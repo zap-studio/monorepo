@@ -1,9 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useVisualViewport } from "./use-visual-viewport.ts";
 
-function createVisualViewportMock(initial: {
+const createVisualViewportMock = (initial: {
   height: number;
   offsetLeft: number;
   offsetTop: number;
@@ -11,8 +12,8 @@ function createVisualViewportMock(initial: {
   pageTop: number;
   scale: number;
   width: number;
-}) {
-  const viewport = new EventTarget() as unknown as VisualViewport;
+}) => {
+  const viewport = asTestDouble<VisualViewport>(new EventTarget());
   let state = { ...initial };
 
   Object.defineProperties(viewport, {
@@ -32,13 +33,13 @@ function createVisualViewportMock(initial: {
     },
     viewport,
   };
-}
+};
 
-function setWindowVisualViewport(viewport: VisualViewport | null) {
+const setWindowVisualViewport = (viewport: VisualViewport | null) => {
   Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
-}
+};
 
-describe(useVisualViewport, () => {
+describe("useVisualViewport", () => {
   it("reports the current window.visualViewport", () => {
     const { viewport } = createVisualViewportMock({
       height: 500,

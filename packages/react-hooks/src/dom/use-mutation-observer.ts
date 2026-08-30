@@ -1,4 +1,6 @@
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 const DEFAULT_OPTIONS: MutationObserverInit = {
   attributes: true,
@@ -8,11 +10,18 @@ const DEFAULT_OPTIONS: MutationObserverInit = {
 };
 
 /**
- * Observes DOM mutations on the ref'd element/subtree via
- * `MutationObserver`. Attach `ref` to the element to observe. Defaults to
- * watching attributes, character data, and the full child subtree;
- * `options` overrides that. `callback` doesn't need to be memoized — the
- * latest one is always called.
+ * Watches for DOM changes inside the ref'd element, using
+ * `MutationObserver`. Attach `ref` to the element you want to watch.
+ *
+ * By default it watches attribute changes, text changes, and changes
+ * anywhere inside the element's children. Pass `options` to change this.
+ *
+ * You don't need to memoize `callback` or `options`. The hook always
+ * calls the latest `callback`, and it compares `options` field by field,
+ * rebuilding the observer only when something actually changes.
+ *
+ * The hook checks `ref` again after every render, so it still works if
+ * the element appears later, is conditionally rendered, or gets replaced.
  *
  * @example
  * ```tsx
@@ -26,12 +35,29 @@ export const useMutationObserver = <T extends Element = HTMLElement>(
 ): RefObject<T | null> => {
   const ref = useRef<T | null>(null);
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    callbackRef.current = callback;
+    optionsRef.current = options;
+  });
+
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
+  const {
+    attributeFilter,
+    attributeOldValue,
+    attributes,
+    characterData,
+    characterDataOldValue,
+    childList,
+    subtree,
+  } = options;
+  const attributeFilterKey = attributeFilter?.join(",");
 
   useEffect(() => {
-    const element = ref.current;
     if (typeof MutationObserver === "undefined" || !element) {
       return undefined;
     }
@@ -39,7 +65,16 @@ export const useMutationObserver = <T extends Element = HTMLElement>(
     const observer = new MutationObserver((mutations) => callbackRef.current(mutations));
     observer.observe(element, optionsRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [
+    element,
+    attributeFilterKey,
+    attributeOldValue,
+    attributes,
+    characterData,
+    characterDataOldValue,
+    childList,
+    subtree,
+  ]);
 
   return ref;
 };

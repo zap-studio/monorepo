@@ -3,12 +3,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { BatteryManager } from "./use-battery.ts";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useBattery } from "./use-battery.ts";
 
-function createBatteryMock(
+const createBatteryMock = (
   initial: Pick<BatteryManager, "charging" | "chargingTime" | "dischargingTime" | "level">,
-) {
-  const battery = new EventTarget() as unknown as BatteryManager;
+) => {
+  const battery = asTestDouble<BatteryManager>(new EventTarget());
   let state = { ...initial };
 
   Object.defineProperties(battery, {
@@ -25,16 +26,16 @@ function createBatteryMock(
       battery.dispatchEvent(new Event("levelchange"));
     },
   };
-}
+};
 
-function setNavigatorGetBattery(getBattery: (() => Promise<BatteryManager>) | undefined) {
+const setNavigatorGetBattery = (getBattery: (() => Promise<BatteryManager>) | undefined) => {
   Object.defineProperty(navigator, "getBattery", {
     configurable: true,
     value: getBattery,
   });
-}
+};
 
-describe(useBattery, () => {
+describe("useBattery", () => {
   it("reports unsupported when the Battery Status API is unavailable", () => {
     setNavigatorGetBattery(undefined);
 

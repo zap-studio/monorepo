@@ -12,6 +12,17 @@ import {
 import { defaultSleep, runRetryPolicy } from "./base-policy.ts";
 import { AbortError, RetryError } from "./errors.ts";
 
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
+const MAX_ATTEMPTS_REASON = "max-attempts-reached";
+const ABORTED_BEFORE_START_MESSAGE = "aborted-before-start";
+
+interface CircularFixture {
+  self?: unknown;
+}
+
 const createRecordingLogger = (): Logger & {
   calls: {
     level: string;
@@ -41,7 +52,7 @@ const createRecordingLogger = (): Logger & {
   };
 };
 
-describe(defaultSleep, () => {
+describe("defaultSleep", () => {
   it("resolves immediately when delay is non-positive", async () => {
     await expect(defaultSleep(0)).resolves.toBeUndefined();
   });
@@ -51,9 +62,10 @@ describe(defaultSleep, () => {
     const done = defaultSleep(40);
     await vi.advanceTimersByTimeAsync(39);
     let settled = false;
-    void done.then(() => {
+    void (async () => {
+      await done;
       settled = true;
-    });
+    })();
     await Promise.resolve();
     expect(settled).toBeFalsy();
     await vi.advanceTimersByTimeAsync(1);
@@ -97,7 +109,7 @@ describe("throw mode (runRetryPolicy default)", () => {
   it("throws RetryError from default onExhausted when retries stop", async () => {
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
@@ -135,10 +147,10 @@ describe("throw mode (runRetryPolicy default)", () => {
     const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
     const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
     const controller = new AbortController();
-    controller.abort(new Error("aborted-before-start"));
+    controller.abort(new Error(ABORTED_BEFORE_START_MESSAGE));
 
     await expect(runRetryPolicy(policy, execute, { signal: controller.signal })).rejects.toThrow(
-      "aborted-before-start",
+      ABORTED_BEFORE_START_MESSAGE,
     );
     expect(execute).not.toHaveBeenCalled();
   });
@@ -166,7 +178,7 @@ describe("throw mode (runRetryPolicy default)", () => {
       .mockRejectedValue(new Error("fail"));
 
     let readCount = 0;
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
         return readCount >= 3;
@@ -176,7 +188,7 @@ describe("throw mode (runRetryPolicy default)", () => {
       reason: "abort-immediate-sleep-check",
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
+    });
 
     await expect(runRetryPolicy(policy, execute, { signal: fakeSignal })).rejects.toThrow(
       "abort-immediate-sleep-check",
@@ -208,10 +220,10 @@ describe("throw mode (runRetryPolicy default)", () => {
   });
 });
 
-describe("result mode (throwOnExhausted: false)", () => {
+describe("result mode (throwOnExhausted: false): success paths", () => {
   it("returns terminal result instead of throwing when retries stop", async () => {
     const policy = createSequencePolicy([
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
@@ -258,110 +270,6 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(execute).toHaveBeenNthCalledWith(2, 2);
   });
 
-  it("returns terminal result when signal is already aborted", async () => {
-    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
-    const controller = new AbortController();
-    controller.abort("aborted-before-start");
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: controller.signal,
-      throwOnExhausted: false,
-    });
-
-    const failure = expectFailureResult(result);
-    expect(failure.attempts).toBe(0);
-    expect(failure.error.message).toBe("aborted-before-start");
-    expect(failure.error).toBeInstanceOf(AbortError);
-    expect(execute).not.toHaveBeenCalled();
-  });
-
-  it("preserves AbortError reason instance in abort result", async () => {
-    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
-    const abortError = new AbortError("already-aborted");
-
-    const fakeSignal = {
-      aborted: true,
-      addEventListener:
-        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-      reason: abortError,
-      removeEventListener:
-        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: fakeSignal,
-      throwOnExhausted: false,
-    });
-
-    const failure = expectFailureResult(result);
-    expect(failure.error).toBe(abortError);
-  });
-
-  it("returns terminal result when signal is aborted during execute", async () => {
-    const policy = createSequencePolicy([{ delayMs: 10, reason: "retry", shouldRetry: true }]);
-    const controller = new AbortController();
-
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockImplementation(() => {
-      controller.abort("aborted-during-execute");
-      return Promise.reject(new Error("failed"));
-    });
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: controller.signal,
-      throwOnExhausted: false,
-    });
-
-    const failure = expectFailureResult(result);
-    expect(failure.attempts).toBe(1);
-    expect(failure.error.message).toBe("aborted-during-execute");
-    expect(failure.error).toBeInstanceOf(AbortError);
-  });
-
-  it("normalizes non-serializable abort reasons to fallback message", async () => {
-    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
-    const circular: { self?: unknown } = {};
-    circular.self = circular;
-    const controller = new AbortController();
-    controller.abort(circular);
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: controller.signal,
-      throwOnExhausted: false,
-    });
-
-    const failure = expectFailureResult(result);
-    expect(failure.attempts).toBe(0);
-    expect(failure.error.message).toBe("Retry aborted.");
-    expect(failure.error).toBeInstanceOf(AbortError);
-  });
-
-  it("handles undefined abort reason fallback message", async () => {
-    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
-    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
-
-    const fakeSignal = {
-      aborted: true,
-      addEventListener:
-        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-      reason: undefined,
-      removeEventListener:
-        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
-
-    const result = await runRetryPolicy(policy, execute, {
-      signal: fakeSignal,
-      throwOnExhausted: false,
-    });
-
-    const failure = expectFailureResult(result);
-    expect(failure.attempts).toBe(0);
-    expect(failure.error.message).toBe("Retry aborted.");
-    expect(failure.error).toBeInstanceOf(AbortError);
-  });
-
   it("retries with signal and positive delay until success", async () => {
     const policy = createSequencePolicy([{ delayMs: 10, reason: "retry", shouldRetry: true }]);
     const controller = new AbortController();
@@ -396,7 +304,114 @@ describe("result mode (throwOnExhausted: false)", () => {
     expect(execute).toHaveBeenNthCalledWith(1, 1);
     expect(execute).toHaveBeenNthCalledWith(2, 2);
   });
+});
 
+describe("result mode (throwOnExhausted: false): abort before and during execution", () => {
+  it("returns terminal result when signal is already aborted", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const controller = new AbortController();
+    controller.abort(ABORTED_BEFORE_START_MESSAGE);
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe(ABORTED_BEFORE_START_MESSAGE);
+    expect(failure.error).toBeInstanceOf(AbortError);
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("preserves AbortError reason instance in abort result", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const abortError = new AbortError("already-aborted");
+
+    const fakeSignal = asTestDouble<AbortSignal>({
+      aborted: true,
+      addEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+      reason: abortError,
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+    });
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: fakeSignal,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.error).toBe(abortError);
+  });
+
+  it("returns terminal result when signal is aborted during execute", async () => {
+    const policy = createSequencePolicy([{ delayMs: 10, reason: "retry", shouldRetry: true }]);
+    const controller = new AbortController();
+
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockImplementation(() => {
+      controller.abort("aborted-during-execute");
+      return Promise.reject(new Error("failed"));
+    });
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(1);
+    expect(failure.error.message).toBe("aborted-during-execute");
+    expect(failure.error).toBeInstanceOf(AbortError);
+  });
+
+  it("normalizes non-serializable abort reasons to fallback message", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const circular: CircularFixture = {};
+    circular.self = circular;
+    const controller = new AbortController();
+    controller.abort(circular);
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe("Retry aborted.");
+    expect(failure.error).toBeInstanceOf(AbortError);
+  });
+
+  it("handles undefined abort reason fallback message", async () => {
+    const policy = createSequencePolicy([{ delayMs: 0, reason: "retry", shouldRetry: true }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+
+    const fakeSignal = asTestDouble<AbortSignal>({
+      aborted: true,
+      addEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+    });
+
+    const result = await runRetryPolicy(policy, execute, {
+      signal: fakeSignal,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe("Retry aborted.");
+    expect(failure.error).toBeInstanceOf(AbortError);
+  });
+});
+
+describe("result mode (throwOnExhausted: false): backoff aborts, sleep errors, and non-retryable failures", () => {
   it("returns failure result when signal aborts during backoff sleep", async () => {
     const policy = createSequencePolicy([{ delayMs: 50, reason: "retry", shouldRetry: true }]);
     const controller = new AbortController();
@@ -446,7 +461,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
 
     let readCount = 0;
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal>({
       get aborted() {
         readCount += 1;
         return readCount >= 3;
@@ -456,7 +471,7 @@ describe("result mode (throwOnExhausted: false)", () => {
       reason: "aborted-from-wait-catch",
       removeEventListener:
         vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
-    } as unknown as AbortSignal;
+    });
 
     const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
@@ -475,17 +490,20 @@ describe("result mode (throwOnExhausted: false)", () => {
     const execute = vi
       .fn<(attempt: number) => Promise<string>>()
       .mockRejectedValue(new Error("fail"));
-    const sleep = vi.fn(() => new Promise<void>(() => {}));
+    const sleep = vi.fn<() => Promise<void>>(() => new Promise<void>(() => {}));
 
-    const fakeSignal = {
+    const fakeSignal = asTestDouble<AbortSignal & { aborted: boolean }>({
       aborted: false,
-      addEventListener: vi.fn((_type: string, listener: EventListenerOrEventListenerObject) => {
-        fakeSignal.aborted = true;
-        (listener as () => void)();
-      }),
+      addEventListener: vi.fn<(_type: string, listener: () => void) => void>(
+        (_type: string, listener: () => void) => {
+          fakeSignal.aborted = true;
+          listener();
+        },
+      ),
       reason: "aborted-during-wait-race",
-      removeEventListener: vi.fn(),
-    } as unknown as AbortSignal & { aborted: boolean };
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+    });
 
     const result = await runRetryPolicy(policy, execute, {
       signal: fakeSignal,
@@ -511,9 +529,8 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error).toBeInstanceOf(RetryError);
-    if (failure.error instanceof RetryError) {
-      expect(failure.error.lastError).toBe(notAnError);
-    }
+    // SAFETY: the toBeInstanceOf check above guarantees failure.error is a RetryError.
+    expect((failure.error as RetryError).lastError).toBe(notAnError);
     expect(execute).toHaveBeenCalledTimes(1);
     expect(policy.seen).toStrictEqual([]);
   });
@@ -524,7 +541,7 @@ describe("logging", () => {
     const logger = createRecordingLogger();
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
@@ -542,7 +559,7 @@ describe("logging", () => {
         context: {
           attempts: 2,
           error: expect.any(Error),
-          reason: "max-attempts-reached",
+          reason: MAX_ATTEMPTS_REASON,
         },
         level: "warn",
         message: "retry policy exhausted",
@@ -554,7 +571,7 @@ describe("logging", () => {
     const logger = createRecordingLogger();
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValueOnce(new Error("fail-1"));
@@ -576,7 +593,7 @@ describe("logging", () => {
         context: {
           attempts: 2,
           error: expect.any(Error),
-          reason: "max-attempts-reached",
+          reason: MAX_ATTEMPTS_REASON,
         },
         level: "warn",
         message: "retry policy exhausted",
@@ -645,7 +662,7 @@ describe("runRetryPolicy defaults", () => {
     const policy: RetryPolicy = {
       next: () => ({
         delayMs: 0,
-        reason: "max-attempts-reached",
+        reason: MAX_ATTEMPTS_REASON,
         shouldRetry: false,
       }),
     };
@@ -662,7 +679,7 @@ describe("runRetryPolicy defaults", () => {
 });
 
 describe("test helpers", () => {
-  describe(createSequencePolicy, () => {
+  describe("createSequencePolicy", () => {
     it("falls back to a terminal decision when constructed without decisions", () => {
       const policy = createSequencePolicy([]);
 
@@ -693,7 +710,7 @@ describe("test helpers", () => {
     });
   });
 
-  describe(expectFailureResult, () => {
+  describe("expectFailureResult", () => {
     it("returns the failure result unchanged", () => {
       const policy = createSequencePolicy([]);
       const failure = {

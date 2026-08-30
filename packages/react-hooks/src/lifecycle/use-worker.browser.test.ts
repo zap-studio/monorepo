@@ -1,10 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWorker } from "./use-worker.ts";
 
 class MockWorker extends EventTarget {
-  static instances: MockWorker[] = [];
+  static readonly instances: MockWorker[] = [];
   postedMessages: unknown[] = [];
   terminated = false;
 
@@ -22,19 +23,19 @@ class MockWorker extends EventTarget {
   }
 }
 
-function reset() {
-  MockWorker.instances = [];
-}
+const reset = () => {
+  MockWorker.instances.length = 0;
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useWorker, () => {
+describe("useWorker", () => {
   it("run() rejects and never creates a worker when unsupported", async () => {
     reset();
     vi.stubGlobal("Worker", undefined);
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker(createWorker));
 
     let error: Error | undefined;
@@ -42,6 +43,8 @@ describe(useWorker, () => {
       try {
         await result.current.run("x");
       } catch (caught) {
+        // SAFETY: run() has only one rejection path (see use-worker.ts). It rejects with
+        // `new Error("Web Workers are not supported by this browser.")`, so caught is an Error.
         error = caught as Error;
       }
     });
@@ -52,14 +55,14 @@ describe(useWorker, () => {
 
   it("reports supported: true when Worker exists", () => {
     reset();
-    const { result } = renderHook(() => useWorker(() => new MockWorker() as unknown as Worker));
+    const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
 
     expect(result.current.supported).toBe(true);
   });
 
   it("does not create the worker until the first run() call", () => {
     reset();
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     renderHook(() => useWorker(createWorker));
 
     expect(createWorker).not.toHaveBeenCalled();
@@ -68,7 +71,7 @@ describe(useWorker, () => {
   it("run() posts the message and resolves with the response", async () => {
     reset();
     const { result } = renderHook(() =>
-      useWorker<number, number>(() => new MockWorker() as unknown as Worker),
+      useWorker<number, number>(() => asTestDouble<Worker>(new MockWorker())),
     );
 
     let responsePromise!: Promise<number>;
@@ -90,7 +93,7 @@ describe(useWorker, () => {
 
   it("reuses the same worker across multiple run() calls", async () => {
     reset();
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
@@ -116,7 +119,7 @@ describe(useWorker, () => {
 
   it("run() rejects when the worker fires an error event", async () => {
     reset();
-    const { result } = renderHook(() => useWorker(() => new MockWorker() as unknown as Worker));
+    const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
 
     let runPromise!: Promise<unknown>;
     act(() => {
@@ -131,6 +134,8 @@ describe(useWorker, () => {
       try {
         await runPromise;
       } catch (caught) {
+        // SAFETY: run()'s handleError listener rejects with `new Error(event.message)` (see
+        // use-worker.ts), so what this test catches is always an Error.
         error = caught as Error;
       }
     });
@@ -140,7 +145,7 @@ describe(useWorker, () => {
 
   it("terminate() terminates the worker so the next run() creates a new one", async () => {
     reset();
-    const createWorker = vi.fn(() => new MockWorker() as unknown as Worker);
+    const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
     const { result } = renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
@@ -172,7 +177,7 @@ describe(useWorker, () => {
   it("terminates the worker on unmount", async () => {
     reset();
     const { result, unmount } = renderHook(() =>
-      useWorker(() => new MockWorker() as unknown as Worker),
+      useWorker(() => asTestDouble<Worker>(new MockWorker())),
     );
 
     let runPromise!: Promise<unknown>;

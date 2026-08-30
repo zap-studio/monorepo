@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/logger",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": false,
   "description": "A lean, tree-shakeable logging abstraction with a console implementation.",
   "keywords": [

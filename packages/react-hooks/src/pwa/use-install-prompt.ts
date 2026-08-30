@@ -13,12 +13,13 @@ export interface UseInstallPromptResult {
 }
 
 /**
- * Custom "Add to Home Screen" UI, wrapping `beforeinstallprompt` (deferred
- * and replayed via `promptInstall()`, since the browser's own prompt is
- * suppressed) and `appinstalled`. `canInstall`/`installed` are both
- * `false` — the SSR-safe default — until the client observes the
- * respective event, and `canInstall` stays `false` permanently in
- * browsers that never fire `beforeinstallprompt` (Safari, Firefox).
+ * Lets you build a custom "Add to Home Screen" button. It wraps the
+ * `beforeinstallprompt` event (which it holds onto and replays later when
+ * you call `promptInstall()`, since the browser's own prompt is
+ * suppressed) and the `appinstalled` event. `canInstall` and `installed`
+ * both start as `false` (safe for server-side rendering) until the client
+ * sees the matching event. `canInstall` stays `false` forever in browsers
+ * that never fire `beforeinstallprompt`, like Safari and Firefox.
  *
  * @example
  * ```tsx
@@ -29,18 +30,18 @@ export interface UseInstallPromptResult {
 export const useInstallPrompt = (): UseInstallPromptResult => {
   const [canInstall, setCanInstall] = useState(false);
   const [installed, setInstalled] = useState(false);
-  const deferredRef = useRef<BeforeInstallPromptEvent | null>(null);
+  const beforeInstallEventRef = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
-      // SAFETY: beforeinstallprompt is a non-standard, Chromium-only event not declared in TypeScript's DOM lib; the listener is only ever registered on this exact event name, so the object it receives is always shaped this way at runtime.
-      deferredRef.current = event as BeforeInstallPromptEvent;
+      // SAFETY: beforeinstallprompt is a non-standard event, Chromium only, and it is not declared. We add this listener only for that exact event name, so the object it gets always has this shape at runtime.
+      beforeInstallEventRef.current = event as BeforeInstallPromptEvent;
       setCanInstall(true);
     };
 
     const handleAppInstalled = () => {
-      deferredRef.current = null;
+      beforeInstallEventRef.current = null;
       setCanInstall(false);
       setInstalled(true);
     };
@@ -54,13 +55,13 @@ export const useInstallPrompt = (): UseInstallPromptResult => {
   }, []);
 
   const promptInstall = useCallback(async (): Promise<"accepted" | "dismissed" | "unavailable"> => {
-    const deferred = deferredRef.current;
-    if (!deferred) {
+    const beforeInstallEvent = beforeInstallEventRef.current;
+    if (!beforeInstallEvent) {
       return "unavailable";
     }
-    await deferred.prompt();
-    const { outcome } = await deferred.userChoice;
-    deferredRef.current = null;
+    await beforeInstallEvent.prompt();
+    const { outcome } = await beforeInstallEvent.userChoice;
+    beforeInstallEventRef.current = null;
     setCanInstall(false);
     return outcome;
   }, []);

@@ -11,12 +11,13 @@ export interface UseWakeLockResult {
 const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(navigator.wakeLock);
 
 /**
- * Screen Wake Lock API wrapper — not auto-acquired on mount; call
- * `request()`/`release()` imperatively. Automatically released when the
- * document is hidden (per spec the platform already does this, but this
- * also proactively releases on `visibilitychange`) and on unmount.
- * `supported: false` — the SSR-safe default — where `navigator.wakeLock`
- * doesn't exist.
+ * Wraps the Screen Wake Lock API. It does not turn on automatically when
+ * the component mounts — call `request()` to turn it on and `release()`
+ * to turn it off. It also releases automatically when the document is
+ * hidden (browsers already do this, but this hook also releases on the
+ * `visibilitychange` event to be safe) and when the component unmounts.
+ * `supported` is `false` (the safe default for server rendering) when
+ * `navigator.wakeLock` doesn't exist.
  *
  * @example
  * ```tsx
@@ -28,29 +29,43 @@ export const useWakeLock = (): UseWakeLockResult => {
   const supported = isSupported();
   const [active, setActive] = useState(false);
   const sentinelRef = useRef<WakeLockSentinel | null>(null);
+  const [sentinel, setSentinel] = useState<WakeLockSentinel | null>(null);
 
   const release = useCallback(async (): Promise<void> => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) {
+    const current = sentinelRef.current;
+    if (!current) {
       return;
     }
     sentinelRef.current = null;
+    setSentinel(null);
     setActive(false);
-    await sentinel.release();
+    await current.release();
   }, []);
 
   const request = useCallback(async (): Promise<void> => {
     if (!isSupported()) {
       return;
     }
-    const sentinel = await navigator.wakeLock.request("screen");
-    sentinelRef.current = sentinel;
+    const newSentinel = await navigator.wakeLock.request("screen");
+    sentinelRef.current = newSentinel;
+    setSentinel(newSentinel);
     setActive(true);
-    sentinel.addEventListener("release", () => {
-      sentinelRef.current = null;
-      setActive(false);
-    });
   }, []);
+
+  useEffect(() => {
+    if (!sentinel) {
+      return undefined;
+    }
+    const handleRelease = () => {
+      sentinelRef.current = null;
+      setSentinel(null);
+      setActive(false);
+    };
+    sentinel.addEventListener("release", handleRelease);
+    return () => {
+      sentinel.removeEventListener("release", handleRelease);
+    };
+  }, [sentinel]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

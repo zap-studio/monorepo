@@ -6,12 +6,13 @@ export type SetHash = (next: string | ((prev: string) => string)) => void;
 const readHash = (): string => location.hash;
 
 /**
- * State synced to `location.hash`, updating on the native `hashchange`
- * event — including when `setHash()` itself writes `location.hash`, since
- * that assignment synchronously fires `hashchange` too (unlike
- * `history.pushState`/`replaceState`, which stay silent — see
- * `useSearchParams` for that case). Falls back to `""` during server
- * rendering and before the client subscribes.
+ * State that stays in sync with `location.hash`. It updates on the
+ * browser's `hashchange` event, including when `setHash()` changes
+ * `location.hash` itself, since that change fires `hashchange` right
+ * away too. This is different from `history.pushState`/`replaceState`,
+ * which don't fire any event — see `useSearchParams` for that case. The
+ * value is `""` during server rendering and until the hook connects on
+ * the client.
  *
  * @example
  * ```tsx
@@ -24,7 +25,9 @@ export const useHashState = (): [string, SetHash] => {
     typeof window === "undefined" ? "" : readHash(),
   );
   const hashRef = useRef(hash);
-  hashRef.current = hash;
+  useEffect(() => {
+    hashRef.current = hash;
+  });
 
   useEffect(() => {
     const handleHashChange = () => setHashState(readHash());

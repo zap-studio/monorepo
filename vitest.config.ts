@@ -5,9 +5,6 @@ const isCI = process.env.CI !== undefined;
 const exclude = [...configDefaults.exclude, "**/dist/**", "**/package.json"];
 
 export default defineConfig({
-  resolve: {
-    dedupe: ["react", "react-dom"],
-  },
   test: {
     coverage: {
       exclude: [...exclude],

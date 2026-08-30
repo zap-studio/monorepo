@@ -4,13 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDebounce } from "./use-debounce.ts";
 
-describe(useDebounce, () => {
+describe("useDebounce", () => {
   it("renders without touching timers during server rendering", () => {
-    const callback = vi.fn();
-    function TestComponent() {
+    const callback = vi.fn<() => void>();
+    const TestComponent = () => {
       useDebounce(callback, 500);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

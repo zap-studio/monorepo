@@ -3,11 +3,13 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useHashState } from "./use-hash-state.ts";
 
+const NEW_HASH = "#from-setter";
+
 afterEach(() => {
   location.hash = "";
 });
 
-describe(useHashState, () => {
+describe("useHashState", () => {
   it("reads the current location.hash", () => {
     location.hash = "#initial";
 
@@ -30,11 +32,11 @@ describe(useHashState, () => {
     const { result } = renderHook(() => useHashState());
 
     await act(async () => {
-      result.current[1]("#from-setter");
+      result.current[1](NEW_HASH);
     });
 
-    expect(result.current[0]).toBe("#from-setter");
-    expect(location.hash).toBe("#from-setter");
+    expect(result.current[0]).toBe(NEW_HASH);
+    expect(location.hash).toBe(NEW_HASH);
   });
 
   it("setHash() accepts an updater function reading the latest hash", async () => {

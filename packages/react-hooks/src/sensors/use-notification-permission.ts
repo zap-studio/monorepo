@@ -14,10 +14,11 @@ const readPermission = (): NotificationPermission | "unsupported" =>
 
 /**
  * The Notifications API's permission state, plus `requestPermission()` and
- * a `notify()` helper that no-ops (returns `undefined`) unless permission is
- * `"granted"`. There's no native "permission changed" event, so `permission`
- * only updates when `requestPermission()` resolves. `"unsupported"` — the
- * SSR-safe default — where the Notifications API doesn't exist.
+ * a `notify()` helper. `notify()` does nothing (returns `undefined`) unless
+ * permission is `"granted"`. There is no built-in event for permission
+ * changes, so `permission` only updates after `requestPermission()`
+ * resolves. Returns `"unsupported"` (the safe default for server
+ * rendering) where the Notifications API doesn't exist.
  *
  * @example
  * ```tsx

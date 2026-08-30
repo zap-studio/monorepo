@@ -1,47 +1,65 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useIndexedDB } from "./use-indexed-db.ts";
 
 // `.error` is a raw string, not an Error instance — this matches real IndexedDB
 // behavior, where `.error` is a DOMException (which does not extend Error), so
 // these tests also exercise the `caught instanceof Error` false branch downstream.
-function makeFailingRequest(errorMessage: string): IDBRequest {
-  const fake: { error: string; onerror?: (() => void) | null; onsuccess?: (() => void) | null } = {
+interface FailingRequestFixture {
+  error: string | undefined;
+  onerror?: (() => void) | null;
+  onsuccess?: (() => void) | null;
+}
+
+const makeFailingRequest = (errorMessage: string | undefined): IDBRequest => {
+  const fake: FailingRequestFixture = {
     error: errorMessage,
   };
   queueMicrotask(() => fake.onerror?.());
-  return fake as unknown as IDBRequest;
+  return asTestDouble<IDBRequest>(fake);
+};
+
+interface SuccessfulReadFixture {
+  onsuccess?: (() => void) | null;
+  result?: number;
 }
 
-function makeFailingTransaction(error: unknown): IDBTransaction {
-  const fakeStore = { delete: vi.fn(), get: vi.fn(), put: vi.fn() };
-  const fake: {
-    error: unknown;
-    objectStore: () => typeof fakeStore;
-    oncomplete?: (() => void) | null;
-    onerror?: (() => void) | null;
-  } = {
+interface FailingTransactionFixture<Store> {
+  error: unknown;
+  objectStore: () => Store;
+  oncomplete?: (() => void) | null;
+  onerror?: (() => void) | null;
+}
+
+const makeFailingTransaction = (error: unknown): IDBTransaction => {
+  const fakeStore = {
+    delete: vi.fn<(key: string) => IDBRequest>(),
+    get: vi.fn<(key: string) => IDBRequest>(),
+    put: vi.fn<(value: unknown, key: string) => IDBRequest>(),
+  };
+  const fake: FailingTransactionFixture<typeof fakeStore> = {
     error,
     objectStore: () => fakeStore,
   };
   queueMicrotask(() => fake.onerror?.());
-  return fake as unknown as IDBTransaction;
-}
+  return asTestDouble<IDBTransaction>(fake);
+};
 
 // A fully-controlled fake IDBOpenDBRequest whose onupgradeneeded/onsuccess fire
 // via a microtask, with a fake `db.transaction(...).objectStore(...).get()`
 // wired to `getRequest` — lets tests control read-timing precisely, instead of
 // racing a real (and much slower) native IndexedDB open.
-function makeControlledOpenRequest(options: {
+const makeControlledOpenRequest = (options: {
   getRequest?: () => IDBRequest;
   storeExists: boolean;
-}) {
+}) => {
   let onupgradeneeded: (() => void) | undefined;
   let onsuccess: (() => void) | undefined;
-  const createObjectStore = vi.fn();
+  const createObjectStore = vi.fn<(name: string) => void>();
   const fakeDb = {
-    close: vi.fn(),
+    close: vi.fn<() => void>(),
     createObjectStore,
     objectStoreNames: { contains: () => options.storeExists },
     transaction: () => ({ objectStore: () => ({ get: options.getRequest }) }),
@@ -68,17 +86,17 @@ function makeControlledOpenRequest(options: {
     onupgradeneeded?.();
     onsuccess?.();
   });
-  return { createObjectStore, request: fake as unknown as IDBOpenDBRequest };
-}
+  return { createObjectStore, request: asTestDouble<IDBOpenDBRequest>(fake) };
+};
 
-function deleteTestDatabase(): Promise<void> {
+const deleteTestDatabase = (): Promise<void> => {
   return new Promise((resolve) => {
     const request = indexedDB.deleteDatabase("zap-studio-react-hooks");
     request.onsuccess = () => resolve();
     request.onerror = () => resolve();
     request.onblocked = () => resolve();
   });
-}
+};
 
 beforeEach(async () => {
   await deleteTestDatabase();
@@ -89,7 +107,7 @@ afterEach(async () => {
   await deleteTestDatabase();
 });
 
-describe(useIndexedDB, () => {
+describe("useIndexedDB", () => {
   it('starts "loading" with the initial value', () => {
     const { result } = renderHook(() => useIndexedDB("count", 0));
 
@@ -166,9 +184,9 @@ describe(useIndexedDB, () => {
   it("ignores a resolved read if the component unmounted first", async () => {
     const { request } = makeControlledOpenRequest({
       getRequest: () => {
-        const fake: { onsuccess?: (() => void) | null; result?: number } = { result: 1 };
+        const fake: SuccessfulReadFixture = { result: 1 };
         queueMicrotask(() => fake.onsuccess?.());
-        return fake as unknown as IDBRequest;
+        return asTestDouble<IDBRequest>(fake);
       },
       storeExists: true,
     });
@@ -221,8 +239,8 @@ describe(useIndexedDB, () => {
   });
 
   it('becomes "error" when opening the database fails', async () => {
-    vi.spyOn(indexedDB, "open").mockImplementation(
-      () => makeFailingRequest("open boom") as unknown as IDBOpenDBRequest,
+    vi.spyOn(indexedDB, "open").mockImplementation(() =>
+      asTestDouble<IDBOpenDBRequest>(makeFailingRequest("open boom")),
     );
 
     const { result } = renderHook(() => useIndexedDB("count", 0));
@@ -240,6 +258,28 @@ describe(useIndexedDB, () => {
     await waitFor(() => expect(result.current.status).toBe("error"));
 
     expect(result.current.error?.message).toBe("read boom");
+  });
+
+  it("falls back to a default message when opening fails without an `error`", async () => {
+    vi.spyOn(indexedDB, "open").mockImplementation(() =>
+      asTestDouble<IDBOpenDBRequest>(makeFailingRequest(undefined)),
+    );
+
+    const { result } = renderHook(() => useIndexedDB("count", 0));
+    await waitFor(() => expect(result.current.status).toBe("error"));
+
+    expect(result.current.error?.message).toBe("The IndexedDB request failed.");
+  });
+
+  it("falls back to a default message when the initial read fails without an `error`", async () => {
+    vi.spyOn(IDBObjectStore.prototype, "get").mockImplementation(() =>
+      makeFailingRequest(undefined),
+    );
+
+    const { result } = renderHook(() => useIndexedDB("count", 0));
+    await waitFor(() => expect(result.current.status).toBe("error"));
+
+    expect(result.current.error?.message).toBe("The IndexedDB request failed.");
   });
 
   it("setValue() sets an error when the write transaction fails", async () => {
@@ -304,9 +344,24 @@ describe(useIndexedDB, () => {
     expect(result.current.status).toBe("error");
   });
 
+  it("falls back to a default message when the write transaction fails without an `error`", async () => {
+    const { result } = renderHook(() => useIndexedDB("count", 0));
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
+      makeFailingTransaction(undefined),
+    );
+
+    await act(async () => {
+      await result.current.setValue(5);
+    });
+
+    expect(result.current.error?.message).toBe("The IndexedDB transaction failed.");
+  });
+
   it('reports supported: false-equivalent "error" status when IndexedDB is unavailable', async () => {
     const original = window.indexedDB;
-    Object.defineProperty(window, "indexedDB", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "indexedDB");
 
     const { result } = renderHook(() => useIndexedDB("count", 0));
     await waitFor(() => expect(result.current.status).toBe("error"));

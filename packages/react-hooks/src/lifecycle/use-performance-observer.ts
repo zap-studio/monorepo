@@ -8,13 +8,17 @@ export interface UsePerformanceObserverResult {
 const isSupported = (): boolean => typeof PerformanceObserver !== "undefined";
 
 /**
- * Wraps `PerformanceObserver` — long tasks, paint timing, layout shift,
- * and other performance entry types, streamed to `callback` as they
- * happen. Subscribes on mount and whenever `options` changes,
- * disconnecting the previous observer first. `callback` doesn't need to
- * be memoized — the latest one is always called, without re-subscribing.
- * `supported: false` — the SSR-safe default — where `PerformanceObserver`
- * doesn't exist.
+ * Wraps `PerformanceObserver`. It streams performance entries — like long
+ * tasks, paint timing, and layout shifts — to `callback` as they happen.
+ * The hook subscribes on mount, and again whenever `options` changes,
+ * disconnecting the old observer first. Neither `callback` nor `options`
+ * needs to be memoized. The hook always calls the latest `callback`
+ * without re-subscribing, and it compares `options` field by field. This
+ * means you can pass a new object literal on every render without
+ * rebuilding the observer — which matters, because with `buffered: true`,
+ * rebuilding it would re-deliver every past entry again.
+ * Returns `supported: false` when `PerformanceObserver` doesn't exist,
+ * such as during server rendering.
  *
  * @example
  * ```tsx
@@ -29,16 +33,23 @@ export const usePerformanceObserver = (
 ): UsePerformanceObserverResult => {
   const supported = isSupported();
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    callbackRef.current = callback;
+    optionsRef.current = options;
+  });
+
+  const { buffered, entryTypes, type } = options;
+  const entryTypesKey = entryTypes?.join(",");
 
   useEffect(() => {
     if (!isSupported()) {
       return undefined;
     }
     const observer = new PerformanceObserver((list, obs) => callbackRef.current(list, obs));
-    observer.observe(options);
+    observer.observe(optionsRef.current);
     return () => observer.disconnect();
-  }, [options]);
+  }, [buffered, entryTypesKey, type]);
 
   return { supported };
 };

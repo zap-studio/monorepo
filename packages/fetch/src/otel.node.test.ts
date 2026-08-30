@@ -5,12 +5,12 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch } from "./index.ts";
 
 describe("$fetch OpenTelemetry active context", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
 
   beforeAll(() => {
     context.setGlobalContextManager(new AsyncHooksContextManager().enable());
@@ -22,7 +22,7 @@ describe("$fetch OpenTelemetry active context", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
   });
 
   afterEach(() => {

@@ -137,7 +137,7 @@ describe("ConsoleLogger", () => {
     logger.info("i", { requestId: "abc" });
 
     expect(infoSpy).toHaveBeenCalledTimes(1);
-    const [line] = infoSpy.mock.calls[0] as [string];
+    const [line] = infoSpy.mock.calls[0] ?? [];
     expect(JSON.parse(line)).toMatchObject({
       level: "info",
       msg: "i",

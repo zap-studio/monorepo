@@ -3,20 +3,20 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useStorageEstimate } from "./use-storage-estimate.ts";
 
-function setNavigatorStorage(estimate: (() => Promise<StorageEstimate>) | undefined) {
+const setNavigatorStorage = (estimate: (() => Promise<StorageEstimate>) | undefined) => {
   Object.defineProperty(navigator, "storage", {
     configurable: true,
     value: estimate ? { estimate } : undefined,
   });
-}
+};
 
-describe(useStorageEstimate, () => {
+describe("useStorageEstimate", () => {
   it("starts unsupported: false but with usage/quota undefined while loading", () => {
     setNavigatorStorage(() => new Promise(() => {}));
 
     const { result } = renderHook(() => useStorageEstimate());
 
-    expect(result.current).toEqual({ quota: undefined, supported: true, usage: undefined });
+    expect(result.current).toEqual({ supported: true });
   });
 
   it("reports usage/quota once estimate resolves", async () => {
@@ -34,7 +34,7 @@ describe(useStorageEstimate, () => {
 
     const { result } = renderHook(() => useStorageEstimate());
 
-    expect(result.current).toEqual({ quota: undefined, supported: false, usage: undefined });
+    expect(result.current).toEqual({ supported: false });
   });
 
   it("ignores a resolved estimate if the component unmounted first", async () => {
@@ -56,7 +56,9 @@ describe(useStorageEstimate, () => {
   });
 
   it("does not call estimate a second time on re-render", async () => {
-    const estimate = vi.fn(() => Promise.resolve({ quota: 1, usage: 1 }));
+    const estimate = vi.fn<() => Promise<{ quota: number; usage: number }>>(() =>
+      Promise.resolve({ quota: 1, usage: 1 }),
+    );
     setNavigatorStorage(estimate);
 
     const { rerender } = renderHook(() => useStorageEstimate());

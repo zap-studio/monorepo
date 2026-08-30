@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 
 import { useOnlineStatus } from "./use-online-status.ts";
 
-function setNavigatorOnLine(value: boolean) {
+const setNavigatorOnLine = (value: boolean) => {
   Object.defineProperty(navigator, "onLine", {
     configurable: true,
     get: () => value,
   });
-}
+};
 
-describe(useOnlineStatus, () => {
+describe("useOnlineStatus", () => {
   it("reflects navigator.onLine on mount", () => {
     setNavigatorOnLine(false);
 

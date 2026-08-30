@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useWebLock } from "./use-web-lock.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useWebLock("my-lock");
   return supported ? "true" : "false";
-}
+};
 
-describe(useWebLock, () => {
+describe("useWebLock", () => {
   it("renders without crashing during server rendering", () => {
     // Node itself implements the Web Locks API natively, so `supported` genuinely reflects
     // that here — unlike browser-only APIs, there's no "always false during SSR" guarantee to assert.

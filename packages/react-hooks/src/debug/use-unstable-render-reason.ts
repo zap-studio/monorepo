@@ -20,6 +20,12 @@ export interface UseUnstableRenderReasonResult<T extends Element> {
   ref: RefObject<T | null>;
 }
 
+/** Options accepted by `useUnstableRenderReason`. */
+export interface UseUnstableRenderReasonOptions {
+  /** How many Fiber ancestors, hooks, and context entries to walk through before giving up. Defaults to `DEFAULT_MAX_WALK` (50). */
+  maxWalk?: number;
+}
+
 interface RenderSnapshot {
   context: unknown[];
   props: Record<string, unknown> | null;
@@ -29,17 +35,17 @@ interface RenderSnapshot {
 const EMPTY_SNAPSHOT: RenderSnapshot = { context: [], props: null, state: [] };
 
 /**
- * How many hooks `useUnstableRenderReason` itself calls (4 `useRef`s, 1
- * `useState`, 1 `useEffect`) — skipped when walking the caller's hook
- * list so this hook's own `reason` state doesn't show up as if it were
- * the caller's own `useState`.
+ * The number of hooks `useUnstableRenderReason` calls internally (4
+ * `useRef`s, 1 `useState`, 1 `useEffect`). We skip this many hooks when
+ * reading the caller's hook list, so this hook's own `reason` state
+ * doesn't get mistaken for one of the caller's own `useState` calls.
  */
 const OWN_HOOK_COUNT = 6;
 
-const snapshotOf = (fiber: FiberLike): RenderSnapshot => ({
-  context: collectContextValues(fiber),
+const snapshotOf = (fiber: FiberLike, maxWalk: number | undefined): RenderSnapshot => ({
+  context: collectContextValues(fiber, maxWalk),
   props: fiber.memoizedProps,
-  state: collectStateHookValues(fiber.memoizedState, OWN_HOOK_COUNT),
+  state: collectStateHookValues(fiber.memoizedState, OWN_HOOK_COUNT, maxWalk),
 });
 
 const classify = (
@@ -63,22 +69,30 @@ const classify = (
 };
 
 /**
- * Classifies why the ref'd component just re-rendered — `"mount"`,
- * `"props"`, `"state"` (a `useState`/`useReducer` value changed),
- * `"context"` (a read `useContext()` value changed), or `"parent"` (none
- * of the above changed, so the parent re-rendered this component without a
- * locally-observable cause — typically a non-memoized child). When more
- * than one changed at once, the first match wins, checked in that order.
- * `"unknown"` is the starting value.
+ * Tells you why the ref'd component just re-rendered. The possible
+ * values are:
+ * - `"mount"` — this is the first render.
+ * - `"props"` — a prop value changed.
+ * - `"state"` — a `useState`/`useReducer` value changed.
+ * - `"context"` — a value read with `useContext()` changed.
+ * - `"parent"` — none of the above changed. The parent re-rendered this
+ *   component anyway, usually because it isn't memoized.
  *
- * Computed in an effect, after commit, so `reason` updates one render
- * behind the change that caused it rather than being available
- * synchronously in the same render.
+ * If more than one thing changed at once, the first match wins, checked
+ * in the order above. The starting value is `"unknown"`.
  *
- * Call `useUnstableRenderReason()` as the first hook in the component —
- * state detection skips this hook's own internal hooks by count when
- * walking the Fiber hook list, so a stateful hook called *before* it
- * would be miscounted as this hook's own.
+ * `reason` is computed after the render commits, so it updates one
+ * render behind the change that caused it, instead of being available in
+ * the same render.
+ *
+ * Call `useUnstableRenderReason()` as the first hook in your component.
+ * It counts its own internal hooks so it can skip them when reading your
+ * component's hook list. If you call a stateful hook before this one, it
+ * will be miscounted as belonging to this hook.
+ *
+ * `options.maxWalk` caps how many Fiber ancestors, hooks, and context
+ * entries get walked while computing the reason. Defaults to 50; pass a
+ * higher number for a deeply nested tree, or a lower one to bail out sooner.
  *
  * @example
  * ```tsx
@@ -86,9 +100,10 @@ const classify = (
  * return <div ref={ref}>{reason}</div>;
  * ```
  */
-export const useUnstableRenderReason = <
-  T extends Element = HTMLElement,
->(): UseUnstableRenderReasonResult<T> => {
+export const useUnstableRenderReason = <T extends Element = HTMLElement>(
+  options?: UseUnstableRenderReasonOptions,
+): UseUnstableRenderReasonResult<T> => {
+  const maxWalk = options?.maxWalk;
   const ref = useRef<T | null>(null);
   const hasSeenFiberRef = useRef(false);
   const previousRef = useRef<RenderSnapshot>(EMPTY_SNAPSHOT);
@@ -96,7 +111,7 @@ export const useUnstableRenderReason = <
   const [reason, setReason] = useState<RenderReason>("unknown");
 
   const computeReason = (): RenderReason => {
-    /* v8 ignore next 3 -- computeReason only runs inside the effect below, which never runs during SSR (so a Node test can't reach this) and can't be forced into a production build at test time (bundlers replace `process.env.NODE_ENV` at build time, before this browser test suite's own build). */
+    /* v8 ignore next 3 -- computeReason only runs inside the effect below, and that effect never runs during server-side rendering, so a Node test cannot reach this. We also cannot force a production build at test time, because bundlers replace `process.env.NODE_ENV` before this test suite is built. */
     if (isProductionBuild()) {
       return "unknown";
     }
@@ -109,7 +124,7 @@ export const useUnstableRenderReason = <
       if (!hostFiber) {
         return "unknown";
       }
-      const current = snapshotOf(findOwnerFiber(hostFiber));
+      const current = snapshotOf(findOwnerFiber(hostFiber, maxWalk), maxWalk);
       const nextReason = classify(hasSeenFiberRef.current, current, previousRef.current);
       hasSeenFiberRef.current = true;
       previousRef.current = current;
@@ -119,6 +134,7 @@ export const useUnstableRenderReason = <
     }
   };
 
+  // oxlint-disable-next-line react-hooks/exhaustive-deps -- no deps array on purpose: this effect must re-check the Fiber on every render, not just when some dependency changes. `skipNextRef` (see comment below) already stops the setState-after-setState loop the rule is warning about.
   useEffect(() => {
     if (skipNextRef.current) {
       skipNextRef.current = false;
@@ -126,7 +142,7 @@ export const useUnstableRenderReason = <
     }
 
     const nextReason = computeReason();
-    // A setState call only triggers (and thus needs skipping) another commit when the value actually changes — Object.is-equal updates are bailed out of silently, so skipNextRef would otherwise go stale and wrongly skip the next real render.
+    // Calling setState only triggers another commit (which we need to skip) when the value actually changes. React silently ignores a setState call with an equal value, so without this check, skipNextRef could get stuck and wrongly skip the next real render.
     if (nextReason !== reason) {
       skipNextRef.current = true;
     }

@@ -5,12 +5,24 @@ import {
   InMemorySpanExporter,
   SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-base";
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { type Mock, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch } from "./index.ts";
 
+/** The arguments a recorded `fetch` call was made with. Throws when that call never happened. */
+const fetchCall = (mock: Mock<typeof fetch>, index = 0): Parameters<typeof fetch> => {
+  const call = mock.mock.calls[index];
+  if (!call) {
+    throw new Error(`fetch was not called ${index + 1} time(s)`);
+  }
+  return call;
+};
+
+const USER_URL = "https://api.example.com/users/1";
+const TRACEPARENT_PATTERN = /^00-[0-9a-f]{32}-[0-9a-f]{16}-0[01]$/u;
+
 describe("$fetch OpenTelemetry", () => {
-  let fetchMock: ReturnType<typeof vi.fn>;
+  let fetchMock: Mock<typeof fetch>;
   const exporter = new InMemorySpanExporter();
 
   beforeAll(() => {
@@ -23,7 +35,7 @@ describe("$fetch OpenTelemetry", () => {
 
   beforeEach(() => {
     fetchMock = vi.fn<typeof fetch>();
-    globalThis.fetch = fetchMock as typeof fetch;
+    globalThis.fetch = fetchMock;
     exporter.reset();
   });
 
@@ -34,19 +46,19 @@ describe("$fetch OpenTelemetry", () => {
   it("creates a CLIENT span with HTTP request attributes", async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
 
-    await $fetch("https://api.example.com/users/1", { method: "GET" });
+    await $fetch(USER_URL, { method: "GET" });
 
     const [span] = exporter.getFinishedSpans();
     expect(span?.name).toBe("GET");
     expect(span?.kind).toBe(SpanKind.CLIENT);
     expect(span?.attributes["http.request.method"]).toBe("GET");
-    expect(span?.attributes["url.full"]).toBe("https://api.example.com/users/1");
+    expect(span?.attributes["url.full"]).toBe(USER_URL);
   });
 
   it("sets http.response.status_code and OK status on a 2xx response", async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 204 }));
 
-    await $fetch("https://api.example.com/users/1");
+    await $fetch(USER_URL);
 
     const [span] = exporter.getFinishedSpans();
     expect(span?.attributes["http.response.status_code"]).toBe(204);
@@ -56,7 +68,7 @@ describe("$fetch OpenTelemetry", () => {
   it("sets ERROR status on a non-2xx response", async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 500, statusText: "Internal Error" }));
 
-    await $fetch("https://api.example.com/users/1", {
+    await $fetch(USER_URL, {
       throwOnFetchError: false,
     });
 
@@ -69,7 +81,7 @@ describe("$fetch OpenTelemetry", () => {
     const networkError = new TypeError("network down");
     fetchMock.mockRejectedValue(networkError);
 
-    await expect($fetch("https://api.example.com/users/1")).rejects.toThrow("network down");
+    await expect($fetch(USER_URL)).rejects.toThrow("network down");
 
     const [span] = exporter.getFinishedSpans();
     expect(span?.status.code).toBe(SpanStatusCode.ERROR);
@@ -79,7 +91,7 @@ describe("$fetch OpenTelemetry", () => {
   it("sets ERROR status without an exception event when a non-Error value is thrown", async () => {
     fetchMock.mockRejectedValue({ reason: "aborted" });
 
-    await expect($fetch("https://api.example.com/users/1")).rejects.toStrictEqual({
+    await expect($fetch(USER_URL)).rejects.toStrictEqual({
       reason: "aborted",
     });
 
@@ -91,10 +103,10 @@ describe("$fetch OpenTelemetry", () => {
   it("injects a traceparent header into the outgoing request", async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 200 }));
 
-    await $fetch("https://api.example.com/users/1");
+    await $fetch(USER_URL);
 
-    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    const headers = new Headers(init.headers);
-    expect(headers.get("traceparent")).toMatch(/^00-[0-9a-f]{32}-[0-9a-f]{16}-0[01]$/);
+    const [, init] = fetchCall(fetchMock);
+    const headers = new Headers(init?.headers);
+    expect(headers.get("traceparent")).toMatch(TRACEPARENT_PATTERN);
   });
 });

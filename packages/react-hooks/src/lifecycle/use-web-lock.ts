@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Status reported by `useWebLock`. */
 export type WebLockStatus = "error" | "holding" | "idle" | "released";
@@ -14,13 +14,14 @@ export interface UseWebLockResult {
 const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(navigator.locks);
 
 /**
- * Wraps the Web Locks API — async mutual exclusion for a named resource,
- * shared across same-origin tabs/workers. `runExclusive(callback)` runs
- * `callback` once the `name`d lock is granted, releasing it automatically
- * when `callback` settles (success or throw) — this hook never leaks a
- * held lock. `supported: false` — the SSR-safe default — where the Web
- * Locks API doesn't exist, and `runExclusive()` then resolves `undefined`
- * without ever calling `callback`.
+ * Wraps the Web Locks API. This lets you run code so that only one tab or
+ * worker can run it at a time, for a given lock `name`, even across
+ * different browser tabs on the same site. `runExclusive(callback)` waits
+ * until the lock is available, then runs `callback`, and always releases
+ * the lock afterward, whether `callback` succeeds or throws. So the lock
+ * is never left held by mistake. Returns `supported: false` when the Web
+ * Locks API doesn't exist, such as during server rendering. In that case,
+ * `runExclusive()` resolves to `undefined` without calling `callback`.
  *
  * @example
  * ```tsx
@@ -33,6 +34,11 @@ export const useWebLock = (name: string, options?: LockOptions): UseWebLockResul
   const [status, setStatus] = useState<WebLockStatus>("idle");
   const [error, setError] = useState<Error | undefined>(undefined);
 
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  });
+
   const runExclusive = useCallback(
     async <T>(callback: (lock: Lock | null) => Promise<T> | T): Promise<T | undefined> => {
       if (!isSupported()) {
@@ -43,10 +49,14 @@ export const useWebLock = (name: string, options?: LockOptions): UseWebLockResul
       setStatus("idle");
       setError(undefined);
       try {
-        const result = await navigator.locks.request(name, options ?? {}, async (lock) => {
-          setStatus("holding");
-          return callback(lock);
-        });
+        const result = await navigator.locks.request(
+          name,
+          optionsRef.current ?? {},
+          async (lock) => {
+            setStatus("holding");
+            return callback(lock);
+          },
+        );
         setStatus("released");
         return result;
       } catch (caught) {
@@ -55,7 +65,7 @@ export const useWebLock = (name: string, options?: LockOptions): UseWebLockResul
         return undefined;
       }
     },
-    [name, options],
+    [name],
   );
 
   return { error, runExclusive, status, supported };

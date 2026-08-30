@@ -1,14 +1,18 @@
 /**
- * Public entrypoint for the react-hooks package.
+ * Public entry point for the react-hooks package.
  *
- * Re-exports every hook. Each hook is also available from its own
- * category subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`, ...)
- * for consumers who prefer granular imports. All exports are side-effect
- * free and tree-shakeable.
+ * This file re-exports every hook. Each hook is also available from its
+ * own category subpath (for example,
+ * `@zap-studio/react-hooks/sensors/use-is-mobile`), if you prefer
+ * importing hooks one by one. All exports are side-effect free and can
+ * be tree-shaken.
  *
- * Hooks relying on private/non-semver-guaranteed APIs carry an `Unstable`
- * marker in their own name (`useUnstableFiber`, ...) rather than living in
- * a separate module — grep for `Unstable` to find them.
+ * Hooks that rely on private APIs (not guaranteed to stay the same
+ * between React versions) have `Unstable` in their name, like
+ * `useUnstableFiber`. Search for `Unstable` to find them. Hooks that wrap
+ * a Web API MDN marks as "Experimental" have `Experimental` in their
+ * name the same way, like `useExperimentalIdleDetector`. Search for
+ * `Experimental` to find those.
  *
  * @module @zap-studio/react-hooks
  */
@@ -23,25 +27,22 @@ export { useBattery } from "./sensors/use-battery.ts";
 export { useBeforeUnload } from "./lifecycle/use-before-unload.ts";
 export type { UseBroadcastChannelResult } from "./state/use-broadcast-channel.ts";
 export { useBroadcastChannel } from "./state/use-broadcast-channel.ts";
+export type { BrowserEngine } from "./sensors/use-browser-engine.ts";
+export { useBrowserEngine } from "./sensors/use-browser-engine.ts";
 export type { UseCameraOptions, UseCameraResult } from "./media/use-camera.ts";
 export { useCamera } from "./media/use-camera.ts";
 export { useClickOutside } from "./dom/use-click-outside.ts";
 export type { ColorScheme } from "./sensors/use-color-scheme.ts";
 export { useColorScheme } from "./sensors/use-color-scheme.ts";
-export type {
-  CookieChangeEvent,
-  CookieInit,
-  CookieListItem,
-  CookieStore,
-  SetCookieOptions,
-  UseCookieResult,
-} from "./state/use-cookie.ts";
+export type { SetCookieOptions, UseCookieResult } from "./state/use-cookie.ts";
 export { useCookie } from "./state/use-cookie.ts";
 export { useCookieEnabled } from "./sensors/use-cookie-enabled.ts";
 export type { UseCopyToClipboardResult } from "./state/use-copy-to-clipboard.ts";
 export { useCopyToClipboard } from "./state/use-copy-to-clipboard.ts";
 export type { UseCounterOptions, UseCounterResult } from "./state/use-counter.ts";
 export { useCounter } from "./state/use-counter.ts";
+export type { UseCredentialResult } from "./state/use-credential.ts";
+export { useCredential } from "./state/use-credential.ts";
 export { useDebounce } from "./state/use-debounce.ts";
 export { useDebouncedValue } from "./state/use-debounced-value.ts";
 export type { DeviceCapabilities } from "./sensors/use-device-capabilities.ts";
@@ -59,8 +60,106 @@ export type { EventListenerTarget } from "./dom/use-event-listener.ts";
 export { useEventListener } from "./dom/use-event-listener.ts";
 export type { EventSourceStatus, UseEventSourceResult } from "./network/use-event-source.ts";
 export { useEventSource } from "./network/use-event-source.ts";
-export type { UseEyeDropperResult } from "./dom/use-eye-dropper.ts";
-export { useEyeDropper } from "./dom/use-eye-dropper.ts";
+export type {
+  AbsoluteOrientationReading,
+  GenericSensorOptions,
+  UseExperimentalAbsoluteOrientationSensorResult,
+} from "./sensors/use-experimental-absolute-orientation-sensor.ts";
+export { useExperimentalAbsoluteOrientationSensor } from "./sensors/use-experimental-absolute-orientation-sensor.ts";
+export type {
+  AccelerometerReading,
+  UseExperimentalAccelerometerResult,
+} from "./sensors/use-experimental-accelerometer.ts";
+export { useExperimentalAccelerometer } from "./sensors/use-experimental-accelerometer.ts";
+export type {
+  AmbientLightReading,
+  UseExperimentalAmbientLightSensorResult,
+} from "./sensors/use-experimental-ambient-light-sensor.ts";
+export { useExperimentalAmbientLightSensor } from "./sensors/use-experimental-ambient-light-sensor.ts";
+export type {
+  BarcodeDetectorSource,
+  BarcodeFormat,
+  DetectedBarcode,
+  UseExperimentalBarcodeDetectorResult,
+} from "./media/use-experimental-barcode-detector.ts";
+export { useExperimentalBarcodeDetector } from "./media/use-experimental-barcode-detector.ts";
+export type {
+  ContactAddress,
+  ContactInfo,
+  ContactProperty,
+  ContactSelectOptions,
+  UseExperimentalContactPickerResult,
+} from "./dom/use-experimental-contact-picker.ts";
+export { useExperimentalContactPicker } from "./dom/use-experimental-contact-picker.ts";
+export type { UseExperimentalEyeDropperResult } from "./dom/use-experimental-eye-dropper.ts";
+export { useExperimentalEyeDropper } from "./dom/use-experimental-eye-dropper.ts";
+export type {
+  GravityReading,
+  UseExperimentalGravitySensorResult,
+} from "./sensors/use-experimental-gravity-sensor.ts";
+export { useExperimentalGravitySensor } from "./sensors/use-experimental-gravity-sensor.ts";
+export type {
+  GyroscopeReading,
+  UseExperimentalGyroscopeResult,
+} from "./sensors/use-experimental-gyroscope.ts";
+export { useExperimentalGyroscope } from "./sensors/use-experimental-gyroscope.ts";
+export type {
+  IdleDetectorStartOptions,
+  IdleScreenState,
+  IdleUserState,
+  UseExperimentalIdleDetectorResult,
+} from "./sensors/use-experimental-idle-detector.ts";
+export { useExperimentalIdleDetector } from "./sensors/use-experimental-idle-detector.ts";
+export type {
+  LinearAccelerationReading,
+  UseExperimentalLinearAccelerationSensorResult,
+} from "./sensors/use-experimental-linear-acceleration-sensor.ts";
+export { useExperimentalLinearAccelerationSensor } from "./sensors/use-experimental-linear-acceleration-sensor.ts";
+export type {
+  LocalFontData,
+  QueryLocalFontsOptions,
+  UseExperimentalLocalFontsResult,
+} from "./sensors/use-experimental-local-fonts.ts";
+export { useExperimentalLocalFonts } from "./sensors/use-experimental-local-fonts.ts";
+export type {
+  MagnetometerReading,
+  UseExperimentalMagnetometerResult,
+} from "./sensors/use-experimental-magnetometer.ts";
+export { useExperimentalMagnetometer } from "./sensors/use-experimental-magnetometer.ts";
+export type {
+  NDEFMessage,
+  NDEFMessageSource,
+  NDEFReadingEvent,
+  NDEFRecord,
+  NDEFRecordInit,
+  NDEFWriteOptions,
+  NfcReading,
+  UseExperimentalNfcResult,
+} from "./sensors/use-experimental-nfc.ts";
+export { useExperimentalNfc } from "./sensors/use-experimental-nfc.ts";
+export type {
+  RelativeOrientationReading,
+  UseExperimentalRelativeOrientationSensorResult,
+} from "./sensors/use-experimental-relative-orientation-sensor.ts";
+export { useExperimentalRelativeOrientationSensor } from "./sensors/use-experimental-relative-orientation-sensor.ts";
+export type {
+  SelectAudioOutputOptions,
+  UseExperimentalSelectAudioOutputResult,
+} from "./media/use-experimental-select-audio-output.ts";
+export { useExperimentalSelectAudioOutput } from "./media/use-experimental-select-audio-output.ts";
+export type {
+  ScreenDetailed,
+  ScreenDetails,
+  UseExperimentalWindowManagementResult,
+} from "./sensors/use-experimental-window-management.ts";
+export type {
+  UserAgentData,
+  UserAgentDataBrand,
+} from "./sensors/use-experimental-user-agent-data.ts";
+export { useExperimentalUserAgentData } from "./sensors/use-experimental-user-agent-data.ts";
+export type { VirtualKeyboardRect } from "./sensors/use-experimental-virtual-keyboard.ts";
+export { useExperimentalVirtualKeyboard } from "./sensors/use-experimental-virtual-keyboard.ts";
+export { useExperimentalWindowManagement } from "./sensors/use-experimental-window-management.ts";
 export { useFavicon } from "./dom/use-favicon.ts";
 export type { UseFileDropResult } from "./dom/use-file-drop.ts";
 export { useDropzone, useFileDrop } from "./dom/use-file-drop.ts";
@@ -69,7 +168,6 @@ export { useFilePicker } from "./dom/use-file-picker.ts";
 export { useFontsReady } from "./sensors/use-fonts-ready.ts";
 export type { UseFullscreenResult } from "./dom/use-fullscreen.ts";
 export { useFullscreen } from "./dom/use-fullscreen.ts";
-export type { GamepadInfo } from "./input/use-gamepad.ts";
 export { useGamepad } from "./input/use-gamepad.ts";
 export type {
   GeolocationCoordinatesState,
@@ -96,7 +194,9 @@ export type { UseIntersectionObserverResult } from "./dom/use-intersection-obser
 export { useInView, useIntersectionObserver } from "./dom/use-intersection-observer.ts";
 export { useInterval } from "./lifecycle/use-interval.ts";
 export { useIsClient } from "./sensors/use-is-client.ts";
+export { useIsFirstRender } from "./debug/use-is-first-render.ts";
 export { useIsMobile } from "./sensors/use-is-mobile.ts";
+export { useIsomorphicLayoutEffect } from "./lifecycle/use-isomorphic-layout-effect.ts";
 export { useIsServer } from "./sensors/use-is-server.ts";
 export { useKeyPress } from "./input/use-key-press.ts";
 export type { SetStoredValue, UseLocalStorageResult } from "./state/use-local-storage.ts";
@@ -124,6 +224,8 @@ export { useNotificationPermission } from "./sensors/use-notification-permission
 export { useOnlineStatus } from "./sensors/use-online-status.ts";
 export type { Orientation } from "./sensors/use-orientation.ts";
 export { useOrientation } from "./sensors/use-orientation.ts";
+export type { UseOwnerStackResult } from "./debug/use-owner-stack.ts";
+export { useOwnerStack } from "./debug/use-owner-stack.ts";
 export { usePageLeave } from "./sensors/use-page-leave.ts";
 export type {
   PaymentRequestStatus,
@@ -150,6 +252,9 @@ export { usePrevious } from "./state/use-previous.ts";
 export { usePrintMode } from "./sensors/use-print-mode.ts";
 export type { UseQueueResult } from "./state/use-queue.ts";
 export { useQueue } from "./state/use-queue.ts";
+export { useRenderCount } from "./debug/use-render-count.ts";
+export type { RenderDurationSample, UseRenderDurationResult } from "./debug/use-render-duration.ts";
+export { useRenderDuration } from "./debug/use-render-duration.ts";
 export type { ElementSize, UseResizeObserverResult } from "./dom/use-resize-observer.ts";
 export { useResizeObserver } from "./dom/use-resize-observer.ts";
 export type { UseServiceWorkerResult } from "./pwa/use-service-worker.ts";
@@ -192,37 +297,26 @@ export type { UseToggleResult } from "./state/use-toggle.ts";
 export { useToggle } from "./state/use-toggle.ts";
 export { useTouchSupport } from "./sensors/use-touch-support.ts";
 export { useUnmount } from "./lifecycle/use-unmount.ts";
-export type { UseUnstableFiberResult } from "./debug/use-unstable-fiber.ts";
-export { useUnstableFiber } from "./debug/use-unstable-fiber.ts";
-export { useUnstableIsFirstRender } from "./debug/use-unstable-is-first-render.ts";
-export type { UseUnstableOwnerStackResult } from "./debug/use-unstable-owner-stack.ts";
-export { useUnstableOwnerStack } from "./debug/use-unstable-owner-stack.ts";
-export { useUnstableRenderCount } from "./debug/use-unstable-render-count.ts";
 export type {
-  RenderDurationSample,
-  UseUnstableRenderDurationResult,
-} from "./debug/use-unstable-render-duration.ts";
-export { useUnstableRenderDuration } from "./debug/use-unstable-render-duration.ts";
+  UseUnstableFiberOptions,
+  UseUnstableFiberResult,
+} from "./debug/use-unstable-fiber.ts";
+export { useUnstableFiber } from "./debug/use-unstable-fiber.ts";
 export type {
   RenderReason,
+  UseUnstableRenderReasonOptions,
   UseUnstableRenderReasonResult,
 } from "./debug/use-unstable-render-reason.ts";
 export { useUnstableRenderReason } from "./debug/use-unstable-render-reason.ts";
-export type { ChangedProp } from "./debug/use-unstable-why-did-you-update.ts";
-export { useUnstableWhyDidYouUpdate } from "./debug/use-unstable-why-did-you-update.ts";
 export { useUpdateEffect } from "./lifecycle/use-update-effect.ts";
 export type { UserActivationState } from "./input/use-user-activation.ts";
 export { useUserActivation } from "./input/use-user-activation.ts";
-export type { UserAgentData, UserAgentDataBrand } from "./sensors/use-user-agent-data.ts";
-export { useUserAgentData } from "./sensors/use-user-agent-data.ts";
 export type { UseVibrateResult } from "./sensors/use-vibrate.ts";
 export type { MediaStreamStatus, UseUserMediaResult } from "./media/use-user-media.ts";
 export { useUserMedia } from "./media/use-user-media.ts";
 export { useVibrate } from "./sensors/use-vibrate.ts";
 export type { UseViewTransitionResult } from "./dom/use-view-transition.ts";
 export { useViewTransition } from "./dom/use-view-transition.ts";
-export type { VirtualKeyboardRect } from "./sensors/use-virtual-keyboard.ts";
-export { useVirtualKeyboard } from "./sensors/use-virtual-keyboard.ts";
 export type { VisualViewportState } from "./sensors/use-visual-viewport.ts";
 export { useVisualViewport } from "./sensors/use-visual-viewport.ts";
 export type { UseWakeLockResult } from "./sensors/use-wake-lock.ts";
@@ -231,6 +325,10 @@ export type { UseWebLockResult, WebLockStatus } from "./lifecycle/use-web-lock.t
 export { useWebLock } from "./lifecycle/use-web-lock.ts";
 export type { UseWebSocketResult, WebSocketStatus } from "./network/use-web-socket.ts";
 export { useWebSocket } from "./network/use-web-socket.ts";
+export type { UseWebTransportResult, WebTransportStatus } from "./network/use-web-transport.ts";
+export { useWebTransport } from "./network/use-web-transport.ts";
+export type { ChangedProp } from "./debug/use-why-did-you-update.ts";
+export { useWhyDidYouUpdate } from "./debug/use-why-did-you-update.ts";
 export type { UseWindowMessageResult, WindowMessage } from "./state/use-window-message.ts";
 export { useWindowMessage } from "./state/use-window-message.ts";
 export type { WindowSize } from "./sensors/use-window-size.ts";

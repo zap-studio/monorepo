@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { usePopState } from "./use-pop-state.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { pathname, state } = usePopState();
-  return `${pathname},${state === null ? "null" : String(state)}`;
-}
+  return `${pathname},${state === null ? "null" : JSON.stringify(state)}`;
+};
 
-describe(usePopState, () => {
+describe("usePopState", () => {
   it("falls back to pathname '/' and state null on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

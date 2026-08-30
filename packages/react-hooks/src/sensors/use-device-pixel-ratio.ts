@@ -5,12 +5,13 @@ const getServerSnapshot = (): number => 1;
 const getSnapshot = (): number => window.devicePixelRatio;
 
 /**
- * `window.devicePixelRatio`, updating on zoom or a monitor-move-driven DPR
- * change. There's no native "devicePixelRatio changed" event, so this
- * subscribes to a `(resolution: <current DPR>dppx)` media query — which
- * only ever matches once — and recreates it against the new DPR each time
- * it fires. Useful for canvas/retina rendering. Falls back to `1` during
- * server rendering and before the client subscribes.
+ * `window.devicePixelRatio`. Updates when the user zooms, or when the
+ * window moves to a screen with a different pixel ratio. There is no
+ * built-in event for this change, so the hook subscribes to a
+ * `(resolution: <current ratio>dppx)` media query. That query only ever
+ * matches once, so the hook creates a new one with the updated ratio each
+ * time it fires. Useful for canvas or retina-display rendering. Falls back
+ * to `1` during server rendering and before the client subscribes.
  *
  * @example
  * ```tsx

@@ -1,10 +1,10 @@
 import { type DependencyList, type EffectCallback, useEffect, useRef } from "react";
 
 /**
- * `useEffect` that skips the first (mount) run — only fires on
- * dependency-driven updates, exactly like `useEffect` otherwise (cleanup
- * included). `deps` is forwarded verbatim, so it follows the exact same
- * rules as a raw `useEffect`'s dependency array.
+ * Works like `useEffect`, but skips the first run on mount. It only runs
+ * `effect` when a dependency actually changes (cleanup still works the
+ * same way). `deps` is passed straight through, so it follows the same
+ * rules as a normal `useEffect` dependency array.
  *
  * @example
  * ```tsx
@@ -22,6 +22,6 @@ export const useUpdateEffect = (effect: EffectCallback, deps?: DependencyList): 
       return undefined;
     }
     return effect();
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps is forwarded verbatim from the caller, mirroring useEffect's own contract; this hook can't statically know its shape.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- `deps` comes from the caller, like the dependency array of useEffect. This hook cannot know what is inside it.
   }, deps);
 };

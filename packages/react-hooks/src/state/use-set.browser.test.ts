@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useSet } from "./use-set.ts";
 
-describe(useSet, () => {
+describe("useSet", () => {
   it("starts empty by default", () => {
     const { result } = renderHook(() => useSet<string>());
 

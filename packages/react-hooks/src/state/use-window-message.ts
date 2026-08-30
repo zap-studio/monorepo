@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** One received message, as tracked by `useWindowMessage`. */
 export interface WindowMessage<T> {
   data: T;
@@ -15,15 +17,16 @@ export interface UseWindowMessageResult<T> {
 }
 
 /**
- * Cross-origin window/iframe/popup communication via the `message`/
- * `messageerror` events (`postMessage()`). Distinct from
- * `useBroadcastChannel`: that's same-origin tabs talking to each other by
- * channel name, with no target reference or origin check needed; this
- * handles cross-origin windows, which require an explicit `targetOrigin`
- * on every send and — since anything on the page can dispatch a `message`
- * event — should always be checked on receive too. Pass `originFilter` to
- * ignore messages from any other origin; without it, every `message`
- * event updates `lastMessage`, matching the raw DOM event.
+ * Handles communication between windows, iframes, or popups from
+ * different origins, using the `message` and `messageerror` events
+ * (`postMessage()`). This is different from `useBroadcastChannel`: that
+ * hook is for same-origin tabs talking by channel name, with no target or
+ * origin check needed. This hook is for cross-origin windows, which need
+ * an explicit `targetOrigin` on every message you send. Since any code on
+ * the page can send a `message` event, you should always check the
+ * origin when receiving one too. Pass `originFilter` to ignore messages
+ * from other origins. Without it, every `message` event updates
+ * `lastMessage`, just like the raw DOM event.
  *
  * @example
  * ```tsx
@@ -35,15 +38,16 @@ export const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowM
   const [lastMessage, setLastMessage] = useState<WindowMessage<T> | undefined>(undefined);
   const [lastError, setLastError] = useState<MessageEvent | undefined>(undefined);
   const originFilterRef = useRef(originFilter);
-  originFilterRef.current = originFilter;
+  useIsomorphicLayoutEffect(() => {
+    originFilterRef.current = originFilter;
+  });
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = (event: MessageEvent<T>) => {
       if (originFilterRef.current !== undefined && event.origin !== originFilterRef.current) {
         return;
       }
-      // SAFETY: T is a caller-supplied type parameter describing the shape of messages expected on this channel — postMessage carries structured-clone data with no runtime-checkable shape, the same trust boundary TypeScript's own untyped MessageEvent.data (any) already has.
-      setLastMessage({ data: event.data as T, origin: event.origin, source: event.source });
+      setLastMessage({ data: event.data, origin: event.origin, source: event.source });
     };
     const handleMessageError = (event: MessageEvent) => setLastError(event);
 

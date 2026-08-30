@@ -8,41 +8,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-Reverted the `@zap-studio/monads` dependency and the `runRetryPolicyResult` export added in 2.1.0 — it added a dependency and bundle size cost for a use case consumers can already cover themselves by wrapping `runRetryPolicy` with `@zap-studio/monads`'s `fromPromise`. See the README's "Using with `@zap-studio/monads`" section. 2.1.0 is deprecated on npm in favor of this release.
+We removed the `@zap-studio/monads` dependency and the `runRetryPolicyResult` export from 2.1.0. They added a dependency and more bundle size, for something you can already do yourself: wrap `runRetryPolicy` with `@zap-studio/monads`'s `fromPromise`. See the README section "Using with `@zap-studio/monads`". 2.1.0 is deprecated on npm — use this release instead.
 
 ## [2.1.0] (deprecated — see 2.1.1)
 
 ### Added
 
-- Added `runRetryPolicyResult(policy, execute, options?)`, a `ResultAsync`-returning alternative to `runRetryPolicy`, backed by the new `@zap-studio/monads` dependency. Additive and opt-in — `runRetryPolicy` (both throw and non-throw modes) is unchanged. No `throwOnExhausted` option; it always returns a `Result`. `Err`'s payload is the same `RetryError`/`AbortError` object `runRetryPolicy`'s throw mode would throw, preserving `RetryError.attempts`/`lastError`/`lastData` and `AbortError.cause`.
+- Added `runRetryPolicyResult(policy, execute, options?)`. It is like `runRetryPolicy`, but returns a `ResultAsync` instead, using the new `@zap-studio/monads` dependency. This is new and optional — `runRetryPolicy` (both throw and non-throw modes) stays the same. `runRetryPolicyResult` has no `throwOnExhausted` option; it always returns a `Result`. The `Err` value is the same `RetryError`/`AbortError` object that `runRetryPolicy`'s throw mode would throw, so `RetryError.attempts`/`lastError`/`lastData` and `AbortError.cause` are kept.
 
 ## [2.0.0]
 
 ### Added
 
-Native OpenTelemetry support. Unlike `fetch`, `webhooks`, and `permit`, this package never creates its own span — a retry loop wraps someone else's operation, so each decision is recorded as an event (`retry.scheduled`/`retry.exhausted`) on whatever span is already active, plus a `retry.attempts` counter tagged by outcome. See [OpenTelemetry](https://www.zapstudio.dev/retry/opentelemetry).
+Added native OpenTelemetry support. `fetch`, `webhooks`, and `permit` each create their own span. This package does not, because a retry loop wraps someone else's work. Instead, each decision is recorded as an event (`retry.scheduled`/`retry.exhausted`) on whatever span is already active, plus a `retry.attempts` counter tagged by outcome. See [OpenTelemetry](https://www.zapstudio.dev/retry/opentelemetry).
 
 ### Changed
 
-**Breaking:** `@opentelemetry/api` is now a required peer dependency. It's tiny, side-effect-free, and a no-op until an app registers a real SDK, so nothing changes at runtime for consumers who don't set one up — but the package won't resolve without it installed: `npm install @opentelemetry/api`.
+**Breaking:** `@opentelemetry/api` is now a required peer dependency. It is small, has no side effects, and does nothing until an app sets up a real SDK, so nothing changes at runtime if you don't set one up. But the package won't resolve without it installed: `npm install @opentelemetry/api`.
 
 ## [1.2.1]
 
 ### Changed
 
-`@zap-studio/logger` is now an optional peer dependency instead of a regular dependency. Every import from it is type-only (`import type { Logger }`), so it was never pulled in at runtime — pass any object matching the `Logger` shape (including `pino`) with no install required. Existing consumers of `logger?: Logger` are unaffected.
+`@zap-studio/logger` is now an optional peer dependency, not a regular one. Every import from it is type-only (`import type { Logger }`), so it was never loaded at runtime — you can pass any object with the `Logger` shape (including `pino`), with no install needed. If you already use `logger?: Logger`, nothing changes for you.
 
 ## [1.2.0]
 
 ### Added
 
-`runRetryPolicy(...)` gains an optional `logger?: Logger` option (from `@zap-studio/logger`). When provided, it logs each retry decision at `debug` (attempt, delay, reason), exhaustion at `warn`, and cancellation at `debug`. Omitting it keeps zero logging overhead. See [Logging](https://www.zapstudio.dev/retry/logging).
+`runRetryPolicy(...)` now takes an optional `logger?: Logger` option (from `@zap-studio/logger`). If you pass it, it logs each retry decision at `debug` level (attempt, delay, reason), exhaustion at `warn`, and cancellation at `debug`. If you don't pass it, there is no extra logging cost. See [Logging](https://www.zapstudio.dev/retry/logging).
 
 ## [1.1.0]
 
 ### Added
 
-`exponentialBackoff(...)` and `linearBackoff(...)` gain an optional `jitter?: "full" | "equal" | JitterOptions` option, applied to the computed delay after it's capped at `maxDelayMs`. `"full"` randomizes across `[0, delayMs]`; `"equal"` keeps a floor at half the delay, randomizing across `[delayMs/2, delayMs]`. Pass `{ mode, random }` to override the random source, useful for deterministic tests.
+`exponentialBackoff(...)` and `linearBackoff(...)` now take an optional `jitter?: "full" | "equal" | JitterOptions` option. It changes the delay after the delay is capped at `maxDelayMs`. `"full"` picks a random value in `[0, delayMs]`. `"equal"` keeps at least half the delay, and picks a random value in `[delayMs/2, delayMs]`. Pass `{ mode, random }` to use your own random source — useful for tests that need the same result every time.
 
 New export: `applyJitter(delayMs, jitter?)`, also available from the `./jitter` subpath. See [Jitter](https://www.zapstudio.dev/retry/jitter).
 
@@ -50,44 +50,44 @@ New export: `applyJitter(delayMs, jitter?)`, also available from the `./jitter` 
 
 ### Added
 
-`RetryPolicy` gains an optional `isKnownError?: (error: unknown) => error is TError` hook that `BaseRetryPolicy.run(...)` now calls before handing a caught value to `next(...)`/`onExhausted(...)`. `BaseRetryPolicy.isKnownError` default checks `error instanceof Error`.
+`RetryPolicy` now has an optional `isKnownError?: (error: unknown) => error is TError` hook. `BaseRetryPolicy.run(...)` calls it before it hands a caught value to `next(...)`/`onExhausted(...)`. By default, `BaseRetryPolicy.isKnownError` checks `error instanceof Error`.
 
-- Override `isKnownError` when `TError` is a narrower subclass (an HTTP error, a domain-specific error) to get real narrowing instead of an `instanceof Error` assumption, and to stop unrelated `Error` types from being retried as if they belonged to your domain.
+- Override `isKnownError` when `TError` is a narrower subclass, like an HTTP error or a domain-specific error. This gives you real type narrowing, instead of just assuming `instanceof Error`, and stops unrelated `Error` types from being retried as if they belonged to your domain.
 
-See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#narrow-the-error-domain) for the override pattern.
+See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#narrow-the-error-domain) for how to override it.
 
-New built-in policy: `linearBackoff(options)` adds a fixed `incrementMs` to the delay after each failed attempt, capped at `maxDelayMs` — steadier growth than `exponentialBackoff`, more spacing than `fixedDelay`. See [linearBackoff](https://www.zapstudio.dev/retry/linear-backoff).
+New built-in policy: `linearBackoff(options)`. It adds a fixed `incrementMs` to the delay after each failed attempt, up to `maxDelayMs` — steadier growth than `exponentialBackoff`, bigger gaps than `fixedDelay`. See [linearBackoff](https://www.zapstudio.dev/retry/linear-backoff).
 
 ### Changed
 
-- **Breaking:** `TError` is now constrained to `TError extends Error` and defaults to `Error` (was `TError = unknown`) on `RetryPolicy`, `RetryDecisionInput`, `RetryExhaustedInput`, and `BaseRetryPolicy`.
-- **Breaking behavior change:** a rejection with a non-`Error` value (a thrown string, plain object, `undefined`, ...) now bypasses retry entirely on the attempt that produced it — it no longer reaches `next(...)`, and no delay/backoff is applied. Previously any thrown value was passed through to the policy unchanged. In throw mode, `run(...)` rethrows the value as-is; with `throwOnExhausted: false`, it's wrapped in a `RetryError` and returned on `result.error` — `run(...)` never throws in that mode.
-- **Breaking:** Policies are plain objects instead of classes, for tree-shaking — bundlers can drop an unused policy factory and its defaults entirely, which isn't possible across a shared class hierarchy. `ExponentialBackoff`/`FixedDelay` classes are replaced by `exponentialBackoff(options)`/`fixedDelay(options)` factory functions that return a `RetryPolicy`. Migrate `new ExponentialBackoff(opts)` to `exponentialBackoff(opts)`, and `new FixedDelay(opts)` to `fixedDelay(opts)`.
-- **Breaking:** `RetryPolicy.onExhausted` is now optional (previously required); omit it to use the same default `RetryError` that `BaseRetryPolicy.onExhausted` used to build.
+- **Breaking:** `TError` must now extend `Error`, and defaults to `Error` (before, it was `TError = unknown`). This applies to `RetryPolicy`, `RetryDecisionInput`, `RetryExhaustedInput`, and `BaseRetryPolicy`.
+- **Breaking behavior change:** if a rejection has a non-`Error` value (a thrown string, a plain object, `undefined`, and so on), that attempt now skips retry completely — it no longer reaches `next(...)`, and no delay or backoff is applied. Before, any thrown value went to the policy unchanged. In throw mode, `run(...)` now rethrows the value as-is. With `throwOnExhausted: false`, it wraps the value in a `RetryError` and returns it on `result.error` — `run(...)` never throws in that mode.
+- **Breaking:** Policies are now plain objects, not classes. This helps tree-shaking: a bundler can drop an unused policy factory and its defaults completely, which it could not do with a shared class hierarchy. `ExponentialBackoff`/`FixedDelay` classes are gone — use the `exponentialBackoff(options)`/`fixedDelay(options)` factory functions instead, both returning a `RetryPolicy`. Change `new ExponentialBackoff(opts)` to `exponentialBackoff(opts)`, and `new FixedDelay(opts)` to `fixedDelay(opts)`.
+- **Breaking:** `RetryPolicy.onExhausted` is now optional (before, it was required). Leave it out to get the same default `RetryError` that `BaseRetryPolicy.onExhausted` used to build.
 
 ### Removed
 
-- **Breaking:** `BaseRetryPolicy` is removed. Retry orchestration is now the standalone function `runRetryPolicy(policy, execute, options?)`, which accepts any object satisfying `RetryPolicy` — no subclassing required. Migrate `policy.run(execute, options)` to `runRetryPolicy(policy, execute, options)`. A custom policy that previously extended `BaseRetryPolicy` and overrode `next`/`onExhausted`/`isKnownError` becomes an object literal implementing the same members; see [Custom Policies](https://www.zapstudio.dev/retry/custom-policies).
+- **Breaking:** `BaseRetryPolicy` is removed. Retry runs now go through the standalone function `runRetryPolicy(policy, execute, options?)`, which accepts any object matching `RetryPolicy` — no subclass needed. Change `policy.run(execute, options)` to `runRetryPolicy(policy, execute, options)`. If your custom policy extended `BaseRetryPolicy` and overrode `next`/`onExhausted`/`isKnownError`, turn it into a plain object with the same members instead; see [Custom Policies](https://www.zapstudio.dev/retry/custom-policies).
 
 ### Removed
 
-Collapsed abort/sleep orchestration internals out of the public API.
+Moved abort/sleep internals out of the public API.
 
 - Removed the `./abort` and `./sleep` subpath exports.
-- Removed the public `sleepWithAbortSignal`, `throwIfAborted`, and `toAbortError` exports — they were orchestration internals with no consumer outside the retry loop, not standalone utilities.
-- `defaultSleep` is unaffected and still exported from `@zap-studio/retry` (no dedicated subpath).
+- Removed the public `sleepWithAbortSignal`, `throwIfAborted`, and `toAbortError` exports — they were internal parts of the retry loop, not standalone tools, and nothing outside the retry loop used them.
+- `defaultSleep` is not affected. It is still exported from `@zap-studio/retry` (no separate subpath).
 
 ## [0.3.2]
 
 ### Added
 
-The package root now re-exports the full public API, so everything can be imported from `@zap-studio/retry` directly (`BaseRetryPolicy`, `ExponentialBackoff`, `FixedDelay`, `RetryError`, `AbortError`, abort helpers, `defaultSleep`, and all public types). All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+The package root now re-exports the full public API, so you can import everything straight from `@zap-studio/retry` (`BaseRetryPolicy`, `ExponentialBackoff`, `FixedDelay`, `RetryError`, `AbortError`, abort helpers, `defaultSleep`, and all public types). Every export has no side effects and supports tree-shaking; the smaller subpath imports still work too.
 
-- `BaseRetryPolicy` moved from the entrypoint into its own module, available as the new `./base-policy` subpath.
+- `BaseRetryPolicy` moved out of the main entrypoint. It now has its own module, at the new `./base-policy` subpath.
 
 ### Removed
 
-- Removed the `./result-mode` and `./throw-mode` subpath exports. Both were orchestration internals (`runResultMode`, `runThrowMode`) and are no longer part of the public API.
+- Removed the `./result-mode` and `./throw-mode` subpath exports. Both held internal code (`runResultMode`, `runThrowMode`) that is no longer part of the public API.
 
 ## [0.3.1]
 
@@ -99,32 +99,32 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 ### Changed
 
-- **Breaking:** Subpath for error types: use `@zap-studio/retry/errors` (plural) for `RetryError`, `AbortError`, and related types. A prior JSR `error` subpath that pointed at a non-existent `error.ts` entry is removed; update deep imports from `@zap-studio/retry/error` to `@zap-studio/retry/errors`.
-- Add dedicated `AbortError` and normalize cancellation paths so retry internals throw/return `RetryError` or `AbortError` instead of plain `Error`.
-- Expose `defaultSleep` from the `@zap-studio/retry/sleep` subpath only (the main entry does not re-export it; `run` still uses it internally when `sleep` is omitted).
-- Align non-throw exhaustion metadata so `result.attempts` and `result.error.attempts` stay consistent for `RetryError` outcomes.
-- In non-throw mode, return a normalized `AbortError` on `result.error` for cancellation; `result.attempts` still reports completed attempts.
-- Refactor result-mode internals into smaller helpers for lower complexity and cleaner maintainability.
-- Expand docs across README and package docs pages to explain `AbortError` behavior in throw and non-throw modes.
-- Split the retry runner into dedicated modules: `throw-mode` (throwing execution path), `result-mode` (non-throw `RetryRunResult` path), and `sleep` (the default `defaultSleep` implementation). `BaseRetryPolicy` in `index` now delegates to these modules without changing public behavior.
-- Add exhaustive TSDoc for `result-mode` and other `src` modules, including private helpers, policy option and state fields, and `RetryRunResult` union members.
-- Rework test layout into `sleep`, `throw-mode`, `result-mode`, and `index` test files with a shared `sequence-policy` fixture, replacing the prior combined `index` and `abort` test files.
+- **Breaking:** New subpath for error types: use `@zap-studio/retry/errors` (plural) for `RetryError`, `AbortError`, and related types. The old JSR `error` subpath pointed at an `error.ts` file that did not exist, so it is removed — change deep imports from `@zap-studio/retry/error` to `@zap-studio/retry/errors`.
+- Added a dedicated `AbortError` type. Cancellation is now consistent: retry internals throw or return `RetryError` or `AbortError`, not a plain `Error`.
+- `defaultSleep` is now only exposed from the `@zap-studio/retry/sleep` subpath — the main entry does not re-export it. `run` still uses it inside, when you don't pass your own `sleep`.
+- Made non-throw exhaustion data consistent: `result.attempts` and `result.error.attempts` now always match for `RetryError` outcomes.
+- In non-throw mode, cancellation now returns a normalized `AbortError` on `result.error`. `result.attempts` still shows the number of completed attempts.
+- Split the result-mode internals into smaller helper functions, to make the code simpler and easier to keep up.
+- Added more docs in the README and the package docs pages about `AbortError` behavior, in both throw and non-throw modes.
+- Split the retry runner into separate modules: `throw-mode` (the throwing path), `result-mode` (the non-throw `RetryRunResult` path), and `sleep` (the default `defaultSleep` code). `BaseRetryPolicy` in `index` now calls these modules, with no change in public behavior.
+- Added full TSDoc for `result-mode` and other `src` modules: private helpers, policy option and state fields, and every `RetryRunResult` union member.
+- Reworked the test layout into `sleep`, `throw-mode`, `result-mode`, and `index` test files, with one shared `sequence-policy` fixture, replacing the old combined `index` and `abort` test files.
 
 ## [0.2.0]
 
 ### Changed
 
-- Optimize retry runner hot paths by splitting throw/non-throw execution flows and skipping sleep calls when delay is non-positive.
-- Add `AbortSignal` support to `run(...)` so retry orchestration can be canceled before or between attempts.
-- Add retry benchmarking coverage with core and ecosystem scenarios, including real-world and fair-mode comparisons.
-- Add abort-focused ecosystem benchmarks comparing signal overhead and immediate cancellation behavior.
-- Expand TSDoc coverage for new runner internals added in this release.
+- Made the retry runner's hot paths faster: throw and non-throw modes now run separately, and a sleep call is skipped when the delay is zero or less.
+- Added `AbortSignal` support to `run(...)`, so you can cancel a retry before or between attempts.
+- Added retry benchmarks, with core and ecosystem scenarios, including real-world and fair-mode comparisons.
+- Added abort-focused benchmarks that compare signal overhead and instant cancellation.
+- Added more TSDoc for the new runner internals in this release.
 
 ## [0.1.2]
 
 ### Changed
 
-- Expand TSDoc coverage across retry modules and exported contracts for stronger JSR documentation completeness.
+- Added more TSDoc across retry modules and exported types, for more complete JSR docs.
 
 ## [0.1.1]
 
@@ -140,12 +140,12 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 ### Added
 
-- Introduced a transport-agnostic `RetryPolicy` contract with `RetryDecisionInput` and `RetryDecision`.
-- Added required `onExhausted` hook to `RetryPolicy` for policy-specific terminal error shaping.
-- Added shared `BaseRetryPolicy` abstract class to centralize default `onExhausted` behavior.
-- Added `BaseRetryPolicy.run(execute, options)` runner method to execute retry policies with minimal boilerplate.
-- Added `throwOnExhausted` runner option with non-throw `RetryRunResult<T>` mode.
-- Added `ExponentialBackoff` policy with bounded exponential delay via `baseDelayMs`, `maxDelayMs`, and `maxAttempts`.
-- Added `FixedDelay` policy with constant delay and bounded attempts.
-- Added `RetryError` for exhausted-retry failures with structured attempt/error/data context.
-- Documented throwable behavior on `RetryPolicy`, `BaseRetryPolicy.run`, and related contracts with explicit `@throws` tags for policy, exhaustion, and custom `sleep` failures.
+- Added a transport-agnostic `RetryPolicy` contract, with `RetryDecisionInput` and `RetryDecision`.
+- Added a required `onExhausted` hook on `RetryPolicy`, so each policy can shape its own final error.
+- Added a shared `BaseRetryPolicy` abstract class, to hold the default `onExhausted` behavior in one place.
+- Added a `BaseRetryPolicy.run(execute, options)` method, to run a retry policy with little setup code.
+- Added a `throwOnExhausted` option, plus a non-throw `RetryRunResult<T>` mode.
+- Added an `ExponentialBackoff` policy. Its delay grows with `baseDelayMs`, up to `maxDelayMs`, and stops at `maxAttempts`.
+- Added a `FixedDelay` policy, with a fixed delay and a limited number of attempts.
+- Added `RetryError` for a failure after retries run out, holding the attempt count, the last error, and the last data.
+- Documented when `RetryPolicy`, `BaseRetryPolicy.run`, and related types throw, with `@throws` tags for policy errors, exhaustion, and custom `sleep` failures.

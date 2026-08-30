@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useAppBadge } from "./use-app-badge.ts";
 
-function setBadgeSupport(
+const setBadgeSupport = (
   api:
     | { clearAppBadge: () => Promise<void>; setAppBadge: (count?: number) => Promise<void> }
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "setAppBadge", {
     configurable: true,
     value: api?.setAppBadge,
@@ -16,17 +16,17 @@ function setBadgeSupport(
     configurable: true,
     value: api?.clearAppBadge,
   });
-}
+};
 
 afterEach(() => {
   setBadgeSupport(undefined);
 });
 
-describe(useAppBadge, () => {
+describe("useAppBadge", () => {
   it("reports supported: true when the Badging API exists", () => {
     setBadgeSupport({
-      clearAppBadge: vi.fn(async () => undefined),
-      setAppBadge: vi.fn(async () => undefined),
+      clearAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
+      setAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
     });
 
     const { result } = renderHook(() => useAppBadge());
@@ -43,8 +43,11 @@ describe(useAppBadge, () => {
   });
 
   it("calls navigator.setAppBadge() with the given count", async () => {
-    const setAppBadge = vi.fn(async () => undefined);
-    setBadgeSupport({ clearAppBadge: vi.fn(async () => undefined), setAppBadge });
+    const setAppBadge = vi.fn<() => Promise<undefined>>(async () => undefined);
+    setBadgeSupport({
+      clearAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
+      setAppBadge,
+    });
 
     const { result } = renderHook(() => useAppBadge());
 
@@ -56,8 +59,11 @@ describe(useAppBadge, () => {
   });
 
   it("calls navigator.setAppBadge() with no count for a plain badge", async () => {
-    const setAppBadge = vi.fn(async () => undefined);
-    setBadgeSupport({ clearAppBadge: vi.fn(async () => undefined), setAppBadge });
+    const setAppBadge = vi.fn<() => Promise<undefined>>(async () => undefined);
+    setBadgeSupport({
+      clearAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
+      setAppBadge,
+    });
 
     const { result } = renderHook(() => useAppBadge());
 
@@ -69,8 +75,11 @@ describe(useAppBadge, () => {
   });
 
   it("calls navigator.clearAppBadge()", async () => {
-    const clearAppBadge = vi.fn(async () => undefined);
-    setBadgeSupport({ clearAppBadge, setAppBadge: vi.fn(async () => undefined) });
+    const clearAppBadge = vi.fn<() => Promise<undefined>>(async () => undefined);
+    setBadgeSupport({
+      clearAppBadge,
+      setAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
+    });
 
     const { result } = renderHook(() => useAppBadge());
 

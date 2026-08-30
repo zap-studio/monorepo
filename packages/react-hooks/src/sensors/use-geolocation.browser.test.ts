@@ -3,22 +3,39 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useGeolocation } from "./use-geolocation.ts";
 
-function createGeolocationMock() {
+const createGeolocationMock = () => {
   return {
-    clearWatch: vi.fn(),
-    getCurrentPosition: vi.fn(),
-    watchPosition: vi.fn(() => 1),
+    clearWatch: vi.fn<(watchId: number) => void>(),
+    getCurrentPosition: vi.fn<
+      (
+        successCallback: (position: {
+          coords: {
+            accuracy: number;
+            altitude: number | null;
+            altitudeAccuracy: number | null;
+            heading: number | null;
+            latitude: number;
+            longitude: number;
+            speed: number | null;
+          };
+          timestamp: number;
+        }) => void,
+        errorCallback?: (error: { code: number; message: string }) => void,
+        options?: PositionOptions,
+      ) => void
+    >(),
+    watchPosition: vi.fn<() => number>(() => 1),
   };
-}
+};
 
-function setNavigatorGeolocation(
+const setNavigatorGeolocation = (
   geolocation: ReturnType<typeof createGeolocationMock> | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "geolocation", {
     configurable: true,
     get: () => geolocation,
   });
-}
+};
 
 const fakePosition = {
   coords: {
@@ -35,14 +52,14 @@ const fakePosition = {
 
 const fakeError = { code: 1, message: "User denied Geolocation" };
 
-describe(useGeolocation, () => {
+describe("useGeolocation", () => {
   it("starts in a loading state", () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);
 
     const { result } = renderHook(() => useGeolocation());
 
-    expect(result.current).toEqual({ coords: undefined, error: undefined, loading: true });
+    expect(result.current).toEqual({ loading: true });
   });
 
   it("reports coords once getCurrentPosition succeeds", async () => {
@@ -66,7 +83,6 @@ describe(useGeolocation, () => {
         longitude: 2.3522,
         speed: null,
       },
-      error: undefined,
       loading: false,
     });
   });
@@ -82,7 +98,7 @@ describe(useGeolocation, () => {
       onError?.(fakeError);
     });
 
-    expect(result.current).toEqual({ coords: undefined, error: fakeError, loading: false });
+    expect(result.current).toEqual({ error: fakeError, loading: false });
   });
 
   it("uses watchPosition and clears the watch on unmount when watch: true", () => {

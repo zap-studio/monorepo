@@ -1,40 +1,41 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useServiceWorker } from "./use-service-worker.ts";
 
-function createInstallingWorker(): ServiceWorker {
-  const worker = new EventTarget() as ServiceWorker;
+const createInstallingWorker = (): ServiceWorker => {
+  const worker = asTestDouble<ServiceWorker>(new EventTarget());
   Object.defineProperty(worker, "state", {
     configurable: true,
     value: "installing",
     writable: true,
   });
   return worker;
-}
+};
 
-function createRegistration(installing: ServiceWorker | null): ServiceWorkerRegistration {
-  const registration = new EventTarget() as ServiceWorkerRegistration;
+const createRegistration = (installing: ServiceWorker | null): ServiceWorkerRegistration => {
+  const registration = asTestDouble<ServiceWorkerRegistration>(new EventTarget());
   Object.defineProperty(registration, "installing", { configurable: true, value: installing });
   return registration;
-}
+};
 
-function setServiceWorkerContainer(
+const setServiceWorkerContainer = (
   container:
     | {
         controller: ServiceWorker | null;
         getRegistration: () => Promise<ServiceWorkerRegistration | undefined>;
       }
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: container });
-}
+};
 
 afterEach(() => {
   setServiceWorkerContainer(undefined);
 });
 
-describe(useServiceWorker, () => {
+describe("useServiceWorker", () => {
   it("reports supported: false when navigator.serviceWorker is unavailable", () => {
     setServiceWorkerContainer(undefined);
 
@@ -81,7 +82,7 @@ describe(useServiceWorker, () => {
     const worker = createInstallingWorker();
     const registration = createRegistration(worker);
     setServiceWorkerContainer({
-      controller: {} as ServiceWorker,
+      controller: asTestDouble<ServiceWorker>({}),
       getRegistration: () => Promise.resolve(registration),
     });
 
@@ -126,7 +127,7 @@ describe(useServiceWorker, () => {
   it("ignores updatefound when the registration has no installing worker", async () => {
     const registration = createRegistration(null);
     setServiceWorkerContainer({
-      controller: {} as ServiceWorker,
+      controller: asTestDouble<ServiceWorker>({}),
       getRegistration: () => Promise.resolve(registration),
     });
 
@@ -141,7 +142,8 @@ describe(useServiceWorker, () => {
   });
 
   it("ignores a resolved registration if the component unmounted first", async () => {
-    let resolveRegistration: (value: ServiceWorkerRegistration | undefined) => void = vi.fn();
+    let resolveRegistration: (value: ServiceWorkerRegistration | undefined) => void =
+      vi.fn<(value: ServiceWorkerRegistration | undefined) => void>();
     const pending = new Promise<ServiceWorkerRegistration | undefined>((resolve) => {
       resolveRegistration = resolve;
     });

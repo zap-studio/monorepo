@@ -1,20 +1,22 @@
 /**
- * Local model of the private react-dom Fiber shape this file's helpers
- * read — no public type exists for it. Shared by `useUnstableFiber` and
- * `useUnstableRenderReason`; not itself a public hook (see the package's
- * `_internal.ts`-style shared-file convention).
+ * A simplified copy of React's internal "Fiber" shape, used only by the
+ * helpers in this file. React does not publish an official type for
+ * this, so we define our own here. Shared by `useUnstableFiber` and
+ * `useUnstableRenderReason`.
  */
 export interface ContextDependency {
   memoizedValue: unknown;
   next: ContextDependency | null;
 }
 
+/** One entry in a Fiber's list of hooks. Each hook call gets one entry, in the order the hooks were called. */
 export interface HookNode {
   memoizedState: unknown;
   next: HookNode | null;
   queue: unknown;
 }
 
+/** The Fiber fields this file's helpers read. */
 export interface FiberLike {
   alternate: FiberLike | null;
   dependencies: { firstContext: ContextDependency | null } | null;
@@ -24,39 +26,45 @@ export interface FiberLike {
   type: unknown;
 }
 
-const MAX_WALK = 50;
+/** How many Fiber/hook/context list entries `findOwnerFiber`, `collectStateHookValues`, and `collectContextValues` walk through by default, unless a caller passes its own `maxWalk`. */
+const DEFAULT_MAX_WALK = 50;
 
 /** Finds the DOM node's private `__reactFiber$<id>` property key, if any. */
-// fallow-ignore-next-line unused-export
-export const getReactFiberKey = (node: Element): string | undefined =>
+const getReactFiberKey = (node: Element): string | undefined =>
   Object.keys(node).find((key) => key.startsWith("__reactFiber$"));
 
-/**
- * Reads the Fiber react-dom attaches to a mounted DOM node via its private
- * `__reactFiber$<id>` pointer. Returns `undefined` for a node react-dom
- * never mounted, or where the shape doesn't match what's expected.
- */
-/** A DOM node carrying react-dom's private per-instance Fiber pointers, keyed by the pointer's own name (`__reactFiber$<id>`). */
+/** A DOM node that has React's private Fiber pointer attached, under a key like `__reactFiber$<id>`. */
 interface FiberBearingElement extends Element {
   [fiberKey: string]: unknown;
 }
 
+/**
+ * Gets the internal Fiber object React attaches to a mounted DOM node.
+ * Returns `undefined` if React never mounted this node.
+ */
 export const readHostFiber = (node: Element): FiberLike | undefined => {
   const key = getReactFiberKey(node);
   if (!key) {
     return undefined;
   }
-  // SAFETY: __reactFiber$<id> is react-dom's private, undocumented DOM-to-Fiber pointer with no public type — this trusts the internal shape react-dom is known to attach as of the currently supported React majors; an unrecognized shape degrades to `undefined`/`unknown` reads at each call site rather than throwing.
+  // SAFETY: `__reactFiber$<id>` is React's private pointer from a DOM node to its Fiber. React does not document it, so it has no public type. We trust the shape React uses in the versions this package supports. If the shape is different, callers just get `undefined`/`unknown` values, not a crash.
   const bag = node as FiberBearingElement;
-  // SAFETY: same private, no-public-type pointer as above — the value at this key is whatever react-dom attached, trusted here as the Fiber shape this file models.
+  // SAFETY: same private pointer as above. We trust that the value React put here matches the Fiber shape defined in this file.
   return bag[key] as FiberLike | undefined;
 };
 
-/** Walks a host (DOM) Fiber up to the nearest function-component ancestor, or the highest reached ancestor if none is found within the walk bound. */
-export const findOwnerFiber = (hostFiber: FiberLike): FiberLike => {
+/**
+ * Walks up from a DOM Fiber to find the nearest ancestor that is a
+ * function component. If none is found within `maxWalk` steps (default
+ * `DEFAULT_MAX_WALK`), returns the highest ancestor reached.
+ */
+export const findOwnerFiber = (
+  hostFiber: FiberLike,
+  maxWalk: number = DEFAULT_MAX_WALK,
+): FiberLike => {
   let current: FiberLike | null = hostFiber;
   let last = hostFiber;
-  for (let i = 0; i < MAX_WALK && current; i += 1) {
+  for (let i = 0; i < maxWalk && current; i += 1) {
     if (typeof current.type === "function") {
       return current;
     }
@@ -67,20 +75,29 @@ export const findOwnerFiber = (hostFiber: FiberLike): FiberLike => {
 };
 
 /**
- * Dispatch-capable (`useState`/`useReducer`) hook values in a Fiber's hook
- * list — `useRef`/`useMemo`/`useCallback`/`useEffect` nodes have no
- * `queue` and are skipped. `skip` drops the first N nodes unconditionally
- * (not just non-queue ones) — for a hook introspecting its own caller's
- * Fiber, that's how many hooks the introspecting hook itself calls, so its
- * own state doesn't show up as if it were the caller's.
+ * Collects the current values of `useState`/`useReducer` hooks from a
+ * Fiber's hook list. Hooks like `useRef`/`useMemo`/`useCallback`/
+ * `useEffect` have no `queue`, so they are skipped.
+ *
+ * `skip` removes the first N hooks from the list before collecting,
+ * counting every hook, not just state hooks. Use this when a hook reads
+ * its own caller's Fiber: set `skip` to the number of hooks this hook
+ * itself calls, so its own state doesn't get mixed in with the caller's.
+ *
+ * `maxWalk` caps how many hooks after `skip` get visited (default
+ * `DEFAULT_MAX_WALK`).
  */
-export const collectStateHookValues = (head: HookNode | null, skip = 0): unknown[] => {
+export const collectStateHookValues = (
+  head: HookNode | null,
+  skip: number = 0,
+  maxWalk: number = DEFAULT_MAX_WALK,
+): unknown[] => {
   const values: unknown[] = [];
   let node = head;
   for (let i = 0; i < skip && node; i += 1) {
     node = node.next;
   }
-  for (let i = 0; i < MAX_WALK && node; i += 1) {
+  for (let i = 0; i < maxWalk && node; i += 1) {
     if (node.queue) {
       values.push(node.memoizedState);
     }
@@ -89,21 +106,29 @@ export const collectStateHookValues = (head: HookNode | null, skip = 0): unknown
   return values;
 };
 
-/** `useContext()` values read by a Fiber, via its `dependencies.firstContext` list. */
-export const collectContextValues = (fiber: FiberLike): unknown[] => {
+/**
+ * `useContext()` values read by a Fiber, via its `dependencies.firstContext`
+ * list. `maxWalk` caps how many context entries get visited (default
+ * `DEFAULT_MAX_WALK`).
+ */
+export const collectContextValues = (
+  fiber: FiberLike,
+  maxWalk: number = DEFAULT_MAX_WALK,
+): unknown[] => {
   const values: unknown[] = [];
   let node = fiber.dependencies?.firstContext ?? null;
-  for (let i = 0; i < MAX_WALK && node; i += 1) {
+  for (let i = 0; i < maxWalk && node; i += 1) {
     values.push(node.memoizedValue);
     node = node.next;
   }
   return values;
 };
 
-/** Value-equality check for two hook/context value snapshots (from `collectStateHookValues`/`collectContextValues`). */
+/** Compares two value snapshots (from `collectStateHookValues`/`collectContextValues`) and returns `true` if they differ. */
 export const arraysDiffer = (a: unknown[], b: unknown[]): boolean =>
   a.length !== b.length || a.some((value, index) => !Object.is(value, b[index]));
 
+/** Compares two props objects key by key and returns `true` if they differ. Used with consecutive `memoizedProps` reads. */
 export const propsDiffer = (
   a: Record<string, unknown> | null,
   b: Record<string, unknown> | null,

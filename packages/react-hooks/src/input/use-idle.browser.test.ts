@@ -11,7 +11,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe(useIdle, () => {
+describe("useIdle", () => {
   it("starts as false", () => {
     const { result } = renderHook(() => useIdle(1000));
 

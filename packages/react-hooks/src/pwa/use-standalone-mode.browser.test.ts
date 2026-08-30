@@ -1,10 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { createMatchMediaMock } from "../sensors/_media-query-test-utils.ts";
+import { createMatchMediaMock } from "../../tests/_media-query-test-utils.ts";
 import { useStandaloneMode } from "./use-standalone-mode.ts";
 
-describe(useStandaloneMode, () => {
+describe("useStandaloneMode", () => {
   it("is true when the display-mode: standalone media query matches", () => {
     const { matchMedia } = createMatchMediaMock(true);
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);

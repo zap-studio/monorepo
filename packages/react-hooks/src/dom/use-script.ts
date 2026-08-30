@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 /** Status reported by `useScript`. */
 export type ScriptStatus = "error" | "idle" | "loading" | "ready";
@@ -29,7 +29,7 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
     return existing;
   }
 
-  // oxlint-disable-next-line github/no-dynamic-script-tag -- on-demand script loading is this hook's entire purpose; the src is caller-supplied, same trust boundary as any other API URL this codebase fetches.
+  // oxlint-disable-next-line github/no-dynamic-script-tag -- loading a script on demand is what this hook does. The caller gives the src, like any other URL we fetch.
   const script = document.createElement("script");
   script.src = src;
   script.async = async ?? true;
@@ -49,12 +49,15 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
 };
 
 /**
- * Loads an external `<script src>` on demand. Concurrent `useScript` calls
- * for the same `src` share a single `<script>` tag — the request is never
- * duplicated. `status` starts `"loading"` and becomes `"ready"`/`"error"`
- * once the script settles (or immediately reflects an already-settled
- * script for later consumers). With `removeOnUnmount: true`, the tag is
- * removed once the last consumer of that `src` unmounts.
+ * Loads an external script (`<script src>`) when needed. If you call
+ * `useScript` more than once with the same `src`, all calls share a
+ * single `<script>` tag, so the script is never loaded twice.
+ *
+ * `status` starts as `"loading"` and becomes `"ready"` or `"error"` once
+ * the script finishes loading. If the script already finished loading
+ * before this call, `status` reflects that right away. With
+ * `removeOnUnmount: true`, the `<script>` tag is removed once the last
+ * component using that `src` unmounts.
  *
  * @example
  * ```tsx
@@ -62,29 +65,44 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
  * if (status === "ready") renderMap();
  * ```
  */
+const getServerSnapshot = (): ScriptStatus => "loading";
+
 export const useScript = (src: string, options?: UseScriptOptions): UseScriptResult => {
-  const [status, setStatus] = useState<ScriptStatus>(() => registry.get(src)?.status ?? "loading");
+  const async = options?.async;
+  const removeOnUnmount = options?.removeOnUnmount;
+
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const entry = getOrCreateEntry(src, async);
+      entry.script.addEventListener("load", onStoreChange);
+      entry.script.addEventListener("error", onStoreChange);
+      return () => {
+        entry.script.removeEventListener("load", onStoreChange);
+        entry.script.removeEventListener("error", onStoreChange);
+      };
+    },
+    [src, async],
+  );
+
+  const getSnapshot = useCallback(
+    (): ScriptStatus => registry.get(src)?.status ?? "loading",
+    [src],
+  );
+
+  const status = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const entry = getOrCreateEntry(src, options?.async);
+    const entry = getOrCreateEntry(src, async);
     entry.refCount += 1;
-    setStatus(entry.status);
-
-    const handleLoad = () => setStatus("ready");
-    const handleError = () => setStatus("error");
-    entry.script.addEventListener("load", handleLoad);
-    entry.script.addEventListener("error", handleError);
 
     return () => {
-      entry.script.removeEventListener("load", handleLoad);
-      entry.script.removeEventListener("error", handleError);
       entry.refCount -= 1;
-      if (entry.refCount <= 0 && options?.removeOnUnmount) {
+      if (entry.refCount <= 0 && removeOnUnmount) {
         entry.script.remove();
         registry.delete(src);
       }
     };
-  }, [src, options?.async, options?.removeOnUnmount]);
+  }, [src, async, removeOnUnmount]);
 
   return { status };
 };

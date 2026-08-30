@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Throttles `value` — updates immediately on the first change after mount
- * (leading edge), then at most once per `delayMs` after that, always
- * eventually reflecting the latest value once the cooldown elapses.
- * Unlike `useDebouncedValue`, the first change in a burst is reflected
- * right away rather than waiting out the full delay.
+ * Throttles `value`. It updates right away on the first change after
+ * mount, then at most once every `delayMs` after that. It always ends up
+ * showing the latest value once the cooldown is over. Unlike
+ * `useDebouncedValue`, the first change in a burst shows up immediately
+ * instead of waiting for the full delay.
  *
  * @example
  * ```tsx

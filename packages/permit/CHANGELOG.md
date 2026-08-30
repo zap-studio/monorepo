@@ -8,45 +8,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-Native OpenTelemetry support. Every `can(...)` call gets an `INTERNAL` span (`permit.check {resourceType}:{action}`) with the decision (`"allow"`/`"deny"`) set as a span attribute, plus a `permit.checks` counter tagged the same way. `mergePoliciesAnd`/`mergePoliciesOr` get their own wrapping span around the composite check. See [OpenTelemetry](https://www.zapstudio.dev/permit/opentelemetry).
+Added native OpenTelemetry support. Every `can(...)` call now gets an `INTERNAL` span (`permit.check {resourceType}:{action}`). The span has the decision (`"allow"`/`"deny"`) as an attribute. There is also a `permit.checks` counter with the same tag. `mergePoliciesAnd`/`mergePoliciesOr` get their own span around the combined check. See [OpenTelemetry](https://www.zapstudio.dev/permit/opentelemetry).
 
 ### Changed
 
-**Breaking:** `@opentelemetry/api` is now a required peer dependency. It's tiny, side-effect-free, and a no-op until an app registers a real SDK, so nothing changes at runtime for consumers who don't set one up — but the package won't resolve without it installed: `npm install @opentelemetry/api`.
+**Breaking:** `@opentelemetry/api` is now a required peer dependency. It is small, has no side effects, and does nothing until an app sets up a real SDK. So nothing changes at runtime if you don't set one up. But the package will not install without it: run `npm install @opentelemetry/api`.
 
 ## [1.1.1]
 
 ### Changed
 
-`@zap-studio/logger` is now an optional peer dependency instead of a regular dependency. Every import from it is type-only (`import type { Logger }`), so it was never pulled in at runtime — pass any object matching the `Logger` shape (including `pino`) with no install required. Existing consumers of `logger?: Logger` are unaffected.
+`@zap-studio/logger` is now an optional peer dependency, not a regular one. Every import from it is type-only (`import type { Logger }`), so it was never loaded at runtime. You can pass any object that matches the `Logger` shape (`pino` included) with no install needed. If you already use `logger?: Logger`, nothing changes for you.
 
 ## [1.1.0]
 
 ### Added
 
-`createPolicy(...)` gains an optional `logger?: Logger` option (from `@zap-studio/logger`). When provided, it logs allow decisions at `debug` and deny decisions at `info`. Internal-error warnings (resource validation and policy evaluation errors) route through the logger's `warn` instead of `console.warn` when a logger is provided; without one, they still print via `console.warn` as before. See [Logging](https://www.zapstudio.dev/permit/logging).
+`createPolicy(...)` now takes an optional `logger?: Logger` option (from `@zap-studio/logger`). If you pass one, it logs allow decisions at `debug` and deny decisions at `info`. Internal-error warnings (from resource validation and policy checks) go through the logger's `warn` instead of `console.warn`, when a logger is set. With no logger, they still print with `console.warn`, as before. See [Logging](https://www.zapstudio.dev/permit/logging).
 
 ## [1.0.0]
 
 ### Changed
 
-- Clarified tree-shakeable design in the package description and README (no code change).
+- Made the package description and README clearer about the tree-shakeable design. No code change.
 
 ### Removed
 
-`assertNever` is no longer exported — it had no internal consumers and existed only as a generic exhaustiveness-check convenience. Use your own `never`-typed helper if you relied on it.
+`assertNever` is no longer exported. Nothing inside the package used it — it was only there as a generic exhaustiveness-check helper. If you used it, write your own `never`-typed helper instead.
 
 ### Fixed
 
-Neither merge strategy short-circuits anymore. All policies now run concurrently via `Promise.allSettled`, and every policy is invoked regardless of outcome, for both `mergePoliciesSome` (allow) and `mergePoliciesEvery` (deny). A rejecting policy no longer sinks the whole check — it's treated as a deny (`false`) and logged with `console.warn`, consistent with how `createPolicy` handles internal validation/evaluation errors.
+Neither merge strategy stops early anymore. All policies now run at the same time, with `Promise.allSettled`. Every policy runs, no matter the outcome, for both `mergePoliciesSome` (allow) and `mergePoliciesEvery` (deny). A policy that rejects no longer breaks the whole check. It is now treated as a deny (`false`) and logged with `console.warn`, the same way `createPolicy` handles its own internal errors.
 
 ## [0.3.4]
 
 ### Added
 
-The package root now re-exports the full public API, so everything can be imported from `@zap-studio/permit` directly, including `PolicyError`, `assertNever`, and all public types. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+The package root now re-exports the full public API. You can import everything from `@zap-studio/permit` directly, including `PolicyError`, `assertNever`, and all public types. All exports have no side effects and are tree-shakeable. Subpath imports still work too.
 
-- The implementation moved out of the entrypoint into two new subpaths: `./conditions` (`allow`, `deny`, `when`, `and`, `or`, `not`, `has`, `hasRole`, `collectInheritedRoles`) and `./policy` (`createPolicy`, `mergePolicies`, `mergePoliciesAny`).
+- The code moved out of the entrypoint into two new subpaths: `./conditions` (`allow`, `deny`, `when`, `and`, `or`, `not`, `has`, `hasRole`, `collectInheritedRoles`) and `./policy` (`createPolicy`, `mergePolicies`, `mergePoliciesAny`).
 
 ## [0.3.3]
 
@@ -104,9 +104,9 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - f0f503e: Made policy evaluation asynchronous by default.
 - f0f503e: **Breaking:** `policy.can(...)` now returns `Promise<boolean>`.
-- f0f503e: **Breaking:** `createPolicy()` now uses async-safe Standard Schema validation for resource schemas (including async resource schemas); this is not a separate `Policy` schema API.
-- f0f503e: **Breaking:** The `Policy` interface changed so `can()` is async, and `mergePolicies`/`mergePoliciesAny` are async accordingly.
-- Action required: callers must `await policy.can(...)` and handle `mergePolicies`/`mergePoliciesAny` as async operations; also account for async-safe resource schema validation in `createPolicy()`.
+- f0f503e: **Breaking:** `createPolicy()` now uses async-safe Standard Schema validation for resource schemas, including async ones. This is not a separate `Policy` schema API.
+- f0f503e: **Breaking:** The `Policy` interface changed so `can()` is async, and `mergePolicies`/`mergePoliciesAny` are async too.
+- Action required: callers must `await policy.can(...)` and handle `mergePolicies`/`mergePoliciesAny` as async operations. Also check that `createPolicy()` now validates resource schemas in an async-safe way.
 - f75b984: Updated dependency `@zap-studio/validation` to `0.3.0`.
 
 ## [0.1.3]

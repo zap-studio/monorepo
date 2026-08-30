@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useCounter } from "./use-counter.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { count } = useCounter(5);
   return String(count);
-}
+};
 
-describe(useCounter, () => {
+describe("useCounter", () => {
   it("renders the initial value on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

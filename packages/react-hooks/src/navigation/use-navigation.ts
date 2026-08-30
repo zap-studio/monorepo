@@ -1,6 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-import { getNavigation, type NavigationHistoryEntry } from "./_navigation-api.ts";
+import { getNavigation } from "./_navigation-api.ts";
 
 /** The shape returned by `useNavigation`. */
 export interface NavigationSnapshot {
@@ -49,14 +49,13 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * Wraps the Navigation API's `window.navigation` — `currentEntry`,
- * `entries()`, `canGoBack`/`canGoForward` — updating on its
- * `currententrychange` event, which fires for both same-document and
- * cross-document navigations the API observes (a superset of
- * `usePopState`'s `popstate`, which only ever fires for back/forward).
- * Falls back to `{ canGoBack: false, canGoForward: false, currentEntry:
- * null, entries: [] }` — the SSR-safe default — during server
- * rendering and permanently in browsers without the Navigation API
+ * Wraps `window.navigation` from the Navigation API, giving you
+ * `currentEntry`, `entries()`, `canGoBack`, and `canGoForward`. It updates
+ * on the `currententrychange` event, which fires for more kinds of
+ * navigation than `usePopState`'s `popstate` event does (that one only
+ * fires for browser back/forward). Falls back to `{ canGoBack: false,
+ * canGoForward: false, currentEntry: null, entries: [] }` during server
+ * rendering, and permanently in browsers without the Navigation API
  * (Safari, Firefox).
  *
  * @example

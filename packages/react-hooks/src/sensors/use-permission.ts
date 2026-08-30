@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /**
- * `navigator.permissions.query({ name })`'s state for the given permission
- * (`"granted" | "denied" | "prompt"`), updating on the query result's
- * `change` event. `undefined` — the SSR-safe default — until the client
- * resolves it, and permanently where the Permissions API is unsupported.
+ * Gives you the state of a browser permission (`"granted"`, `"denied"`, or
+ * `"prompt"`) using `navigator.permissions.query({ name })`. It updates
+ * when the permission changes. The value is `undefined` (the safe default
+ * for server rendering) until the client checks it, and it stays
+ * `undefined` if the Permissions API isn't supported.
  *
  * @example
  * ```tsx
@@ -12,40 +15,48 @@ import { useEffect, useState } from "react";
  * ```
  */
 export const usePermission = (name: PermissionName): PermissionState | undefined => {
+  const isClient = useIsClient();
+  const supported = isClient && typeof navigator !== "undefined" && !!navigator.permissions;
+
   const [state, setState] = useState<PermissionState | undefined>(undefined);
+  const [status, setStatus] = useState<PermissionStatus | undefined>(undefined);
 
   useEffect(() => {
-    const permissions = navigator.permissions;
-    if (!permissions) {
-      setState(undefined);
+    if (!supported) {
       return undefined;
     }
 
-    let cancelled = false;
-    let cleanup: (() => void) | undefined;
+    let isMounted = true;
 
-    const subscribeToPermission = async () => {
-      const status = await permissions.query({ name });
-      if (cancelled) {
+    void (async () => {
+      const result = await navigator.permissions.query({ name });
+      if (!isMounted) {
         return;
       }
-      setState(status.state);
-
-      const handleChange = () => {
-        setState(status.state);
-      };
-
-      status.addEventListener("change", handleChange);
-      cleanup = () => status.removeEventListener("change", handleChange);
-    };
-
-    void subscribeToPermission();
+      setStatus(result);
+      setState(result.state);
+    })();
 
     return () => {
-      cancelled = true;
-      cleanup?.();
+      isMounted = false;
     };
-  }, [name]);
+  }, [supported, name]);
+
+  useEffect(() => {
+    if (!status) {
+      return undefined;
+    }
+
+    const handleChange = () => {
+      setState(status.state);
+    };
+
+    status.addEventListener("change", handleChange);
+
+    return () => {
+      status.removeEventListener("change", handleChange);
+    };
+  }, [status]);
 
   return state;
 };

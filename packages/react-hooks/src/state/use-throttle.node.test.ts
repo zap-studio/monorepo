@@ -4,13 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useThrottle } from "./use-throttle.ts";
 
-describe(useThrottle, () => {
+describe("useThrottle", () => {
   it("renders without touching timers during server rendering", () => {
-    const callback = vi.fn();
-    function TestComponent() {
+    const callback = vi.fn<() => void>();
+    const TestComponent = () => {
       useThrottle(callback, 500);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

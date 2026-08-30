@@ -4,12 +4,12 @@ import { describe, expect, it, vi } from "vitest";
 
 import { usePerformanceObserver } from "./use-performance-observer.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = usePerformanceObserver(vi.fn(), { entryTypes: ["longtask"] });
   return supported ? "true" : "false";
-}
+};
 
-describe(usePerformanceObserver, () => {
+describe("usePerformanceObserver", () => {
   it("renders without crashing during server rendering", () => {
     // Node itself implements PerformanceObserver natively, so `supported` genuinely reflects
     // that here — unlike browser-only APIs, there's no "always false during SSR" guarantee to assert.

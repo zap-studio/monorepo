@@ -8,30 +8,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-Reverted the `@zap-studio/monads` dependency and the `standardValidateResult`/`standardValidateResultSync`/`createStandardValidatorResult`/`createStandardValidatorResultSync` exports added in 1.1.0 — they added a dependency and bundle size cost for a use case consumers can already cover themselves by wrapping `standardValidate`/`standardValidateSync` with `@zap-studio/monads`'s `fromPromise`/`fromThrowable`. See the README's "Using with `@zap-studio/monads`" section. 1.1.0 is deprecated on npm in favor of this release. The `instanceof Promise` fix below is retained.
+We removed the `@zap-studio/monads` dependency and the exports 1.1.0 added: `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, `createStandardValidatorResultSync`. These added a dependency and more bundle size, for something you can already do yourself: wrap `standardValidate`/`standardValidateSync` with `@zap-studio/monads`'s `fromPromise`/`fromThrowable`. See the README section "Using with `@zap-studio/monads`". We deprecated 1.1.0 on npm in favor of this release. The `instanceof Promise` fix below stays.
 
 ## [1.1.0] (deprecated — see 1.1.1)
 
 ### Added
 
-- Added `Result`/`ResultAsync`-returning variants of the existing throw-based API, backed by the new `@zap-studio/monads` dependency: `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync`. Additive and opt-in — `standardValidate`, `standardValidateSync`, and the existing `throwOnError` behavior are unchanged. Only validation issues become `Err`; a malformed schema still throws.
+- Added new functions that return `Result`/`ResultAsync` instead of throwing: `standardValidateResult`, `standardValidateResultSync`, `createStandardValidatorResult`, and `createStandardValidatorResultSync`. They use the new `@zap-studio/monads` dependency. These are new and optional — `standardValidate`, `standardValidateSync`, and the existing `throwOnError` behavior do not change. Only a validation issue becomes `Err`. A broken schema still throws.
 
 ### Fixed
 
-- Fixed async-schema detection relying on `instanceof Promise`, which returns `false` for a Promise constructed in a different JavaScript realm (a separate `vm.Context`, iframe, or worker), even though a conforming Standard Schema is allowed to return one. Previously this caused the value to be silently misread as a synchronous result (`Ok(undefined)`/`undefined`/an unresolved raw result, depending on the function) instead of being awaited or rejected. Affects `standardValidate`, `standardValidateSync`, `standardValidateResult`, and `standardValidateResultSync` (and the `createStandardValidator*` factories built on them).
+- Fixed how we detect an async schema. We used `instanceof Promise`, but this check returns `false` for a Promise made in a different JavaScript realm (a separate `vm.Context`, an iframe, or a worker) — even though the Standard Schema spec allows that. Before this fix, the code read the value as a sync result by mistake (`Ok(undefined)`, `undefined`, or an unresolved raw result, depending on the function), instead of awaiting or rejecting it. This affects `standardValidate`, `standardValidateSync`, `standardValidateResult`, `standardValidateResultSync`, and the `createStandardValidator*` factories built on them.
 
 ## [1.0.0]
 
 ### Changed
 
-- Clarified tree-shakeable design in the package description and README (no code change).
-- **Breaking:** `createSyncStandardValidator` is renamed to `createStandardValidatorSync` for naming consistency with `standardValidateSync`. Update imports and usages accordingly; the thrown error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
+- Made the package description and README clearer about the tree-shakeable design. No code change.
+- **Breaking:** Renamed `createSyncStandardValidator` to `createStandardValidatorSync`, to match the name `standardValidateSync`. Update your imports and calls. The error message for async schemas now reads `Async schemas are not supported by createStandardValidatorSync`.
 
 ## [0.3.6]
 
 ### Added
 
-The package root now re-exports the full public API, so `ValidationError` can be imported from `@zap-studio/validation` directly alongside the validators. All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+The package root now re-exports the full public API, so `ValidationError` can be imported from `@zap-studio/validation` directly alongside the validators. All exports have no side effects and are tree-shakeable. Subpath imports still work too.
 
 - The validator implementation moved from the entrypoint into its own module, available as the new `./validate` subpath.
 

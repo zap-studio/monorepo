@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /** The `coords` shape `useGeolocation` reports on success — a flattened `GeolocationCoordinates`. */
 export interface GeolocationCoordinatesState {
   accuracy: number;
@@ -55,11 +57,12 @@ const toErrorState = (error: GeolocationPositionError): GeolocationErrorState =>
 });
 
 /**
- * Wraps `navigator.geolocation`. One-shot by default (`getCurrentPosition`);
- * pass `watch: true` for continuous updates (`watchPosition`, cleaned up via
- * `clearWatch` on unmount or option change). `loading` starts `true` and the
- * effect — client-only — resolves it, so this is SSR-safe with no extra
- * handling needed.
+ * Wraps `navigator.geolocation`. By default it reads the position once
+ * (`getCurrentPosition`). Pass `watch: true` to get continuous updates
+ * instead (`watchPosition`, which stops via `clearWatch` when the
+ * component unmounts or the options change). `loading` starts as `true`
+ * and only changes on the client, so this is safe to use with server
+ * rendering without any extra handling.
  *
  * @example
  * ```tsx
@@ -70,11 +73,13 @@ const toErrorState = (error: GeolocationPositionError): GeolocationErrorState =>
 export const useGeolocation = (options: UseGeolocationOptions = {}): GeolocationState => {
   const { enableHighAccuracy, maximumAge, timeout, watch = false } = options;
 
+  const isClient = useIsClient();
+  const supported = isClient && typeof navigator !== "undefined" && !!navigator.geolocation;
+
   const [state, setState] = useState<GeolocationState>(INITIAL_STATE);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setState({ error: UNSUPPORTED_ERROR, loading: false });
+    if (!supported) {
       return undefined;
     }
 
@@ -93,7 +98,7 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
     };
 
     if (watch) {
-      // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- Continuous location tracking is this hook's entire purpose (watch: true); the permission prompt is the expected, user-visible consequence of opting in.
+      // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- tracking the location is what this hook does when you pass `watch: true`. The user asks for it, so the permission prompt is expected.
       const watchId = navigator.geolocation.watchPosition(
         handleSuccess,
         handleError,
@@ -102,10 +107,10 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
       return () => navigator.geolocation.clearWatch(watchId);
     }
 
-    // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- One-shot location read is this hook's entire purpose; the permission prompt is the expected, user-visible consequence of calling it.
+    // oxlint-disable-next-line sonarjs/no-intrusive-permissions -- reading the location once is what this hook does. The user calls it, so the permission prompt is expected.
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, positionOptions);
     return undefined;
-  }, [enableHighAccuracy, maximumAge, timeout, watch]);
+  }, [supported, enableHighAccuracy, maximumAge, timeout, watch]);
 
-  return state;
+  return isClient && !supported ? { error: UNSUPPORTED_ERROR, loading: false } : state;
 };

@@ -1,5 +1,7 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** The size fields `useResizeObserver` reports. */
 export interface ElementSize {
   height: number;
@@ -15,9 +17,13 @@ export interface UseResizeObserverResult<T extends Element> {
 const isSupported = (): boolean => typeof ResizeObserver !== "undefined";
 
 /**
- * Tracks the ref'd element's content-box size via `ResizeObserver`. Attach
- * `ref` to the element to observe. `size` starts `undefined` — the
- * SSR-safe default — until the first observation fires.
+ * Tracks the ref'd element's content size (width and height), using
+ * `ResizeObserver`. Attach `ref` to the element you want to observe.
+ * `size` starts as `undefined` — this is also the safe default for
+ * server-side rendering — until the first measurement happens.
+ *
+ * The hook checks `ref` again after every render, so it still works if
+ * the element appears later, is conditionally rendered, or gets replaced.
  *
  * @example
  * ```tsx
@@ -31,21 +37,27 @@ export const useResizeObserver = <
   const ref = useRef<T | null>(null);
   const [size, setSize] = useState<ElementSize | undefined>(undefined);
 
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
   useEffect(() => {
-    const element = ref.current;
     if (!isSupported() || !element) {
       return undefined;
     }
 
     const observer = new ResizeObserver((entries) => {
-      // SAFETY: ResizeObserver invokes its callback with one entry per observed target, and this observer only ever observes a single element via observe(element) below, so entries[0] is always present.
-      const entry = entries[0]!;
+      const entry = entries.find((observed) => observed.target === element);
+      if (!entry) {
+        return;
+      }
       setSize({ height: entry.contentRect.height, width: entry.contentRect.width });
     });
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [element]);
 
   return { ref, size };
 };

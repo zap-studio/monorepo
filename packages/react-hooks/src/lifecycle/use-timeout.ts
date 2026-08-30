@@ -1,11 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+
+import { useLatestRef } from "./_latest-ref.ts";
 
 /**
- * Declarative `setTimeout` — schedules `callback` after `delayMs`,
- * clearing and rescheduling when `delayMs` changes, and clearing on
- * unmount. Pass `delayMs: null` to pause without unmounting the hook.
- * `callback` doesn't need to be memoized — the latest one is always
- * called, without resetting the timer.
+ * A `setTimeout` wrapper for React. Runs `callback` once, after `delayMs`
+ * milliseconds. It clears and restarts the timer when `delayMs` changes,
+ * and clears it when the component unmounts. Pass `delayMs: null` to
+ * pause without unmounting the hook. You don't need to memoize
+ * `callback` — the hook always uses the latest version, without
+ * resetting the timer.
  *
  * @example
  * ```tsx
@@ -13,8 +16,7 @@ import { useEffect, useRef } from "react";
  * ```
  */
 export const useTimeout = (callback: () => void, delayMs: number | null): void => {
-  const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  const callbackRef = useLatestRef(callback);
 
   useEffect(() => {
     if (delayMs === null) {
@@ -22,5 +24,5 @@ export const useTimeout = (callback: () => void, delayMs: number | null): void =
     }
     const id = setTimeout(() => callbackRef.current(), delayMs);
     return () => clearTimeout(id);
-  }, [delayMs]);
+  }, [callbackRef, delayMs]);
 };

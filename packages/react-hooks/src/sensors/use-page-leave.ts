@@ -1,15 +1,18 @@
 import { useEffect, useRef } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 interface LegacyMouseEvent extends MouseEvent {
   readonly toElement?: Element | null;
 }
 
 /**
- * Calls `onPageLeave` when the pointer leaves the viewport — a `mouseout`
- * on `document` whose `relatedTarget` (and legacy `toElement`) are both
- * null, meaning the pointer left the page entirely rather than moving
- * between two elements inside it. Useful for exit-intent UI. `onPageLeave`
- * doesn't need to be memoized — the latest one is always called.
+ * Calls `onPageLeave` when the mouse pointer leaves the page. It listens
+ * for a `mouseout` on `document` where both `relatedTarget` and the old
+ * `toElement` field are null. This means the pointer left the page
+ * completely, not just moved to another element on the page. Useful for
+ * exit-intent popups. You don't need to memoize `onPageLeave`; the hook
+ * always calls the latest version.
  *
  * @example
  * ```tsx
@@ -18,11 +21,13 @@ interface LegacyMouseEvent extends MouseEvent {
  */
 export const usePageLeave = (onPageLeave: () => void): void => {
   const onPageLeaveRef = useRef(onPageLeave);
-  onPageLeaveRef.current = onPageLeave;
+  useIsomorphicLayoutEffect(() => {
+    onPageLeaveRef.current = onPageLeave;
+  });
 
   useEffect(() => {
     const handleMouseOut = (event: MouseEvent) => {
-      // SAFETY: toElement is a legacy, non-standard MouseEvent field (old IE/WebKit) not declared in TypeScript's DOM lib; read defensively as an optional field, so a browser without it just yields undefined.
+      // SAFETY: toElement is an old, non-standard MouseEvent field (old IE/WebKit) and is not declared. We read it as optional, so browsers without it give undefined.
       const legacyRelatedTarget = (event as LegacyMouseEvent).toElement;
       if (event.relatedTarget === null && !legacyRelatedTarget) {
         onPageLeaveRef.current();

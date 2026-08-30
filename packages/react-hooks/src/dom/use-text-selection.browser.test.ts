@@ -3,20 +3,22 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useTextSelection } from "./use-text-selection.ts";
 
-function selectText(element: HTMLElement) {
+const SELECTED_TEXT = "hello world";
+
+const selectText = (element: HTMLElement) => {
   const range = document.createRange();
   range.selectNodeContents(element);
   const selection = window.getSelection();
   selection?.removeAllRanges();
   selection?.addRange(range);
-}
+};
 
 afterEach(() => {
   window.getSelection()?.removeAllRanges();
   document.body.replaceChildren();
 });
 
-describe(useTextSelection, () => {
+describe("useTextSelection", () => {
   it("starts with an empty selection", () => {
     const { result } = renderHook(() => useTextSelection());
 
@@ -25,13 +27,13 @@ describe(useTextSelection, () => {
 
   it("updates to the selected text on selectionchange", async () => {
     const paragraph = document.createElement("p");
-    paragraph.textContent = "hello world";
+    paragraph.textContent = SELECTED_TEXT;
     document.body.append(paragraph);
 
     const { result } = renderHook(() => useTextSelection());
     selectText(paragraph);
 
-    await waitFor(() => expect(result.current).toBe("hello world"));
+    await waitFor(() => expect(result.current).toBe(SELECTED_TEXT));
   });
 
   it("falls back to an empty string when getSelection() returns null", () => {
@@ -45,7 +47,7 @@ describe(useTextSelection, () => {
 
   it("stops updating after unmount", async () => {
     const paragraph = document.createElement("p");
-    paragraph.textContent = "hello world";
+    paragraph.textContent = SELECTED_TEXT;
     document.body.append(paragraph);
 
     const { result, unmount } = renderHook(() => useTextSelection());

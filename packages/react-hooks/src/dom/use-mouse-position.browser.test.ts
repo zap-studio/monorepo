@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useMousePosition } from "./use-mouse-position.ts";
 
-describe(useMousePosition, () => {
+describe("useMousePosition", () => {
   it("starts at all-0", () => {
     const { result } = renderHook(() => useMousePosition());
 

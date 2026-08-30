@@ -2,17 +2,18 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { html } from "../../tests/_html.ts";
 import { useIntersectionObserver } from "./use-intersection-observer.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { inView, ref } = useIntersectionObserver<HTMLDivElement>();
   return createElement("div", { ref }, inView ? "true" : "false");
-}
+};
 
-describe(useIntersectionObserver, () => {
+describe("useIntersectionObserver", () => {
   it("renders false on the server, before any observation can fire", () => {
-    const html = renderToString(createElement(TestComponent));
+    const output = renderToString(createElement(TestComponent));
 
-    expect(html).toBe("<div>false</div>");
+    expect(output).toBe(html`<div>false</div>`);
   });
 });

@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useHistoryState } from "./use-history-state.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { value, canUndo, canRedo } = useHistoryState("a");
   return `${value},${canUndo},${canRedo}`;
-}
+};
 
-describe(useHistoryState, () => {
+describe("useHistoryState", () => {
   it("renders the initial value on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -1,5 +1,7 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
+
 /** The shape returned by `useIntersectionObserver`. */
 export interface UseIntersectionObserverResult<T extends Element> {
   entry: IntersectionObserverEntry | undefined;
@@ -10,13 +12,22 @@ export interface UseIntersectionObserverResult<T extends Element> {
 const isSupported = (): boolean => typeof IntersectionObserver !== "undefined";
 
 /**
- * Tracks whether the ref'd element is visible in the viewport (or a given
- * `root`), via `IntersectionObserver`. Attach `ref` to the element to
- * observe; `options` is passed straight through to the observer
- * (`root`/`rootMargin`/`threshold`). `inView` and `entry` start at `false`/
- * `undefined` — the SSR-safe default — until the first observation fires.
+ * Tracks whether the ref'd element is visible on screen (or inside a
+ * given `root` element), using `IntersectionObserver`. Attach `ref` to
+ * the element you want to watch.
  *
- * Also exported as `useInView`, an alias for the same hook.
+ * `options` (`root`/`rootMargin`/`threshold`) is passed straight to the
+ * observer. You don't need to memoize it — the hook compares its fields
+ * itself and only rebuilds the observer when one of them changes.
+ *
+ * `inView` starts as `false` and `entry` starts as `undefined`. This is
+ * also the safe default for server-side rendering. Both update once the
+ * first observation happens.
+ *
+ * The hook checks `ref` again after every render, so it still works if
+ * the element appears later, is conditionally rendered, or gets replaced.
+ *
+ * Also exported as `useInView`, which is the same hook under another name.
  *
  * @example
  * ```tsx
@@ -29,11 +40,20 @@ export const useIntersectionObserver = <T extends Element = HTMLElement>(
 ): UseIntersectionObserverResult<T> => {
   const ref = useRef<T | null>(null);
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  });
   const [entry, setEntry] = useState<IntersectionObserverEntry | undefined>(undefined);
 
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
+  const { root, rootMargin, threshold } = options ?? {};
+  const thresholdKey = Array.isArray(threshold) ? threshold.join(",") : threshold;
+
   useEffect(() => {
-    const element = ref.current;
     if (!isSupported() || !element) {
       return undefined;
     }
@@ -44,7 +64,7 @@ export const useIntersectionObserver = <T extends Element = HTMLElement>(
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [element, root, rootMargin, thresholdKey]);
 
   return { entry, inView: entry?.isIntersecting ?? false, ref };
 };

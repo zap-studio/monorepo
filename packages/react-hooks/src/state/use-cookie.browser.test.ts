@@ -1,15 +1,14 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { CookieInit, CookieListItem, CookieStore } from "./use-cookie.ts";
-
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useCookie } from "./use-cookie.ts";
 
-function cookieItem(name: string, value: string): CookieListItem {
-  return { domain: null, expires: null, name, path: "/", sameSite: "lax", value };
-}
+const cookieItem = (name: string, value: string): CookieListItem => {
+  return { name, value };
+};
 
-function createCookieStoreMock(initial: Record<string, string> = {}) {
+const createCookieStoreMock = (initial: Record<string, string> = {}) => {
   const target = new EventTarget();
   const cookies = new Map<string, CookieListItem>(
     Object.entries(initial).map(([name, value]) => [name, cookieItem(name, value)]),
@@ -19,37 +18,45 @@ function createCookieStoreMock(initial: Record<string, string> = {}) {
     store.dispatchEvent(Object.assign(new Event("change"), { changed, deleted }));
   };
 
-  const store: CookieStore = Object.assign(target, {
-    delete: vi.fn((name: string): Promise<void> => {
-      const existing = cookies.get(name);
-      cookies.delete(name);
-      if (existing) {
-        dispatchChange([], [existing]);
-      }
-      return Promise.resolve();
-    }),
-    get: vi.fn((name: string): Promise<CookieListItem | null> =>
-      Promise.resolve(cookies.get(name) ?? null),
-    ),
-    set: vi.fn((options: CookieInit): Promise<void> => {
+  const deleteCookie = vi.fn<(name: string) => Promise<void>>((name: string): Promise<void> => {
+    const existing = cookies.get(name);
+    cookies.delete(name);
+    if (existing) {
+      dispatchChange([], [existing]);
+    }
+    return Promise.resolve();
+  });
+  const setCookie = vi.fn<(options: CookieInit) => Promise<void>>(
+    (options: CookieInit): Promise<void> => {
       const item = cookieItem(options.name, options.value);
       cookies.set(options.name, item);
       dispatchChange([item], []);
       return Promise.resolve();
+    },
+  );
+
+  const store: CookieStore = asTestDouble<CookieStore>(
+    Object.assign(target, {
+      delete: deleteCookie,
+      get: vi.fn<(name: string) => Promise<CookieListItem | null>>(
+        (name: string): Promise<CookieListItem | null> =>
+          Promise.resolve(cookies.get(name) ?? null),
+      ),
+      set: setCookie,
     }),
-  }) as unknown as CookieStore;
+  );
 
-  return { dispatchChange, store };
-}
+  return { deleteCookie, dispatchChange, setCookie, store };
+};
 
-function setCookieStore(store: CookieStore | undefined) {
+const setCookieStore = (store: CookieStore | undefined) => {
   Object.defineProperty(window, "cookieStore", {
     configurable: true,
     get: () => store,
   });
-}
+};
 
-describe(useCookie, () => {
+describe("useCookie", () => {
   it("reports supported: false when the Cookie Store API is unsupported", () => {
     setCookieStore(undefined);
 
@@ -78,7 +85,7 @@ describe(useCookie, () => {
   });
 
   it("set() writes the cookie and updates value via the change event", async () => {
-    const { store } = createCookieStoreMock();
+    const { setCookie, store } = createCookieStoreMock();
     setCookieStore(store);
 
     const { result } = renderHook(() => useCookie("theme"));
@@ -88,12 +95,12 @@ describe(useCookie, () => {
       await result.current.set("dark", { path: "/" });
     });
 
-    expect(store.set).toHaveBeenCalledWith({ name: "theme", path: "/", value: "dark" });
+    expect(setCookie).toHaveBeenCalledWith({ name: "theme", path: "/", value: "dark" });
     expect(result.current.value).toBe("dark");
   });
 
   it("remove() deletes the cookie and clears value via the change event", async () => {
-    const { store } = createCookieStoreMock({ theme: "dark" });
+    const { deleteCookie, store } = createCookieStoreMock({ theme: "dark" });
     setCookieStore(store);
 
     const { result } = renderHook(() => useCookie("theme"));
@@ -103,7 +110,7 @@ describe(useCookie, () => {
       await result.current.remove();
     });
 
-    expect(store.delete).toHaveBeenCalledWith("theme");
+    expect(deleteCookie).toHaveBeenCalledWith("theme");
     expect(result.current.value).toBeUndefined();
   });
 
@@ -136,25 +143,29 @@ describe(useCookie, () => {
 
   it("ignores the initial get() result if unmounted before it resolves", async () => {
     let resolveGet: (item: CookieListItem | null) => void = () => {};
-    const store: CookieStore = Object.assign(new EventTarget(), {
-      delete: vi.fn(),
-      get: vi.fn(
-        () =>
-          new Promise<CookieListItem | null>((resolve) => {
-            resolveGet = resolve;
-          }),
-      ),
-      set: vi.fn(),
-    }) as unknown as CookieStore;
+    const store: CookieStore = asTestDouble<CookieStore>(
+      Object.assign(new EventTarget(), {
+        delete: vi.fn<(...args: any[]) => any>(),
+        get: vi.fn<() => Promise<CookieListItem | null>>(
+          () =>
+            new Promise<CookieListItem | null>((resolve) => {
+              resolveGet = resolve;
+            }),
+        ),
+        set: vi.fn<(...args: any[]) => any>(),
+      }),
+    );
     setCookieStore(store);
 
-    const { unmount } = renderHook(() => useCookie("theme"));
+    const { result, unmount } = renderHook(() => useCookie("theme"));
     unmount();
     resolveGet(cookieItem("theme", "dark"));
 
     await act(async () => {
       await Promise.resolve();
     });
+
+    expect(result.current.value).toBeUndefined();
   });
 
   it("removes the change listener on unmount", async () => {

@@ -11,12 +11,12 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && Boolean(navigator.serviceWorker);
 
 /**
- * The current page's Service Worker registration (if any), plus whether a
- * new worker has finished installing while an existing one already
- * controls the page — the standard "update available, reload to activate"
- * signal. `registration` is `undefined` — the SSR-safe default — until
- * the client resolves it, and permanently where Service Workers are
- * unsupported.
+ * Gives you the current page's Service Worker registration, if there is
+ * one, plus whether a new worker has finished installing while an older
+ * one is still active. This is the usual "update available, reload to
+ * activate" signal. `registration` is `undefined` by default (safe for
+ * server-side rendering) until the client resolves it, and stays
+ * `undefined` forever if Service Workers aren't supported.
  *
  * @example
  * ```tsx
@@ -37,6 +37,7 @@ export const useServiceWorker = (): UseServiceWorkerResult => {
     }
 
     let cancelled = false;
+    const cleanupFns: (() => void)[] = [];
 
     const handleUpdateFound = (reg: ServiceWorkerRegistration) => {
       const installingWorker = reg.installing;
@@ -49,6 +50,7 @@ export const useServiceWorker = (): UseServiceWorkerResult => {
         }
       };
       installingWorker.addEventListener("statechange", handleStateChange);
+      cleanupFns.push(() => installingWorker.removeEventListener("statechange", handleStateChange));
     };
 
     const subscribeToRegistration = async () => {
@@ -57,13 +59,18 @@ export const useServiceWorker = (): UseServiceWorkerResult => {
         return;
       }
       setRegistration(reg);
-      reg.addEventListener("updatefound", () => handleUpdateFound(reg));
+      const handleUpdateFoundForReg = () => handleUpdateFound(reg);
+      reg.addEventListener("updatefound", handleUpdateFoundForReg);
+      cleanupFns.push(() => reg.removeEventListener("updatefound", handleUpdateFoundForReg));
     };
 
     void subscribeToRegistration();
 
     return () => {
       cancelled = true;
+      for (const fn of cleanupFns) {
+        fn();
+      }
     };
   }, []);
 

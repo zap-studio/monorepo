@@ -1,11 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+
+import { useLatestRef } from "./_latest-ref.ts";
 
 /**
- * Declarative `setInterval` — calls `callback` every `delayMs`, restarting
- * when `delayMs` changes, and clearing on unmount. Pass `delayMs: null` to
- * pause without unmounting the hook. `callback` doesn't need to be
- * memoized — the latest one is always called, without resetting the
- * interval.
+ * A `setInterval` wrapper for React. Calls `callback` every `delayMs`
+ * milliseconds. It restarts the timer when `delayMs` changes, and clears
+ * it when the component unmounts. Pass `delayMs: null` to pause without
+ * unmounting the hook. You don't need to memoize `callback` — the hook
+ * always uses the latest version, without resetting the timer.
  *
  * @example
  * ```tsx
@@ -13,8 +15,7 @@ import { useEffect, useRef } from "react";
  * ```
  */
 export const useInterval = (callback: () => void, delayMs: number | null): void => {
-  const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  const callbackRef = useLatestRef(callback);
 
   useEffect(() => {
     if (delayMs === null) {
@@ -22,5 +23,5 @@ export const useInterval = (callback: () => void, delayMs: number | null): void 
     }
     const id = setInterval(() => callbackRef.current(), delayMs);
     return () => clearInterval(id);
-  }, [delayMs]);
+  }, [callbackRef, delayMs]);
 };

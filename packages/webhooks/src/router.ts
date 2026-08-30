@@ -80,7 +80,7 @@ const runBeforeHooks = async (ctx: WebhookContext, hooks?: BeforeHook[]): Promis
   }
 
   for (const hook of hooks) {
-    // oxlint-disable-next-line react-doctor/async-await-in-loop -- False positive: before-hooks must run in registration order (a later hook may depend on an earlier one's side effect), and a throw from any hook must abort the remaining ones. Promise.all would run them concurrently and lose both properties.
+    // oxlint-disable-next-line react-doctor/async-await-in-loop -- false positive: before-hooks must run in the order they were added, because a later hook can depend on an earlier one. A throw must also stop the hooks that are left. Promise.all would run them at the same time and lose both rules.
     await hook(ctx);
   }
 };
@@ -96,7 +96,7 @@ const runAfterHooks = async (
   }
 
   for (const hook of hooks) {
-    // oxlint-disable-next-line react-doctor/async-await-in-loop -- False positive: same ordering/abort contract as runBeforeHooks above — after-hooks must run in registration order and a throw must abort the remaining ones.
+    // oxlint-disable-next-line react-doctor/async-await-in-loop -- false positive: same rules as runBeforeHooks above. After-hooks must run in the order they were added, and a throw must stop the hooks that are left.
     await hook(ctx, response);
   }
 };
@@ -137,7 +137,7 @@ const validatePayload = async <TPayload>(
   schema?: StandardSchemaV1<unknown, TPayload>,
 ): Promise<TPayload | Response> => {
   if (!schema) {
-    // SAFETY: No schema was provided, so the caller-declared `TPayload` is the route's only contract; there is nothing to validate against.
+    // SAFETY: no schema was given, so there is nothing to validate against. The `TPayload` type declared by the caller is the route's only contract.
     return parsedJson as TPayload;
   }
 

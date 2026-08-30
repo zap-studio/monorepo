@@ -1,28 +1,29 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useFullscreen } from "./use-fullscreen.ts";
 
-function setFullscreenSupport(supported: boolean) {
+const setFullscreenSupport = (supported: boolean) => {
   Object.defineProperty(document, "fullscreenEnabled", {
     configurable: true,
     value: supported,
   });
-}
+};
 
-function setFullscreenElement(element: Element | null) {
+const setFullscreenElement = (element: Element | null) => {
   Object.defineProperty(document, "fullscreenElement", {
     configurable: true,
     value: element,
   });
-}
+};
 
 afterEach(() => {
   setFullscreenSupport(true);
   setFullscreenElement(null);
 });
 
-describe(useFullscreen, () => {
+describe("useFullscreen", () => {
   it("reports supported: true when the Fullscreen API exists", () => {
     setFullscreenSupport(true);
 
@@ -42,8 +43,8 @@ describe(useFullscreen, () => {
 
   it("enter() requests fullscreen on the ref'd element", async () => {
     setFullscreenSupport(true);
-    const requestFullscreen = vi.fn(() => Promise.resolve());
-    const element = { requestFullscreen } as unknown as HTMLDivElement;
+    const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
+    const element = asTestDouble<HTMLDivElement>({ requestFullscreen });
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
@@ -65,7 +66,9 @@ describe(useFullscreen, () => {
 
   it("becomes fullscreen when fullscreenchange fires with the ref'd element active", async () => {
     setFullscreenSupport(true);
-    const element = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
+    const element = asTestDouble<HTMLDivElement>({
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    });
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
@@ -80,8 +83,12 @@ describe(useFullscreen, () => {
 
   it("becomes not fullscreen when a different element is active", async () => {
     setFullscreenSupport(true);
-    const element = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
-    const other = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
+    const element = asTestDouble<HTMLDivElement>({
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    });
+    const other = asTestDouble<HTMLDivElement>({
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    });
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
@@ -103,7 +110,7 @@ describe(useFullscreen, () => {
   it("exit() calls document.exitFullscreen() when this element is active", async () => {
     setFullscreenSupport(true);
     const element = document.createElement("div");
-    const exitFullscreen = vi.fn(() => Promise.resolve());
+    const exitFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitFullscreen", {
       configurable: true,
       value: exitFullscreen,
@@ -124,7 +131,7 @@ describe(useFullscreen, () => {
     setFullscreenSupport(true);
     const element = document.createElement("div");
     const other = document.createElement("div");
-    const exitFullscreen = vi.fn(() => Promise.resolve());
+    const exitFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitFullscreen", {
       configurable: true,
       value: exitFullscreen,
@@ -158,8 +165,8 @@ describe(useFullscreen, () => {
 
   it("toggle() enters when not fullscreen", async () => {
     setFullscreenSupport(true);
-    const requestFullscreen = vi.fn(() => Promise.resolve());
-    const element = { requestFullscreen } as unknown as HTMLDivElement;
+    const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
+    const element = asTestDouble<HTMLDivElement>({ requestFullscreen });
 
     const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
@@ -174,7 +181,7 @@ describe(useFullscreen, () => {
   it("toggle() exits when this element is fullscreen", async () => {
     setFullscreenSupport(true);
     const element = document.createElement("div");
-    const exitFullscreen = vi.fn(() => Promise.resolve());
+    const exitFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitFullscreen", {
       configurable: true,
       value: exitFullscreen,
@@ -193,7 +200,9 @@ describe(useFullscreen, () => {
 
   it("removes the fullscreenchange listener on unmount", async () => {
     setFullscreenSupport(true);
-    const element = { requestFullscreen: vi.fn() } as unknown as HTMLDivElement;
+    const element = asTestDouble<HTMLDivElement>({
+      requestFullscreen: vi.fn<() => Promise<void>>(),
+    });
 
     const { result, unmount } = renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDeviceOrientation } from "./use-device-orientation.ts";
 
-describe(useDeviceOrientation, () => {
+describe("useDeviceOrientation", () => {
   it("starts with all-null orientation and supported reflecting DeviceOrientationEvent", () => {
     const { result } = renderHook(() => useDeviceOrientation());
 
@@ -62,7 +62,7 @@ describe(useDeviceOrientation, () => {
   });
 
   it("resolves according to the iOS permission gate when present", async () => {
-    const requestPermission = vi.fn().mockResolvedValue("denied");
+    const requestPermission = vi.fn<() => Promise<"denied">>().mockResolvedValue("denied");
     Object.defineProperty(DeviceOrientationEvent, "requestPermission", {
       configurable: true,
       value: requestPermission,
@@ -78,10 +78,7 @@ describe(useDeviceOrientation, () => {
 
   it("reports supported: false when DeviceOrientationEvent is unavailable", () => {
     const original = window.DeviceOrientationEvent;
-    Object.defineProperty(window, "DeviceOrientationEvent", {
-      configurable: true,
-      value: undefined,
-    });
+    Reflect.deleteProperty(window, "DeviceOrientationEvent");
 
     const { result } = renderHook(() => useDeviceOrientation());
 

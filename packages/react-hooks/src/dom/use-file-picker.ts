@@ -1,10 +1,8 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   getFileSystemAccess,
   type DirectoryPickerOptions,
-  type FileSystemDirectoryHandle,
-  type FileSystemFileHandle,
   type OpenFilePickerOptions,
   type SaveFilePickerOptions,
 } from "./_file-system-access-api.ts";
@@ -27,12 +25,13 @@ const isAbortError = (error: unknown): boolean =>
   error instanceof Error && error.name === "AbortError";
 
 /**
- * Wraps the File System Access API — `showOpenFilePicker`/
- * `showSaveFilePicker`/`showDirectoryPicker` — Chromium-only, no Safari/
- * Firefox support yet; `supported: false` elsewhere and every method
- * resolves `undefined` without opening a dialog. Each method also resolves
- * `undefined` (rather than throwing) when the user dismisses the native
- * picker.
+ * Wraps the File System Access API: `showOpenFilePicker`,
+ * `showSaveFilePicker`, and `showDirectoryPicker`. This API only works in
+ * Chromium browsers, not yet in Safari or Firefox. Where it's not
+ * supported, `supported` is `false` and every method resolves `undefined`
+ * without opening a dialog. Each method also resolves `undefined` instead
+ * of throwing an error when the user closes the native picker without
+ * choosing anything.
  *
  * @example
  * ```tsx
@@ -97,5 +96,8 @@ export const useFilePicker = (): UseFilePickerResult => {
     [],
   );
 
-  return { showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported };
+  return useMemo(
+    () => ({ showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported }),
+    [showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported],
+  );
 };

@@ -22,12 +22,13 @@ const isTypeSupported = (mimeType: string): boolean =>
   isSupported() && MediaRecorder.isTypeSupported(mimeType);
 
 /**
- * Wraps the MediaStream Recording API around an existing `stream` — e.g.
- * one from `useUserMedia`/`useCamera`/`useScreenCapture`. Manual
- * `start()`/`stop()`/`pause()`/`resume()`; `blob` is assembled once
- * recording stops. `supported: false` — the SSR-safe default — where
- * `MediaRecorder` doesn't exist. `isTypeSupported(mimeType)` checks whether
- * a given MIME type can be recorded, false when unsupported.
+ * Wraps the MediaStream Recording API around an existing `stream` (for
+ * example, one from `useUserMedia`, `useCamera`, or `useScreenCapture`).
+ * You call `start()`, `stop()`, `pause()`, and `resume()` yourself. The
+ * `blob` is built once recording stops. `supported` is `false` by default
+ * (safe for server-side rendering) when `MediaRecorder` doesn't exist.
+ * `isTypeSupported(mimeType)` tells you if a given MIME type can be
+ * recorded.
  *
  * @example
  * ```tsx
@@ -44,7 +45,13 @@ export const useMediaRecorder = (
   const [blob, setBlob] = useState<Blob | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const recorderRef = useRef<MediaRecorder | null>(null);
+  const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   const start = useCallback((): void => {
     if (!isSupported() || !stream) {
@@ -54,25 +61,12 @@ export const useMediaRecorder = (
     setBlob(undefined);
     chunksRef.current = [];
 
-    const recorder = new MediaRecorder(stream, options);
-    recorder.addEventListener("dataavailable", (event: BlobEvent) => {
-      if (event.data.size > 0) {
-        chunksRef.current.push(event.data);
-      }
-    });
-    recorder.addEventListener("stop", () => {
-      setBlob(new Blob(chunksRef.current, { type: recorder.mimeType }));
-      setStatus("inactive");
-    });
-    recorder.addEventListener("error", () => {
-      setError(new Error("MediaRecorder encountered an error."));
-      setStatus("inactive");
-    });
-
-    recorder.start();
-    recorderRef.current = recorder;
+    const newRecorder = new MediaRecorder(stream, optionsRef.current);
+    newRecorder.start();
+    recorderRef.current = newRecorder;
+    setRecorder(newRecorder);
     setStatus("recording");
-  }, [stream, options]);
+  }, [stream]);
 
   const stop = useCallback((): void => {
     recorderRef.current?.stop();
@@ -91,6 +85,34 @@ export const useMediaRecorder = (
       setStatus("recording");
     }
   }, []);
+
+  useEffect(() => {
+    if (!recorder) {
+      return undefined;
+    }
+    const handleDataAvailable = (event: BlobEvent) => {
+      if (event.data.size > 0) {
+        chunksRef.current.push(event.data);
+      }
+    };
+    const handleStop = () => {
+      setBlob(new Blob(chunksRef.current, { type: recorder.mimeType }));
+      setStatus("inactive");
+    };
+    const handleError = () => {
+      setError(new Error("MediaRecorder encountered an error."));
+      setStatus("inactive");
+    };
+
+    recorder.addEventListener("dataavailable", handleDataAvailable);
+    recorder.addEventListener("stop", handleStop);
+    recorder.addEventListener("error", handleError);
+    return () => {
+      recorder.removeEventListener("dataavailable", handleDataAvailable);
+      recorder.removeEventListener("stop", handleStop);
+      recorder.removeEventListener("error", handleError);
+    };
+  }, [recorder]);
 
   useEffect(
     () => () => {

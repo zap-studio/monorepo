@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useMediaRecorder } from "./use-media-recorder.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useMediaRecorder(undefined);
   return supported ? "true" : "false";
-}
+};
 
-describe(useMediaRecorder, () => {
+describe("useMediaRecorder", () => {
   it("renders false on the server, before MediaRecorder can be read", () => {
     const html = renderToString(createElement(TestComponent));
 

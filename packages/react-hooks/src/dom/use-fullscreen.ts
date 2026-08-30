@@ -14,12 +14,13 @@ const isSupported = (): boolean =>
   typeof document !== "undefined" && Boolean(document.fullscreenEnabled);
 
 /**
- * Fullscreen API wrapper for a single ref'd element — attach `ref` to the
- * element (e.g. a video player container), then call `enter()`/`exit()`/
- * `toggle()` imperatively, typically from a click handler (the API
- * requires a user gesture). `isFullscreen` tracks whether that exact
- * element currently holds fullscreen, via `fullscreenchange`.
- * `supported: false` — the SSR-safe default — where the API doesn't exist.
+ * Wraps the Fullscreen API for a single element. Attach `ref` to the
+ * element (for example, a video player container), then call `enter()`,
+ * `exit()`, or `toggle()` — usually from a click handler, since the
+ * browser requires a user action to enter fullscreen. `isFullscreen`
+ * tracks whether that exact element is currently fullscreen. `supported`
+ * is `false` by default (safe for server rendering) where the API doesn't
+ * exist.
  *
  * @example
  * ```tsx
@@ -60,7 +61,7 @@ export const useFullscreen = <T extends Element = HTMLElement>(): UseFullscreenR
     }
 
     const handleFullscreenChange = () => {
-      setIsFullscreen(document.fullscreenElement === ref.current);
+      setIsFullscreen(ref.current !== null && document.fullscreenElement === ref.current);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);

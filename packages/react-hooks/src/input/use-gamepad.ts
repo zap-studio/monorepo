@@ -1,34 +1,29 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-/** One connected gamepad, as reported by `useGamepad`. */
-export interface GamepadInfo {
-  id: string;
-  index: number;
-  mapping: GamepadMappingType;
-}
+const EMPTY_GAMEPADS: Gamepad[] = [];
 
-const EMPTY_GAMEPADS: GamepadInfo[] = [];
-
-const readGamepads = (): GamepadInfo[] => {
+const readGamepads = (): Gamepad[] => {
   if (typeof navigator === "undefined" || typeof navigator.getGamepads !== "function") {
     return EMPTY_GAMEPADS;
   }
-  const pads: GamepadInfo[] = [];
+  const pads: Gamepad[] = [];
   for (const pad of navigator.getGamepads()) {
     if (pad) {
-      pads.push({ id: pad.id, index: pad.index, mapping: pad.mapping });
+      pads.push(pad);
     }
   }
   return pads;
 };
 
-const gamepadsEqual = (a: GamepadInfo[], b: GamepadInfo[]): boolean =>
-  a.length === b.length &&
-  a.every(
-    (pad, i) => pad.id === b[i]?.id && pad.index === b[i]?.index && pad.mapping === b[i]?.mapping,
-  );
+const COMPARED_FIELDS = ["id", "index", "mapping", "connected", "timestamp"] as const;
 
-const getServerSnapshot = (): GamepadInfo[] => EMPTY_GAMEPADS;
+const gamepadEqual = (a: Gamepad, b: Gamepad | undefined): boolean =>
+  COMPARED_FIELDS.every((field) => a[field] === b?.[field]);
+
+const gamepadsEqual = (a: Gamepad[], b: Gamepad[]): boolean =>
+  a.length === b.length && a.every((pad, i) => gamepadEqual(pad, b[i]));
+
+const getServerSnapshot = (): Gamepad[] => EMPTY_GAMEPADS;
 
 const subscribe = (onStoreChange: () => void) => {
   window.addEventListener("gamepadconnected", onStoreChange);
@@ -40,12 +35,15 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * Currently connected gamepads, via `navigator.getGamepads()`, updating on
- * `gamepadconnected`/`gamepaddisconnected`. Only exposes `id`/`index`/
- * `mapping` — live button/axis state requires polling on an animation
- * frame, out of scope for this hook. Falls back to `[]` during server
- * rendering, before the client subscribes, and where the Gamepad API is
- * unsupported.
+ * The gamepads currently connected, from `navigator.getGamepads()`.
+ * Updates when a gamepad connects or disconnects.
+ *
+ * The returned snapshot is re-read on every connect/disconnect event, but
+ * live button and joystick state still needs polling on an animation
+ * frame, which is outside what this hook does.
+ *
+ * Returns `[]` during server rendering, before the client subscribes,
+ * and where the Gamepad API isn't supported.
  *
  * @example
  * ```tsx
@@ -53,10 +51,10 @@ const subscribe = (onStoreChange: () => void) => {
  * const isControllerConnected = gamepads.length > 0;
  * ```
  */
-export const useGamepad = (): GamepadInfo[] => {
-  const cacheRef = useRef<GamepadInfo[]>(EMPTY_GAMEPADS);
+export const useGamepad = (): Gamepad[] => {
+  const cacheRef = useRef<Gamepad[]>(EMPTY_GAMEPADS);
 
-  const getSnapshot = useCallback((): GamepadInfo[] => {
+  const getSnapshot = useCallback((): Gamepad[] => {
     const next = readGamepads();
     if (!gamepadsEqual(cacheRef.current, next)) {
       cacheRef.current = next;

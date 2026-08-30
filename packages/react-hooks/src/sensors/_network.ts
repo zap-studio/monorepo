@@ -1,8 +1,9 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
+/** A small copy of the Network Information API's types, not declared elsewhere. */
 export interface NetworkInformation extends EventTarget {
   readonly downlink?: number;
-  // oxlint-disable-next-line sonarjs/max-union-size -- Models the NetworkInformation Web API's fixed effectiveType set; the 4 values are the whole spec, not something to shrink.
+  // oxlint-disable-next-line sonarjs/max-union-size -- these are the only 4 values that the NetworkInformation spec allows for effectiveType. We cannot make the list shorter.
   readonly effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
   readonly rtt?: number;
   readonly saveData?: boolean;
@@ -15,7 +16,7 @@ interface NavigatorWithConnection extends Navigator {
 /** The shape returned by `useNetworkState` (and `useOnlineStatus`'s `.online`). */
 export interface NetworkState {
   downlink?: number;
-  // oxlint-disable-next-line sonarjs/max-union-size -- Same fixed NetworkInformation effectiveType set as above.
+  // oxlint-disable-next-line sonarjs/max-union-size -- same fixed effectiveType values as above.
   effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
   online: boolean;
   rtt?: number;
@@ -27,7 +28,7 @@ const SERVER_SNAPSHOT: NetworkState = {
 };
 
 const getConnection = (): NetworkInformation | undefined =>
-  // SAFETY: NetworkInformation is an experimental Web API not declared in TypeScript's DOM lib; every caller reads its fields through optional chaining, so an unsupported browser (where `connection` is genuinely absent) degrades to `undefined` rather than throwing.
+  // SAFETY: connection is not declared on Navigator. Every caller reads its fields with optional chaining, so a browser without `connection` gives `undefined` instead of throwing.
   (navigator as NavigatorWithConnection).connection;
 
 const readNetworkState = (): NetworkState => {
@@ -62,14 +63,13 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * Shared `navigator.onLine` + `navigator.connection` subscription behind
- * `useOnlineStatus` and `useNetworkState`. Not itself a public hook — hook
- * files never import one another, so shared logic lives here (mirrors
- * `@zap-studio/retry`'s `_otel.ts` convention).
+ * Shared `navigator.onLine` and `navigator.connection` subscription used by
+ * `useOnlineStatus` and `useNetworkState`.
  *
- * Caches the snapshot object by field equality so unchanged reads return the
- * same reference — required by `useSyncExternalStore` to avoid re-rendering
- * (or looping) on every read.
+ * Caches the snapshot object and only replaces it when a field actually
+ * changes, so unchanged reads return the same object reference.
+ * `useSyncExternalStore` needs this to avoid re-rendering (or looping
+ * forever) on every read.
  */
 export const useNetworkSnapshot = (): NetworkState => {
   const cacheRef = useRef<NetworkState>(SERVER_SNAPSHOT);

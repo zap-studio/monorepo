@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
@@ -12,10 +12,12 @@ const ACTIVITY_EVENTS = [
 ] as const;
 
 /**
- * `true` once `timeoutMs` (default 60s) has passed without user activity
- * (mouse move/click, key press, touch, scroll, wheel), resetting to `false`
- * on the next activity. SSR-safe — returns `false` on the server and until
- * the first timeout elapses on the client.
+ * Returns `true` once `timeoutMs` (default 60 seconds) has passed with no
+ * user activity — mouse move, click, key press, touch, scroll, or wheel.
+ * Goes back to `false` on the next activity.
+ *
+ * Safe for server-side rendering: returns `false` on the server, and
+ * stays `false` on the client until the first timeout passes.
  *
  * @example
  * ```tsx
@@ -24,28 +26,34 @@ const ACTIVITY_EVENTS = [
  */
 export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const scheduleTimeout = useCallback(() => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(setIdle, timeoutMs, true);
+  }, [timeoutMs]);
+
+  const resetTimer = useCallback(() => {
+    setIdle(false);
+    scheduleTimeout();
+  }, [scheduleTimeout]);
 
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
+    scheduleTimeout();
+    return () => clearTimeout(timerRef.current);
+  }, [scheduleTimeout]);
 
-    const resetTimer = () => {
-      setIdle(false);
-      clearTimeout(timer);
-      timer = setTimeout(setIdle, timeoutMs, true);
-    };
-
+  useEffect(() => {
     for (const type of ACTIVITY_EVENTS) {
       window.addEventListener(type, resetTimer);
     }
-    timer = setTimeout(setIdle, timeoutMs, true);
 
     return () => {
-      clearTimeout(timer);
       for (const type of ACTIVITY_EVENTS) {
         window.removeEventListener(type, resetTimer);
       }
     };
-  }, [timeoutMs]);
+  }, [resetTimer]);
 
   return idle;
 };

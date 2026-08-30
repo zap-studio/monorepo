@@ -1,48 +1,18 @@
-/** Minimal shape of the Navigation API's `NavigationHistoryEntry`. */
-export interface NavigationHistoryEntry {
-  readonly url: string;
-}
-
-/** Minimal shape of the Navigation API's `NavigationDestination`. */
-export interface NavigationDestination {
-  readonly url: string;
-}
-
-/** Minimal shape of the Navigation API's `NavigateEvent`. */
-export interface NavigateEvent extends Event {
-  readonly canIntercept: boolean;
-  readonly destination: NavigationDestination;
-  readonly downloadRequest: string | null;
-  readonly hashChange: boolean;
-  intercept(options: { handler: () => Promise<void> }): void;
-}
-
-/** Minimal shape of the Navigation API's `window.navigation`. */
-export interface Navigation extends EventTarget {
-  readonly canGoBack: boolean;
-  readonly canGoForward: boolean;
-  readonly currentEntry: NavigationHistoryEntry | null;
-  entries(): NavigationHistoryEntry[];
-}
+/**
+ * `Navigation`, `NavigateEvent`, and `NavigationHistoryEntry` are ambient
+ * global types for the Navigation API — used bare, no import needed.
+ */
 
 /**
- * Shared `window.navigation` (Navigation API) accessor behind `useNavigation`
- * and `useNavigationBlocker`. Not itself a public hook — hook files never
- * import one another, so shared logic lives here (mirrors `@zap-studio/retry`'s
- * `_otel.ts` convention).
+ * Shared helper that reads `window.navigation`. Both `useNavigation` and
+ * `useNavigationBlocker` use this; it lives here instead of a hook file
+ * because hook files should never import from each other.
  *
- * The Navigation API is Chromium-only, and different supported TypeScript
- * versions disagree on whether (and how) `Window.navigation` is declared —
- * some don't declare it at all, others declare it as always-present. Casting
- * `window` to a small local shape (rather than an `interface extends
- * Window`) sidesteps both: it doesn't inherit — and so can't conflict with —
- * whatever `Window.navigation` typing a given lib.dom.d.ts snapshot has.
+ * The Navigation API only works in Chromium browsers (Chrome, Edge) —
+ * Safari and Firefox leave `window.navigation` `undefined` at runtime, so
+ * this function's return type widens back to `Navigation | undefined`.
  *
- * Only ever called client-side — from `useSyncExternalStore`'s `getSnapshot`
- * (never `getServerSnapshot`) and from inside `useEffect` — so, unlike a
- * public hook, this doesn't need its own `typeof window === "undefined"`
- * guard for SSR.
+ * Only ever called in the browser, never during server rendering, so it
+ * doesn't need its own `typeof window === "undefined"` check.
  */
-export const getNavigation = (): Navigation | undefined =>
-  // SAFETY: window.navigation is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
-  (window as { navigation?: Navigation }).navigation;
+export const getNavigation = (): Navigation | undefined => window.navigation;

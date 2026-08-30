@@ -4,7 +4,7 @@ import { runRetryPolicy } from "./base-policy.ts";
 import { AbortError } from "./errors.ts";
 import { fixedDelay } from "./fixed-delay.ts";
 
-describe(fixedDelay, () => {
+describe("fixedDelay", () => {
   it("retries with constant delay before max attempts", () => {
     const policy = fixedDelay({
       delayMs: 300,

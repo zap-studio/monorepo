@@ -13,15 +13,19 @@ import type { Actions, Resources } from "./types.ts";
 
 import { allow, createPolicy, mergePoliciesOr } from "./index.ts";
 
-function createSchema<T>(): StandardSchemaV1<T, T> {
+// SAFETY: one place to cast test doubles and fake fixtures to a type they do not
+// fully match. This keeps `as unknown as X` chains out of the test body.
+const asTestDouble = <T>(value: unknown): T => value as T;
+
+const createSchema = <T>(): StandardSchemaV1<T, T> => {
   return {
     "~standard": {
-      validate: (value: unknown) => ({ value: value as T }),
+      validate: (value: unknown) => ({ value: asTestDouble<T>(value) }),
       vendor: "test",
       version: 1,
     },
   };
-}
+};
 
 interface Post {
   authorId: string;

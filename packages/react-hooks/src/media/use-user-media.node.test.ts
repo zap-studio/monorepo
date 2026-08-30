@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useUserMedia } from "./use-user-media.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { status } = useUserMedia({ video: true });
   return status;
-}
+};
 
-describe(useUserMedia, () => {
+describe("useUserMedia", () => {
   it('renders "idle" on the server, before start() can be called', () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { usePreferredLanguage } from "./use-preferred-language.ts";
 
-function setNavigatorLanguage(language: string, languages: readonly string[]) {
+const setNavigatorLanguage = (language: string, languages: readonly string[]) => {
   Object.defineProperty(navigator, "language", {
     configurable: true,
     get: () => language,
@@ -12,9 +12,9 @@ function setNavigatorLanguage(language: string, languages: readonly string[]) {
     configurable: true,
     get: () => languages,
   });
-}
+};
 
-describe(usePreferredLanguage, () => {
+describe("usePreferredLanguage", () => {
   it("reports navigator.language and navigator.languages", () => {
     setNavigatorLanguage("fr-FR", ["fr-FR", "en-US"]);
 

@@ -2,6 +2,7 @@ import { act, render, renderHook } from "@testing-library/react";
 import { createContext, createElement, useContext, useRef, useState } from "react";
 import { describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useUnstableRenderReason, type RenderReason } from "./use-unstable-render-reason.ts";
 
 const TestContext = createContext("default");
@@ -11,9 +12,9 @@ interface ChildHandle {
   setCount: (value: number) => void;
 }
 
-function renderChild(props: { label: string }) {
+const renderChild = (props: { label: string }) => {
   let latest!: ChildHandle;
-  function Child({ label }: { label: string }) {
+  const Child = ({ label }: { label: string }) => {
     const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
     // A non-dispatch-capable hook (no `.queue`) called after useUnstableRenderReason, alongside the useState below — exercises both sides of collectStateHookValues' per-node filter.
     useRef(null);
@@ -21,7 +22,7 @@ function renderChild(props: { label: string }) {
     const contextValue = useContext(TestContext);
     latest = { reason, setCount };
     return createElement("div", { ref }, `${label}-${count}-${contextValue}`);
-  }
+  };
 
   const { rerender } = render(createElement(Child, props));
   return {
@@ -30,16 +31,16 @@ function renderChild(props: { label: string }) {
     },
     rerender: (nextProps: { label: string }) => rerender(createElement(Child, nextProps)),
   };
-}
+};
 
-function renderChildWithContext(props: { label: string }, contextValue: string) {
+const renderChildWithContext = (props: { label: string }, contextValue: string) => {
   let latest!: ChildHandle;
-  function Child({ label }: { label: string }) {
+  const Child = ({ label }: { label: string }) => {
     const { reason, ref } = useUnstableRenderReason<HTMLDivElement>();
     const value = useContext(TestContext);
     latest = { reason, setCount: () => {} };
     return createElement("div", { ref }, `${label}-${value}`);
-  }
+  };
 
   const wrap = (elementProps: { label: string }, value: string) =>
     createElement(TestContext.Provider, { value }, createElement(Child, elementProps));
@@ -52,9 +53,9 @@ function renderChildWithContext(props: { label: string }, contextValue: string) 
     rerender: (nextProps: { label: string }, nextContextValue: string) =>
       rerender(wrap(nextProps, nextContextValue)),
   };
-}
+};
 
-describe(useUnstableRenderReason, () => {
+describe("useUnstableRenderReason", () => {
   it("classifies a hook with no attached ref as unknown", () => {
     const { result } = renderHook(() => useUnstableRenderReason());
 
@@ -106,14 +107,16 @@ describe(useUnstableRenderReason, () => {
   });
 
   it("fails closed to unknown when reading the internal shape throws", () => {
-    const throwing = new Proxy(
-      {},
-      {
-        ownKeys() {
-          throw new Error("boom");
+    const throwing = asTestDouble<HTMLDivElement>(
+      new Proxy(
+        {},
+        {
+          ownKeys() {
+            throw new Error("boom");
+          },
         },
-      },
-    ) as unknown as HTMLDivElement;
+      ),
+    );
 
     const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
     result.current.ref.current = throwing;
@@ -148,12 +151,12 @@ describe(useUnstableRenderReason, () => {
       return: null,
       type: "div",
     };
-    const element = document.createElement("div") as unknown as Record<string, unknown>;
+    const element = asTestDouble<Record<string, unknown>>(document.createElement("div"));
 
     const { rerender, result } = renderHook(() => useUnstableRenderReason<HTMLDivElement>());
 
     element["__reactFiber$fake"] = nullPropsFiber;
-    result.current.ref.current = element as unknown as HTMLDivElement;
+    result.current.ref.current = asTestDouble<HTMLDivElement>(element);
     rerender();
     expect(result.current.reason).toBe("mount");
 

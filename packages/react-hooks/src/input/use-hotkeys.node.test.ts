@@ -4,12 +4,12 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useHotkeys } from "./use-hotkeys.ts";
 
-function TestComponent() {
-  useHotkeys({ "ctrl+s": vi.fn() });
+const TestComponent = () => {
+  useHotkeys({ "ctrl+s": vi.fn<() => void>() });
   return "rendered";
-}
+};
 
-describe(useHotkeys, () => {
+describe("useHotkeys", () => {
   it("renders on the server without touching window", () => {
     const html = renderToString(createElement(TestComponent));
 

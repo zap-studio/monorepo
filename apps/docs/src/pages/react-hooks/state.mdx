@@ -56,18 +56,18 @@ const throttledScrollY = useThrottledValue(scrollY, 200);
 
 ## useLocalStorage
 
-State synced to [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) under a key, JSON-serialized. Reads the stored value on mount, falling back to the initial value when nothing's stored or the stored JSON is malformed, and syncs across same-origin tabs via the `storage` event. Storage read/write failures (quota exceeded, private browsing) are swallowed — state still updates in-memory.
+State synced to [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) under a key, JSON-serialized. Reads the stored value on mount, falling back to the initial value when nothing's stored or the stored JSON is malformed, and syncs across same-origin tabs via the `storage` event. Storage read/write/remove failures (quota exceeded, private browsing) still update state in-memory and are returned as the 4th tuple element (`null` otherwise).
 
 ```tsx
-const [theme, setTheme, clearTheme] = useLocalStorage("theme", "light");
+const [theme, setTheme, clearTheme, themeError] = useLocalStorage("theme", "light");
 ```
 
 ## useSessionStorage
 
-State synced to [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) under a key, JSON-serialized — the same read/fallback/error-swallowing behavior as `useLocalStorage`, minus cross-tab sync, since `sessionStorage` is already scoped to a single tab.
+State synced to [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) under a key, JSON-serialized — the same read/fallback/error behavior as `useLocalStorage`, minus cross-tab sync, since `sessionStorage` is already scoped to a single tab.
 
 ```tsx
-const [draft, setDraft, clearDraft] = useSessionStorage("draft", "");
+const [draft, setDraft, clearDraft, draftError] = useSessionStorage("draft", "");
 ```
 
 ## useIndexedDB
@@ -197,6 +197,16 @@ Cross-origin window/iframe/popup communication via the [`message`/`messageerror`
 ```tsx
 const { lastMessage, postMessage } = useWindowMessage<string>("https://trusted.example");
 postMessage(iframeRef.current!.contentWindow!, "hello", "https://trusted.example");
+```
+
+## useCredential
+
+Wraps the [Credential Management API](https://developer.mozilla.org/en-US/docs/Web/API/Credential_Management_API) (`navigator.credentials`) — the browser's native store for WebAuthn (public-key) credentials, the only credential type still typed by TypeScript's DOM lib (Password/Federated Credential support was dropped from both browsers and types). Every method resolves `undefined` where the API is unsupported; `get()`/`create()` still resolve `null` the way the underlying API does, when there's no credential to return.
+
+```tsx
+const { get, store, supported } = useCredential();
+const credential = supported ? await get({ publicKey: requestOptions }) : undefined;
+if (credential) await store(credential);
 ```
 
 ## See Also

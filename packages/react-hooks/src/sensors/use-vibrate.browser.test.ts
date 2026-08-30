@@ -3,11 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useVibrate } from "./use-vibrate.ts";
 
-function setNavigatorVibrate(vibrate: ((pattern: VibratePattern) => boolean) | undefined) {
+const setNavigatorVibrate = (vibrate: ((pattern: VibratePattern) => boolean) | undefined) => {
   Object.defineProperty(navigator, "vibrate", { configurable: true, value: vibrate });
-}
+};
 
-describe(useVibrate, () => {
+describe("useVibrate", () => {
   it("reports supported: true when navigator.vibrate exists", () => {
     setNavigatorVibrate(vi.fn(() => true));
 
@@ -25,7 +25,7 @@ describe(useVibrate, () => {
   });
 
   it("calls navigator.vibrate with the given pattern and returns its result", () => {
-    const vibrate = vi.fn(() => true);
+    const vibrate = vi.fn<() => boolean>(() => true);
     setNavigatorVibrate(vibrate);
 
     const { result } = renderHook(() => useVibrate());

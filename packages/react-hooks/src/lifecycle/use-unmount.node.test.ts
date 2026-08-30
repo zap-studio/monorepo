@@ -4,13 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useUnmount } from "./use-unmount.ts";
 
-describe(useUnmount, () => {
+describe("useUnmount", () => {
   it("does not call the cleanup during server rendering", () => {
-    const cleanup = vi.fn();
-    function TestComponent() {
+    const cleanup = vi.fn<() => void>();
+    const TestComponent = () => {
       useUnmount(cleanup);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

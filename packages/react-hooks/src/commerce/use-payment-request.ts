@@ -18,15 +18,18 @@ export interface UsePaymentRequestResult {
 const isSupported = (): boolean => typeof PaymentRequest !== "undefined";
 
 /**
- * Wraps the Payment Request API — shows the browser/OS's native payment
- * sheet for the given payment method data and details, resolving with the
- * user's `PaymentResponse` once they authorize it. Callers are
- * responsible for calling `response.complete("success" | "fail")` once
- * their own backend confirms the charge — this hook only tracks whether
- * the sheet itself completed or was cancelled/errored, not whether the
- * charge succeeded. `supported: false` — the SSR-safe default — where the
- * Payment Request API doesn't exist, and `pay()` then resolves
- * `undefined` without throwing.
+ * Wraps the browser's Payment Request API. It shows the native payment
+ * sheet for the given payment method and details, and resolves with the
+ * user's `PaymentResponse` once they approve it.
+ *
+ * You must call `response.complete("success" | "fail")` yourself once
+ * your backend confirms the charge. This hook only tracks whether the
+ * payment sheet closed or errored, not whether the charge actually
+ * succeeded.
+ *
+ * `supported` is `false` by default (safe for server-side rendering) and
+ * stays `false` where the Payment Request API doesn't exist. In that
+ * case, `pay()` resolves `undefined` instead of throwing.
  *
  * @example
  * ```tsx

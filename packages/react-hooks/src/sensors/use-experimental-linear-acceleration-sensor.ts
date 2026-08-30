@@ -1,0 +1,60 @@
+import {
+  type GenericSensorInstance,
+  type GenericSensorOptions,
+  useGenericSensor,
+  type UseGenericSensorResult,
+} from "./_generic-sensor-api.ts";
+
+export type { GenericSensorOptions } from "./_generic-sensor-api.ts";
+
+interface LinearAccelerationSensorInstance extends GenericSensorInstance {
+  readonly x: number | null;
+  readonly y: number | null;
+  readonly z: number | null;
+}
+
+/** The reading from `useExperimentalLinearAccelerationSensor`. Acceleration in m/s² along each axis, without gravity. */
+export interface LinearAccelerationReading {
+  x: number | null;
+  y: number | null;
+  z: number | null;
+}
+
+const readLinearAcceleration = (
+  sensor: LinearAccelerationSensorInstance,
+): LinearAccelerationReading => ({
+  x: sensor.x,
+  y: sensor.y,
+  z: sensor.z,
+});
+
+/** The shape returned by `useExperimentalLinearAccelerationSensor`. */
+export type UseExperimentalLinearAccelerationSensorResult =
+  UseGenericSensorResult<LinearAccelerationReading>;
+
+/**
+ * Reads the device's `LinearAccelerationSensor`. This is experimental,
+ * only works in Chrome, needs the `"accelerometer"` permission, and needs
+ * a secure (HTTPS) page. Reports acceleration along the device's x/y/z
+ * axes, in m/s², with gravity removed. Unlike
+ * `useExperimentalAccelerometer`, gravity is not included here.
+ *
+ * Call `start()` to create the sensor and start getting readings. If a
+ * permission is blocked or denied, you see that in `error` instead of a
+ * thrown error. `reading` stays `undefined` until the first reading
+ * arrives, which is safe for server-side rendering.
+ *
+ * @example
+ * ```tsx
+ * const { reading, supported, start } = useExperimentalLinearAccelerationSensor({ frequency: 60 });
+ * <button onClick={start} disabled={!supported}>Enable linear acceleration</button>
+ * ```
+ */
+export const useExperimentalLinearAccelerationSensor = (
+  options?: GenericSensorOptions,
+): UseExperimentalLinearAccelerationSensorResult =>
+  useGenericSensor<LinearAccelerationSensorInstance, LinearAccelerationReading>(
+    "LinearAccelerationSensor",
+    readLinearAcceleration,
+    options,
+  );

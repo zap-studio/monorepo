@@ -1,5 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
+import { useTrackedRefElement } from "../lifecycle/_tracked-ref-element.ts";
+
 /** The shape returned by `usePopover`. */
 export interface UsePopoverResult<T extends HTMLElement> {
   hide: () => void;
@@ -14,12 +16,20 @@ const isSupported = (): boolean =>
   typeof HTMLElement !== "undefined" && typeof HTMLElement.prototype.togglePopover === "function";
 
 /**
- * Wraps the native Popover API (2024+ baseline) for a single ref'd
- * element — attach `ref` to the element carrying the `popover` attribute,
- * then call `show()`/`hide()`/`toggle()` imperatively. `isOpen` tracks the
- * element's open state via its own `toggle` event, so it also stays in
- * sync when the browser closes the popover itself (light-dismiss, Esc).
- * `supported: false` — the SSR-safe default — where the API doesn't exist.
+ * Wraps the browser's built-in Popover API for a single ref'd element.
+ * Attach `ref` to the element that has the `popover` attribute, then call
+ * `show()`, `hide()`, or `toggle()` to control it.
+ *
+ * `isOpen` tracks whether the popover is open by listening to its own
+ * `toggle` event. This keeps `isOpen` correct even when the browser
+ * closes the popover on its own (for example, clicking outside it or
+ * pressing Esc). `supported` is `false` on browsers without this API, and
+ * also as the safe default during server-side rendering.
+ *
+ * The hook checks `ref` again after every render. This matters for
+ * popovers used in menus, which are often only rendered while open — the
+ * hook still picks them up right away, instead of leaving `isOpen` stuck
+ * at `false`.
  *
  * @example
  * ```tsx
@@ -47,20 +57,20 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
     ref.current?.togglePopover();
   }, []);
 
+  const element = useTrackedRefElement(ref);
+
   useEffect(() => {
-    const element = ref.current;
     if (!isSupported() || !element) {
       return undefined;
     }
 
-    const handleToggle = (event: Event) => {
-      // SAFETY: addEventListener types "toggle" as the generic Event, but the popover element only ever dispatches ToggleEvent for it.
-      setIsOpen((event as ToggleEvent).newState === "open");
+    const handleToggle = (event: ToggleEvent) => {
+      setIsOpen(event.newState === "open");
     };
 
     element.addEventListener("toggle", handleToggle);
     return () => element.removeEventListener("toggle", handleToggle);
-  }, []);
+  }, [element]);
 
   return { hide, isOpen, ref, show, supported, toggle };
 };

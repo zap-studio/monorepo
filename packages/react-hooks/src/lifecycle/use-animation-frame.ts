@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Declarative `requestAnimationFrame` loop — calls `callback` every frame
- * with the delta time (ms) since the previous one, skipping the very
- * first frame (no delta to report yet). Auto-cancels on unmount or when
- * `enabled` becomes `false`. `callback` doesn't need to be memoized — the
- * latest one is always called, without restarting the loop.
+ * Runs `callback` on every animation frame, using `requestAnimationFrame`.
+ * It passes the time (in ms) since the last frame. The first frame is
+ * skipped because there is no previous time yet. The loop stops
+ * automatically when the component unmounts or when `enabled` becomes
+ * `false`. You don't need to memoize `callback` — the hook always uses
+ * the latest version, without restarting the loop.
  *
  * @example
  * ```tsx
@@ -14,7 +15,9 @@ import { useEffect, useRef } from "react";
  */
 export const useAnimationFrame = (callback: (deltaMs: number) => void, enabled = true): void => {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
   const previousTimeRef = useRef<number | null>(null);
   const frameRef = useRef<number>(0);
 

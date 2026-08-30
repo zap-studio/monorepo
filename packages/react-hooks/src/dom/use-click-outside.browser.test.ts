@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useClickOutside } from "./use-click-outside.ts";
 
-describe(useClickOutside, () => {
+describe("useClickOutside", () => {
   it("calls onOutside when a mousedown lands outside the ref'd element", () => {
-    const onOutside = vi.fn();
+    const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     const outside = document.createElement("span");
     document.body.append(inside, outside);
@@ -21,7 +21,7 @@ describe(useClickOutside, () => {
   });
 
   it("does not call onOutside when the mousedown lands inside the ref'd element", () => {
-    const onOutside = vi.fn();
+    const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     const child = document.createElement("span");
     inside.append(child);
@@ -37,7 +37,7 @@ describe(useClickOutside, () => {
   });
 
   it("reacts to touchstart the same way", () => {
-    const onOutside = vi.fn();
+    const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     const outside = document.createElement("span");
     document.body.append(inside, outside);
@@ -53,7 +53,7 @@ describe(useClickOutside, () => {
   });
 
   it("ignores events when the ref is not attached to any element", () => {
-    const onOutside = vi.fn();
+    const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
 
     document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
@@ -62,7 +62,7 @@ describe(useClickOutside, () => {
   });
 
   it("ignores events whose target is not a Node", () => {
-    const onOutside = vi.fn();
+    const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     document.body.append(inside);
 
@@ -78,8 +78,8 @@ describe(useClickOutside, () => {
   });
 
   it("calls the latest onOutside without re-subscribing", () => {
-    const first = vi.fn();
-    const second = vi.fn();
+    const first = vi.fn<(event: MouseEvent | TouchEvent) => void>();
+    const second = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const outside = document.createElement("span");
     document.body.append(outside);
 
@@ -99,7 +99,7 @@ describe(useClickOutside, () => {
   });
 
   it("removes the listeners on unmount", () => {
-    const onOutside = vi.fn();
+    const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const outside = document.createElement("span");
     document.body.append(outside);
 

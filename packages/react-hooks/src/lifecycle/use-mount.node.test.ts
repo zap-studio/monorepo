@@ -4,13 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useMount } from "./use-mount.ts";
 
-describe(useMount, () => {
+describe("useMount", () => {
   it("does not call the effect during server rendering", () => {
-    const effect = vi.fn();
-    function TestComponent() {
+    const effect = vi.fn<() => void>();
+    const TestComponent = () => {
       useMount(effect);
       return "rendered";
-    }
+    };
 
     const html = renderToString(createElement(TestComponent));
 

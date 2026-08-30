@@ -1,10 +1,16 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePermission } from "./use-permission.ts";
 
-function createPermissionStatusMock(initialState: PermissionState) {
-  const status = new EventTarget() as unknown as PermissionStatus;
+/** `renderHook` props for the re-query test, typed so a later `rerender` can pass another name. */
+interface PermissionNameProps {
+  name: PermissionName;
+}
+
+const createPermissionStatusMock = (initialState: PermissionState) => {
+  const status = asTestDouble<PermissionStatus>(new EventTarget());
   let state = initialState;
 
   Object.defineProperty(status, "state", { configurable: true, get: () => state });
@@ -16,18 +22,18 @@ function createPermissionStatusMock(initialState: PermissionState) {
     },
     status,
   };
-}
+};
 
-function setNavigatorPermissions(
+const setNavigatorPermissions = (
   query: ((descriptor: PermissionDescriptor) => Promise<PermissionStatus>) | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "permissions", {
     configurable: true,
     value: query ? { query } : undefined,
   });
-}
+};
 
-describe(usePermission, () => {
+describe("usePermission", () => {
   it("starts undefined before the query resolves", () => {
     setNavigatorPermissions(() => new Promise(() => {}));
 
@@ -60,20 +66,18 @@ describe(usePermission, () => {
   });
 
   it("queries again when the permission name changes", async () => {
-    const query = vi.fn((_descriptor: PermissionDescriptor) =>
-      Promise.resolve(
-        createPermissionStatusMock("granted").status as PermissionStatus & { name: string },
-      ),
+    const query = vi.fn<(_descriptor: PermissionDescriptor) => Promise<PermissionStatus>>(
+      (_descriptor: PermissionDescriptor) =>
+        Promise.resolve(createPermissionStatusMock("granted").status),
     );
     setNavigatorPermissions(query);
 
-    const { rerender } = renderHook(({ name }) => usePermission(name), {
-      initialProps: { name: "geolocation" as PermissionName },
-    });
+    const initialProps: PermissionNameProps = { name: "geolocation" };
+    const { rerender } = renderHook(({ name }) => usePermission(name), { initialProps });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
 
-    rerender({ name: "camera" as PermissionName });
+    rerender({ name: "camera" });
 
     await waitFor(() => expect(query).toHaveBeenCalledTimes(2));
     expect(query.mock.calls[1]?.[0]).toEqual({ name: "camera" });

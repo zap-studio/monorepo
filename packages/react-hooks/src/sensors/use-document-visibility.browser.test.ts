@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 
 import { useDocumentVisibility } from "./use-document-visibility.ts";
 
-function setDocumentVisibility(state: DocumentVisibilityState) {
+const setDocumentVisibility = (state: DocumentVisibilityState) => {
   Object.defineProperty(document, "visibilityState", {
     configurable: true,
     get: () => state,
   });
-}
+};
 
-describe(useDocumentVisibility, () => {
+describe("useDocumentVisibility", () => {
   it("reports the current document.visibilityState", () => {
     setDocumentVisibility("hidden");
 

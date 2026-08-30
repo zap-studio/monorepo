@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useIsClient } from "./use-is-client.ts";
+
 /** The shape returned by `useStorageEstimate`. */
 export interface StorageEstimateState {
   quota?: number;
@@ -10,13 +12,17 @@ export interface StorageEstimateState {
 const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.storage?.estimate === "function";
 
-const INITIAL_STATE: StorageEstimateState = { supported: false };
+interface EstimateData {
+  quota?: number;
+  usage?: number;
+}
 
 /**
- * `navigator.storage.estimate()`'s `usage`/`quota`, one-shot on mount — no
- * live updates, no refresh. `supported` reflects whether the Storage API is
- * available; `{ supported: false }` — the SSR-safe default — where it
- * isn't.
+ * Reads `usage` and `quota` from `navigator.storage.estimate()` once, when
+ * the component mounts. It does not update or refresh after that.
+ * `supported` tells you if the Storage API is available. The default
+ * value, `{ supported: false }`, is also what you get when the API isn't
+ * available.
  *
  * @example
  * ```tsx
@@ -24,15 +30,14 @@ const INITIAL_STATE: StorageEstimateState = { supported: false };
  * ```
  */
 export const useStorageEstimate = (): StorageEstimateState => {
-  const [state, setState] = useState<StorageEstimateState>(INITIAL_STATE);
+  const isClient = useIsClient();
+  const supported = isClient && isSupported();
+  const [data, setData] = useState<EstimateData>({});
 
   useEffect(() => {
-    if (!isSupported()) {
-      setState({ supported: false });
+    if (!supported) {
       return undefined;
     }
-
-    setState({ supported: true });
 
     let cancelled = false;
 
@@ -41,9 +46,8 @@ export const useStorageEstimate = (): StorageEstimateState => {
       if (cancelled) {
         return;
       }
-      setState({
+      setData({
         ...(estimate.quota !== undefined && { quota: estimate.quota }),
-        supported: true,
         ...(estimate.usage !== undefined && { usage: estimate.usage }),
       });
     };
@@ -53,7 +57,7 @@ export const useStorageEstimate = (): StorageEstimateState => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [supported]);
 
-  return state;
+  return { ...data, supported };
 };

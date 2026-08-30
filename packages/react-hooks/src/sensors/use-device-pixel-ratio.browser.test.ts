@@ -1,17 +1,18 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useDevicePixelRatio } from "./use-device-pixel-ratio.ts";
 
-function setDevicePixelRatio(value: number) {
+const setDevicePixelRatio = (value: number) => {
   Object.defineProperty(window, "devicePixelRatio", { configurable: true, value });
-}
+};
 
-function createMatchMediaMock() {
+const createMatchMediaMock = () => {
   const lists: { query: string; matchMediaList: MediaQueryList; listener?: () => void }[] = [];
 
-  const matchMedia = vi.fn((query: string) => {
-    const list = {
+  const matchMedia = vi.fn<(query: string) => MediaQueryList>((query: string) => {
+    const list = asTestDouble<MediaQueryList>({
       addEventListener: (_type: "change", listener: () => void) => {
         const entry = lists.find((item) => item.matchMediaList === list);
         if (entry) {
@@ -19,7 +20,7 @@ function createMatchMediaMock() {
         }
       },
       removeEventListener: () => {},
-    } as unknown as MediaQueryList;
+    });
     lists.push({ matchMediaList: list, query });
     return list;
   });
@@ -31,9 +32,9 @@ function createMatchMediaMock() {
     },
     matchMedia,
   };
-}
+};
 
-describe(useDevicePixelRatio, () => {
+describe("useDevicePixelRatio", () => {
   it("reports the current window.devicePixelRatio", () => {
     setDevicePixelRatio(2);
     const { matchMedia } = createMatchMediaMock();

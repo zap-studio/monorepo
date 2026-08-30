@@ -1,8 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { Navigation, NavigationHistoryEntry } from "./_navigation-api.ts";
-
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useNavigation } from "./use-navigation.ts";
 
 interface MockState {
@@ -12,7 +11,7 @@ interface MockState {
   entries: NavigationHistoryEntry[];
 }
 
-function createNavigationMock(initial: MockState) {
+const createNavigationMock = (initial: MockState) => {
   const target = new EventTarget();
   let state = { ...initial };
 
@@ -22,7 +21,7 @@ function createNavigationMock(initial: MockState) {
     currentEntry: { configurable: true, get: () => state.currentEntry },
     entries: { configurable: true, value: () => state.entries },
   });
-  const nav = target as unknown as Navigation;
+  const nav = asTestDouble<Navigation>(target);
 
   return {
     nav,
@@ -31,20 +30,20 @@ function createNavigationMock(initial: MockState) {
       nav.dispatchEvent(new Event("currententrychange"));
     },
   };
-}
+};
 
-function setWindowNavigation(nav: Navigation | undefined) {
+const setWindowNavigation = (nav: Navigation | undefined) => {
   Object.defineProperty(window, "navigation", {
     configurable: true,
     get: () => nav,
   });
-}
+};
 
-function fakeEntry(url: string): NavigationHistoryEntry {
-  return { url } as unknown as NavigationHistoryEntry;
-}
+const fakeEntry = (url: string): NavigationHistoryEntry => {
+  return asTestDouble<NavigationHistoryEntry>({ url });
+};
 
-describe(useNavigation, () => {
+describe("useNavigation", () => {
   it("reports the current navigation state", () => {
     const entryA = fakeEntry("/a");
     const { nav } = createNavigationMock({

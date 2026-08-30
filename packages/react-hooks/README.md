@@ -44,64 +44,78 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Sensors (`sensors/`)
 
-| Hook                        | What it does                                                                             |
-| --------------------------- | ---------------------------------------------------------------------------------------- |
-| `useMediaQuery`             | Matches the viewport against an arbitrary CSS media query string                         |
-| `useIsMobile`               | `true` below a breakpoint (768px by default) — built on `useMediaQuery`                  |
-| `useIsClient`               | `true` only after the client has mounted — SSR hydration guard                           |
-| `useIsServer`               | `true` only during server rendering — the inverse of `useIsClient`                       |
-| `useColorScheme`            | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`                               |
-| `usePrefersDarkMode`        | Boolean shorthand for `useColorScheme() === "dark"`                                      |
-| `useOnlineStatus`           | Tracks `navigator.onLine`, updating on `online`/`offline` events                         |
-| `useNetworkState`           | `useOnlineStatus` plus `navigator.connection` info where supported                       |
-| `usePreferredLanguage`      | `navigator.language`/`navigator.languages`, updating on `languagechange`                 |
-| `useOrientation`            | `screen.orientation`'s `angle`/`type`, updating on orientation change                    |
-| `useGeolocation`            | Wraps `navigator.geolocation`; one-shot by default, `watch: true` for continuous updates |
-| `useBattery`                | Wraps the Battery Status API (Chromium-only); `supported: false` elsewhere               |
-| `useWindowSize`             | `window.innerWidth`/`innerHeight`, updating on `resize`                                  |
-| `useDocumentVisibility`     | `document.visibilityState`, updating on `visibilitychange`                               |
-| `usePageLeave`              | Calls a handler when the pointer leaves the viewport — exit-intent UI                    |
-| `useShare`                  | Wraps the Web Share API (`navigator.share`), with `canShare` feature-detection           |
-| `usePermission`             | `navigator.permissions.query({ name })`'s state for a given permission                   |
-| `useVibrate`                | Wraps `navigator.vibrate()` — mostly Android Chrome; no-op elsewhere                     |
-| `useWakeLock`               | Screen Wake Lock; auto-released on tab hide/unmount                                      |
-| `useStorageEstimate`        | `navigator.storage.estimate()`'s `usage`/`quota`, one-shot on mount                      |
-| `useDeviceCapabilities`     | `navigator.hardwareConcurrency`/`deviceMemory` (latter Chromium-only)                    |
-| `useDeviceOrientation`      | Accelerometer/magnetometer tilt; iOS requires a `requestPermission()` gesture            |
-| `useDeviceMotion`           | Accelerometer motion; same iOS permission caveat as `useDeviceOrientation`               |
-| `useVisualViewport`         | `window.visualViewport`; captures on-screen-keyboard shrink `innerHeight` misses         |
-| `useDevicePixelRatio`       | `window.devicePixelRatio`, updating on zoom/monitor moves                                |
-| `useTouchSupport`           | `true` when `navigator.maxTouchPoints > 0`                                               |
-| `useUserAgentData`          | `navigator.userAgentData`'s low-entropy fields — structured `navigator.userAgent`        |
-| `useCookieEnabled`          | `navigator.cookieEnabled`                                                                |
-| `useVirtualKeyboard`        | `navigator.virtualKeyboard`'s bounding rect (Chromium-only)                              |
-| `usePrintMode`              | `true` while printing, via the `print` media query                                       |
-| `useNotificationPermission` | Notifications API permission state + a `notify()` trigger                                |
-| `useFontsReady`             | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts             |
+| Hook                                       | What it does                                                                                                          |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `useMediaQuery`                            | Matches the viewport against an arbitrary CSS media query string                                                      |
+| `useIsMobile`                              | `true` below a breakpoint (768px by default) — built on `useMediaQuery`                                               |
+| `useIsClient`                              | `true` only after the client has mounted — SSR hydration guard                                                        |
+| `useIsServer`                              | `true` only during server rendering — the inverse of `useIsClient`                                                    |
+| `useColorScheme`                           | `"dark"` or `"light"`, from `(prefers-color-scheme: dark)`                                                            |
+| `usePrefersDarkMode`                       | Boolean shorthand for `useColorScheme() === "dark"`                                                                   |
+| `useOnlineStatus`                          | Tracks `navigator.onLine`, updating on `online`/`offline` events                                                      |
+| `useNetworkState`                          | `useOnlineStatus` plus `navigator.connection` info where supported                                                    |
+| `usePreferredLanguage`                     | `navigator.language`/`navigator.languages`, updating on `languagechange`                                              |
+| `useOrientation`                           | `screen.orientation`'s `angle`/`type`, updating on orientation change                                                 |
+| `useGeolocation`                           | Wraps `navigator.geolocation`; one-shot by default, `watch: true` for continuous updates                              |
+| `useBattery`                               | Wraps the Battery Status API (Chromium-only); `supported: false` elsewhere                                            |
+| `useWindowSize`                            | `window.innerWidth`/`innerHeight`, updating on `resize`                                                               |
+| `useDocumentVisibility`                    | `document.visibilityState`, updating on `visibilitychange`                                                            |
+| `usePageLeave`                             | Calls a handler when the pointer leaves the viewport — exit-intent UI                                                 |
+| `useShare`                                 | Wraps the Web Share API (`navigator.share`), with `canShare` feature-detection                                        |
+| `usePermission`                            | `navigator.permissions.query({ name })`'s state for a given permission                                                |
+| `useVibrate`                               | Wraps `navigator.vibrate()` — mostly Android Chrome; no-op elsewhere                                                  |
+| `useWakeLock`                              | Screen Wake Lock; auto-released on tab hide/unmount                                                                   |
+| `useStorageEstimate`                       | `navigator.storage.estimate()`'s `usage`/`quota`, one-shot on mount                                                   |
+| `useDeviceCapabilities`                    | `navigator.hardwareConcurrency`/`deviceMemory` (latter Chromium-only)                                                 |
+| `useDeviceOrientation`                     | Accelerometer/magnetometer tilt; iOS requires a `requestPermission()` gesture                                         |
+| `useDeviceMotion`                          | Accelerometer motion; same iOS permission caveat as `useDeviceOrientation`                                            |
+| `useVisualViewport`                        | `window.visualViewport`; captures on-screen-keyboard shrink `innerHeight` misses                                      |
+| `useDevicePixelRatio`                      | `window.devicePixelRatio`, updating on zoom/monitor moves                                                             |
+| `useTouchSupport`                          | `true` when `navigator.maxTouchPoints > 0`                                                                            |
+| `useCookieEnabled`                         | `navigator.cookieEnabled`                                                                                             |
+| `usePrintMode`                             | `true` while printing, via the `print` media query                                                                    |
+| `useNotificationPermission`                | Notifications API permission state + a `notify()` trigger                                                             |
+| `useFontsReady`                            | `true` once `document.fonts.ready` resolves — avoid FOUC on custom web fonts                                          |
+| `useBrowserEngine`                         | `"blink"`/`"gecko"`/`"webkit"`/`"unknown"`, via feature detection — no `navigator.userAgent` parsing                  |
+| `useExperimentalIdleDetector`              | Idle Detection API — `userState`/`screenState` (Experimental, Chromium-only)                                          |
+| `useExperimentalLocalFonts`                | Local Font Access API — `window.queryLocalFonts()` (Experimental, Chromium-only)                                      |
+| `useExperimentalNfc`                       | Web NFC API — scan, write, and lock NDEF tags (Experimental, Chromium on Android only)                                |
+| `useExperimentalAccelerometer`             | Generic Sensor API `Accelerometer` — acceleration incl. gravity (Experimental, Chromium-only)                         |
+| `useExperimentalLinearAccelerationSensor`  | Generic Sensor API `LinearAccelerationSensor` — acceleration excl. gravity (Experimental, Chromium-only)              |
+| `useExperimentalGravitySensor`             | Generic Sensor API `GravitySensor` — gravity component of acceleration (Experimental, Chromium-only)                  |
+| `useExperimentalGyroscope`                 | Generic Sensor API `Gyroscope` — angular velocity (Experimental, Chromium-only)                                       |
+| `useExperimentalMagnetometer`              | Generic Sensor API `Magnetometer` — ambient magnetic field (Experimental, Chromium-only)                              |
+| `useExperimentalAbsoluteOrientationSensor` | Generic Sensor API `AbsoluteOrientationSensor` — rotation quaternion, geomagnetic north (Experimental, Chromium-only) |
+| `useExperimentalRelativeOrientationSensor` | Generic Sensor API `RelativeOrientationSensor` — rotation quaternion, no magnetometer (Experimental, Chromium-only)   |
+| `useExperimentalAmbientLightSensor`        | Generic Sensor API `AmbientLightSensor` — ambient light in lux (Experimental, Chromium-only)                          |
+| `useExperimentalUserAgentData`             | User-Agent Client Hints API — `navigator.userAgentData`'s low-entropy fields (Experimental, Chromium-only)            |
+| `useExperimentalVirtualKeyboard`           | VirtualKeyboard API — `navigator.virtualKeyboard`'s bounding rect (Experimental, Chromium-only)                       |
+| `useExperimentalWindowManagement`          | Window Management API — multi-screen details + `getScreenDetails()` (Experimental, Chromium-only)                     |
 
 ### DOM / element interaction (`dom/`)
 
-| Hook                      | What it does                                                                     |
-| ------------------------- | -------------------------------------------------------------------------------- |
-| `useClickOutside`         | Detects a click/touch outside a ref'd element                                    |
-| `useHover`                | Boolean hover state for a ref'd element                                          |
-| `useMousePosition`        | Pointer `clientX`/`clientY`/`pageX`/`pageY`/`screenX`/`screenY`, via `mousemove` |
-| `useIntersectionObserver` | Element visibility in the viewport (also exported as `useInView`)                |
-| `useResizeObserver`       | Element content-box size tracking via `ResizeObserver`                           |
-| `useEventListener`        | Typed, auto-cleanup `addEventListener` wrapper                                   |
-| `useLockBodyScroll`       | Locks body scroll (modals/drawers)                                               |
-| `useFavicon`              | Imperatively swaps the `<link rel="icon">` href                                  |
-| `useScript`               | Loads an external `<script src>` on demand, dedupes concurrent requests          |
-| `useScrollPosition`       | `window.scrollX`/`scrollY`, updating on the `scroll` event                       |
-| `useTextSelection`        | The current page text selection, via `window.getSelection()`                     |
-| `useFilePicker`           | File System Access API (Chromium-only)                                           |
-| `useFileDrop`             | Drag-and-drop file upload state (also exported as `useDropzone`)                 |
-| `useMutationObserver`     | `MutationObserver` on a ref'd element/subtree                                    |
-| `useFullscreen`           | Fullscreen API wrapper for a ref'd element                                       |
-| `usePointer`              | Unified mouse/touch/pen position via Pointer events                              |
-| `usePopover`              | Native Popover API open/close state                                              |
-| `useViewTransition`       | `document.startViewTransition()` wrapper                                         |
-| `useEyeDropper`           | EyeDropper API, single-shot color picker (Chromium-only)                         |
+| Hook                           | What it does                                                                     |
+| ------------------------------ | -------------------------------------------------------------------------------- |
+| `useClickOutside`              | Detects a click/touch outside a ref'd element                                    |
+| `useHover`                     | Boolean hover state for a ref'd element                                          |
+| `useMousePosition`             | Pointer `clientX`/`clientY`/`pageX`/`pageY`/`screenX`/`screenY`, via `mousemove` |
+| `useIntersectionObserver`      | Element visibility in the viewport (also exported as `useInView`)                |
+| `useResizeObserver`            | Element content-box size tracking via `ResizeObserver`                           |
+| `useEventListener`             | Typed, auto-cleanup `addEventListener` wrapper                                   |
+| `useLockBodyScroll`            | Locks body scroll (modals/drawers)                                               |
+| `useFavicon`                   | Imperatively swaps the `<link rel="icon">` href                                  |
+| `useScript`                    | Loads an external `<script src>` on demand, dedupes concurrent requests          |
+| `useScrollPosition`            | `window.scrollX`/`scrollY`, updating on the `scroll` event                       |
+| `useTextSelection`             | The current page text selection, via `window.getSelection()`                     |
+| `useFilePicker`                | File System Access API (Chromium-only)                                           |
+| `useFileDrop`                  | Drag-and-drop file upload state (also exported as `useDropzone`)                 |
+| `useMutationObserver`          | `MutationObserver` on a ref'd element/subtree                                    |
+| `useFullscreen`                | Fullscreen API wrapper for a ref'd element                                       |
+| `usePointer`                   | Unified mouse/touch/pen position via Pointer events                              |
+| `usePopover`                   | Native Popover API open/close state                                              |
+| `useViewTransition`            | `document.startViewTransition()` wrapper                                         |
+| `useExperimentalContactPicker` | Contact Picker API — `navigator.contacts.select()` (Experimental, Chromium-only) |
+| `useExperimentalEyeDropper`    | EyeDropper API, single-shot color picker (Experimental, Chromium-only)           |
 
 ### Input (`input/`)
 
@@ -116,15 +130,17 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Media (`media/`)
 
-| Hook                   | What it does                                                                     |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| `useUserMedia`         | Wraps `getUserMedia()` for arbitrary audio/video constraints                     |
-| `useCamera`            | `useUserMedia` convenience wrapper for the common webcam case                    |
-| `useScreenCapture`     | Wraps `getDisplayMedia()` — screen/window/tab sharing                            |
-| `useMediaRecorder`     | Wraps the MediaStream Recording API around an existing stream                    |
-| `useSpeechSynthesis`   | Wraps the Web Speech API's synthesis half — text-to-speech                       |
-| `useSpeechRecognition` | Wraps the Web Speech API's recognition half — voice input (Chromium/Safari only) |
-| `usePictureInPicture`  | Picture-in-Picture wrapper for a ref'd `<video>`                                 |
+| Hook                               | What it does                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------- |
+| `useUserMedia`                     | Wraps `getUserMedia()` for arbitrary audio/video constraints                     |
+| `useCamera`                        | `useUserMedia` convenience wrapper for the common webcam case                    |
+| `useScreenCapture`                 | Wraps `getDisplayMedia()` — screen/window/tab sharing                            |
+| `useMediaRecorder`                 | Wraps the MediaStream Recording API around an existing stream                    |
+| `useSpeechSynthesis`               | Wraps the Web Speech API's synthesis half — text-to-speech                       |
+| `useSpeechRecognition`             | Wraps the Web Speech API's recognition half — voice input (Chromium/Safari only) |
+| `usePictureInPicture`              | Picture-in-Picture wrapper for a ref'd `<video>`                                 |
+| `useExperimentalBarcodeDetector`   | Barcode Detection API — `BarcodeDetector.detect()` (Experimental, Chromium-only) |
+| `useExperimentalSelectAudioOutput` | `MediaDevices.selectAudioOutput()` device picker (Experimental, Chromium-only)   |
 
 ### History & Navigation (`navigation/`)
 
@@ -137,10 +153,11 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Network (`network/`)
 
-| Hook             | What it does                                                             |
-| ---------------- | ------------------------------------------------------------------------ |
-| `useWebSocket`   | WebSocket connection state + `send()`/`close()`, latest message received |
-| `useEventSource` | Server-Sent Events connection state + latest message data                |
+| Hook              | What it does                                                             |
+| ----------------- | ------------------------------------------------------------------------ |
+| `useWebSocket`    | WebSocket connection state + `send()`/`close()`, latest message received |
+| `useEventSource`  | Server-Sent Events connection state + latest message data                |
+| `useWebTransport` | WebTransport (HTTP/3) connection state + datagrams and streams           |
 
 ### PWA (`pwa/`)
 
@@ -159,20 +176,21 @@ Every hook is also importable from its own category subpath — see [Conventions
 
 ### Lifecycle (`lifecycle/`)
 
-| Hook                     | What it does                                                             |
-| ------------------------ | ------------------------------------------------------------------------ |
-| `useMount`               | Runs an effect exactly once, on mount                                    |
-| `useUnmount`             | Runs a cleanup exactly once, on unmount                                  |
-| `useUpdateEffect`        | `useEffect` that skips the first (mount) run                             |
-| `useTimeout`             | Declarative `setTimeout` with cleanup                                    |
-| `useInterval`            | Declarative `setInterval` with cleanup                                   |
-| `useAsync`               | Wraps a promise-returning function with `loading`/`error`/`data` state   |
-| `useBeforeUnload`        | `beforeunload` event — "unsaved changes" navigation guard                |
-| `useAnimationFrame`      | Declarative `requestAnimationFrame` loop, called with delta time         |
-| `useIdleCallback`        | Wraps `requestIdleCallback`/`cancelIdleCallback`, with a Safari fallback |
-| `useWebLock`             | Web Locks API — async mutual exclusion across tabs                       |
-| `useWorker`              | Offloads work to a `Worker`, with a promise-based `run()`                |
-| `usePerformanceObserver` | Wraps `PerformanceObserver` — long tasks, paint timing, and more         |
+| Hook                        | What it does                                                                |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `useMount`                  | Runs an effect exactly once, on mount                                       |
+| `useUnmount`                | Runs a cleanup exactly once, on unmount                                     |
+| `useUpdateEffect`           | `useEffect` that skips the first (mount) run                                |
+| `useIsomorphicLayoutEffect` | `useLayoutEffect` on the client, `useEffect` on the server — no SSR warning |
+| `useTimeout`                | Declarative `setTimeout` with cleanup                                       |
+| `useInterval`               | Declarative `setInterval` with cleanup                                      |
+| `useAsync`                  | Wraps a promise-returning function with `loading`/`error`/`data` state      |
+| `useBeforeUnload`           | `beforeunload` event — "unsaved changes" navigation guard                   |
+| `useAnimationFrame`         | Declarative `requestAnimationFrame` loop, called with delta time            |
+| `useIdleCallback`           | Wraps `requestIdleCallback`/`cancelIdleCallback`, with a Safari fallback    |
+| `useWebLock`                | Web Locks API — async mutual exclusion across tabs                          |
+| `useWorker`                 | Offloads work to a `Worker`, with a promise-based `run()`                   |
+| `usePerformanceObserver`    | Wraps `PerformanceObserver` — long tasks, paint timing, and more            |
 
 ### State (`state/`)
 
@@ -197,20 +215,21 @@ Every hook is also importable from its own category subpath — see [Conventions
 | `useSearchParams`     | State synced to the URL query string (`URLSearchParams`)                         |
 | `useHashState`        | State synced to `location.hash`, via the `hashchange` event                      |
 | `useCookie`           | A single cookie's value, via the Cookie Store API (Chromium-only)                |
+| `useCredential`       | Wraps the Credential Management API (`navigator.credentials`)                    |
 | `useBroadcastChannel` | Pub/sub state shared across same-origin tabs/workers                             |
 | `useWindowMessage`    | Cross-origin window/iframe/popup messaging (`postMessage`)                       |
 
 ### Debug / observability (`debug/`)
 
-| Hook                         | What it does                                                                    |
-| ---------------------------- | ------------------------------------------------------------------------------- |
-| `useUnstableRenderCount`     | Render count for the calling component instance                                 |
-| `useUnstableWhyDidYouUpdate` | Logs which props changed to cause the current render                            |
-| `useUnstableIsFirstRender`   | `true` only on the mount render                                                 |
-| `useUnstableRenderReason`    | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
-| `useUnstableFiber`           | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
-| `useUnstableRenderDuration`  | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
-| `useUnstableOwnerStack`      | Wraps React 19's `captureOwnerStack` debug API                                  |
+| Hook                      | What it does                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| `useRenderCount`          | Render count for the calling component instance                                 |
+| `useWhyDidYouUpdate`      | Logs which props changed to cause the current render                            |
+| `useIsFirstRender`        | `true` only on the mount render                                                 |
+| `useUnstableRenderReason` | Classifies the render cause — `mount`/`props`/`state`/`context`/`parent`        |
+| `useUnstableFiber`        | The nearest Fiber node for a ref'd DOM element, via a private react-dom pointer |
+| `useRenderDuration`       | Wraps React `<Profiler>`'s `onRender` timing as a hook                          |
+| `useOwnerStack`           | Wraps React 19's `captureOwnerStack` debug API                                  |
 
 Every hook's TSDoc includes a runnable usage example — hover it in your editor for a quick reference without leaving your code.
 
@@ -219,7 +238,12 @@ More hooks land incrementally.
 ## Conventions
 
 - Every hook is available both from the top-level package and from its own subpath (`@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
-- Hooks relying on private, non-semver-guaranteed APIs (react-dom internals, mostly) carry an `Unstable` marker in the hook's own name — `useUnstableFiber`, not a separate module — so the risk travels with every import and autocomplete hit, not just a path a reader might skip.
-</content>
 
-</invoke>
+### `Unstable` vs. `Experimental`
+
+Two different name markers warn about two different kinds of risk:
+
+- **`Unstable`** — the hook reads a private API with no public type, not guaranteed to stay the same shape between React versions. Only `useUnstableFiber` and `useUnstableRenderReason` carry this marker: they walk react-dom's internal Fiber tree, the same private structure React DevTools itself reads. The risk is this package breaking on a React upgrade, not the browser.
+- **`Experimental`** — the hook wraps a browser Web API that MDN itself badges "Experimental," like the Idle Detection API or Web NFC (`useExperimentalIdleDetector`, `useExperimentalNfc`, ...). The hook's own code is stable; the risk is that the browser API can change or ship in fewer browsers than you'd like. Every `useExperimental*` hook still fails closed — `supported: false` (or the equivalent) wherever the underlying API doesn't exist, instead of throwing.
+
+A hook with neither marker is built entirely on public, standard APIs — safe to treat like any other hook in the package.

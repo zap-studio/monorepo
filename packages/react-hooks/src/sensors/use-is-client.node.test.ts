@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useIsClient } from "./use-is-client.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const isClient = useIsClient();
   return isClient ? "true" : "false";
-}
+};
 
-describe(useIsClient, () => {
+describe("useIsClient", () => {
   it("renders false on the server, before the client has mounted", () => {
     const html = renderToString(createElement(TestComponent));
 

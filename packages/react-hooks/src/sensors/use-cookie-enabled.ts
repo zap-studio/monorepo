@@ -7,8 +7,8 @@ const getSnapshot = (): boolean => navigator.cookieEnabled;
 const getServerSnapshot = (): boolean => false;
 
 /**
- * `navigator.cookieEnabled`. A static capability — doesn't change at
- * runtime. `false` — the SSR-safe default — during server rendering.
+ * `navigator.cookieEnabled`. This value stays the same while the app runs.
+ * Returns `false` during server rendering (the safe default).
  *
  * @example
  * ```tsx

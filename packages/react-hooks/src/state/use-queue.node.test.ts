@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useQueue } from "./use-queue.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { first, last } = useQueue<string>(["a", "b"]);
   return `${first},${last}`;
-}
+};
 
-describe(useQueue, () => {
+describe("useQueue", () => {
   it("renders the initial values on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

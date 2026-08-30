@@ -19,16 +19,15 @@ const STORAGE_KEY = "zap-studio-theme";
 const getLocalStorage = (): Storage => window.localStorage;
 
 /**
- * `"light"`/`"dark"`/`"system"` theme mode with persistence (via
- * `localStorage`, syncing across tabs), layered on the same
- * `prefers-color-scheme` reading `useColorScheme` uses for the
- * `"system"` case. Distinct from `useColorScheme`: that hook only ever
- * reports the OS's actual current preference — no third state is
- * possible from `prefers-color-scheme` alone — while this hook
- * additionally tracks a stored user override and falls back to the OS
- * reading when `theme` is `"system"`. `resolvedTheme` is always
- * `"light"` | `"dark"` — the OS reading when `theme` is `"system"`,
- * otherwise `theme` itself.
+ * Theme mode: `"light"`, `"dark"`, or `"system"`. The choice is saved in
+ * `localStorage` and stays in sync across tabs. For the `"system"` case,
+ * it uses the same `prefers-color-scheme` check as `useColorScheme`. This
+ * is different from `useColorScheme`: that hook only reports the OS's
+ * current preference, which is always `"light"` or `"dark"`. This hook
+ * also remembers a user's own choice, and falls back to the OS
+ * preference when `theme` is `"system"`. `resolvedTheme` is always
+ * `"light"` or `"dark"`: the OS preference when `theme` is `"system"`,
+ * otherwise it matches `theme`.
  *
  * @example
  * ```tsx

@@ -7,7 +7,7 @@ afterEach(() => {
   history.replaceState(null, "", "/");
 });
 
-describe(useSearchParams, () => {
+describe("useSearchParams", () => {
   it("reads the current location.search", () => {
     history.pushState(null, "", "/path?a=1&b=2");
 
@@ -67,7 +67,7 @@ describe(useSearchParams, () => {
     });
 
     expect(result.current[0].get("a")).toBe("2");
-    expect(history.length).toBe(lengthBefore);
+    expect(history).toHaveLength(lengthBefore);
   });
 
   it("omits the query string entirely when params are empty", () => {

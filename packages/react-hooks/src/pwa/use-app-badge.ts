@@ -11,10 +11,10 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.setAppBadge === "function";
 
 /**
- * Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`) — the
- * small numeric/dot badge shown on an installed PWA's app icon.
- * `supported: false` where the Badging API doesn't exist, and
- * `setBadge()`/`clearBadge()` then no-op.
+ * Wraps the Badging API (`navigator.setAppBadge`/`clearAppBadge`), the
+ * small number or dot badge shown on an installed PWA's app icon.
+ * `supported` is `false` when the Badging API doesn't exist, and
+ * `setBadge()`/`clearBadge()` do nothing in that case.
  *
  * @example
  * ```tsx

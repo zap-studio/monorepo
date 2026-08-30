@@ -1,3 +1,4 @@
+// oxlint-disable sonarjs/no-duplicate-string -- "react-hooks" is the real npm package name and route slug, so it repeats in the sidebar, the topNav, and the JSON-LD package metadata.
 import { defineConfig } from "vocs/config";
 
 const baseUrl = "https://www.zapstudio.dev";
@@ -117,7 +118,6 @@ const sidebar = [
           { link: "/react-hooks/state", text: "State" },
           { link: "/react-hooks/debug", text: "Debug / Observability" },
         ],
-        // oxlint-disable-next-line sonarjs/no-duplicate-string -- "react-hooks" is the real npm package/route slug; it's expected to repeat across the sidebar, topNav, and JSON-LD package metadata.
         text: "react-hooks",
       },
       {
@@ -253,7 +253,7 @@ export default defineConfig({
       {
         slug: "react-hooks",
         name: "@zap-studio/react-hooks",
-        version: "1.0.0",
+        version: "1.1.0",
         description:
           "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle.",
       },

@@ -4,31 +4,34 @@ import type { LogRecord } from "./types.ts";
 
 import { classicFormat, compactFormat, jsonFormat, prettyFormat } from "./format.ts";
 
+const STARTUP_MESSAGE = "server started";
+const CLOCK_TIME_PATTERN = /\d{2}:\d{2}:\d{2}\.\d{3}/u;
+
 const baseRecord = (overrides: Partial<LogRecord> = {}): LogRecord => ({
-  context: undefined,
   level: "info",
-  message: "server started",
+  message: STARTUP_MESSAGE,
   timestamp: new Date("2024-01-01T00:00:00.000Z"),
   ...overrides,
+  context: overrides.context,
 });
 
 describe("classicFormat", () => {
   it("returns only the message when context is absent", () => {
-    expect(classicFormat(baseRecord())).toStrictEqual(["server started"]);
+    expect(classicFormat(baseRecord())).toStrictEqual([STARTUP_MESSAGE]);
   });
 
   it("appends context as a second argument when present", () => {
     const record = baseRecord({ context: { port: 3000 } });
-    expect(classicFormat(record)).toStrictEqual(["server started", { port: 3000 }]);
+    expect(classicFormat(record)).toStrictEqual([STARTUP_MESSAGE, { port: 3000 }]);
   });
 });
 
 describe("jsonFormat", () => {
   it("produces a single JSON string with pino-style field names", () => {
     const [line] = jsonFormat(baseRecord());
-    expect(JSON.parse(line as string)).toStrictEqual({
+    expect(JSON.parse(line)).toStrictEqual({
       level: "info",
-      msg: "server started",
+      msg: STARTUP_MESSAGE,
       time: 1_704_067_200_000,
     });
   });
@@ -36,9 +39,9 @@ describe("jsonFormat", () => {
   it("flattens context fields to the top level", () => {
     const record = baseRecord({ context: { port: 3000 } });
     const [line] = jsonFormat(record);
-    expect(JSON.parse(line as string)).toStrictEqual({
+    expect(JSON.parse(line)).toStrictEqual({
       level: "info",
-      msg: "server started",
+      msg: STARTUP_MESSAGE,
       port: 3000,
       time: 1_704_067_200_000,
     });
@@ -49,9 +52,9 @@ describe("jsonFormat", () => {
       context: { level: "hijacked", msg: "hijacked", time: -1 },
     });
     const [line] = jsonFormat(record);
-    expect(JSON.parse(line as string)).toStrictEqual({
+    expect(JSON.parse(line)).toStrictEqual({
       level: "info",
-      msg: "server started",
+      msg: STARTUP_MESSAGE,
       time: 1_704_067_200_000,
     });
   });
@@ -60,7 +63,7 @@ describe("jsonFormat", () => {
     const error = new Error("boom");
     const record = baseRecord({ context: { error } });
     const [line] = jsonFormat(record);
-    const parsed = JSON.parse(line as string);
+    const parsed = JSON.parse(line);
     expect(parsed.error).toMatchObject({ message: "boom", name: "Error" });
     expect(typeof parsed.error.stack).toBe("string");
   });
@@ -68,20 +71,22 @@ describe("jsonFormat", () => {
   it("serializes bigint context values as strings", () => {
     const record = baseRecord({ context: { id: 9_007_199_254_740_993n } });
     const [line] = jsonFormat(record);
-    expect(JSON.parse(line as string).id).toBe("9007199254740993");
+    expect(JSON.parse(line).id).toBe("9007199254740993");
   });
 });
 
 describe("compactFormat", () => {
   it("produces a single logfmt line with pino-style field names", () => {
     const [line] = compactFormat(baseRecord());
-    expect(line).toBe('level=info msg="server started" time=2024-01-01T00:00:00.000Z');
+    expect(line).toBe(`level=info msg="${STARTUP_MESSAGE}" time=2024-01-01T00:00:00.000Z`);
   });
 
   it("flattens context fields to the top level", () => {
     const record = baseRecord({ context: { port: 3000 } });
     const [line] = compactFormat(record);
-    expect(line).toBe('port=3000 level=info msg="server started" time=2024-01-01T00:00:00.000Z');
+    expect(line).toBe(
+      `port=3000 level=info msg="${STARTUP_MESSAGE}" time=2024-01-01T00:00:00.000Z`,
+    );
   });
 
   it("quotes values containing whitespace, quotes, or =", () => {
@@ -107,7 +112,7 @@ describe("compactFormat", () => {
   });
 
   it("formats undefined and null context values as bare tokens", () => {
-    const record = baseRecord({ context: { a: undefined, b: null } });
+    const record = baseRecord({ context: { a: void 0, b: null } });
     const [line] = compactFormat(record);
     expect(line).toContain("a=undefined");
     expect(line).toContain("b=null");
@@ -127,11 +132,11 @@ describe("prettyFormat", () => {
 
   it("includes a clock time, the uppercased level, and the message", () => {
     vi.stubGlobal("process", undefined);
-    const [prefix] = prettyFormat(baseRecord()) as [string];
+    const [prefix] = prettyFormat(baseRecord());
 
-    expect(prefix).toMatch(/\d{2}:\d{2}:\d{2}\.\d{3}/);
+    expect(prefix).toMatch(CLOCK_TIME_PATTERN);
     expect(prefix).toContain("INFO");
-    expect(prefix).toContain("server started");
+    expect(prefix).toContain(STARTUP_MESSAGE);
   });
 
   it("passes context as a second argument, not inlined into the string", () => {
@@ -144,21 +149,21 @@ describe("prettyFormat", () => {
 
   it("colors output when no process global is present", () => {
     vi.stubGlobal("process", undefined);
-    const [prefix] = prettyFormat(baseRecord()) as [string];
+    const [prefix] = prettyFormat(baseRecord());
 
     expect(prefix).toContain("[");
   });
 
   it("colors output on a real TTY without NO_COLOR", () => {
     vi.stubGlobal("process", { env: {}, stdout: { isTTY: true } });
-    const [prefix] = prettyFormat(baseRecord()) as [string];
+    const [prefix] = prettyFormat(baseRecord());
 
     expect(prefix).toContain("[");
   });
 
   it("skips color when not a TTY", () => {
     vi.stubGlobal("process", { env: {}, stdout: { isTTY: false } });
-    const [prefix] = prettyFormat(baseRecord()) as [string];
+    const [prefix] = prettyFormat(baseRecord());
 
     expect(prefix).not.toContain("[");
   });
@@ -168,14 +173,14 @@ describe("prettyFormat", () => {
       env: { NO_COLOR: "1" },
       stdout: { isTTY: true },
     });
-    const [prefix] = prettyFormat(baseRecord()) as [string];
+    const [prefix] = prettyFormat(baseRecord());
 
     expect(prefix).not.toContain("[");
   });
   it("skips color on Cloudflare Workers, even without a process global", () => {
     vi.stubGlobal("process", undefined);
     vi.stubGlobal("navigator", { userAgent: "Cloudflare-Workers" });
-    const [prefix] = prettyFormat(baseRecord()) as [string];
+    const [prefix] = prettyFormat(baseRecord());
 
     expect(prefix).not.toContain("\u001b[");
   });

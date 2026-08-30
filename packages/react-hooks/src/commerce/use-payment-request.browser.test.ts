@@ -4,13 +4,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { usePaymentRequest } from "./use-payment-request.ts";
 
 class MockPaymentResponse {
-  complete = vi.fn(() => Promise.resolve());
+  complete = vi.fn<() => Promise<void>>(() => Promise.resolve());
   readonly methodName = "basic-card";
 }
 
+interface MockPaymentRequestState {
+  nextShow: (() => Promise<MockPaymentResponse>) | null;
+}
+
 class MockPaymentRequest {
-  static instances: MockPaymentRequest[] = [];
-  static nextShow: (() => Promise<MockPaymentResponse>) | undefined;
+  static readonly instances: MockPaymentRequest[] = [];
+  static readonly state: MockPaymentRequestState = {
+    nextShow: null,
+  };
   readonly methodData: PaymentMethodData[];
   readonly details: PaymentDetailsInit;
 
@@ -21,18 +27,18 @@ class MockPaymentRequest {
   }
 
   show() {
-    return MockPaymentRequest.nextShow?.() ?? Promise.resolve(new MockPaymentResponse());
+    return MockPaymentRequest.state.nextShow?.() ?? Promise.resolve(new MockPaymentResponse());
   }
 }
 
-function installMockPaymentRequest() {
-  MockPaymentRequest.instances = [];
-  MockPaymentRequest.nextShow = undefined;
+const installMockPaymentRequest = () => {
+  MockPaymentRequest.instances.length = 0;
+  MockPaymentRequest.state.nextShow = null;
   Object.defineProperty(window, "PaymentRequest", {
     configurable: true,
     value: MockPaymentRequest,
   });
-}
+};
 
 const methodData: PaymentMethodData[] = [{ supportedMethods: "basic-card" }];
 const details: PaymentDetailsInit = {
@@ -40,10 +46,10 @@ const details: PaymentDetailsInit = {
 };
 
 afterEach(() => {
-  Object.defineProperty(window, "PaymentRequest", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "PaymentRequest");
 });
 
-describe(usePaymentRequest, () => {
+describe("usePaymentRequest", () => {
   it('starts "idle" and reports supported: true when PaymentRequest exists', () => {
     installMockPaymentRequest();
 
@@ -92,7 +98,8 @@ describe(usePaymentRequest, () => {
 
   it('becomes "error" and resolves undefined when the user cancels the sheet', async () => {
     installMockPaymentRequest();
-    MockPaymentRequest.nextShow = () => Promise.reject(new DOMException("cancelled", "AbortError"));
+    MockPaymentRequest.state.nextShow = () =>
+      Promise.reject(new DOMException("cancelled", "AbortError"));
     const { result } = renderHook(() => usePaymentRequest());
 
     let response: PaymentResponse | undefined;
@@ -107,7 +114,7 @@ describe(usePaymentRequest, () => {
 
   it("wraps a non-Error rejection", async () => {
     installMockPaymentRequest();
-    MockPaymentRequest.nextShow = () => Promise.reject("cancelled");
+    MockPaymentRequest.state.nextShow = () => Promise.reject("cancelled");
     const { result } = renderHook(() => usePaymentRequest());
 
     await act(async () => {

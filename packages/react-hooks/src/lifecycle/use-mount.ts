@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
- * Runs `effect` exactly once, on mount — a thin `useEffect(effect, [])`
- * wrapper for callers who want the intent to read explicitly rather than
- * relying on an empty dependency array. `effect` is only ever called with
- * the reference passed on the first render; later renders' closures are
- * never invoked (mirrors `useEffect(fn, [])`'s own semantics).
+ * Runs `effect` exactly once, when the component mounts. It's a thin
+ * wrapper around `useEffect(effect, [])`, so the intent is clear without
+ * needing to read an empty dependency array. Only the `effect` function
+ * from the first render is ever called, even if you pass a new function
+ * on later renders.
  *
  * @example
  * ```tsx
@@ -13,8 +13,9 @@ import { useEffect } from "react";
  * ```
  */
 export const useMount = (effect: () => void): void => {
+  const effectRef = useRef(effect);
+
   useEffect(() => {
-    effect();
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- runs exactly once on mount by design, matching useEffect(fn, []); re-running when `effect`'s reference changes would defeat the hook's entire purpose.
+    effectRef.current();
   }, []);
 };

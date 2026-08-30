@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useViewTransition } from "./use-view-transition.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useViewTransition();
   return supported ? "true" : "false";
-}
+};
 
-describe(useViewTransition, () => {
+describe("useViewTransition", () => {
   it("renders supported: false on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

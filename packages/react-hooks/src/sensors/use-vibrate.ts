@@ -10,9 +10,10 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
 
 /**
- * Wraps `navigator.vibrate()` — mostly Android Chrome; no-op elsewhere.
- * `supported: false` — the SSR-safe default — where `navigator.vibrate`
- * doesn't exist, and `vibrate()` then always returns `false`.
+ * Wraps `navigator.vibrate()`. This mostly works on Android Chrome and
+ * does nothing on other browsers. `supported` is `false` (the safe
+ * default for server rendering) when `navigator.vibrate` doesn't exist,
+ * and in that case `vibrate()` always returns `false`.
  *
  * @example
  * ```tsx

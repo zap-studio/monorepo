@@ -5,16 +5,16 @@ import type { NetworkInformation } from "./_network.ts";
 
 import { useNetworkState } from "./use-network-state.ts";
 
-function setNavigatorOnLine(value: boolean) {
+const setNavigatorOnLine = (value: boolean) => {
   Object.defineProperty(navigator, "onLine", {
     configurable: true,
     get: () => value,
   });
-}
+};
 
-function createConnectionMock(
+const createConnectionMock = (
   initial: Pick<NetworkInformation, "downlink" | "effectiveType" | "rtt" | "saveData">,
-) {
+) => {
   const connection: NetworkInformation = new EventTarget();
   let state = { ...initial };
 
@@ -32,16 +32,16 @@ function createConnectionMock(
       connection.dispatchEvent(new Event("change"));
     },
   };
-}
+};
 
-function setNavigatorConnection(connection: NetworkInformation | undefined) {
+const setNavigatorConnection = (connection: NetworkInformation | undefined) => {
   Object.defineProperty(navigator, "connection", {
     configurable: true,
     get: () => connection,
   });
-}
+};
 
-describe(useNetworkState, () => {
+describe("useNetworkState", () => {
   it("reports online status and connection info", () => {
     setNavigatorOnLine(true);
     const { connection } = createConnectionMock({
@@ -90,11 +90,7 @@ describe(useNetworkState, () => {
     const { result } = renderHook(() => useNetworkState());
 
     expect(result.current).toEqual({
-      downlink: undefined,
-      effectiveType: undefined,
       online: true,
-      rtt: undefined,
-      saveData: undefined,
     });
   });
 });

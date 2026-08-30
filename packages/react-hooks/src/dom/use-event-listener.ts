@@ -1,4 +1,6 @@
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useRef, useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** Anything `useEventListener` can attach to: a DOM node, `window`/`document`, or a ref to one. */
 export type EventListenerTarget =
@@ -9,6 +11,14 @@ export type EventListenerTarget =
   | null
   | undefined;
 
+/** The `options` fields that actually change how `addEventListener` behaves, kept as plain values so we can compare them easily. */
+type NormalizedOptions = {
+  capture: boolean;
+  once: boolean;
+  passive?: boolean;
+  signal?: AbortSignal;
+};
+
 const resolveTarget = (target: EventListenerTarget): EventTarget | null => {
   if (!target) {
     return null;
@@ -16,12 +26,45 @@ const resolveTarget = (target: EventListenerTarget): EventTarget | null => {
   return "current" in target ? target.current : target;
 };
 
+const assignIfDefined = <T, K extends keyof T>(
+  target: T,
+  key: K,
+  value: T[K] | undefined,
+): void => {
+  if (value !== undefined) {
+    target[key] = value;
+  }
+};
+
+const normalizeOptions = (
+  options: AddEventListenerOptions | boolean | undefined,
+): NormalizedOptions => {
+  if (typeof options === "boolean") {
+    return { capture: options, once: false };
+  }
+  const normalized: NormalizedOptions = {
+    capture: options?.capture ?? false,
+    once: options?.once ?? false,
+  };
+  assignIfDefined(normalized, "passive", options?.passive);
+  assignIfDefined(normalized, "signal", options?.signal);
+  return normalized;
+};
+
 /**
- * Typed `addEventListener` wrapper with automatic cleanup — attaches
- * `handler` for `type` on `target` (a `RefObject`, a DOM node, or
- * `window`/`document`), and removes it on unmount or when `target`/`type`/
- * `options` change. `handler` doesn't need to be memoized — the latest one
- * is always called, without re-subscribing.
+ * A typed `addEventListener` wrapper that cleans up after itself. It attaches
+ * `handler` for the given `type` on `target` (a `RefObject`, a DOM node, or
+ * `window`/`document`). It removes the listener when the component unmounts,
+ * or when the resolved element, `type`, or `options` change.
+ *
+ * You don't need to memoize `handler` or `options` — the hook always uses the
+ * latest values you pass in, without re-attaching the listener. You can even
+ * pass a new `options` object literal on every render for free.
+ *
+ * The listener attaches before the browser paints, so it never misses an
+ * early event. When `target` is a ref, the hook checks `ref.current` again on
+ * every render, so it still works if the ref is `null` at first, or later
+ * points to a different element.
  *
  * @example
  * ```tsx
@@ -37,17 +80,34 @@ export const useEventListener = <E extends Event = Event>(
   options?: AddEventListenerOptions | boolean,
 ): void => {
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useIsomorphicLayoutEffect(() => {
+    handlerRef.current = handler;
+  });
 
-  useEffect(() => {
-    const element = resolveTarget(target);
+  const [element, setElement] = useState<EventTarget | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(resolveTarget(target));
+  });
+
+  const { capture, once, passive, signal } = normalizeOptions(options);
+
+  // oxlint-disable-next-line react-doctor/effect-needs-cleanup -- cleanup is returned below (removeEventListener); the early-return branch has nothing to clean up.
+  useIsomorphicLayoutEffect(() => {
     if (!element) {
       return undefined;
     }
 
-    // SAFETY: addEventListener's native `Event` is narrowed to `E` on the caller's word — TypeScript can't derive `E` from a runtime string `type`, so this trusts the caller's explicit type parameter (or its `Event` default).
+    // SAFETY: we trust the type parameter `E` given by the caller. TypeScript cannot work out `E` from a runtime string like `type`, so we cast the native `Event` to `E`, the type the caller declared (or the default `Event`).
     const listener = (event: Event) => handlerRef.current(event as E);
-    element.addEventListener(type, listener, options);
-    return () => element.removeEventListener(type, listener, options);
-  }, [target, type, options]);
+    const listenerOptions: AddEventListenerOptions = {
+      capture,
+      once,
+      ...(passive !== undefined && { passive }),
+      ...(signal !== undefined && { signal }),
+    };
+    element.addEventListener(type, listener, listenerOptions);
+    return () => {
+      element.removeEventListener(type, listener, listenerOptions);
+    };
+  }, [element, type, capture, once, passive, signal]);
 };

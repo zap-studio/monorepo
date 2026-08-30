@@ -1,10 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIsClient } from "../sensors/use-is-client.ts";
+import { isUpdaterFunction } from "./_updater.ts";
+
 const DB_NAME = "zap-studio-react-hooks";
 const STORE_NAME = "use-indexed-db";
 const DB_VERSION = 1;
 
+/**
+ * Fallbacks for the `error` property, which an `IDBRequest`/`IDBTransaction`
+ * always populates before firing its `error` event, but types as nullable.
+ */
+const REQUEST_FAILED = "The IndexedDB request failed.";
+const TRANSACTION_FAILED = "The IndexedDB transaction failed.";
+
 const isSupported = (): boolean => typeof indexedDB !== "undefined";
+
+const UNSUPPORTED_ERROR = new Error("IndexedDB is not supported by this browser.");
 
 const openDatabase = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
@@ -15,8 +27,7 @@ const openDatabase = (): Promise<IDBDatabase> =>
       }
     };
     request.onsuccess = () => resolve(request.result);
-    // SAFETY: per the IndexedDB spec, an IDBRequest's `error` is always populated by the time its `error` event fires, so this is never null in practice.
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(request.error ?? new Error(REQUEST_FAILED));
   });
 
 const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
@@ -24,46 +35,39 @@ const getValue = async <T>(key: string, initialValue: T): Promise<T> => {
   try {
     return await new Promise<T>((resolve, reject) => {
       const request = db.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).get(key);
-      // SAFETY: this hook is the only writer of this key (via putValue below), so a stored entry always round-trips back to a T; an absent entry (undefined) falls back to initialValue.
+      // SAFETY: only this hook writes to this key (with putValue below), so a stored entry is always a T. If there is no entry (undefined), we use initialValue instead.
       request.onsuccess = () =>
         resolve(request.result === undefined ? initialValue : (request.result as T));
-      // SAFETY: see openDatabase — an IDBRequest's `error` is always populated when its `error` event fires.
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(request.error ?? new Error(REQUEST_FAILED));
     });
   } finally {
     db.close();
   }
 };
 
-const putValue = async <T>(key: string, value: T): Promise<void> => {
+const write = async (mutate: (store: IDBObjectStore) => void): Promise<void> => {
   const db = await openDatabase();
   try {
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readwrite");
-      tx.objectStore(STORE_NAME).put(value, key);
+      mutate(tx.objectStore(STORE_NAME));
       tx.oncomplete = () => resolve();
-      // SAFETY: see openDatabase — an IDBTransaction's `error` is always populated when its `error` event fires.
-      tx.onerror = () => reject(tx.error);
+      tx.onerror = () => reject(tx.error ?? new Error(TRANSACTION_FAILED));
     });
   } finally {
     db.close();
   }
 };
 
-const deleteValue = async (key: string): Promise<void> => {
-  const db = await openDatabase();
-  try {
-    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, "readwrite");
-      tx.objectStore(STORE_NAME).delete(key);
-      tx.oncomplete = () => resolve();
-      // SAFETY: see openDatabase — an IDBTransaction's `error` is always populated when its `error` event fires.
-      tx.onerror = () => reject(tx.error);
-    });
-  } finally {
-    db.close();
-  }
-};
+const putValue = <T>(key: string, value: T): Promise<void> =>
+  write((store) => {
+    store.put(value, key);
+  });
+
+const deleteValue = (key: string): Promise<void> =>
+  write((store) => {
+    store.delete(key);
+  });
 
 /** Status reported by `useIndexedDB`. */
 export type IndexedDBStatus = "error" | "loading" | "ready";
@@ -78,13 +82,14 @@ export interface UseIndexedDBResult<T> {
 }
 
 /**
- * State synced to IndexedDB under `key`, via a small dedicated
- * object store. Distinct from `useLocalStorage`/`useSessionStorage`:
- * those wrap a synchronous, string-only, size-limited API, while this
- * hook supports structured/binary values and much larger storage quotas
- * at the cost of an async read/write API — `status` tracks the initial
- * read (`"loading"` → `"ready"`/`"error"`), and `setValue`/`remove`
- * return promises that resolve once the write completes.
+ * State synced to IndexedDB under `key`, using a small dedicated object
+ * store. This is different from `useLocalStorage`/`useSessionStorage`:
+ * those wrap a synchronous API that only stores strings and has a small
+ * size limit. This hook supports structured or binary values and much
+ * more storage space, but the read/write API is async — `status` tracks
+ * the first read (`"loading"` then `"ready"` or `"error"`), and
+ * `setValue`/`remove` return promises that resolve once the write is
+ * done.
  *
  * @example
  * ```tsx
@@ -93,22 +98,26 @@ export interface UseIndexedDBResult<T> {
  * ```
  */
 export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResult<T> => {
+  const isClient = useIsClient();
+  const supported = isClient && isSupported();
+
   const [value, setValueState] = useState<T>(initialValue);
   const [status, setStatus] = useState<IndexedDBStatus>("loading");
   const [error, setError] = useState<Error | undefined>(undefined);
   const valueRef = useRef(value);
-  valueRef.current = value;
   const initialValueRef = useRef(initialValue);
-  initialValueRef.current = initialValue;
+  useEffect(() => {
+    valueRef.current = value;
+    initialValueRef.current = initialValue;
+  });
 
   useEffect(() => {
-    if (!isSupported()) {
-      setStatus("error");
-      setError(new Error("IndexedDB is not supported by this browser."));
+    if (!supported) {
       return undefined;
     }
 
     let cancelled = false;
+    // oxlint-disable-next-line react/set-state-in-effect -- we need this when `key` changes after mount. It resets the status from the old key ("ready" or "error") back to "loading". On mount, this call does nothing, because the state is already "loading".
     setStatus("loading");
 
     const load = async () => {
@@ -131,13 +140,11 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
     return () => {
       cancelled = true;
     };
-  }, [key]);
+  }, [supported, key]);
 
   const setValue = useCallback(
     async (next: T | ((prev: T) => T)): Promise<void> => {
-      // SAFETY: T | ((prev: T) => T); the typeof check above narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
-      const resolved =
-        typeof next === "function" ? (next as (prev: T) => T)(valueRef.current) : next;
+      const resolved = isUpdaterFunction(next) ? next(valueRef.current) : next;
       setValueState(resolved);
       try {
         await putValue(key, resolved);
@@ -159,5 +166,11 @@ export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResul
     }
   }, [key]);
 
-  return { error, remove, setValue, status, value };
+  return {
+    error: isClient && !supported ? UNSUPPORTED_ERROR : error,
+    remove,
+    setValue,
+    status: isClient && !supported ? "error" : status,
+    value,
+  };
 };

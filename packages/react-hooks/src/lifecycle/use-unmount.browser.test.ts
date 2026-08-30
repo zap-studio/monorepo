@@ -3,16 +3,16 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useUnmount } from "./use-unmount.ts";
 
-describe(useUnmount, () => {
+describe("useUnmount", () => {
   it("does not call the cleanup while mounted", () => {
-    const cleanup = vi.fn();
+    const cleanup = vi.fn<() => void>();
     renderHook(() => useUnmount(cleanup));
 
     expect(cleanup).not.toHaveBeenCalled();
   });
 
   it("calls the cleanup once on unmount", () => {
-    const cleanup = vi.fn();
+    const cleanup = vi.fn<() => void>();
     const { unmount } = renderHook(() => useUnmount(cleanup));
 
     unmount();
@@ -21,8 +21,8 @@ describe(useUnmount, () => {
   });
 
   it("calls the latest cleanup, not a stale one from an earlier render", () => {
-    const firstCleanup = vi.fn();
-    const secondCleanup = vi.fn();
+    const firstCleanup = vi.fn<() => void>();
+    const secondCleanup = vi.fn<() => void>();
     const { rerender, unmount } = renderHook(({ cleanup }) => useUnmount(cleanup), {
       initialProps: { cleanup: firstCleanup },
     });

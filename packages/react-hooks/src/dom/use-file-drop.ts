@@ -1,4 +1,6 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type RefObject, useRef, useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useFileDrop`. */
 export interface UseFileDropResult<T extends HTMLElement> {
@@ -9,11 +11,18 @@ export interface UseFileDropResult<T extends HTMLElement> {
 const filesFrom = (event: DragEvent): File[] => [...(event.dataTransfer?.files ?? [])];
 
 /**
- * Drag-and-drop file upload state for a single ref'd drop target, via the
- * HTML Drag and Drop API. `isOver` tracks whether a drag is currently over
- * the element; `onDrop` is called with the dropped `File[]`. `onDrop`
- * doesn't need to be memoized — the latest one is always called. Also
- * exported as `useDropzone`, an alias for the same hook.
+ * Tracks drag-and-drop file uploads for one element, using the browser's
+ * Drag and Drop API. `isOver` tells you whether a drag is currently over
+ * the element. `onDrop` is called with the dropped files as a `File[]`.
+ * You don't need to memoize `onDrop` — the hook always calls the latest
+ * version you passed in. This hook is also exported as `useDropzone`,
+ * which is just another name for the same hook.
+ *
+ * The listeners attach before the browser paints. This matters because a
+ * `drop` event only fires once, so an overlay that appears in the middle
+ * of a drag could otherwise miss it. The hook also re-checks `ref` on
+ * every render, so it still works if the drop target appears later, is
+ * shown conditionally, or gets swapped for a different element.
  *
  * @example
  * ```tsx
@@ -26,11 +35,17 @@ export const useFileDrop = <T extends HTMLElement = HTMLElement>(
 ): UseFileDropResult<T> => {
   const ref = useRef<T | null>(null);
   const onDropRef = useRef(onDrop);
-  onDropRef.current = onDrop;
+  useIsomorphicLayoutEffect(() => {
+    onDropRef.current = onDrop;
+  });
   const [isOver, setIsOver] = useState(false);
 
-  useEffect(() => {
-    const element = ref.current;
+  const [element, setElement] = useState<T | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    setElement(ref.current);
+  });
+
+  useIsomorphicLayoutEffect(() => {
     if (!element) {
       return undefined;
     }
@@ -59,7 +74,7 @@ export const useFileDrop = <T extends HTMLElement = HTMLElement>(
       element.removeEventListener("dragleave", handleDragLeave);
       element.removeEventListener("drop", handleDrop);
     };
-  }, []);
+  }, [element]);
 
   return { isOver, ref };
 };

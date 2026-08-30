@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 
 import { useTouchSupport } from "./use-touch-support.ts";
 
-function setMaxTouchPoints(value: number) {
+const setMaxTouchPoints = (value: number) => {
   Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value });
-}
+};
 
-describe(useTouchSupport, () => {
+describe("useTouchSupport", () => {
   it("is true when maxTouchPoints is greater than 0", () => {
     setMaxTouchPoints(5);
 

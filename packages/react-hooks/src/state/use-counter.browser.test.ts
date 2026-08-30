@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useCounter } from "./use-counter.ts";
 
-describe(useCounter, () => {
+describe("useCounter", () => {
   it("defaults to 0", () => {
     const { result } = renderHook(() => useCounter());
 

@@ -57,7 +57,9 @@ return (
 
 ## useEventListener
 
-Typed [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) wrapper with automatic cleanup — attaches `handler` for `type` on `target` (a `RefObject`, a DOM node, or `window`/`document`), and removes it on unmount or when `target`/`type`/`options` change.
+Typed [`addEventListener`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) wrapper with automatic cleanup — attaches `handler` for `type` on `target` (a `RefObject`, a DOM node, or `window`/`document`), and removes it on unmount or when the resolved element, `type`, or `options` change. Neither `handler` nor `options` needs to be memoized: the latest `handler` is always called without re-subscribing, and `options` is compared field by field, so an object literal written inline at the call site is free.
+
+The listener is attached in a layout effect ([`useIsomorphicLayoutEffect`](/react-hooks/lifecycle#useisomorphiclayouteffect)), before the browser paints, so no event can slip through the gap a passive effect would leave open. When `target` is a ref, its `current` is re-read on every commit — a ref that is still `null` on the first render, or that later points at a different element, is picked up as soon as React commits the change.
 
 ```tsx
 const ref = useRef<HTMLDivElement>(null);
@@ -185,14 +187,25 @@ const { startTransition } = useViewTransition();
 const handleThemeChange = () => startTransition(() => setTheme("dark"));
 ```
 
-## useEyeDropper
+## useExperimentalContactPicker
+
+Wraps the [Contact Picker API](https://developer.mozilla.org/en-US/docs/Web/API/Contact_Picker_API) (`navigator.contacts`) — `select()` shows the OS contact picker for the given properties, resolving the chosen contacts, or `undefined` if the user cancels or the API is unsupported. `getProperties()` resolves which properties this browser can actually retrieve.
+
+Experimental per MDN, Chromium-only, requires a secure context and a user gesture — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Contact_Picker_API#browser_compatibility).
+
+```tsx
+const { select, supported } = useExperimentalContactPicker();
+const contacts = supported ? await select(["name", "email"], { multiple: true }) : undefined;
+```
+
+## useExperimentalEyeDropper
 
 Wraps the [EyeDropper API](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper) — a single-shot native color picker. `open()` resolves the picked color as an `sRGBHex` string (e.g. `"#ff0000"`), or `undefined` if the user cancels or the API is unsupported.
 
-Chromium-only, no Safari/Firefox support yet — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper#browser_compatibility).
+Experimental per MDN, Chromium-only, no Safari/Firefox support yet — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper#browser_compatibility).
 
 ```tsx
-const { open, supported } = useEyeDropper();
+const { open, supported } = useExperimentalEyeDropper();
 const hex = supported ? await open() : undefined;
 ```
 

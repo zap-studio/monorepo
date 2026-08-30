@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useTextSelection } from "./use-text-selection.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const text = useTextSelection();
   return `[${text}]`;
-}
+};
 
-describe(useTextSelection, () => {
+describe("useTextSelection", () => {
   it("renders an empty selection on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

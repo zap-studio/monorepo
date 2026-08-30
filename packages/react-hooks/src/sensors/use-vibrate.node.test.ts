@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useVibrate } from "./use-vibrate.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { supported } = useVibrate();
   return supported ? "true" : "false";
-}
+};
 
-describe(useVibrate, () => {
+describe("useVibrate", () => {
   it("renders unsupported on the server, without touching navigator", () => {
     const html = renderToString(createElement(TestComponent));
 

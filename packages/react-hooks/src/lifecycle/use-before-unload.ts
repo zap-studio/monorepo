@@ -1,14 +1,14 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Registers a `beforeunload` handler — the classic "unsaved changes"
- * navigation guard. `handler` receives the raw event; call
- * `event.preventDefault()` (and, for legacy browser support, set
- * `event.returnValue = ""`) inside it to trigger the browser's own
- * confirmation prompt. Pass `enabled: false` to detach without
- * unmounting the hook (e.g. once a form has no unsaved changes).
- * `handler` doesn't need to be memoized — the latest one is always
- * called, without re-subscribing.
+ * Registers a `beforeunload` handler. This is the classic "you have
+ * unsaved changes" warning that browsers show before leaving a page.
+ * `handler` receives the raw event. Call `event.preventDefault()` inside
+ * it (and, for older browsers, set `event.returnValue = ""`) to trigger
+ * the browser's confirmation prompt. Pass `enabled: false` to turn the
+ * handler off without unmounting the hook, for example once a form has
+ * no unsaved changes left. You don't need to memoize `handler` — the
+ * hook always uses the latest version, without re-subscribing.
  *
  * @example
  * ```tsx
@@ -25,7 +25,9 @@ export const useBeforeUnload = (
   enabled = true,
 ): void => {
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useEffect(() => {
+    handlerRef.current = handler;
+  });
 
   useEffect(() => {
     if (!enabled) {

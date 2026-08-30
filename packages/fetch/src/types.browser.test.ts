@@ -18,6 +18,6 @@ describe("types", () => {
     expect(requestBody.body).toBe("raw");
     expect("json" in jsonBody).toBeTruthy();
     expect(defaults.throwOnFetchError).toBeTruthy();
-    void invalid;
+    expect(invalid).toBeDefined();
   });
 });

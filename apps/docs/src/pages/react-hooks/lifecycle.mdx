@@ -33,6 +33,18 @@ useUpdateEffect(() => {
 }, [filter]);
 ```
 
+## useIsomorphicLayoutEffect
+
+[`useLayoutEffect`](https://react.dev/reference/react/useLayoutEffect) on the client, [`useEffect`](https://react.dev/reference/react/useEffect) on the server — same signature as either, so it is a drop-in replacement. `useLayoutEffect` has no meaning during server rendering (there is no layout to read or mutate) and React warns when it is called there; this picks the implementation once, at module scope, so the warning never appears and client behaviour is unchanged.
+
+Reach for it when an effect must run _before_ the browser paints — reading layout, mutating the DOM to avoid a visible flash, or attaching an event listener that must not miss anything the user does between paint and the passive effect flush.
+
+```tsx
+useIsomorphicLayoutEffect(() => {
+  element.scrollTop = element.scrollHeight;
+}, [messages]);
+```
+
 ## useTimeout
 
 Declarative [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout) — schedules `callback` after `delayMs`, clearing and rescheduling when `delayMs` changes, and clearing on unmount. Pass `delayMs: null` to pause without unmounting the hook.

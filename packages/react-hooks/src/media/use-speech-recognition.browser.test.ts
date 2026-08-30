@@ -13,7 +13,7 @@ interface MockRecognitionEvent {
 }
 
 class MockRecognition {
-  static instances: MockRecognition[] = [];
+  static readonly instances: MockRecognition[] = [];
   continuous = false;
   interimResults = false;
   lang = "";
@@ -42,33 +42,30 @@ class MockRecognition {
   }
 }
 
-function installMockSpeechRecognition() {
-  MockRecognition.instances = [];
+const installMockSpeechRecognition = () => {
+  MockRecognition.instances.length = 0;
   Object.defineProperty(window, "SpeechRecognition", {
     configurable: true,
     value: MockRecognition,
   });
-}
+};
 
-function makeResultEvent(transcripts: string[]): MockRecognitionEvent {
+const makeResultEvent = (transcripts: string[]): MockRecognitionEvent => {
   const results: Record<number, MockRecognitionResult> & { length: number } = {
     length: transcripts.length,
   };
-  transcripts.forEach((transcript, index) => {
+  for (const [index, transcript] of transcripts.entries()) {
     results[index] = { 0: { transcript }, length: 1 };
-  });
+  }
   return { results };
-}
+};
 
 afterEach(() => {
-  Object.defineProperty(window, "SpeechRecognition", { configurable: true, value: undefined });
-  Object.defineProperty(window, "webkitSpeechRecognition", {
-    configurable: true,
-    value: undefined,
-  });
+  Reflect.deleteProperty(window, "SpeechRecognition");
+  Reflect.deleteProperty(window, "webkitSpeechRecognition");
 });
 
-describe(useSpeechRecognition, () => {
+describe("useSpeechRecognition", () => {
   it("reports supported: true when SpeechRecognition exists", () => {
     installMockSpeechRecognition();
 

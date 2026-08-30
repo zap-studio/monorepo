@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useSearchParams } from "./use-search-params.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const [searchParams] = useSearchParams();
   return searchParams.size === 0 ? "empty" : searchParams.toString();
-}
+};
 
-describe(useSearchParams, () => {
+describe("useSearchParams", () => {
   it("falls back to empty params on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

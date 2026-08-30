@@ -1,45 +1,48 @@
 import { renderHook } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { useViewTransition } from "./use-view-transition.ts";
 
-describe(useViewTransition, () => {
+afterEach(() => {
+  // Removes the own-property override installed by each test below, exposing
+  // the native (or absent) Document.prototype.startViewTransition again —
+  // avoids ever reading the property into a variable just to restore it,
+  // which is what triggered `unbound-method` on the old save/restore pattern.
+  Reflect.deleteProperty(document, "startViewTransition");
+});
+
+describe("useViewTransition", () => {
   it("reports supported: true when startViewTransition exists", () => {
-    const original = document.startViewTransition;
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
-      value: vi.fn(),
+      value: vi.fn<(update: () => Promise<void> | void) => { finished: Promise<void> }>(),
     });
 
     const { result } = renderHook(() => useViewTransition());
 
     expect(result.current.supported).toBe(true);
-    Object.defineProperty(document, "startViewTransition", {
-      configurable: true,
-      value: original,
-    });
   });
 
   it("reports supported: false when startViewTransition is unavailable", () => {
-    const original = document.startViewTransition;
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
-      value: undefined,
+      value: null,
     });
 
     const { result } = renderHook(() => useViewTransition());
 
     expect(result.current.supported).toBe(false);
-    Object.defineProperty(document, "startViewTransition", {
-      configurable: true,
-      value: original,
-    });
   });
 
   it("startTransition() runs the callback through startViewTransition when supported", async () => {
-    const callback = vi.fn();
-    const startViewTransition = vi.fn((update: () => Promise<void> | void) => {
-      const finished = Promise.resolve().then(() => update());
+    const callback = vi.fn<() => Promise<void> | void>();
+    const startViewTransition = vi.fn<
+      (update: () => Promise<void> | void) => { finished: Promise<void> }
+    >((update: () => Promise<void> | void) => {
+      const finished = (async () => {
+        await Promise.resolve();
+        return update();
+      })();
       return { finished };
     });
     Object.defineProperty(document, "startViewTransition", {
@@ -52,28 +55,18 @@ describe(useViewTransition, () => {
 
     expect(startViewTransition).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledTimes(1);
-
-    Object.defineProperty(document, "startViewTransition", {
-      configurable: true,
-      value: undefined,
-    });
   });
 
   it("startTransition() just calls the callback directly when unsupported", async () => {
-    const original = document.startViewTransition;
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
-      value: undefined,
+      value: null,
     });
-    const callback = vi.fn();
+    const callback = vi.fn<() => Promise<void> | void>();
 
     const { result } = renderHook(() => useViewTransition());
     await result.current.startTransition(callback);
 
     expect(callback).toHaveBeenCalledTimes(1);
-    Object.defineProperty(document, "startViewTransition", {
-      configurable: true,
-      value: original,
-    });
   });
 });

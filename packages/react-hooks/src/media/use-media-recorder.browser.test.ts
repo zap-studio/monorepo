@@ -1,16 +1,19 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useMediaRecorder } from "./use-media-recorder.ts";
 
+const WEBM_MIME_TYPE = "video/webm";
+
 class MockMediaRecorder extends EventTarget {
-  static instances: MockMediaRecorder[] = [];
+  static readonly instances: MockMediaRecorder[] = [];
 
   static isTypeSupported(mimeType: string) {
-    return mimeType === "video/webm";
+    return mimeType === WEBM_MIME_TYPE;
   }
   state: "inactive" | "paused" | "recording" = "inactive";
-  readonly mimeType = "video/webm";
+  readonly mimeType = WEBM_MIME_TYPE;
   readonly stream: MediaStream;
 
   constructor(stream: MediaStream) {
@@ -37,18 +40,18 @@ class MockMediaRecorder extends EventTarget {
   }
 }
 
-function installMockMediaRecorder() {
-  MockMediaRecorder.instances = [];
+const installMockMediaRecorder = () => {
+  MockMediaRecorder.instances.length = 0;
   Object.defineProperty(window, "MediaRecorder", { configurable: true, value: MockMediaRecorder });
-}
+};
 
-const fakeStream = {} as MediaStream;
+const fakeStream = asTestDouble<MediaStream>({});
 
 afterEach(() => {
-  Object.defineProperty(window, "MediaRecorder", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "MediaRecorder");
 });
 
-describe(useMediaRecorder, () => {
+describe("useMediaRecorder", () => {
   it("reports supported: true when MediaRecorder exists", () => {
     installMockMediaRecorder();
 
@@ -221,14 +224,14 @@ describe(useMediaRecorder, () => {
     installMockMediaRecorder();
     const { result } = renderHook(() => useMediaRecorder(fakeStream));
 
-    expect(result.current.isTypeSupported("video/webm")).toBe(true);
+    expect(result.current.isTypeSupported(WEBM_MIME_TYPE)).toBe(true);
     expect(result.current.isTypeSupported("video/mp4")).toBe(false);
   });
 
   it("isTypeSupported() returns false when MediaRecorder is unavailable", () => {
     const { result } = renderHook(() => useMediaRecorder(fakeStream));
 
-    expect(result.current.isTypeSupported("video/webm")).toBe(false);
+    expect(result.current.isTypeSupported(WEBM_MIME_TYPE)).toBe(false);
   });
 
   it("does not throw when stop()/pause()/resume() are called while unsupported", () => {
@@ -254,5 +257,19 @@ describe(useMediaRecorder, () => {
     unmount();
 
     expect(MockMediaRecorder.instances[0]?.state).toBe("inactive");
+  });
+});
+
+describe("useMediaRecorder option stability", () => {
+  it("keeps start stable across renders with an inline options object", () => {
+    const stream = new MediaStream();
+    const { rerender, result } = renderHook(() =>
+      useMediaRecorder(stream, { mimeType: WEBM_MIME_TYPE }),
+    );
+    const first = result.current.start;
+
+    rerender();
+
+    expect(result.current.start).toBe(first);
   });
 });

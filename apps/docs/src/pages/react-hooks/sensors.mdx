@@ -227,29 +227,12 @@ const dpr = useDevicePixelRatio();
 const hasTouch = useTouchSupport();
 ```
 
-## useUserAgentData
-
-[`navigator.userAgentData`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API)'s low-entropy fields (`brands`, `mobile`, `platform`) — a structured, Chromium-only replacement for parsing `navigator.userAgent` (see [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData#browser_compatibility)). A static device capability — doesn't change at runtime. `undefined` — the SSR-safe default — where User-Agent Client Hints is unsupported.
-
-```tsx
-const uaData = useUserAgentData();
-const isMobile = uaData?.mobile ?? false;
-```
-
 ## useCookieEnabled
 
 [`navigator.cookieEnabled`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/cookieEnabled). A static capability — doesn't change at runtime. `false` — the SSR-safe default — during server rendering.
 
 ```tsx
 const cookiesEnabled = useCookieEnabled();
-```
-
-## useVirtualKeyboard
-
-[`navigator.virtualKeyboard`](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API)'s `boundingRect` (Chromium-only VirtualKeyboard API — see [browser compatibility](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API#browser_compatibility)), updating on its `geometrychange` event. Falls back to `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering, before the client subscribes, and where the API is unsupported.
-
-```tsx
-const { height } = useVirtualKeyboard(); // on-screen keyboard height, in px
 ```
 
 ## usePrintMode
@@ -277,6 +260,97 @@ notify("Done!", { body: "Your export finished." });
 ```tsx
 const fontsReady = useFontsReady();
 if (!fontsReady) return <Skeleton />;
+```
+
+## useBrowserEngine
+
+Identifies the browser's rendering engine — `"blink"` (Chrome, Edge, Opera, and other Chromium browsers), `"gecko"` (Firefox), or `"webkit"` (Safari) — using feature detection instead of parsing `navigator.userAgent`, per [MDN's guidance against user-agent sniffing](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Browser_detection_using_the_user_agent). `"unknown"` is also the safe default for server rendering.
+
+This is a best-effort heuristic, meant for the rare cross-engine quirk that no single feature check covers — for example, only Safari requires a `requestPermission()` gesture before [`useDeviceOrientation`](#usedeviceorientation)/[`useDeviceMotion`](#usedevicemotion) report values. Prefer detecting the specific feature or API you need over branching on the engine when you can.
+
+```tsx
+const engine = useBrowserEngine();
+const { requestPermission } = useDeviceOrientation();
+
+return engine === "webkit" ? (
+  <button onClick={requestPermission}>Enable tilt controls</button>
+) : null;
+```
+
+## useExperimentalIdleDetector
+
+Wraps the [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API)'s `IdleDetector` — reports `userState` (`"active"`/`"idle"`) and `screenState` (`"locked"`/`"unlocked"`), updating on its `change` event. `start()` requests the `"idle-detection"` permission first (resolving `false` if denied), then begins reporting; `stop()` tears the detector down. Both states stay `undefined` — the SSR-safe default — until `start()` resolves `true`.
+
+Experimental per MDN, Chromium-only, requires a secure context — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API#browser_compatibility).
+
+```tsx
+const { userState, screenState, start, supported } = useExperimentalIdleDetector();
+<button onClick={() => start({ threshold: 60_000 })} disabled={!supported}>
+  Watch for idle
+</button>;
+```
+
+## useExperimentalLocalFonts
+
+Wraps [`window.queryLocalFonts()`](https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API) (Local Font Access API) — `query()` prompts for the `"local-fonts"` permission on first call and resolves the user's locally installed fonts, or `undefined` when the user denies the prompt or the API is unsupported.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Local_Font_Access_API#browser_compatibility).
+
+```tsx
+const { query, supported } = useExperimentalLocalFonts();
+const fonts = supported ? await query() : undefined;
+```
+
+## useExperimentalNfc
+
+Wraps the [Web NFC API](https://developer.mozilla.org/en-US/docs/Web/API/Web_NFC_API)'s `NDEFReader` — `scan()` prompts for the `"nfc"` permission and starts listening for tags, resolving `false` when the API is missing or the user denies it; every tag that comes into range then updates `reading` with its `serialNumber` and raw `records`. `stop()` aborts the scan. `write()` and `makeReadOnly()` act on the next tag in range, each resolving `false` rather than throwing when the tag can't be written. `error` holds the last failure — a rejected call, or a tag that couldn't be decoded.
+
+Records are handed over undecoded: `data` is a `DataView`, so text records are read with a `TextDecoder` built from the record's own `encoding`.
+
+Experimental per MDN, Chromium on Android only, and gated behind a secure context and a user gesture — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Web_NFC_API#browser_compatibility).
+
+```tsx
+const { scan, reading, supported } = useExperimentalNfc();
+<button onClick={() => scan()} disabled={!supported}>
+  Scan a tag
+</button>;
+{
+  reading ? <p>Tag {reading.serialNumber}</p> : null;
+}
+```
+
+## useExperimentalUserAgentData
+
+[`navigator.userAgentData`](https://developer.mozilla.org/en-US/docs/Web/API/User-Agent_Client_Hints_API)'s low-entropy fields (`brands`, `mobile`, `platform`) — a structured replacement for parsing `navigator.userAgent`. A static device capability — doesn't change at runtime. `undefined` — the SSR-safe default — where User-Agent Client Hints is unsupported.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData#browser_compatibility).
+
+```tsx
+const uaData = useExperimentalUserAgentData();
+const isMobile = uaData?.mobile ?? false;
+```
+
+## useExperimentalVirtualKeyboard
+
+[`navigator.virtualKeyboard`](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API)'s `boundingRect`, updating on its `geometrychange` event. Falls back to `{ x: 0, y: 0, width: 0, height: 0 }` during server rendering, before the client subscribes, and where the API is unsupported.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API#browser_compatibility).
+
+```tsx
+const { height } = useExperimentalVirtualKeyboard(); // on-screen keyboard height, in px
+```
+
+## useExperimentalWindowManagement
+
+Wraps the [Window Management API](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API) — for placing windows across multiple screens. `isExtended` mirrors `window.screen.isExtended` (`true` once more than one display is connected), updating on the `screen`'s `change` event and needing no permission prompt. `requestPermission()` calls `window.getScreenDetails()`, resolving `false` when the API is missing or the user denies it; once granted, `screens` (every connected display) and `currentScreen` (the one showing this window) populate and stay live, updating on the underlying `screenschange`/`currentscreenchange` events. `screens`/`currentScreen` stay empty/`undefined` — the SSR-safe default — until permission is granted.
+
+Experimental per MDN, Chromium-only, not Baseline — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Window_Management_API#browser_compatibility).
+
+```tsx
+const { isExtended, screens, currentScreen, requestPermission } = useExperimentalWindowManagement();
+<button onClick={requestPermission} disabled={!isExtended}>
+  Show all {screens.length} screens
+</button>;
 ```
 
 ## See Also

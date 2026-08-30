@@ -3,9 +3,17 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useNotificationPermission } from "./use-notification-permission.ts";
 
+interface MockNotificationState {
+  permission: NotificationPermission;
+}
+
 class MockNotification {
-  static permission: NotificationPermission = "default";
-  static requestPermission = vi.fn<() => Promise<NotificationPermission>>();
+  static readonly state: MockNotificationState = { permission: "default" };
+  static readonly requestPermission = vi.fn<() => Promise<NotificationPermission>>();
+
+  static get permission(): NotificationPermission {
+    return MockNotification.state.permission;
+  }
 
   readonly title: string;
   readonly body: string | undefined;
@@ -18,12 +26,12 @@ class MockNotification {
   close() {}
 }
 
-function setMockNotification(permission: NotificationPermission) {
-  MockNotification.permission = permission;
+const setMockNotification = (permission: NotificationPermission) => {
+  MockNotification.state.permission = permission;
   Object.defineProperty(window, "Notification", { configurable: true, value: MockNotification });
-}
+};
 
-describe(useNotificationPermission, () => {
+describe("useNotificationPermission", () => {
   it("reports the current Notification.permission", () => {
     setMockNotification("default");
 
@@ -65,7 +73,7 @@ describe(useNotificationPermission, () => {
   });
 
   it('requestPermission resolves "denied" without calling the API when unsupported', async () => {
-    Object.defineProperty(window, "Notification", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "Notification");
 
     const { result } = renderHook(() => useNotificationPermission());
     expect(result.current.permission).toBe("unsupported");

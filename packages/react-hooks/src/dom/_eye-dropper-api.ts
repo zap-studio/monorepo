@@ -1,11 +1,10 @@
-/** Minimal local model of the EyeDropper API — Chromium-only, not declared in every TypeScript DOM lib. */
+/** A simple local copy of the EyeDropper API types. It only works in Chromium browsers. */
 export interface EyeDropperOpenOptions {
   signal?: AbortSignal;
 }
 
-/** Minimal local model of the EyeDropper API — Chromium-only, not declared in every TypeScript DOM lib. */
-// fallow-ignore-next-line unused-type
-export interface EyeDropperResult {
+/** A simple local copy of the EyeDropper API types. It only works in Chromium browsers. */
+interface EyeDropperResult {
   sRGBHex: string;
 }
 
@@ -18,14 +17,14 @@ interface EyeDropperWindow {
 }
 
 /**
- * Guards `typeof window === "undefined"` because `useEyeDropper` reads
- * this synchronously in the hook body, on every render including SSR —
- * not just from an effect.
+ * Checks for `typeof window === "undefined"`. This is needed because
+ * `useExperimentalEyeDropper` calls this function directly during render
+ * (including on the server), not just inside an effect.
  */
 export const getEyeDropperConstructor = (): EyeDropperConstructor | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
-  // SAFETY: window.EyeDropper is read as optional here regardless of how (or whether) the resolved TypeScript version's DOM lib declares it, so a browser where it's genuinely absent (Safari, Firefox) degrades to undefined rather than throwing.
+  // SAFETY: EyeDropper is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as EyeDropperWindow).EyeDropper;
 };

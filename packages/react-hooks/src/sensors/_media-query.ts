@@ -3,9 +3,7 @@ import { useCallback, useSyncExternalStore } from "react";
 const getServerSnapshot = (): boolean => false;
 
 /**
- * Shared `matchMedia` subscription behind `useMediaQuery` and `useIsMobile`.
- * Not itself a public hook — hook files never import one another, so shared
- * logic lives here (mirrors `@zap-studio/retry`'s `_otel.ts` convention).
+ * Shared `matchMedia` subscription used by `useMediaQuery` and `useIsMobile`.
  */
 export const useMediaQueryMatch = (query: string): boolean => {
   const subscribe = useCallback(

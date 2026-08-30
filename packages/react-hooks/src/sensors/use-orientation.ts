@@ -28,10 +28,10 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * `screen.orientation`'s `angle`/`type`, updating on its `change` event and
- * the legacy `window` `orientationchange` event. Falls back to
- * `{ angle: 0 }` during server rendering, before the client subscribes, and
- * where the ScreenOrientation API is unsupported.
+ * Gives you `screen.orientation`'s `angle` and `type`. It updates when the
+ * `change` event fires, or the older `orientationchange` window event.
+ * Falls back to `{ angle: 0 }` during server rendering, before the client
+ * connects, and in browsers that don't support the ScreenOrientation API.
  *
  * @example
  * ```tsx

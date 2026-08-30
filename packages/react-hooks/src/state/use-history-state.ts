@@ -1,12 +1,23 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { isUpdaterFunction } from "./_updater.ts";
 
 const DEFAULT_CAPACITY = 100;
 
+/**
+ * `past` and `future` are both stored newest-first, so the entry `undo()`
+ * and `redo()` need is always the head. That lets {@link isNonEmptyStack}
+ * narrow them to a tuple with a definite first element, which a `.length`
+ * check alone cannot express.
+ */
 interface HistoryStack<T> {
   future: readonly T[];
   past: readonly T[];
   present: T;
 }
+
+const isNonEmptyStack = <T>(entries: readonly T[]): entries is readonly [T, ...T[]] =>
+  entries.length > 0;
 
 /** The shape returned by `useHistoryState`. */
 export interface UseHistoryStateResult<T> {
@@ -20,13 +31,14 @@ export interface UseHistoryStateResult<T> {
 }
 
 /**
- * State with undo/redo, backed by a bounded history stack — `set()` pushes
- * the previous value onto `past` (dropping the oldest entry once `past`
- * reaches `capacity`) and clears `future`; `undo()`/`redo()` move the
- * boundary between `past`/`future` without discarding either side, so
- * redoing after an undo restores exactly what was undone. `reset()`
- * replaces `value` and clears both stacks. Generic state utility, unrelated
- * to the browser History API — see `usePopState`/`useNavigation` for that.
+ * State with undo/redo, backed by a history stack that has a maximum
+ * size. `set()` saves the previous value into `past` and clears `future`.
+ * Once `past` reaches `capacity`, its oldest entry is dropped. `undo()`
+ * and `redo()` move values between `past` and `future` without deleting
+ * them, so redoing after an undo brings back exactly what you undid.
+ * `reset()` replaces the value and clears both `past` and `future`. This
+ * is a general state helper — it has nothing to do with the browser's
+ * History API. See `usePopState`/`useNavigation` for that.
  *
  * @example
  * ```tsx
@@ -45,28 +57,27 @@ export const useHistoryState = <T>(
     present: initialValue,
   });
   const capacityRef = useRef(capacity);
-  capacityRef.current = capacity;
+  useEffect(() => {
+    capacityRef.current = capacity;
+  });
 
   const set = useCallback((next: T | ((prev: T) => T)) => {
     setStack((prev) => {
-      // SAFETY: T | ((prev: T) => T); the typeof check narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
-      const resolved = typeof next === "function" ? (next as (prev: T) => T)(prev.present) : next;
-      const past = [...prev.past, prev.present].slice(-capacityRef.current);
+      const resolved = isUpdaterFunction(next) ? next(prev.present) : next;
+      const past = [prev.present, ...prev.past].slice(0, capacityRef.current);
       return { future: [], past, present: resolved };
     });
   }, []);
 
   const undo = useCallback(() => {
     setStack((prev) => {
-      if (prev.past.length === 0) {
+      if (!isNonEmptyStack(prev.past)) {
         return prev;
       }
-      const previous = prev.past.at(-1);
-      // SAFETY: the length check above guarantees at least one element, so `at(-1)` is never undefined here.
-      const present = previous as T;
+      const [present, ...past] = prev.past;
       return {
         future: [prev.present, ...prev.future],
-        past: prev.past.slice(0, -1),
+        past,
         present,
       };
     });
@@ -74,13 +85,11 @@ export const useHistoryState = <T>(
 
   const redo = useCallback(() => {
     setStack((prev) => {
-      const [next, ...rest] = prev.future;
-      if (prev.future.length === 0) {
+      if (!isNonEmptyStack(prev.future)) {
         return prev;
       }
-      // SAFETY: the length check above guarantees at least one element, so the destructured first element is never undefined here.
-      const present = next as T;
-      return { future: rest, past: [...prev.past, prev.present], present };
+      const [present, ...future] = prev.future;
+      return { future, past: [prev.present, ...prev.past], present };
     });
   }, []);
 

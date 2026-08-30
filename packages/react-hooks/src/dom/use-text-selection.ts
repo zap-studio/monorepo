@@ -12,9 +12,10 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * The current page text selection, via `window.getSelection()`, updating
- * on the document's `selectionchange` event. Falls back to `""` during
- * server rendering and before the client subscribes.
+ * The text currently selected on the page, read with
+ * `window.getSelection()`. It updates whenever the document's
+ * `selectionchange` event fires. Falls back to `""` during server
+ * rendering, and before the client starts listening.
  *
  * @example
  * ```tsx

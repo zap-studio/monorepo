@@ -1,14 +1,14 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { createMatchMediaMock } from "../sensors/_media-query-test-utils.ts";
+import { createMatchMediaMock } from "../../tests/_media-query-test-utils.ts";
 import { useTheme } from "./use-theme.ts";
 
 afterEach(() => {
   window.localStorage.clear();
 });
 
-describe(useTheme, () => {
+describe("useTheme", () => {
   it('defaults to theme: "system"', () => {
     const { matchMedia } = createMatchMediaMock(false);
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);

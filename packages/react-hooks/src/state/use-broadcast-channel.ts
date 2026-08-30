@@ -10,15 +10,14 @@ export interface UseBroadcastChannelResult<T> {
 const isSupported = (): boolean => typeof BroadcastChannel !== "undefined";
 
 /**
- * Pub/sub state shared across same-origin tabs/windows/workers via the
- * Broadcast Channel API — every `useBroadcastChannel(name)` instance
- * (in any same-origin browsing context, including this one) that posts a
- * message updates every other instance's `lastMessage`. Distinct from
- * `useWindowMessage`: this needs no target reference or origin handshake
- * (same-origin, name-addressed), while that handles cross-origin
- * window/iframe/popup communication where an explicit `targetOrigin` is
- * required. `supported: false` — with `postMessage()` no-oping — where
- * the Broadcast Channel API doesn't exist.
+ * Shares state across same-origin tabs, windows, and workers using the
+ * Broadcast Channel API. Every `useBroadcastChannel(name)` instance with
+ * the same name and origin gets the message when one of them calls
+ * `postMessage()`. This is different from `useWindowMessage`: that hook
+ * is for cross-origin windows and needs a target and an origin, while
+ * this hook works by channel name only, within the same origin. If the
+ * browser doesn't support the Broadcast Channel API, `supported` is
+ * `false` and `postMessage()` does nothing.
  *
  * @example
  * ```tsx

@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useKeyPress } from "./use-key-press.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const isPressed = useKeyPress("Shift");
   return isPressed ? "true" : "false";
-}
+};
 
-describe(useKeyPress, () => {
+describe("useKeyPress", () => {
   it("renders false on the server, before any key event can fire", () => {
     const html = renderToString(createElement(TestComponent));
 

@@ -45,12 +45,12 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
    * @param onfulfilled - Called with the resolved `Result<T, E>`.
    * @param onrejected - Called if the underlying promise rejects.
    */
-  // oxlint-disable-next-line unicorn/no-thenable -- ResultAsync is designed to be thenable, so `await resultAsync` resolves to the wrapped Result directly; see the class doc.
+  // oxlint-disable-next-line unicorn/no-thenable -- ResultAsync is thenable on purpose, so `await resultAsync` gives back the wrapped Result; see the class doc.
   then<TResult1 = Result<T, E>, TResult2 = never>(
     onfulfilled?: ((value: Result<T, E>) => PromiseLike<TResult1> | TResult1) | null,
     onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | null,
   ): PromiseLike<TResult1 | TResult2> {
-    // oxlint-disable-next-line github/no-then -- implements PromiseLike; delegating to the native `.then` is the correct implementation, not an async/await opportunity.
+    // oxlint-disable-next-line github/no-then -- this implements PromiseLike. Calling the native `.then` is the right code here, not a place for async/await.
     return this.promise.then(onfulfilled, onrejected);
   }
 

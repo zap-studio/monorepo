@@ -3,11 +3,9 @@ import { useSyncExternalStore } from "react";
 const subscribe = () => () => {};
 
 /**
- * Shared mount-state primitive behind `useIsClient` and `useIsServer`. Not
- * itself a public hook — hook files never import one another, so shared
- * logic lives here (mirrors `@zap-studio/retry`'s `_otel.ts` convention).
+ * Shared mount-state logic used by `useIsClient` and `useIsServer`.
  *
- * Returns `clientValue` once mounted on the client, `serverValue` during
+ * Returns `clientValue` once mounted on the client, or `serverValue` during
  * server rendering.
  */
 export const useMountState = (clientValue: boolean, serverValue: boolean): boolean =>

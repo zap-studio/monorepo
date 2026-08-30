@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useSpeechSynthesis } from "./use-speech-synthesis.ts";
 
 class MockUtterance extends EventTarget {
@@ -14,11 +15,13 @@ class MockUtterance extends EventTarget {
   }
 }
 
-function installMockSpeechSynthesis() {
-  const speak = vi.fn((utterance: SpeechSynthesisUtterance) => {
-    utterance.dispatchEvent(new Event("start"));
-  });
-  const cancel = vi.fn();
+const installMockSpeechSynthesis = () => {
+  const speak = vi.fn<(utterance: SpeechSynthesisUtterance) => void>(
+    (utterance: SpeechSynthesisUtterance) => {
+      utterance.dispatchEvent(new Event("start"));
+    },
+  );
+  const cancel = vi.fn<() => void>();
   Object.defineProperty(window, "speechSynthesis", {
     configurable: true,
     value: { cancel, speak },
@@ -28,17 +31,14 @@ function installMockSpeechSynthesis() {
     value: MockUtterance,
   });
   return { cancel, speak };
-}
+};
 
 afterEach(() => {
-  Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
-  Object.defineProperty(window, "SpeechSynthesisUtterance", {
-    configurable: true,
-    value: undefined,
-  });
+  Reflect.deleteProperty(window, "speechSynthesis");
+  Reflect.deleteProperty(window, "SpeechSynthesisUtterance");
 });
 
-describe(useSpeechSynthesis, () => {
+describe("useSpeechSynthesis", () => {
   it("reports supported: true when window.speechSynthesis exists", () => {
     installMockSpeechSynthesis();
 
@@ -69,29 +69,28 @@ describe(useSpeechSynthesis, () => {
   it("applies rate/pitch/lang/voice options to the utterance", async () => {
     const { speak } = installMockSpeechSynthesis();
     const { result } = renderHook(() => useSpeechSynthesis());
-    const voice = {} as SpeechSynthesisVoice;
+    const voice = asTestDouble<SpeechSynthesisVoice>({});
 
     await act(async () => {
       result.current.speak("hello", { lang: "fr-FR", pitch: 1.5, rate: 0.5, voice });
     });
 
-    const utterance = speak.mock.calls[0]?.[0] as SpeechSynthesisUtterance;
-    expect(utterance.lang).toBe("fr-FR");
-    expect(utterance.pitch).toBe(1.5);
-    expect(utterance.rate).toBe(0.5);
-    expect(utterance.voice).toBe(voice);
+    const [utterance] = speak.mock.calls[0] ?? [];
+    expect(utterance?.lang).toBe("fr-FR");
+    expect(utterance?.pitch).toBe(1.5);
+    expect(utterance?.rate).toBe(0.5);
+    expect(utterance?.voice).toBe(voice);
   });
 
   it("becomes speaking: false when the utterance ends", async () => {
-    installMockSpeechSynthesis();
+    const { speak } = installMockSpeechSynthesis();
     const { result } = renderHook(() => useSpeechSynthesis());
 
     let utterance: SpeechSynthesisUtterance | undefined;
     await act(async () => {
       result.current.speak("hello");
     });
-    utterance = (window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock
-      .calls[0]?.[0] as SpeechSynthesisUtterance;
+    [utterance] = speak.mock.calls[0] ?? [];
 
     await act(async () => {
       utterance?.dispatchEvent(new Event("end"));
@@ -101,17 +100,16 @@ describe(useSpeechSynthesis, () => {
   });
 
   it("becomes speaking: false when the utterance errors", async () => {
-    installMockSpeechSynthesis();
+    const { speak } = installMockSpeechSynthesis();
     const { result } = renderHook(() => useSpeechSynthesis());
 
     await act(async () => {
       result.current.speak("hello");
     });
-    const utterance = (window.speechSynthesis.speak as ReturnType<typeof vi.fn>).mock
-      .calls[0]?.[0] as SpeechSynthesisUtterance;
+    const [utterance] = speak.mock.calls[0] ?? [];
 
     await act(async () => {
-      utterance.dispatchEvent(new Event("error"));
+      utterance?.dispatchEvent(new Event("error"));
     });
 
     expect(result.current.speaking).toBe(false);

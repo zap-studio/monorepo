@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useIsServer } from "./use-is-server.ts";
 
-describe(useIsServer, () => {
+describe("useIsServer", () => {
   it("is false once mounted on the client", () => {
     const { result, unmount } = renderHook(() => useIsServer());
 

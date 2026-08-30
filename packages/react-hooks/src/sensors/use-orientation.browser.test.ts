@@ -1,10 +1,13 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useOrientation } from "./use-orientation.ts";
 
-function createOrientationMock(initial: Pick<ScreenOrientation, "angle" | "type">) {
-  const info = new EventTarget() as unknown as ScreenOrientation;
+const LANDSCAPE_PRIMARY = "landscape-primary";
+
+const createOrientationMock = (initial: Pick<ScreenOrientation, "angle" | "type">) => {
+  const info = asTestDouble<ScreenOrientation>(new EventTarget());
   let state = { ...initial };
 
   Object.defineProperties(info, {
@@ -19,23 +22,23 @@ function createOrientationMock(initial: Pick<ScreenOrientation, "angle" | "type"
       info.dispatchEvent(new Event("change"));
     },
   };
-}
+};
 
-function setScreenOrientation(info: ScreenOrientation | undefined) {
+const setScreenOrientation = (info: ScreenOrientation | undefined) => {
   Object.defineProperty(screen, "orientation", {
     configurable: true,
     get: () => info,
   });
-}
+};
 
-describe(useOrientation, () => {
+describe("useOrientation", () => {
   it("reports the current orientation from screen.orientation", () => {
-    const { info } = createOrientationMock({ angle: 90, type: "landscape-primary" });
+    const { info } = createOrientationMock({ angle: 90, type: LANDSCAPE_PRIMARY });
     setScreenOrientation(info);
 
     const { result } = renderHook(() => useOrientation());
 
-    expect(result.current).toEqual({ angle: 90, type: "landscape-primary" });
+    expect(result.current).toEqual({ angle: 90, type: LANDSCAPE_PRIMARY });
   });
 
   it("updates when screen.orientation fires a change event", async () => {
@@ -59,11 +62,11 @@ describe(useOrientation, () => {
     const { result } = renderHook(() => useOrientation());
 
     await act(async () => {
-      setState({ angle: 90, type: "landscape-primary" });
+      setState({ angle: 90, type: LANDSCAPE_PRIMARY });
       window.dispatchEvent(new Event("orientationchange"));
     });
 
-    expect(result.current).toEqual({ angle: 90, type: "landscape-primary" });
+    expect(result.current).toEqual({ angle: 90, type: LANDSCAPE_PRIMARY });
   });
 
   it("falls back to angle 0 when screen.orientation is unsupported", () => {
@@ -71,6 +74,6 @@ describe(useOrientation, () => {
 
     const { result } = renderHook(() => useOrientation());
 
-    expect(result.current).toEqual({ angle: 0, type: undefined });
+    expect(result.current).toEqual({ angle: 0 });
   });
 });

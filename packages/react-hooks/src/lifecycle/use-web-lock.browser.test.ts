@@ -1,9 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWebLock } from "./use-web-lock.ts";
 
-function setLocksSupport(
+const setLocksSupport = (
   request:
     | ((
         name: string,
@@ -11,18 +12,18 @@ function setLocksSupport(
         callback: (lock: Lock | null) => unknown,
       ) => Promise<unknown>)
     | undefined,
-) {
+) => {
   Object.defineProperty(navigator, "locks", {
     configurable: true,
     value: request ? { request } : undefined,
   });
-}
+};
 
 afterEach(() => {
   setLocksSupport(undefined);
 });
 
-describe(useWebLock, () => {
+describe("useWebLock", () => {
   it("reports supported: true when navigator.locks exists", () => {
     setLocksSupport(() => Promise.resolve(undefined));
 
@@ -41,9 +42,14 @@ describe(useWebLock, () => {
   });
 
   it('runExclusive() requests the named lock, holds it, and becomes "released"', async () => {
-    const request = vi.fn(
-      async (name: string, options: LockOptions, callback: (lock: Lock | null) => unknown) =>
-        callback({ mode: options.mode ?? "exclusive", name } as Lock),
+    const request = vi.fn<
+      (
+        name: string,
+        options: LockOptions,
+        callback: (lock: Lock | null) => unknown,
+      ) => Promise<unknown>
+    >(async (name: string, options: LockOptions, callback: (lock: Lock | null) => unknown) =>
+      callback(asTestDouble<Lock>({ mode: options.mode ?? "exclusive", name })),
     );
     setLocksSupport(request);
     const { result } = renderHook(() => useWebLock("my-lock"));
@@ -96,5 +102,16 @@ describe(useWebLock, () => {
 
     expect(value).toBeUndefined();
     expect(result.current.status).toBe("error");
+  });
+});
+
+describe("useWebLock option stability", () => {
+  it("keeps runExclusive stable across renders with an inline options object", () => {
+    const { rerender, result } = renderHook(() => useWebLock("cart", { mode: "shared" }));
+    const first = result.current.runExclusive;
+
+    rerender();
+
+    expect(result.current.runExclusive).toBe(first);
   });
 });

@@ -1,20 +1,16 @@
 import { renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useNavigationType } from "./use-navigation-type.ts";
 
-const originalGetEntriesByType = performance.getEntriesByType.bind(performance);
-
-afterEach(() => {
-  performance.getEntriesByType = originalGetEntriesByType;
-});
-
-describe(useNavigationType, () => {
+describe("useNavigationType", () => {
   it("reads the type off the navigation timing entry", () => {
-    performance.getEntriesByType = ((type: string) =>
+    vi.spyOn(performance, "getEntriesByType").mockImplementation((type: string) =>
       type === "navigation"
-        ? [{ type: "reload" } as unknown as PerformanceNavigationTiming]
-        : []) as typeof performance.getEntriesByType;
+        ? [asTestDouble<PerformanceNavigationTiming>({ entryType: "navigation", type: "reload" })]
+        : [],
+    );
 
     const { result } = renderHook(() => useNavigationType());
 
@@ -22,7 +18,7 @@ describe(useNavigationType, () => {
   });
 
   it('falls back to "navigate" when there is no navigation timing entry', () => {
-    performance.getEntriesByType = (() => []) as typeof performance.getEntriesByType;
+    vi.spyOn(performance, "getEntriesByType").mockReturnValue([]);
 
     const { result } = renderHook(() => useNavigationType());
 
@@ -32,7 +28,7 @@ describe(useNavigationType, () => {
   it('falls back to "navigate" when the Navigation Timing API is unsupported', () => {
     Object.defineProperty(performance, "getEntriesByType", {
       configurable: true,
-      value: undefined,
+      value: null,
     });
 
     const { result } = renderHook(() => useNavigationType());

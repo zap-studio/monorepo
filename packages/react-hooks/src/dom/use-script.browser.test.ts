@@ -4,16 +4,17 @@ import { describe, expect, it } from "vitest";
 import { useScript } from "./use-script.ts";
 
 let counter = 0;
-function uniqueSrc(): string {
+const uniqueSrc = (): string => {
   counter += 1;
   return `https://example.com/script-${counter}.js`;
-}
+};
 
-function scriptFor(src: string): HTMLScriptElement | null {
+const scriptFor = (src: string): HTMLScriptElement | null => {
+  // oxlint-disable-next-line testing-library/no-node-access -- a <script> tag has no ARIA role and never renders visible content, so no Testing Library query can reach it. Direct DOM access is the only way to assert it exists.
   return document.querySelector(`script[src="${src}"]`);
-}
+};
 
-describe(useScript, () => {
+describe("useScript", () => {
   it("starts with status: loading and appends a <script> tag", () => {
     const src = uniqueSrc();
     const { result } = renderHook(() => useScript(src));
@@ -49,6 +50,7 @@ describe(useScript, () => {
     renderHook(() => useScript(src));
     renderHook(() => useScript(src));
 
+    // oxlint-disable-next-line testing-library/no-node-access -- same reason as scriptFor above: a <script> tag has no ARIA role, so there is no query for it.
     expect(document.querySelectorAll(`script[src="${src}"]`)).toHaveLength(1);
   });
 

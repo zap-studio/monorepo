@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { useDeviceMotion } from "./use-device-motion.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { acceleration, interval, supported } = useDeviceMotion();
-  return [acceleration, interval, supported].join(",");
-}
+  return [acceleration === null ? "" : JSON.stringify(acceleration), interval, supported].join(",");
+};
 
-describe(useDeviceMotion, () => {
+describe("useDeviceMotion", () => {
   it("renders null acceleration and unsupported on the server", () => {
     const html = renderToString(createElement(TestComponent));
 

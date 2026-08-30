@@ -109,7 +109,7 @@ describe("orElse", () => {
 });
 
 describe("unwrapOr", () => {
-  it("returns the Some value", () => {
+  it("unwrapOr returns the Some value", () => {
     expect(pipe(some(1), unwrapOr(0))).toBe(1);
   });
 
@@ -119,7 +119,7 @@ describe("unwrapOr", () => {
 });
 
 describe("unwrapOrElse", () => {
-  it("returns the Some value", () => {
+  it("unwrapOrElse returns the Some value", () => {
     expect(
       pipe(
         some(1),
@@ -139,7 +139,7 @@ describe("unwrapOrElse", () => {
 });
 
 describe("unwrap", () => {
-  it("returns the Some value", () => {
+  it("unwrap returns the Some value", () => {
     expect(unwrap(some(42))).toBe(42);
   });
 

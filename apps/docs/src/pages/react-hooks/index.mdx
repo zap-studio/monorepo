@@ -18,8 +18,16 @@ Every hook also ships as its own standalone, side-effect-free module — import 
 ## Conventions
 
 - Every hook is available both from the top-level `.` barrel and from its own subpath (e.g. `@zap-studio/react-hooks/sensors/use-is-mobile`) — same function either way.
-- Hooks relying on private, non-semver-guaranteed APIs (react-dom internals, mostly) carry an `Unstable` marker in the hook's own name — `useUnstableFiber`, not a separate module — so the risk travels with every import and autocomplete hit, not just a path a reader might skip. See [Debug / Observability](/react-hooks/debug).
 - No hook file imports another hook file.
+
+### Unstable vs. Experimental
+
+Two different name markers warn about two different kinds of risk:
+
+- **`Unstable`** — the hook reads a private API with no public type, not guaranteed to stay the same shape between React versions. Only `useUnstableFiber` and `useUnstableRenderReason` carry this marker, both in [Debug / Observability](/react-hooks/debug): they walk react-dom's internal Fiber tree, the same private structure React DevTools itself reads. The risk is about **this package breaking on a React upgrade**, not about the browser.
+- **`Experimental`** — the hook wraps a browser Web API that MDN itself badges "Experimental," like the Idle Detection API or Web NFC. The hook's own code is stable; the risk is that **the browser API can change or ship in fewer browsers than you'd like**. Every `useExperimental*` hook still fails closed: `supported: false` (or the equivalent) wherever the underlying API doesn't exist, instead of throwing.
+
+A hook with neither marker is built entirely on public, standard APIs — safe to treat like any other hook in the package.
 
 ## Hooks by Category
 
@@ -33,7 +41,7 @@ Every hook also ships as its own standalone, side-effect-free module — import 
 - [Commerce](/react-hooks/commerce) — the Payment Request API (`usePaymentRequest`)
 - [Lifecycle](/react-hooks/lifecycle) — mount/unmount, timers, and async helpers (`useMount`, `useInterval`, `useAsync`, ...)
 - [State](/react-hooks/state) — local, persisted, and cross-tab state (`useLocalStorage`, `useIndexedDB`, `useBroadcastChannel`, ...)
-- [Debug / Observability](/react-hooks/debug) — render diagnostics built on private React internals (`useUnstableRenderCount`, `useUnstableFiber`, ...)
+- [Debug / Observability](/react-hooks/debug) — render diagnostics (`useRenderCount`, `useWhyDidYouUpdate`, `useUnstableFiber`, ...)
 
 ## Learn More
 

@@ -12,10 +12,11 @@ export interface UseWebSocketResult {
 }
 
 /**
- * WebSocket connection state (`"connecting" | "open" | "closed"`) plus
- * `send()`/`close()`, wrapping a `WebSocket` opened for `url` and torn
- * down on unmount or when `url` changes. Pass `undefined` to stay
- * disconnected (e.g. before an auth token is ready).
+ * Tracks a WebSocket connection state (`"connecting" | "open" | "closed"`)
+ * and gives you `send()`/`close()` functions. It wraps a `WebSocket`
+ * opened for `url`, and closes it when the component unmounts or when
+ * `url` changes. Pass `undefined` to stay disconnected, for example
+ * while waiting for an auth token.
  *
  * @example
  * ```tsx
@@ -30,6 +31,7 @@ export const useWebSocket = (url: string | undefined): UseWebSocketResult => {
 
   useEffect(() => {
     if (!url) {
+      // oxlint-disable-next-line react/set-state-in-effect -- we need this when `url` changes from a value to `undefined` after mount. It closes a socket that was open. On mount with no `url`, this call does nothing, because the state is already "closed".
       setStatus("closed");
       return undefined;
     }

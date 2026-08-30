@@ -19,11 +19,11 @@ export interface UseSpeechSynthesisResult {
 const isSupported = (): boolean => typeof window !== "undefined" && Boolean(window.speechSynthesis);
 
 /**
- * Wraps the Web Speech API's synthesis half (`window.speechSynthesis`) —
- * text-to-speech. `speaking` tracks the current utterance via its
- * `start`/`end`/`error` events. `supported: false` — the SSR-safe default
- * — where Speech Synthesis doesn't exist, and `speak()`/`cancel()` then
- * no-op.
+ * Wraps the text-to-speech part of the Web Speech API
+ * (`window.speechSynthesis`). `speaking` tracks the current utterance
+ * using its `start`, `end`, and `error` events. `supported` is `false`
+ * by default (safe for server-side rendering) when Speech Synthesis
+ * doesn't exist, and `speak()`/`cancel()` do nothing in that case.
  *
  * @example
  * ```tsx
@@ -34,28 +34,26 @@ const isSupported = (): boolean => typeof window !== "undefined" && Boolean(wind
 export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
   const supported = isSupported();
   const [speaking, setSpeaking] = useState(false);
+  const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
 
   const speak = useCallback((text: string, options: SpeakOptions = {}): void => {
     if (!isSupported()) {
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(text);
+    const newUtterance = new SpeechSynthesisUtterance(text);
     if (options.voice) {
-      utterance.voice = options.voice;
+      newUtterance.voice = options.voice;
     }
     if (options.rate !== undefined) {
-      utterance.rate = options.rate;
+      newUtterance.rate = options.rate;
     }
     if (options.pitch !== undefined) {
-      utterance.pitch = options.pitch;
+      newUtterance.pitch = options.pitch;
     }
     if (options.lang !== undefined) {
-      utterance.lang = options.lang;
+      newUtterance.lang = options.lang;
     }
-    utterance.addEventListener("start", () => setSpeaking(true));
-    utterance.addEventListener("end", () => setSpeaking(false));
-    utterance.addEventListener("error", () => setSpeaking(false));
-    window.speechSynthesis.speak(utterance);
+    setUtterance(newUtterance);
   }, []);
 
   const cancel = useCallback((): void => {
@@ -65,6 +63,25 @@ export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
     window.speechSynthesis.cancel();
     setSpeaking(false);
   }, []);
+
+  useEffect(() => {
+    if (!utterance) {
+      return undefined;
+    }
+    const handleStart = () => setSpeaking(true);
+    const handleEnd = () => setSpeaking(false);
+    const handleError = () => setSpeaking(false);
+
+    utterance.addEventListener("start", handleStart);
+    utterance.addEventListener("end", handleEnd);
+    utterance.addEventListener("error", handleError);
+    window.speechSynthesis.speak(utterance);
+    return () => {
+      utterance.removeEventListener("start", handleStart);
+      utterance.removeEventListener("end", handleEnd);
+      utterance.removeEventListener("error", handleError);
+    };
+  }, [utterance]);
 
   useEffect(() => cancel, [cancel]);
 

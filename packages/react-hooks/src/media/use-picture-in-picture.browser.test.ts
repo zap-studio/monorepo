@@ -2,28 +2,29 @@ import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePictureInPicture, type UsePictureInPictureResult } from "./use-picture-in-picture.ts";
 
-function setPictureInPictureSupport(supported: boolean) {
+const setPictureInPictureSupport = (supported: boolean) => {
   Object.defineProperty(document, "pictureInPictureEnabled", {
     configurable: true,
     value: supported,
   });
-}
+};
 
-function setPictureInPictureElement(element: Element | null) {
+const setPictureInPictureElement = (element: Element | null) => {
   Object.defineProperty(document, "pictureInPictureElement", {
     configurable: true,
     value: element,
   });
-}
+};
 
-function renderPipVideo() {
+const renderPipVideo = () => {
   let latest!: UsePictureInPictureResult<HTMLVideoElement>;
-  function TestComponent() {
+  const TestComponent = () => {
     latest = usePictureInPicture<HTMLVideoElement>();
     return createElement("video", { ref: latest.ref });
-  }
+  };
   const { unmount } = render(createElement(TestComponent));
   return {
     get current() {
@@ -31,14 +32,14 @@ function renderPipVideo() {
     },
     unmount,
   };
-}
+};
 
 afterEach(() => {
   setPictureInPictureSupport(true);
   setPictureInPictureElement(null);
 });
 
-describe(usePictureInPicture, () => {
+describe("usePictureInPicture", () => {
   it("reports supported: true when document.pictureInPictureEnabled is true", () => {
     setPictureInPictureSupport(true);
 
@@ -58,8 +59,8 @@ describe(usePictureInPicture, () => {
 
   it("enter() requests PiP on the ref'd element", async () => {
     setPictureInPictureSupport(true);
-    const requestPictureInPicture = vi.fn(() => Promise.resolve());
-    const element = { requestPictureInPicture } as unknown as HTMLVideoElement;
+    const requestPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
+    const element = asTestDouble<HTMLVideoElement>({ requestPictureInPicture });
 
     const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());
     result.current.ref.current = element;
@@ -109,7 +110,7 @@ describe(usePictureInPicture, () => {
   it("exit() calls document.exitPictureInPicture() when this element is active", async () => {
     setPictureInPictureSupport(true);
     const element = document.createElement("video");
-    const exitPictureInPicture = vi.fn(() => Promise.resolve());
+    const exitPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitPictureInPicture", {
       configurable: true,
       value: exitPictureInPicture,
@@ -130,7 +131,7 @@ describe(usePictureInPicture, () => {
     setPictureInPictureSupport(true);
     const element = document.createElement("video");
     const other = document.createElement("video");
-    const exitPictureInPicture = vi.fn(() => Promise.resolve());
+    const exitPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
     Object.defineProperty(document, "exitPictureInPicture", {
       configurable: true,
       value: exitPictureInPicture,

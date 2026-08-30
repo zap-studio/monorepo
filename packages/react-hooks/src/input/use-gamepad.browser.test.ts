@@ -3,33 +3,40 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { useGamepad } from "./use-gamepad.ts";
 
-function makeGamepad(overrides: Partial<Gamepad> = {}): Gamepad {
-  return {
+// `useGamepad` never reads `vibrationActuator` (see COMPARED_FIELDS in use-gamepad.ts), so this
+// stub only needs to satisfy `GamepadHapticActuator`'s two methods, never actually call them.
+const noopVibrationActuator: GamepadHapticActuator = {
+  playEffect: () => Promise.resolve("complete"),
+  reset: () => Promise.resolve("complete"),
+};
+
+const makeGamepad = (overrides: Partial<Gamepad> = {}): Gamepad => {
+  const gamepad: Gamepad = {
     axes: [],
     buttons: [],
     connected: true,
-    hapticActuators: [],
     id: "Test Gamepad",
     index: 0,
     mapping: "standard",
     timestamp: 0,
-    vibrationActuator: null,
+    vibrationActuator: noopVibrationActuator,
     ...overrides,
-  } as Gamepad;
-}
+  };
+  return gamepad;
+};
 
-function setGamepads(gamepads: Array<Gamepad | null> | undefined) {
+const setGamepads = (gamepads: Array<Gamepad | null> | undefined) => {
   Object.defineProperty(navigator, "getGamepads", {
     configurable: true,
     value: gamepads === undefined ? undefined : () => gamepads,
   });
-}
+};
 
 afterEach(() => {
   setGamepads([]);
 });
 
-describe(useGamepad, () => {
+describe("useGamepad", () => {
   it("starts with no connected gamepads", () => {
     setGamepads([]);
 
@@ -39,11 +46,12 @@ describe(useGamepad, () => {
   });
 
   it("reflects gamepads already present on mount", () => {
-    setGamepads([makeGamepad({ id: "Pad A", index: 0 })]);
+    const pad = makeGamepad({ id: "Pad A", index: 0 });
+    setGamepads([pad]);
 
     const { result } = renderHook(() => useGamepad());
 
-    expect(result.current).toEqual([{ id: "Pad A", index: 0, mapping: "standard" }]);
+    expect(result.current).toEqual([pad]);
   });
 
   it("adds a gamepad when gamepadconnected fires", async () => {
@@ -52,12 +60,13 @@ describe(useGamepad, () => {
     const { result } = renderHook(() => useGamepad());
     expect(result.current).toEqual([]);
 
+    const pad = makeGamepad({ id: "Pad A", index: 0 });
     await act(async () => {
-      setGamepads([makeGamepad({ id: "Pad A", index: 0 })]);
+      setGamepads([pad]);
       window.dispatchEvent(new Event("gamepadconnected"));
     });
 
-    expect(result.current).toEqual([{ id: "Pad A", index: 0, mapping: "standard" }]);
+    expect(result.current).toEqual([pad]);
   });
 
   it("removes a gamepad when gamepaddisconnected fires", async () => {
@@ -75,11 +84,12 @@ describe(useGamepad, () => {
   });
 
   it("skips null slots returned by getGamepads()", () => {
-    setGamepads([null, makeGamepad({ id: "Pad B", index: 1 }), null]);
+    const pad = makeGamepad({ id: "Pad B", index: 1 });
+    setGamepads([null, pad, null]);
 
     const { result } = renderHook(() => useGamepad());
 
-    expect(result.current).toEqual([{ id: "Pad B", index: 1, mapping: "standard" }]);
+    expect(result.current).toEqual([pad]);
   });
 
   it("returns an empty array when the Gamepad API is unsupported", () => {

@@ -8,35 +8,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-Reverted the `@zap-studio/monads` dependency and the `$fetchResult`/`apiResult`/`createFetch(...).​$fetchResult`/`createFetch(...).​apiResult` exports added in 2.1.0 — they added a dependency and bundle size cost for a use case consumers can already cover themselves by wrapping `$fetch`/`api` with `@zap-studio/monads`'s `fromPromise`. See the README's "Using with `@zap-studio/monads`" section. 2.1.0 is deprecated on npm in favor of this release.
+Reverted the `@zap-studio/monads` dependency and the `$fetchResult`/`apiResult`/`createFetch(...).​$fetchResult`/`createFetch(...).​apiResult` exports added in 2.1.0. They added a dependency and more bundle size for something you can already do yourself: wrap `$fetch`/`api` with `@zap-studio/monads`'s `fromPromise`. See the README's "Using with `@zap-studio/monads`" section. 2.1.0 is now deprecated on npm. Use this release instead.
 
 ## [2.1.0] (deprecated — see 2.1.1)
 
 ### Added
 
-- Added `$fetchResult`/`apiResult`, `Result`/`ResultAsync`-returning counterparts to `$fetch`/`api`, backed by the new `@zap-studio/monads` dependency. `createFetch(...)` instances also get `$fetchResult`/`apiResult` alongside the existing `$fetch`/`api`. Additive and opt-in — `$fetch`, `api`, and `createFetch(...)` are unchanged. No `throwOnFetchError`/`throwOnValidationError` option; a non-ok response and validation issues both become `Err`, and a malformed schema or request still throws.
+- Added `$fetchResult`/`apiResult`: versions of `$fetch`/`api` that return `Result`/`ResultAsync` instead of throwing. They use the new `@zap-studio/monads` dependency. `createFetch(...)` instances also get `$fetchResult`/`apiResult`, next to the existing `$fetch`/`api`. This is opt-in: `$fetch`, `api`, and `createFetch(...)` do not change. There is no `throwOnFetchError`/`throwOnValidationError` option here. A non-ok response and a validation issue both become `Err`. A malformed schema or request still throws.
 
 ## [2.0.0]
 
 ### Added
 
-Native OpenTelemetry support. Every request gets a `CLIENT` span (`http.request.method`, `url.full`, `http.response.status_code`), and the trace context is injected into the outgoing request's headers so the call continues the caller's distributed trace. On failure — a non-2xx response or a thrown error — the span is marked `ERROR`, with thrown errors also recorded as span exceptions. See [OpenTelemetry](https://www.zapstudio.dev/fetch/opentelemetry).
+Native OpenTelemetry support. Every request now gets a `CLIENT` span (`http.request.method`, `url.full`, `http.response.status_code`). The trace context is added to the outgoing request's headers, so the call stays part of the caller's trace. On failure — a non-2xx response or a thrown error — the span is marked `ERROR`, and a thrown error is also recorded on the span. See [OpenTelemetry](https://www.zapstudio.dev/fetch/opentelemetry).
 
 ### Changed
 
-**Breaking:** `@opentelemetry/api` is now a required peer dependency. It's tiny, side-effect-free, and a no-op until an app registers a real SDK, so nothing changes at runtime for consumers who don't set one up — but the package won't resolve without it installed: `npm install @opentelemetry/api`.
+**Breaking:** `@opentelemetry/api` is now a required peer dependency. It is small, has no side effects, and does nothing until an app sets up a real SDK. So nothing changes at runtime if you don't use one. But you must install it for the package to work: `npm install @opentelemetry/api`.
 
 ## [1.1.1]
 
 ### Changed
 
-`@zap-studio/logger` is now an optional peer dependency instead of a regular dependency. Every import from it is type-only (`import type { Logger }`), so it was never pulled in at runtime — pass any object matching the `Logger` shape (including `pino`) with no install required. Existing consumers of `logger?: Logger` are unaffected.
+`@zap-studio/logger` is now an optional peer dependency, not a regular one. Every import from it is type-only (`import type { Logger }`), so it was never loaded at runtime. You can pass any object with the `Logger` shape (`pino` included) with no install needed. If you already use `logger?: Logger`, nothing changes for you.
 
 ## [1.1.0]
 
 ### Added
 
-`createFetch(...)` gains an optional `logger?: Logger` option (from `@zap-studio/logger`). When provided, it logs outgoing requests at `debug`, response status at `debug` (2xx) or `warn` (non-2xx), and schema validation failures at `error`. Omitting it keeps zero logging overhead. See [Logging](https://www.zapstudio.dev/fetch/logging).
+`createFetch(...)` now has an optional `logger?: Logger` option (from `@zap-studio/logger`). When you pass one, it logs outgoing requests at `debug`, the response status at `debug` (2xx) or `warn` (non-2xx), and schema validation failures at `error`. Leave it out and there is no logging cost at all. See [Logging](https://www.zapstudio.dev/fetch/logging).
 
 ## [1.0.0]
 
@@ -46,16 +46,16 @@ Native OpenTelemetry support. Every request gets a `CLIENT` span (`http.request.
 
 ### Removed
 
-Collapsed the internal request pipeline (`_internal.ts`, `_methods.ts`, `constants.ts`, `headers.ts`, `request.ts`, `url.ts`) into implementation-only files. `mergeHeaders`, `normalizeRequest`, and `resolveRequestUrl` are no longer public API — they were pipeline internals, not meant for standalone use.
+Collapsed the internal request pipeline (`_internal.ts`, `_methods.ts`, `constants.ts`, `headers.ts`, `request.ts`, `url.ts`) into implementation-only files. `mergeHeaders`, `normalizeRequest`, and `resolveRequestUrl` are no longer public API. They were internal pipeline pieces, not made for standalone use.
 
 - Removed the `./constants`, `./headers`, `./request`, `./url`, and `./fetch` subpath exports. Use the root `@zap-studio/fetch` entry instead.
-- `GLOBAL_DEFAULTS`, `FetchError`, `$fetch`, `api`, `createFetch`, and all public types are unaffected and still exported from `.`; `./errors` and `./types` subpaths are unaffected.
+- `GLOBAL_DEFAULTS`, `FetchError`, `$fetch`, `api`, `createFetch`, and all public types still work the same, still exported from `.`. The `./errors` and `./types` subpaths still work too.
 
 ## [0.5.6]
 
 ### Added
 
-The package root now re-exports the full public API, so everything can be imported from `@zap-studio/fetch` directly (`$fetch`, `api`, `createFetch`, `FetchError`, `mergeHeaders`, `GLOBAL_DEFAULTS`, `normalizeRequest`, `resolveRequestUrl`, and all public types). All exports are side-effect free and tree-shakeable; granular subpath imports keep working.
+The package root now re-exports the full public API. So you can import everything straight from `@zap-studio/fetch` (`$fetch`, `api`, `createFetch`, `FetchError`, `mergeHeaders`, `GLOBAL_DEFAULTS`, `normalizeRequest`, `resolveRequestUrl`, and all public types). All exports are side-effect free and tree-shakeable. The narrower subpath imports still work too.
 
 - The `$fetch`/`api`/`createFetch` implementation moved from the entrypoint into its own module, available as the new `./fetch` subpath.
 
@@ -111,7 +111,7 @@ Internal formatting and lint cleanup only. No public API or behavior change.
 
 - **Breaking:** Request bodies are no longer auto-serialized from plain objects; use the explicit `json` option (or set `body` yourself). `body` and `json` are mutually exclusive at the type level and enforced at runtime.
 - Simplified the request API around web platform types.
-  - The first argument is named `input` and typed as `FetchInput` (`Parameters<typeof fetch>[0]` from `lib.dom`), exported from `@zap-studio/fetch/types`, so allowed inputs track global `fetch` when DOM typings change.
+  - The first argument is now named `input` and typed as `FetchInput` (`Parameters<typeof fetch>[0]` from `lib.dom`), exported from `@zap-studio/fetch/types`. This means the allowed inputs update on their own when the DOM types for `fetch` change.
   - Non-`Request` values (including `URL`) are normalized to a string URL before query merge.
   - `ExtendedRequestInit` now extends native `RequestInit` directly instead of redefining request options.
   - `searchParams` now accepts the same input shape as `new URLSearchParams(...)`.

@@ -1,9 +1,14 @@
-import { useEffect } from "react";
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /**
- * Locks `document.body`'s scroll while `locked` is `true` — the standard
- * "no background scroll behind an open modal/drawer" pattern. Restores the
- * body's previous inline `overflow` on unlock or unmount.
+ * Stops the page from scrolling in the background while `locked` is
+ * `true`. This is the usual pattern behind an open modal or drawer. When
+ * `locked` becomes `false`, or the component unmounts, the previous
+ * `overflow` style is restored.
+ *
+ * The style is applied early, before the browser paints. This avoids a
+ * brief moment where the background could still scroll right after the
+ * modal appears.
  *
  * @example
  * ```tsx
@@ -11,7 +16,7 @@ import { useEffect } from "react";
  * ```
  */
 export const useLockBodyScroll = (locked = true): void => {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!locked) {
       return undefined;
     }

@@ -77,6 +77,30 @@ const { ref, active, enter, exit } = usePictureInPicture<HTMLVideoElement>();
 return <video ref={ref} onDoubleClick={() => (active ? exit() : enter())} />;
 ```
 
+## useExperimentalBarcodeDetector
+
+Wraps the [Barcode Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API)'s `BarcodeDetector` — `detect()` scans an image/video/canvas source for barcodes, resolving `undefined` where the API is unsupported. A fresh `BarcodeDetector` is constructed per call, scoped to the `formats` passed to the hook (all supported formats, if omitted); `getSupportedFormats()` resolves which formats this browser can actually detect.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API#browser_compatibility).
+
+```tsx
+const { detect, supported } = useExperimentalBarcodeDetector(["qr_code"]);
+const barcodes = supported ? await detect(videoElement) : undefined;
+```
+
+## useExperimentalSelectAudioOutput
+
+Wraps [`MediaDevices.selectAudioOutput()`](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/selectAudioOutput) — shows the browser's native audio output device picker. Must be called from a user gesture (a click handler, not an effect); resolves the picked `MediaDeviceInfo`, or `undefined` when the user cancels or a Permissions Policy blocks the request.
+
+Experimental per MDN, Chromium-only — see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/selectAudioOutput#browser_compatibility).
+
+```tsx
+const { selectAudioOutput, supported } = useExperimentalSelectAudioOutput();
+<button onClick={() => selectAudioOutput()} disabled={!supported}>
+  Choose speaker
+</button>;
+```
+
 ## See Also
 
 - [Getting Started](/react-hooks/getting-started)

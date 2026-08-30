@@ -1,10 +1,11 @@
 import { useMediaQueryMatch } from "./_media-query.ts";
 
 /**
- * `true` while the page is being printed (or previewed for print), via the
- * `print` media query — more reliable than the raw `beforeprint`/`afterprint`
- * events, which some browsers fire inconsistently around the print dialog.
- * `false` during server rendering and before the client subscribes.
+ * `true` while the page is being printed (or shown in print preview). It
+ * uses the `print` media query. This is more reliable than the
+ * `beforeprint`/`afterprint` events, because some browsers fire those
+ * events at the wrong time. `false` during server rendering and before
+ * the client connects.
  *
  * @example
  * ```tsx

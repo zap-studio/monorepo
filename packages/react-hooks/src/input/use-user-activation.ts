@@ -34,15 +34,21 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * `navigator.userActivation`'s `hasBeenActive`/`isActive` — whether the
- * page has ever/is currently within a user-activation window (a click, key
- * press, or similar gesture), useful to gate autoplay/popups browsers
- * block outside one. There's no native change event for user activation,
- * so this re-checks on the same gesture events that set it (`pointerdown`,
- * `pointerup`, `keydown`, captured so it observes the gesture even if a
- * listener elsewhere stops propagation). Falls back to
- * `{ isActive: false, hasBeenActive: false }` during server rendering,
- * before the client subscribes, and where the API is unsupported.
+ * Reads `navigator.userActivation`'s `hasBeenActive` and `isActive`
+ * flags. These tell you whether the page has ever had, or currently
+ * has, a "user activation" — a click, key press, or similar gesture.
+ * This is useful for gating things like autoplay or popups, which
+ * browsers block outside of a user gesture.
+ *
+ * There's no native event for when user activation changes, so this
+ * hook re-checks on the same gesture events that create it
+ * (`pointerdown`, `pointerup`, `keydown`). It listens during the capture
+ * phase, so it still sees the gesture even if something else stops the
+ * event from bubbling.
+ *
+ * Falls back to `{ isActive: false, hasBeenActive: false }` during
+ * server rendering, before the client subscribes, and where this API
+ * isn't supported.
  *
  * @example
  * ```tsx

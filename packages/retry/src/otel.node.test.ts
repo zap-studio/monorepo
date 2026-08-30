@@ -16,6 +16,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createSequencePolicy } from "./_sequence-policy.ts";
 import { runRetryPolicy } from "./base-policy.ts";
 
+const MAX_ATTEMPTS_REASON = "max-attempts-reached";
+
 describe("retry OpenTelemetry", () => {
   const spanExporter = new InMemorySpanExporter();
   const metricExporter = new InMemoryMetricExporter(AggregationTemporality.CUMULATIVE);
@@ -85,7 +87,7 @@ describe("retry OpenTelemetry", () => {
 
   it("adds a retry.exhausted event to the active span when retries run out", async () => {
     const policy = createSequencePolicy([
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValue(new Error("fail"));
@@ -94,7 +96,7 @@ describe("retry OpenTelemetry", () => {
 
     const event = getCallerSpan()?.events.find((e) => e.name === "retry.exhausted");
     expect(event?.attributes?.["attempt"]).toBe(1);
-    expect(event?.attributes?.["retry.reason"]).toBe("max-attempts-reached");
+    expect(event?.attributes?.["retry.reason"]).toBe(MAX_ATTEMPTS_REASON);
   });
 
   it("defaults retry.reason to an empty string on exhaustion when the policy omits it", async () => {
@@ -119,7 +121,9 @@ describe("retry OpenTelemetry", () => {
     const counts: Record<string, number> = {};
     for (const point of metric?.dataPoints ?? []) {
       const decision = String(point.attributes["retry.decision"]);
-      counts[decision] = point.value as number;
+      if (typeof point.value === "number") {
+        counts[decision] = point.value;
+      }
     }
     return counts;
   };
@@ -131,7 +135,7 @@ describe("retry OpenTelemetry", () => {
 
     const policy = createSequencePolicy([
       { delayMs: 0, reason: "retry", shouldRetry: true },
-      { delayMs: 0, reason: "max-attempts-reached", shouldRetry: false },
+      { delayMs: 0, reason: MAX_ATTEMPTS_REASON, shouldRetry: false },
     ]);
     const execute = vi.fn<(attempt: number) => Promise<string>>();
     execute.mockRejectedValue(new Error("fail"));

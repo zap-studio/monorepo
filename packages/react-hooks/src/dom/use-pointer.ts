@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `usePointer`. */
 export interface PointerState {
@@ -18,12 +20,18 @@ const INITIAL_STATE: PointerState = {
 };
 
 /**
- * Unified mouse/touch/pen position and pressure via Pointer events — a
- * modern superset of a plain `mousemove`-based position hook, tracking
- * `pointerdown`/`pointermove`/`pointerup` on `window`. `isDown` reflects
- * whether the primary pointer button/contact is currently active. Starts
- * all-`0`/`false`/`""` — also the SSR-safe default — until the first
- * pointer event fires.
+ * Tracks mouse, touch, and pen input together, using Pointer events. It
+ * listens for `pointerdown`, `pointermove`, and `pointerup` on `window`.
+ * This covers more input types than a simple `mousemove` hook.
+ *
+ * `isDown` is `true` while the pointer (finger, pen, or mouse button) is
+ * pressed down. All values start at `0`, `false`, or `""` — this is also
+ * the safe default for server-side rendering — until the first pointer
+ * event happens.
+ *
+ * The listeners attach early, before the browser paints. This makes sure
+ * a `pointerup` event is never missed, so `isDown` does not get stuck at
+ * `true`.
  *
  * @example
  * ```tsx
@@ -33,7 +41,7 @@ const INITIAL_STATE: PointerState = {
 export const usePointer = (): PointerState => {
   const [state, setState] = useState<PointerState>(INITIAL_STATE);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
       setState({
         clientX: event.clientX,

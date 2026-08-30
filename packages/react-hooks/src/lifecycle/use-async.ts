@@ -1,4 +1,6 @@
-import { type DependencyList, useEffect, useState } from "react";
+import { type DependencyList, useEffect, useRef, useState } from "react";
+
+import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useAsync`. */
 export interface UseAsyncState<T> {
@@ -8,18 +10,21 @@ export interface UseAsyncState<T> {
 }
 
 /**
- * Wraps a promise-returning function with `loading`/`error`/`data` state.
- * Re-runs `asyncFn` whenever `deps` changes (forwarded verbatim to the
- * underlying effect, so it follows the exact same rules as `useEffect`'s
- * dependency array — omit it to run once on mount). A stale run's
- * resolution is ignored if `deps` changes (or the component unmounts)
- * before it settles.
+ * Wraps a promise-returning function with `loading`, `error`, and `data`
+ * state. Runs `asyncFn` again whenever `deps` changes. This works just
+ * like `useEffect`'s dependency array — leave `deps` empty to run once on
+ * mount. If `deps` changes (or the component unmounts) before `asyncFn`
+ * finishes, the old result is ignored.
  *
- * `useAsync(() => fetch(url).then((r) => r.json()), [url])` covers the
- * common "fetch on mount/when url changes" case — a separate `useFetch`
- * would be a near-duplicate, and real fetch ergonomics (caching,
- * revalidation, request dedup) are React Query/SWR's job, not this
- * package's.
+ * `asyncFn` also follows `useEffect`'s closure rules: it only sees the
+ * values from the last time `deps` changed. With the default `[]`, this
+ * means `useAsync(() => fetchUser(id))` always uses the `id` from the
+ * first render. Pass `[id]` if `id` can change.
+ *
+ * For a simple "fetch on mount or when the URL changes" case, you can
+ * write `useAsync(() => fetch(url).then((r) => r.json()), [url])`. For
+ * caching, revalidation, or request deduplication, use a library like
+ * React Query or SWR instead.
  *
  * @example
  * ```tsx
@@ -31,14 +36,19 @@ export const useAsync = <T>(
   deps: DependencyList = [],
 ): UseAsyncState<T> => {
   const [state, setState] = useState<UseAsyncState<T>>({ loading: true });
+  const asyncFnRef = useRef(asyncFn);
+  useIsomorphicLayoutEffect(() => {
+    asyncFnRef.current = asyncFn;
+  });
 
+  // oxlint-disable-next-line react-hooks/exhaustive-deps -- `deps` comes from the caller, like the dependency array of useEffect. This hook cannot know what is inside it.
   useEffect(() => {
     let cancelled = false;
     setState({ loading: true });
 
     const run = async () => {
       try {
-        const data = await asyncFn();
+        const data = await asyncFnRef.current();
         if (!cancelled) {
           setState({ data, loading: false });
         }
@@ -57,7 +67,7 @@ export const useAsync = <T>(
     return () => {
       cancelled = true;
     };
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps is forwarded verbatim from the caller, mirroring useEffect's own contract; asyncFn is deliberately excluded so consumers never have to memoize it.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- same pass-through `deps` as above; the rule cannot verify a non-literal dependency list.
   }, deps);
 
   return state;

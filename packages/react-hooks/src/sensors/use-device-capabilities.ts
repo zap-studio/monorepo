@@ -12,16 +12,19 @@ export interface DeviceCapabilities {
 
 const SERVER_SNAPSHOT: DeviceCapabilities = { hardwareConcurrency: 0 };
 
+const getServerSnapshot = () => SERVER_SNAPSHOT;
+
 const capabilitiesEqual = (a: DeviceCapabilities, b: DeviceCapabilities): boolean =>
   a.hardwareConcurrency === b.hardwareConcurrency && a.deviceMemory === b.deviceMemory;
 
 const subscribe = () => () => {};
 
 /**
- * `navigator.hardwareConcurrency` and `navigator.deviceMemory` (the latter
- * Chromium-only — `undefined` elsewhere). Static device capabilities —
- * don't change at runtime. `{ hardwareConcurrency: 0, deviceMemory:
- * undefined }` — the SSR-safe default — during server rendering.
+ * `navigator.hardwareConcurrency` and `navigator.deviceMemory`. Only
+ * Chromium browsers support `deviceMemory`; it is `undefined` elsewhere.
+ * These values don't change while the app runs. During server rendering,
+ * this returns `{ hardwareConcurrency: 0, deviceMemory: undefined }` (the
+ * safe default).
  *
  * @example
  * ```tsx
@@ -32,7 +35,7 @@ export const useDeviceCapabilities = (): DeviceCapabilities => {
   const cacheRef = useRef<DeviceCapabilities>(SERVER_SNAPSHOT);
 
   const getSnapshot = useCallback((): DeviceCapabilities => {
-    // SAFETY: deviceMemory is a Chromium-only Device Memory API field not declared in TypeScript's DOM lib; read as optional, so an unsupported browser yields undefined rather than throwing.
+    // SAFETY: deviceMemory is not declared on Navigator. We read it as optional, so a browser without support gives `undefined` instead of crashing.
     const deviceMemory = (navigator as NavigatorWithDeviceMemory).deviceMemory;
     const next: DeviceCapabilities = {
       ...(deviceMemory !== undefined && { deviceMemory }),
@@ -44,5 +47,5 @@ export const useDeviceCapabilities = (): DeviceCapabilities => {
     return cacheRef.current;
   }, []);
 
-  return useSyncExternalStore(subscribe, getSnapshot, () => SERVER_SNAPSHOT);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };

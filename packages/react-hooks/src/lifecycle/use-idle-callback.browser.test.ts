@@ -1,42 +1,48 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useIdleCallback } from "./use-idle-callback.ts";
 
-function setIdleCallbackSupport(
+const setIdleCallbackSupport = (
   supported: boolean,
 ):
   | { fire: (deadline: IdleDeadline) => void; requestIdleCallback: ReturnType<typeof vi.fn> }
-  | undefined {
+  | undefined => {
   if (!supported) {
-    Object.defineProperty(window, "requestIdleCallback", { configurable: true, value: undefined });
-    Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "requestIdleCallback");
+    Reflect.deleteProperty(window, "cancelIdleCallback");
     return undefined;
   }
 
   let stored: IdleRequestCallback | undefined;
-  const requestIdleCallback = vi.fn((callback: IdleRequestCallback) => {
-    stored = callback;
-    return 1;
-  });
+  const requestIdleCallback = vi.fn<(callback: IdleRequestCallback) => number>(
+    (callback: IdleRequestCallback) => {
+      stored = callback;
+      return 1;
+    },
+  );
   Object.defineProperty(window, "requestIdleCallback", {
     configurable: true,
     value: requestIdleCallback,
   });
-  Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: vi.fn() });
+  Object.defineProperty(window, "cancelIdleCallback", {
+    configurable: true,
+    value: vi.fn<(handle: number) => void>(),
+  });
 
   return {
     fire: (deadline: IdleDeadline) => stored?.(deadline),
     requestIdleCallback,
   };
-}
+};
 
 afterEach(() => {
-  Object.defineProperty(window, "requestIdleCallback", { configurable: true, value: undefined });
-  Object.defineProperty(window, "cancelIdleCallback", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "requestIdleCallback");
+  Reflect.deleteProperty(window, "cancelIdleCallback");
 });
 
-describe(useIdleCallback, () => {
+describe("useIdleCallback", () => {
   it("schedules via requestIdleCallback when supported", () => {
     const mock = setIdleCallbackSupport(true);
     renderHook(() => useIdleCallback(vi.fn()));
@@ -46,10 +52,10 @@ describe(useIdleCallback, () => {
 
   it("calls the callback with the idle deadline", () => {
     const mock = setIdleCallbackSupport(true);
-    const callback = vi.fn();
+    const callback = vi.fn<(deadline: IdleDeadline) => void>();
     renderHook(() => useIdleCallback(callback));
 
-    const deadline = { didTimeout: false, timeRemaining: () => 42 } as IdleDeadline;
+    const deadline = asTestDouble<IdleDeadline>({ didTimeout: false, timeRemaining: () => 42 });
     act(() => {
       mock?.fire(deadline);
     });
@@ -59,7 +65,7 @@ describe(useIdleCallback, () => {
 
   it("falls back to setTimeout when requestIdleCallback is unsupported", async () => {
     setIdleCallbackSupport(false);
-    const callback = vi.fn();
+    const callback = vi.fn<(deadline: IdleDeadline) => void>();
     renderHook(() => useIdleCallback(callback));
 
     await act(async () => {
@@ -67,9 +73,9 @@ describe(useIdleCallback, () => {
     });
 
     expect(callback).toHaveBeenCalledTimes(1);
-    const [deadline] = callback.mock.calls[0] as [IdleDeadline];
-    expect(deadline.didTimeout).toBe(false);
-    expect(deadline.timeRemaining()).toBeGreaterThan(0);
+    const [deadline] = callback.mock.calls[0] ?? [];
+    expect(deadline?.didTimeout).toBe(false);
+    expect(deadline?.timeRemaining()).toBeGreaterThan(0);
   });
 
   it("does not schedule when enabled: false", () => {
@@ -86,5 +92,33 @@ describe(useIdleCallback, () => {
     unmount();
 
     expect(window.cancelIdleCallback).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("useIdleCallback option stability", () => {
+  it("does not re-request for an options object re-created every render", () => {
+    const idle = setIdleCallbackSupport(true);
+    const { rerender } = renderHook(() => useIdleCallback(() => {}, { timeout: 500 }));
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(1);
+
+    rerender();
+    rerender();
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it("re-requests when the timeout actually changes", () => {
+    const idle = setIdleCallbackSupport(true);
+    const { rerender } = renderHook(
+      ({ timeout }: { timeout: number }) => useIdleCallback(() => {}, { timeout }),
+      { initialProps: { timeout: 500 } },
+    );
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(1);
+
+    rerender({ timeout: 1000 });
+
+    expect(idle?.requestIdleCallback).toHaveBeenCalledTimes(2);
   });
 });

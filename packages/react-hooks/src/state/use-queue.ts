@@ -11,11 +11,12 @@ export interface UseQueueResult<T> {
 }
 
 /**
- * FIFO queue state. `dequeue()` both removes and returns the front item
- * synchronously — reading/writing through a ref kept in lockstep with
- * state, rather than a plain `useState` updater, so a `dequeue()` right
- * after an `enqueue()` in the same synchronous block always sees the
- * item that was just enqueued.
+ * First-in-first-out queue state. `dequeue()` removes and returns the
+ * front item right away. It reads and writes through a ref that is
+ * always kept up to date with the state, instead of using a plain
+ * `useState` updater. This way, calling `dequeue()` right after
+ * `enqueue()` in the same block of code always sees the item that was
+ * just added.
  *
  * @example
  * ```tsx

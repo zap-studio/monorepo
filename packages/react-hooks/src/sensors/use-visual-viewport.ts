@@ -48,9 +48,9 @@ const viewportsEqual = (a: VisualViewportState, b: VisualViewportState): boolean
 const getServerSnapshot = (): VisualViewportState => FALLBACK_VIEWPORT;
 
 const subscribe = (onStoreChange: () => void) => {
-  // oxlint-disable-next-line github/prefer-observers -- VisualViewport is its own EventTarget, not an element ResizeObserver/IntersectionObserver could attach to; its own resize/scroll events are the only primitive.
+  // oxlint-disable-next-line github/prefer-observers -- VisualViewport is not an element, so ResizeObserver and IntersectionObserver cannot watch it. Its resize and scroll events are the only way to see changes.
   window.visualViewport?.addEventListener("resize", onStoreChange);
-  // oxlint-disable-next-line github/prefer-observers -- Same VisualViewport EventTarget as above — there's no element to observe.
+  // oxlint-disable-next-line github/prefer-observers -- same VisualViewport target as above. There is no element to watch.
   window.visualViewport?.addEventListener("scroll", onStoreChange);
   return () => {
     window.visualViewport?.removeEventListener("resize", onStoreChange);
@@ -59,12 +59,13 @@ const subscribe = (onStoreChange: () => void) => {
 };
 
 /**
- * `window.visualViewport`'s geometry, updating on its `resize`/`scroll`
- * events — this is what actually shrinks when an on-screen mobile keyboard
- * opens, unlike `useWindowSize`'s `innerHeight`. Falls back to
+ * Gives you `window.visualViewport`'s size and position. It updates on
+ * `resize` and `scroll` events. This is the viewport that actually
+ * shrinks when an on-screen mobile keyboard opens — unlike
+ * `useWindowSize`'s `innerHeight`, which doesn't change. Falls back to
  * `{ width: 0, height: 0, offsetLeft: 0, offsetTop: 0, pageLeft: 0,
  * pageTop: 0, scale: 1 }` during server rendering, before the client
- * subscribes, and where the Visual Viewport API is unsupported.
+ * connects, and when the Visual Viewport API isn't supported.
  *
  * @example
  * ```tsx

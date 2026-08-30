@@ -1,27 +1,28 @@
 import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { FileSystemDirectoryHandle, FileSystemFileHandle } from "./_file-system-access-api.ts";
-
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { useFilePicker } from "./use-file-picker.ts";
 
-function abortError(): Error {
+const DISK_ERROR_MESSAGE = "disk error";
+
+const abortError = (): Error => {
   const error = new Error("The user aborted a request.");
   error.name = "AbortError";
   return error;
-}
+};
 
-function stubUnsupported() {
+const stubUnsupported = () => {
   vi.stubGlobal("showOpenFilePicker", undefined);
   vi.stubGlobal("showSaveFilePicker", undefined);
   vi.stubGlobal("showDirectoryPicker", undefined);
-}
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe(useFilePicker, () => {
+describe("useFilePicker", () => {
   it("reports supported: false when the File System Access API is unavailable", () => {
     stubUnsupported();
 
@@ -39,7 +40,7 @@ describe(useFilePicker, () => {
   });
 
   it("showOpenFilePicker() resolves the picker's handles", async () => {
-    const handles = [{ kind: "file", name: "a.txt" }] as FileSystemFileHandle[];
+    const handles = asTestDouble<FileSystemFileHandle[]>([{ kind: "file", name: "a.txt" }]);
     vi.stubGlobal(
       "showOpenFilePicker",
       vi.fn(() => Promise.resolve(handles)),
@@ -62,11 +63,11 @@ describe(useFilePicker, () => {
   it("showOpenFilePicker() rethrows non-abort errors", async () => {
     vi.stubGlobal(
       "showOpenFilePicker",
-      vi.fn(() => Promise.reject(new Error("disk error"))),
+      vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
     const { result } = renderHook(() => useFilePicker());
-    await expect(result.current.showOpenFilePicker()).rejects.toThrow("disk error");
+    await expect(result.current.showOpenFilePicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showOpenFilePicker() resolves undefined when unsupported", async () => {
@@ -77,7 +78,7 @@ describe(useFilePicker, () => {
   });
 
   it("showSaveFilePicker() resolves the picker's handle", async () => {
-    const handle = { kind: "file", name: "a.txt" } as FileSystemFileHandle;
+    const handle = asTestDouble<FileSystemFileHandle>({ kind: "file", name: "a.txt" });
     vi.stubGlobal(
       "showSaveFilePicker",
       vi.fn(() => Promise.resolve(handle)),
@@ -100,11 +101,11 @@ describe(useFilePicker, () => {
   it("showSaveFilePicker() rethrows non-abort errors", async () => {
     vi.stubGlobal(
       "showSaveFilePicker",
-      vi.fn(() => Promise.reject(new Error("disk error"))),
+      vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
     const { result } = renderHook(() => useFilePicker());
-    await expect(result.current.showSaveFilePicker()).rejects.toThrow("disk error");
+    await expect(result.current.showSaveFilePicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showSaveFilePicker() resolves undefined when unsupported", async () => {
@@ -115,7 +116,7 @@ describe(useFilePicker, () => {
   });
 
   it("showDirectoryPicker() resolves the picker's handle", async () => {
-    const handle = { kind: "directory", name: "dir" } as FileSystemDirectoryHandle;
+    const handle = asTestDouble<FileSystemDirectoryHandle>({ kind: "directory", name: "dir" });
     vi.stubGlobal(
       "showDirectoryPicker",
       vi.fn(() => Promise.resolve(handle)),
@@ -138,11 +139,11 @@ describe(useFilePicker, () => {
   it("showDirectoryPicker() rethrows non-abort errors", async () => {
     vi.stubGlobal(
       "showDirectoryPicker",
-      vi.fn(() => Promise.reject(new Error("disk error"))),
+      vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
     const { result } = renderHook(() => useFilePicker());
-    await expect(result.current.showDirectoryPicker()).rejects.toThrow("disk error");
+    await expect(result.current.showDirectoryPicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showDirectoryPicker() resolves undefined when unsupported", async () => {

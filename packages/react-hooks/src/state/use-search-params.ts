@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { isUpdaterFunction } from "./_updater.ts";
+
 /** Anything `new URLSearchParams()` itself accepts. */
 export type SearchParamsInit = ConstructorParameters<typeof URLSearchParams>[0];
 
@@ -23,12 +25,12 @@ const buildUrl = (params: URLSearchParams): string => {
 
 /**
  * State synced to the URL's query string. Reads `location.search` and
- * updates on `popstate` (back/forward); the setter itself calls
- * `history.pushState`/`replaceState` (silent APIs — they don't fire
- * `popstate`), so it updates local state directly rather than waiting on
- * an event. Pass `{ replace: true }` to replace the current history entry
- * instead of pushing a new one. Falls back to empty params during server
- * rendering.
+ * updates when the user goes back or forward (the `popstate` event). The
+ * setter calls `history.pushState`/`replaceState`, which don't fire
+ * `popstate`, so the setter also updates the local state directly instead
+ * of waiting for an event. Pass `{ replace: true }` to replace the
+ * current history entry instead of adding a new one. Falls back to empty
+ * params during server rendering.
  *
  * @example
  * ```tsx
@@ -48,13 +50,9 @@ export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const setSearchParams = useCallback<SetSearchParams>((next, options) => {
-    setSearchParamsState((prev) => {
-      const resolvedInit =
-        typeof next === "function"
-          ? // SAFETY: SearchParamsInit | ((prev: URLSearchParams) => SearchParamsInit); the typeof check narrows to the function branch, so this cast just recovers the parameter type TS can't infer through a bare `typeof x === "function"` guard on a generic union.
-            (next as (prev: URLSearchParams) => SearchParamsInit)(prev)
-          : next;
+  const setSearchParams = useCallback<SetSearchParams>(
+    (next, options) => {
+      const resolvedInit = isUpdaterFunction(next) ? next(searchParams) : next;
       const nextParams = new URLSearchParams(resolvedInit);
       const url = buildUrl(nextParams);
       if (options?.replace) {
@@ -62,9 +60,10 @@ export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
       } else {
         history.pushState(history.state, "", url);
       }
-      return nextParams;
-    });
-  }, []);
+      setSearchParamsState(nextParams);
+    },
+    [searchParams],
+  );
 
   return [searchParams, setSearchParams];
 };

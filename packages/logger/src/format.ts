@@ -6,7 +6,19 @@
  * @module @zap-studio/logger/format
  */
 
-import type { CallableLogLevel, LogFormatter } from "./types.ts";
+import type { CallableLogLevel, LogRecord } from "./types.ts";
+
+/**
+ * A formatter whose output is always one rendered line. Narrower than
+ * `LogFormatter`, which any third-party formatter satisfies, so callers of
+ * these built-ins do not have to narrow `unknown[]` themselves.
+ */
+type SingleLineFormatter = (record: LogRecord) => [line: string];
+
+/** A formatter that returns the rendered line, plus `context` as a second argument when there is one. */
+type LineWithContextFormatter = (
+  record: LogRecord,
+) => [line: string] | [line: string, context: Record<string, unknown>];
 
 /**
  * Default formatter: the message, plus `context` as a second argument when
@@ -17,7 +29,7 @@ import type { CallableLogLevel, LogFormatter } from "./types.ts";
  * classicFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date() });
  * // ["server started", { port: 3000 }]
  */
-export const classicFormat: LogFormatter = (record) =>
+export const classicFormat: LineWithContextFormatter = (record) =>
   record.context === undefined ? [record.message] : [record.message, record.context];
 
 /**
@@ -47,7 +59,7 @@ const jsonReplacer = (_key: string, value: unknown) => {
  * jsonFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date(0) });
  * // ['{"port":3000,"time":0,"level":"info","msg":"server started"}']
  */
-export const jsonFormat: LogFormatter = (record) => [
+export const jsonFormat: SingleLineFormatter = (record) => [
   JSON.stringify(
     {
       ...record.context,
@@ -108,7 +120,7 @@ const formatLogfmtValue = (value: unknown): string => {
  * compactFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date(0) });
  * // ['port=3000 time=1970-01-01T00:00:00.000Z level=info msg="server started"']
  */
-export const compactFormat: LogFormatter = (record) => {
+export const compactFormat: SingleLineFormatter = (record) => {
   const fields = {
     ...record.context,
     level: record.level,
@@ -175,9 +187,14 @@ const isCloudflareWorkers = (): boolean =>
  * - Anywhere else without a `process` global (browsers): unconditionally,
  *   on the assumption it's a devtools-like console.
  */
+/** `globalThis` widened with the optional `process` global Node/Bun/Deno expose. */
+interface GlobalThisWithProcess {
+  process?: unknown;
+}
+
 const isColorSupported = (): boolean => {
-  // SAFETY: `process` isn't declared on `globalThis`'s type in browser/edge targets; this reads it as an optional untyped property, validated below by `isNodeProcessLike`.
-  const proc: unknown = (globalThis as { process?: unknown }).process;
+  // SAFETY: `process` is not part of the `globalThis` type in browser and edge targets. This reads it as an optional untyped property, and `isNodeProcessLike` below checks it.
+  const proc: unknown = (globalThis as GlobalThisWithProcess).process;
   if (isNodeProcessLike(proc)) {
     return Boolean(proc.stdout?.isTTY) && proc.env?.["NO_COLOR"] === undefined;
   }
@@ -230,7 +247,7 @@ const formatClockTime = (date: Date): string =>
  * prettyFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date() });
  * // ["12:34:56.789 INFO  server started", { port: 3000 }]  (colored, when supported)
  */
-export const prettyFormat: LogFormatter = (record) => {
+export const prettyFormat: LineWithContextFormatter = (record) => {
   const time = formatClockTime(record.timestamp);
   const label = record.level.toUpperCase().padEnd(LEVEL_LABEL_WIDTH);
   const colored = isColorSupported();

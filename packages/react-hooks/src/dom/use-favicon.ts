@@ -12,9 +12,9 @@ const getOrCreateFaviconLink = (): HTMLLinkElement => {
 };
 
 /**
- * Imperatively swaps the `<link rel="icon">` `href` — creates the tag if
- * the document doesn't already have one. Restores the previous `href` on
- * unmount.
+ * Sets the `href` of the `<link rel="icon">` tag (the favicon). Creates
+ * the tag if the page doesn't already have one. Restores the previous
+ * `href` when the component unmounts.
  *
  * @example
  * ```tsx

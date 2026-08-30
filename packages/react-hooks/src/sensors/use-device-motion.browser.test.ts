@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { useDeviceMotion } from "./use-device-motion.ts";
 
-describe(useDeviceMotion, () => {
+describe("useDeviceMotion", () => {
   it("starts with all-null motion and supported reflecting DeviceMotionEvent", () => {
     const { result } = renderHook(() => useDeviceMotion());
 
@@ -39,7 +39,7 @@ describe(useDeviceMotion, () => {
   });
 
   it("resolves according to the iOS permission gate when present", async () => {
-    const requestPermission = vi.fn().mockResolvedValue("granted");
+    const requestPermission = vi.fn<() => Promise<"granted">>().mockResolvedValue("granted");
     Object.defineProperty(DeviceMotionEvent, "requestPermission", {
       configurable: true,
       value: requestPermission,
@@ -55,7 +55,7 @@ describe(useDeviceMotion, () => {
 
   it("reports supported: false when DeviceMotionEvent is unavailable", () => {
     const original = window.DeviceMotionEvent;
-    Object.defineProperty(window, "DeviceMotionEvent", { configurable: true, value: undefined });
+    Reflect.deleteProperty(window, "DeviceMotionEvent");
 
     const { result } = renderHook(() => useDeviceMotion());
 

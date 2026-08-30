@@ -14,7 +14,7 @@ const sizesEqual = (a: WindowSize, b: WindowSize): boolean =>
 const getServerSnapshot = (): WindowSize => FALLBACK_SIZE;
 
 const subscribe = (onStoreChange: () => void) => {
-  // oxlint-disable-next-line github/prefer-observers -- ResizeObserver observes a specific element's box, not the window/viewport itself; there's no element whose border-box exactly matches innerWidth/innerHeight (scrollbars, etc.), so the `resize` event is the correct primitive here.
+  // oxlint-disable-next-line github/prefer-observers -- ResizeObserver watches one element, not the window. No element has the same size as innerWidth/innerHeight, because of scrollbars and so on. So we need the `resize` event.
   window.addEventListener("resize", onStoreChange);
   return () => window.removeEventListener("resize", onStoreChange);
 };

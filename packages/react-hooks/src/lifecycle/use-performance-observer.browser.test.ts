@@ -1,10 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePerformanceObserver } from "./use-performance-observer.ts";
 
 class MockPerformanceObserver {
-  static instances: MockPerformanceObserver[] = [];
+  static readonly instances: MockPerformanceObserver[] = [];
   disconnected = false;
   observedOptions: PerformanceObserverInit | undefined;
   readonly callback: PerformanceObserverCallback;
@@ -23,19 +24,19 @@ class MockPerformanceObserver {
   }
 }
 
-function installMockPerformanceObserver() {
-  MockPerformanceObserver.instances = [];
+const installMockPerformanceObserver = () => {
+  MockPerformanceObserver.instances.length = 0;
   Object.defineProperty(window, "PerformanceObserver", {
     configurable: true,
     value: MockPerformanceObserver,
   });
-}
+};
 
 afterEach(() => {
-  Object.defineProperty(window, "PerformanceObserver", { configurable: true, value: undefined });
+  Reflect.deleteProperty(window, "PerformanceObserver");
 });
 
-describe(usePerformanceObserver, () => {
+describe("usePerformanceObserver", () => {
   it("reports supported: true when PerformanceObserver exists", () => {
     installMockPerformanceObserver();
 
@@ -64,13 +65,13 @@ describe(usePerformanceObserver, () => {
 
   it("calls the callback with the entry list and observer", () => {
     installMockPerformanceObserver();
-    const callback = vi.fn();
+    const callback = vi.fn<PerformanceObserverCallback>();
     renderHook(() => usePerformanceObserver(callback, { entryTypes: ["longtask"] }));
 
     const observer = MockPerformanceObserver.instances[0]!;
-    const list = {} as PerformanceObserverEntryList;
+    const list = asTestDouble<PerformanceObserverEntryList>({});
     act(() => {
-      observer.callback(list, observer as unknown as PerformanceObserver);
+      observer.callback(list, asTestDouble<PerformanceObserver>(observer));
     });
 
     expect(callback).toHaveBeenCalledWith(list, observer);
@@ -78,8 +79,8 @@ describe(usePerformanceObserver, () => {
 
   it("always calls the latest callback", () => {
     installMockPerformanceObserver();
-    const firstCallback = vi.fn();
-    const secondCallback = vi.fn();
+    const firstCallback = vi.fn<PerformanceObserverCallback>();
+    const secondCallback = vi.fn<PerformanceObserverCallback>();
     const { rerender } = renderHook(
       ({ callback }) => usePerformanceObserver(callback, { entryTypes: ["longtask"] }),
       { initialProps: { callback: firstCallback } },
@@ -89,8 +90,8 @@ describe(usePerformanceObserver, () => {
     const observer = MockPerformanceObserver.instances[0]!;
     act(() => {
       observer.callback(
-        {} as PerformanceObserverEntryList,
-        observer as unknown as PerformanceObserver,
+        asTestDouble<PerformanceObserverEntryList>({}),
+        asTestDouble<PerformanceObserver>(observer),
       );
     });
 
@@ -106,6 +107,41 @@ describe(usePerformanceObserver, () => {
 
     unmount();
 
+    expect(MockPerformanceObserver.instances[0]?.disconnected).toBe(true);
+  });
+});
+
+describe("usePerformanceObserver option stability", () => {
+  it("does not rebuild the observer for an options object re-created every render", () => {
+    vi.stubGlobal("PerformanceObserver", MockPerformanceObserver);
+    MockPerformanceObserver.instances.length = 0;
+
+    const { rerender } = renderHook(() =>
+      usePerformanceObserver(() => {}, { buffered: true, entryTypes: ["mark"] }),
+    );
+
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+
+    rerender();
+    rerender();
+
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+  });
+
+  it("rebuilds the observer when an option actually changes", () => {
+    vi.stubGlobal("PerformanceObserver", MockPerformanceObserver);
+    MockPerformanceObserver.instances.length = 0;
+
+    const { rerender } = renderHook(
+      ({ type }: { type: string }) => usePerformanceObserver(() => {}, { type }),
+      { initialProps: { type: "mark" } },
+    );
+
+    expect(MockPerformanceObserver.instances).toHaveLength(1);
+
+    rerender({ type: "measure" });
+
+    expect(MockPerformanceObserver.instances).toHaveLength(2);
     expect(MockPerformanceObserver.instances[0]?.disconnected).toBe(true);
   });
 });

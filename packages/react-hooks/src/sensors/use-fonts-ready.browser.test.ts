@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useFontsReady } from "./use-fonts-ready.ts";
 
-describe(useFontsReady, () => {
+describe("useFontsReady", () => {
   it("starts false", () => {
     const { result } = renderHook(() => useFontsReady());
 
@@ -17,8 +17,10 @@ describe(useFontsReady, () => {
   });
 
   it("resolves immediately when the CSS Font Loading API is unsupported", async () => {
+    // `document.fonts` is an inherited Document.prototype getter in a real browser, so
+    // Reflect.deleteProperty on the instance is a no-op; shadow it with an own property instead.
     const originalFonts = document.fonts;
-    Object.defineProperty(document, "fonts", { configurable: true, value: undefined });
+    Object.defineProperty(document, "fonts", { configurable: true, value: void 0 });
 
     const { result } = renderHook(() => useFontsReady());
 

@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import { usePreferredLanguage } from "./use-preferred-language.ts";
 
-function TestComponent() {
+const TestComponent = () => {
   const { language, languages } = usePreferredLanguage();
   return `${language},${languages.join(";")}`;
-}
+};
 
-describe(usePreferredLanguage, () => {
+describe("usePreferredLanguage", () => {
   it('falls back to "en" on the server, before navigator can be read', () => {
     const html = renderToString(createElement(TestComponent));
 

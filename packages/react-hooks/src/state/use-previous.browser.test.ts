@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { usePrevious } from "./use-previous.ts";
 
-describe(usePrevious, () => {
+describe("usePrevious", () => {
   it("returns undefined on the first render", () => {
     const { result } = renderHook(() => usePrevious(1));
 

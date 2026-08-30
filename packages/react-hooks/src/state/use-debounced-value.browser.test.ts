@@ -11,7 +11,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe(useDebouncedValue, () => {
+describe("useDebouncedValue", () => {
   it("starts equal to the initial value", () => {
     const { result } = renderHook(() => useDebouncedValue("a", 500));
 

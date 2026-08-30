@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { useQueue } from "./use-queue.ts";
 
-describe(useQueue, () => {
+describe("useQueue", () => {
   it("starts empty by default", () => {
     const { result } = renderHook(() => useQueue<string>());
 

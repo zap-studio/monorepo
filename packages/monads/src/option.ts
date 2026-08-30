@@ -155,6 +155,5 @@ export const fromNullable = <T>(value: T | null | undefined): Option<NonNullable
     return none();
   }
 
-  // SAFETY: The null/undefined branch above already returned, so `value` is narrowed to `NonNullable<T>` here.
-  return some(value as NonNullable<T>);
+  return some(value);
 };
