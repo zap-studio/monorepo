@@ -19,5 +19,6 @@ export const usePrevious = <T>(value: T): T | undefined => {
     ref.current = value;
   });
 
+  // oxlint-disable-next-line react/refs -- reading the ref during render is the point: it holds the value from the last completed render, which cannot be derived from the current one.
   return ref.current;
 };
