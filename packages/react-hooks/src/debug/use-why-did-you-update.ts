@@ -45,7 +45,6 @@ export const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>)
               }
             }
             if (Object.keys(changed).length > 0) {
-              // oxlint-disable-next-line no-console -- the whole point of this hook is to log a props diff for local debugging.
               console.log(`[why-did-you-update] ${name}`, changed);
             }
           }

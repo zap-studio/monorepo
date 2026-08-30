@@ -1191,7 +1191,6 @@ describe("createPolicy - resource schema validation", () => {
   it("should deny when resource validation reports issues", async () => {
     await Promise.resolve();
     const failingResources = {
-      // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate always returns an issues array to cover the "resource validation reports issues" path.
       post: {
         "~standard": {
           validate: () => ({
@@ -1230,7 +1229,6 @@ describe("createPolicy - resource schema validation", () => {
   it("should deny when resource validation throws (no logger, no console)", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate always throws to cover the "resource validation throws" path.
     const throwingResources = {
       post: {
         "~standard": {
@@ -1292,7 +1290,6 @@ describe("createPolicy - resource schema validation", () => {
   });
   it("should support async resource schema validation", async () => {
     await Promise.resolve();
-    // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate resolves asynchronously to cover the async resource-validation path.
     const asyncResources = {
       post: {
         "~standard": {
@@ -1942,7 +1939,6 @@ describe("logging", () => {
   it("routes the resource validation warning through the logger instead of console.warn", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const logger = createRecordingLogger();
-    // SAFETY: this mock only implements the "~standard" fields the policy engine reads (validate/vendor/version). Its validate always throws, so we can check the warning through `logger.calls`.
     const throwingResources = {
       post: {
         "~standard": {
