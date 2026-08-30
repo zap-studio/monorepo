@@ -18,7 +18,6 @@ Root `package.json` `scripts` is the source of truth. The main ones:
 | `pnpm run lint:fix`, `pnpm run format` | oxlint (type-aware) and oxfmt.                                                                                                                                                                 |
 | `pnpm run test`                        | Vitest. Browser tests need Chromium once: `pnpm exec playwright install --with-deps chromium`.                                                                                                 |
 | `pnpm run fallow`                      | Finds unused dependencies and unused exports.                                                                                                                                                  |
-| `pnpm run react-doctor`                | React-specific audit (`--scope full`). Run it after you touch `packages/react-hooks`. Not part of `publish:check`.                                                                             |
 
 ## Code style
 
@@ -30,14 +29,13 @@ Root `package.json` `scripts` is the source of truth. The main ones:
 
 ## Quality tools
 
-Four tools gate `pnpm run publish:check`. Know what each one is for, so a failure tells you where to look:
+Three tools gate `pnpm run publish:check`. Know what each one is for, so a failure tells you where to look:
 
-| Tool                                       | What it is for                                                                                                                                                                                                                                                                          |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **oxlint** (`pnpm run lint`, type-aware)   | The linter. It catches correctness bugs, unsafe patterns, and style problems. Rules come from `@zap-studio/oxlint` plus the plugins in `oxlint.config.ts`, including a repo-local plugin (`packages/oxlint/src/anti-slop`) with rules like `require-safety-comment-for-type-assertion`. |
-| **fallow** (`pnpm run fallow`)             | Finds unused dependencies and unused exports. It fails if you add a dependency you don't import, or export something nothing uses.                                                                                                                                                      |
-| **react-doctor** (`pnpm run react-doctor`) | A React-specific audit (hooks rules, ref-in-render, effect patterns). Not part of `publish:check`. Run it by hand after you touch `packages/react-hooks`.                                                                                                                               |
-| **v8**                                     | Not a linter. It is Vitest's coverage provider (see `coverage.provider` in the root Vitest config). It measures which lines your tests run. A `v8 ignore` comment tells it that a line cannot be reached in tests on purpose, so coverage does not fail on it.                          |
+| Tool                                     | What it is for                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **oxlint** (`pnpm run lint`, type-aware)  | The linter. It catches correctness bugs, unsafe patterns, and style problems. Rules come from `@zap-studio/oxlint` plus the plugins in `oxlint.config.ts`: a repo-local plugin (`packages/oxlint/src/anti-slop`, rules like `require-safety-comment-for-type-assertion`) and the `react-doctor` plugin (hooks rules, ref-in-render, effect patterns — most relevant to `packages/react-hooks`; findings show up as `react-doctor/<rule>`, disabled the same way as any other oxlint rule). |
+| **fallow** (`pnpm run fallow`)            | Finds unused dependencies and unused exports. It fails if you add a dependency you don't import, or export something nothing uses.                                                                                                                                                                                                                                               |
+| **v8**                                    | Not a linter. It is Vitest's coverage provider (see `coverage.provider` in the root Vitest config). It measures which lines your tests run. A `v8 ignore` comment tells it that a line cannot be reached in tests on purpose, so coverage does not fail on it.                                                                                                                  |
 
 For working through an oxlint finding, deciding whether a disable comment is the right call, or writing a SAFETY comment for an `as` cast, use the `review-linting` skill instead of guessing — it has the exact rule and format.
 
