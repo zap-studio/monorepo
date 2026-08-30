@@ -63,7 +63,7 @@ export const useWebTransport = (
     optionsRef.current = options;
   });
 
-  // react-doctor-disable-next-line react-doctor/no-set-state-after-await-in-effect -- every state update after an `await` here (in `readDatagrams`, `waitForReady`, `waitForClose`) checks `if (!controller.signal.aborted)` first. The cleanup function calls `controller.abort()` before anything else, so a re-run caused by `url` changing can never write stale state.
+  // oxlint-disable-next-line react-doctor/no-set-state-after-await-in-effect -- every state update after an `await` here (in `readDatagrams`, `waitForReady`, `waitForClose`) checks `if (!controller.signal.aborted)` first. The cleanup function calls `controller.abort()` before anything else, so a re-run caused by `url` changing can never write stale state.
   useEffect(() => {
     if (!url || !isSupported()) {
       setStatus("closed");
