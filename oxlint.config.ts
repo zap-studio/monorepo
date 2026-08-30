@@ -22,7 +22,12 @@ export default defineConfig({
     {
       files: ["packages/react-hooks/**/*.browser.test.ts"],
       jsPlugins: testingLibraryJsPlugins,
-      rules: testingLibraryRulesFinal,
+      rules: {
+        ...testingLibraryRulesFinal,
+        "react/globals": "off",
+        "react/refs": "off",
+        "react/immutability": "off",
+      },
     },
   ],
 });
