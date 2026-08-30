@@ -8,6 +8,7 @@ const ORIGINAL_FAVICON = "/original.svg";
 const UPDATED_FAVICON = "/updated.svg";
 
 afterEach(() => {
+  // oxlint-disable-next-line testing-library/no-node-access -- a <link rel="icon"> lives in <head>, has no ARIA role, and never renders visible content, so no Testing Library query can reach it.
   for (const link of document.querySelectorAll(FAVICON_SELECTOR)) {
     link.remove();
   }
@@ -17,6 +18,7 @@ describe("useFavicon", () => {
   it('creates a <link rel="icon"> when none exists', () => {
     renderHook(() => useFavicon("/favicon.svg"));
 
+    // oxlint-disable-next-line testing-library/no-node-access -- same reason as the afterEach above: a <link rel="icon"> has no ARIA role.
     const link = document.querySelector<HTMLLinkElement>(FAVICON_SELECTOR);
     expect(link?.href).toContain("/favicon.svg");
   });
@@ -29,6 +31,7 @@ describe("useFavicon", () => {
 
     renderHook(() => useFavicon(UPDATED_FAVICON));
 
+    // oxlint-disable-next-line testing-library/no-node-access -- same reason as the afterEach above: a <link rel="icon"> has no ARIA role.
     expect(document.querySelectorAll(FAVICON_SELECTOR)).toHaveLength(1);
     expect(existing.href).toContain(UPDATED_FAVICON);
   });
@@ -40,6 +43,7 @@ describe("useFavicon", () => {
 
     rerender({ href: "/b.svg" });
 
+    // oxlint-disable-next-line testing-library/no-node-access -- same reason as the afterEach above: a <link rel="icon"> has no ARIA role.
     const link = document.querySelector<HTMLLinkElement>(FAVICON_SELECTOR);
     expect(link?.href).toContain("/b.svg");
   });

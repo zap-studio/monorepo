@@ -134,6 +134,7 @@ export const useUnstableRenderReason = <T extends Element = HTMLElement>(
     }
   };
 
+  // oxlint-disable-next-line react-hooks/exhaustive-deps -- no deps array on purpose: this effect must re-check the Fiber on every render, not just when some dependency changes. `skipNextRef` (see comment below) already stops the setState-after-setState loop the rule is warning about.
   useEffect(() => {
     if (skipNextRef.current) {
       skipNextRef.current = false;

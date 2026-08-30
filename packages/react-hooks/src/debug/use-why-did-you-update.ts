@@ -30,6 +30,7 @@ export const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>)
   const previousPropsRef = useRef<Record<string, unknown> | undefined>(undefined);
   const skip = isProductionBuild();
 
+  // oxlint-disable-next-line react-hooks/exhaustive-deps -- no deps array on purpose: this effect must compare props on every render, not just when some dependency changes. The rule cannot see that intent because the callback sits behind `skip ? noop : ...`, not a plain arrow function.
   useEffect(
     skip
       ? noop

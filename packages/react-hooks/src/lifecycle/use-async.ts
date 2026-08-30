@@ -41,6 +41,7 @@ export const useAsync = <T>(
     asyncFnRef.current = asyncFn;
   });
 
+  // oxlint-disable-next-line react-hooks/exhaustive-deps -- `deps` comes from the caller, like the dependency array of useEffect. This hook cannot know what is inside it.
   useEffect(() => {
     let cancelled = false;
     setState({ loading: true });
@@ -66,6 +67,7 @@ export const useAsync = <T>(
     return () => {
       cancelled = true;
     };
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- same pass-through `deps` as above; the rule cannot verify a non-literal dependency list.
   }, deps);
 
   return state;

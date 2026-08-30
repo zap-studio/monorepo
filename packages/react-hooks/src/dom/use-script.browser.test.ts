@@ -10,6 +10,7 @@ const uniqueSrc = (): string => {
 };
 
 const scriptFor = (src: string): HTMLScriptElement | null => {
+  // oxlint-disable-next-line testing-library/no-node-access -- a <script> tag has no ARIA role and never renders visible content, so no Testing Library query can reach it. Direct DOM access is the only way to assert it exists.
   return document.querySelector(`script[src="${src}"]`);
 };
 
@@ -49,6 +50,7 @@ describe("useScript", () => {
     renderHook(() => useScript(src));
     renderHook(() => useScript(src));
 
+    // oxlint-disable-next-line testing-library/no-node-access -- same reason as scriptFor above: a <script> tag has no ARIA role, so there is no query for it.
     expect(document.querySelectorAll(`script[src="${src}"]`)).toHaveLength(1);
   });
 
