@@ -8,33 +8,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-Native OpenTelemetry support. Every `handle(request)` call gets a `SERVER` delivery span, extracting the sender's `traceparent` header so the delivery continues their trace instead of starting a new one. Each handler dispatch gets its own child `INTERNAL` span. A non-2xx response marks the delivery span `ERROR`; a thrown handler error is also recorded as an exception on the handler span. See [OpenTelemetry](https://www.zapstudio.dev/webhooks/opentelemetry).
+Native OpenTelemetry support. Every `handle(request)` call now gets a `SERVER` delivery span. It reads the sender's `traceparent` header, so the delivery continues their trace instead of starting a new one. Each handler dispatch gets its own child `INTERNAL` span. A non-2xx response marks the delivery span `ERROR`. A thrown handler error is also recorded as an exception on the handler span. See [OpenTelemetry](https://www.zapstudio.dev/webhooks/opentelemetry).
 
 ### Changed
 
-**Breaking:** `@opentelemetry/api` is now a required peer dependency. It's tiny, side-effect-free, and a no-op until an app registers a real SDK, so nothing changes at runtime for consumers who don't set one up — but the package won't resolve without it installed: `npm install @opentelemetry/api`.
+**Breaking:** `@opentelemetry/api` is now a required peer dependency. It is small, has no side effects, and does nothing until an app registers a real SDK. So nothing changes at runtime if you don't set one up. But the package will not resolve unless it is installed: `npm install @opentelemetry/api`.
 
 ## [1.1.1]
 
 ### Changed
 
-`@zap-studio/logger` is now an optional peer dependency instead of a regular dependency. Every import from it is type-only (`import type { Logger }`), so it was never pulled in at runtime — pass any object matching the `Logger` shape (including `pino`) with no install required. Existing consumers of `logger?: Logger` are unaffected.
+`@zap-studio/logger` is now an optional peer dependency, not a regular one. Every import from it is type-only (`import type { Logger }`), so it was never loaded at runtime anyway. You can pass any object with the `Logger` shape (`pino` included) with no install needed. This does not affect existing use of `logger?: Logger`.
 
 ## [1.1.0]
 
 ### Added
 
-`WebhookRouter` (and `createWebhookRouter(...)`) gain an optional `logger?: Logger` option (from `@zap-studio/logger`). When provided, it logs each delivery attempt and handler dispatch at `debug`, and verification failures and unmatched routes at `warn`. Omitting it keeps zero logging overhead. See [Logging](https://www.zapstudio.dev/webhooks/logging).
+`WebhookRouter` (and `createWebhookRouter(...)`) now take an optional `logger?: Logger` option, from `@zap-studio/logger`. When you pass one, it logs each delivery attempt and handler dispatch at `debug`, and logs verification failures and unmatched routes at `warn`. Leave it out, and there is no logging cost at all. See [Logging](https://www.zapstudio.dev/webhooks/logging).
 
 ## [1.0.0]
 
 ### Changed
 
-`WebhookRouter`'s stateless private static methods (`runBeforeHooks`, `runAfterHooks`, `createHandlerEntry`, `parseRequestBody`, `validatePayload`, `executeHandler`) are now module-level functions in `router.ts`. Internal-only change; the public API (`WebhookRouter`, `createWebhookRouter`, `.register()`, `.handle()`) is unaffected.
+`WebhookRouter`'s stateless private static methods — `runBeforeHooks`, `runAfterHooks`, `createHandlerEntry`, `parseRequestBody`, `validatePayload`, `executeHandler` — are now plain functions at the module level in `router.ts`. This is internal only. The public API (`WebhookRouter`, `createWebhookRouter`, `.register()`, `.handle()`) does not change.
 
-HMAC signature verification decodes the incoming header's hex signature to bytes and compares it against the computed digest byte-for-byte, instead of hex-encoding the digest and comparing hex text. Behavior is unchanged for valid requests; this only affects internals (fewer bytes compared, and the header's hex is no longer case-normalized as text since decoding handles case natively).
+HMAC signature verification now decodes the header's hex signature into bytes, and compares it to the computed digest byte by byte. Before, it turned the digest into hex text and compared that text instead. Behavior stays the same for valid requests. This only changes internals: fewer bytes get compared, and the header's hex case no longer needs normalizing as text, since decoding handles the case on its own.
 
-`constantTimeEquals` moved from `utils.ts` into `verify.ts` (its only consumer) and now compares `Uint8Array`s (bytes) instead of strings. Still exported from `@zap-studio/webhooks` and `@zap-studio/webhooks/verify`.
+`constantTimeEquals` moved from `utils.ts` to `verify.ts`, its only user, and now compares `Uint8Array`s (bytes) instead of strings. It is still exported from `@zap-studio/webhooks` and `@zap-studio/webhooks/verify`.
 
 ### Removed
 
@@ -44,25 +44,25 @@ Removed the `./utils` subpath export.
 
 ### Changed
 
-The custom `NormalizedRequest`/`NormalizedResponse` contract is gone. `router.handle` now takes a standard Web API `Request` and returns a standard `Response`, so the router plugs directly into fetch-native runtimes (Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono) with no adapter layer.
+The custom `NormalizedRequest`/`NormalizedResponse` contract is gone. `router.handle` now takes a standard Web API `Request` and returns a standard `Response`. So the router works directly with fetch-native runtimes — Bun, Deno, Cloudflare Workers, Next.js route handlers, Hono — with no adapter layer needed.
 
 **Breaking changes:**
 
 - `handle(req: NormalizedRequest): Promise<NormalizedResponse>` → `handle(request: Request): Promise<Response>`.
-- Handlers receive `{ request, rawBody, path, payload }` (a `WebhookContext` plus the validated `payload`) and return a `Response` or `undefined` (default `200` `"ok"`). The `ack` helper is removed — use `Response.json(body, init)`.
-- Hooks and `verify` are retyped against the context: `BeforeHook(ctx)`, `AfterHook(ctx, response)`, `ErrorHook(error, ctx)`, `VerifyFn(ctx)`. After hooks must `clone()` the response before reading its body.
-- `Adapter`, `BaseAdapter`, and the `./adapters/base` export are removed. Node `http` users can bridge with `srvx` or `@hono/node-server`.
-- The prefix is normalized to a trailing slash and only matches on a path boundary: `prefix: "/api"` now behaves as `/api/`, so `/apihello` no longer matches a route (previously it matched `ihello`).
+- Handlers now get `{ request, rawBody, path, payload }` — a `WebhookContext` plus the validated `payload` — and return a `Response`, or `undefined` for the default `200 "ok"`. The `ack` helper is removed. Use `Response.json(body, init)` instead.
+- Hooks and `verify` now use the context type: `BeforeHook(ctx)`, `AfterHook(ctx, response)`, `ErrorHook(error, ctx)`, `VerifyFn(ctx)`. An after hook must call `clone()` on the response before it reads the body.
+- `Adapter`, `BaseAdapter`, and the `./adapters/base` export are removed. If you use Node's `http`, bridge with `srvx` or `@hono/node-server`.
+- The prefix now always gets a trailing slash, and only matches at a path boundary. `prefix: "/api"` now behaves like `/api/`. So `/apihello` no longer matches a route — before this fix, it matched the route `ihello`.
 
-Behavior kept: hook execution order, prefix semantics (default `/webhooks/`), exact-match routing, HMAC verification, and the `404`/`400`/`500` error body shapes. Unknown routes now return `404` without reading the request body.
+Kept the same: hook order, how the prefix works (default `/webhooks/`), exact-match routing, HMAC verification, and the `404`/`400`/`500` error body shapes. One change: an unknown route now returns `404` without reading the request body.
 
 ## [0.3.0]
 
 ### Changed
 
-`Adapter` and `BaseAdapter` are now generic over the framework request/response types (`Adapter<TReq, TRes>`, `BaseAdapter<TReq, TRes>`), replacing the previous per-method generics. The mapping members (`toNormalizedRequest`, `toFrameworkResponse`, `handleWebhook`) are now arrow properties, so custom adapters must override them with property syntax rather than method syntax.
+`Adapter` and `BaseAdapter` are now generic over the framework's request/response types: `Adapter<TReq, TRes>`, `BaseAdapter<TReq, TRes>`. This replaces the old per-method generics. The mapping members — `toNormalizedRequest`, `toFrameworkResponse`, `handleWebhook` — are now arrow properties. So a custom adapter must now override them as properties, not as methods.
 
-Also: `register()` now returns `this`, error hooks always receive a real `Error` instance, and `rawBody` is typed as `Uint8Array`. Internal formatting and lint cleanup migrated to ultracite.
+Also: `register()` now returns `this`. Error hooks always get a real `Error` instance. `rawBody` is now typed as `Uint8Array`. Internal formatting and lint cleanup moved to ultracite.
 
 ## [0.2.2]
 
@@ -74,22 +74,22 @@ Also: `register()` now returns `this`, error hooks always receive a real `Error`
 
 ### Changed
 
-- 5fa58b1: Reduced webhook router complexity by consolidating hook normalization and handler entry creation.
-- 7004e9f: Allow explicit `undefined` in option handling, then follow with d707800 to remove redundant `| undefined` unions from public types.
-- 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
+- 5fa58b1: Made the webhook router simpler. Hook normalization and handler entry creation are now combined.
+- 7004e9f: Option handling now allows explicit `undefined`. d707800 then removed extra `| undefined` unions from public types that this made redundant.
+- 9f31f87: Switched the package build to ESNext-aligned output, and updated package tooling and publish metadata.
 - Updated dependency `@zap-studio/validation` to `0.3.3`.
 
 ### Fixed
 
-- 3a950dc: Preserve registered hook assignment types while keeping the schema-first router API unchanged.
+- 3a950dc: Kept the types of registered hook assignments correct, with no change to the schema-first router API.
 
 ## [0.2.0]
 
 ### Changed
 
-- c686862: Switch `createHmacVerifier` to Web Crypto and standardize the verifier around string secrets.
+- c686862: Switched `createHmacVerifier` to Web Crypto, and made all verifiers use string secrets.
 
-  This change removes the Node `crypto` dependency from the verifier path, keeps `req.rawBody` as `Uint8Array`, simplifies `createHmacVerifier` to take a string secret, and adds public `VerificationError` in `@zap-studio/webhooks/errors` for verifier setup and signature failures.
+  This removes the Node `crypto` dependency from the verifier path. `req.rawBody` stays a `Uint8Array`. `createHmacVerifier` is now simpler: it takes a string secret. It also adds a public `VerificationError` in `@zap-studio/webhooks/errors`, for verifier setup and signature failures.
 
 ## [0.1.4]
 
@@ -109,7 +109,7 @@ Also: `register()` now returns `this`, error hooks always receive a real `Error`
 
 ### Fixed
 
-- c209a27: Fix payload schema validation internals to use the current async `standardValidate` options API (`{ throwOnError: false }`), restoring typecheck compatibility after the validation helper signature update.
+- c209a27: Fixed payload schema validation internals to use the current async `standardValidate` options API (`{ throwOnError: false }`). This restores typecheck compatibility after a signature update to the validation helper.
 
 ## [0.1.1]
 
