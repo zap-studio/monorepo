@@ -20,6 +20,7 @@ TanStack Store has the best reactive core of the three. It uses an auto-tracked 
 ## Features
 
 - **[One factory per store](/store/getting-started)**, via `createStore(initialState, actionsFactory?, options?)`. Actions are created once, not on every render or every consumer.
+- **`get()` is stable** — it returns the same reference across calls, until the state actually changes. Safe to use as a snapshot source for things like React's `useSyncExternalStore`.
 - **[`set` takes an updater only](/store/set)**: `set((prev) => partialOrFullState)`. The result is always shallow-merged. There is no `set({ ... })` shortcut, so there is no confusion between "merge" and "replace".
 - **[Auto-tracked derived values](/store/derive)**, via `derive(deps, fn)`. The value is cached. It only recomputes when something `fn` actually read last time has changed. `fn` can read from any store, even one not listed in `deps`, and it will still track correctly.
 - **Plain unsubscribe functions** — `subscribe(...)` returns `() => void`, not a `Subscription` object.

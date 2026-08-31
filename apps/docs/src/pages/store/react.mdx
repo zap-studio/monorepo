@@ -1,0 +1,88 @@
+---
+title: React
+description: useStore — a single hook that subscribes a component to a createStore or derive instance.
+---
+
+# React
+
+[`@zap-studio/store-react`](https://www.npmjs.com/package/@zap-studio/store-react) is a separate package with one hook: `useStore(store, selector?)`. It subscribes a component to a `createStore` or `derive` instance, and re-renders only when the subscribed value changes.
+
+## Installation
+
+```bash
+npm install @zap-studio/store-react @zap-studio/store
+```
+
+## Import
+
+```ts
+import { useStore } from "@zap-studio/store-react";
+```
+
+## Basic Usage
+
+```tsx
+import { createStore } from "@zap-studio/store";
+import { useStore } from "@zap-studio/store-react";
+
+const counter = createStore({ count: 0 }, (set) => ({
+  increment: () => set((s) => ({ count: s.count + 1 })),
+}));
+
+function Counter() {
+  const count = useStore(counter, (s) => s.count);
+  return <button onClick={() => counter.get().increment()}>{count}</button>;
+}
+```
+
+## Without a Selector
+
+`useStore(store)` re-renders on every change to `store`. Both `createStore` and `derive` results are cached — [`get()` returns the same reference until the state actually changes](/store#features) — so this is always safe, it just re-renders on more changes than a selector would:
+
+```tsx
+const isEven = derive([counter], (s) => s.count % 2 === 0);
+
+function Parity() {
+  const even = useStore(isEven);
+  return even ? "even" : "odd";
+}
+```
+
+## With a Selector
+
+Pass a `selector` to narrow what the component reads. The component only re-renders when the selector's result changes, compared with `Object.is`:
+
+```tsx
+const count = useStore(counter, (s) => s.count);
+```
+
+Reading actions this way is also fine — actions are bound once at creation, so `s.increment` never changes:
+
+```tsx
+const increment = useStore(counter, (s) => s.increment);
+```
+
+## Prefer `derive` Over Manual Equality Checks
+
+Zustand's React binding needs a `selector` plus a manual `shallow` comparison to avoid re-rendering when a selector returns a new object or array every time. `@zap-studio/store` solves this at the source instead: build the exact value you need with `derive`, which caches its result and only changes reference when the value itself changes.
+
+```tsx
+// Prefer this — derive() caches the computed object:
+const summary = derive([counter], (s) => ({ count: s.count, isEven: s.count % 2 === 0 }));
+const { count, isEven } = useStore(summary);
+
+// Over this — a new object every render, would need a manual shallow-equality check:
+const { count, isEven } = useStore(counter, (s) => ({
+  count: s.count,
+  isEven: s.count % 2 === 0,
+}));
+```
+
+## Concurrent Rendering
+
+`useStore` is built on React's own [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore), so it is safe under concurrent rendering — no custom subscription-in-`useEffect` code, and no risk of tearing between renders.
+
+## See Also
+
+- [Getting Started](/store/getting-started) — creating a store to use with this hook
+- [`derive`](/store/derive) — auto-tracked, cached derived values

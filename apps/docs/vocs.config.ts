@@ -259,6 +259,7 @@ const sidebar = [
           { link: "/store/set", text: "set" },
           { link: "/store/derive", text: "derive" },
           { link: "/store/persist", text: "Persist" },
+          { link: "/store/react", text: "React" },
         ],
         text: "store",
       },
