@@ -87,6 +87,7 @@ export const derive = <const Deps extends readonly Dependency[], T>(
   const ensureNode = (): ReactiveNode<T> => (dirty || node === undefined ? compute() : node);
 
   const onUpstreamChange = (): void => {
+    /* v8 ignore next -- `node` always has a value here. `onUpstreamChange` can only run after `compute()` has subscribed to a dependency, and `compute()` always sets `node` before it finishes. `?.` and `?? 0` are only here to make TypeScript happy about `node`'s type — they do not check for something that can really happen. */
     if ((node?.listenerCount ?? 0) === 0) {
       dirty = true;
       return;
