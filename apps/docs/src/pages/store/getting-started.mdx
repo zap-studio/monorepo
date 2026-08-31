@@ -1,0 +1,111 @@
+---
+title: Getting Started
+description: Install @zap-studio/store and build your first store step by step.
+---
+
+# Getting Started
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/store
+```
+
+```bash [yarn]
+yarn add @zap-studio/store
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/store
+```
+
+```bash [bun]
+bun add @zap-studio/store
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/store
+```
+
+:::
+
+## Create a Store
+
+`createStore(initialState, actionsFactory?, options?)` returns a store. `initialState` is the only required argument.
+
+```ts
+import { createStore } from "@zap-studio/store";
+
+const counter = createStore({ count: 0 });
+
+counter.getState(); // { count: 0 }
+```
+
+## Add Actions
+
+Pass a second argument: a function that receives `set` and `get`, and returns your actions. It runs once, at creation — actions are not rebuilt per render or per consumer.
+
+```ts
+const counter = createStore({ count: 0 }, (set, get) => ({
+  increment: () => set((s) => ({ count: s.count + 1 })),
+  reset: () => set(() => ({ count: 0 })),
+}));
+
+counter.get().increment();
+counter.getState(); // { count: 1 }
+```
+
+`set` only takes an updater function — see [`set`](/store/set) for why, and for the shallow-merge rule.
+
+## Read State
+
+- `getState()` returns state only.
+- `get()` returns state and actions merged.
+
+```ts
+counter.getState(); // { count: 1 }
+counter.get(); // { count: 1, increment: fn, reset: fn }
+```
+
+## Subscribe to Changes
+
+`subscribe(listener)` calls `listener` with the merged state (and actions) on every change, and returns a plain unsubscribe function:
+
+```ts
+const unsubscribe = counter.subscribe((state) => console.log(state.count));
+
+counter.get().increment(); // logs 2
+
+unsubscribe();
+counter.get().increment(); // nothing logged
+```
+
+## Derive a Value
+
+`derive(deps, fn)` builds a cached value from one or more stores. It stays correct on its own — see [`derive`](/store/derive) for how the tracking works.
+
+```ts
+import { derive } from "@zap-studio/store";
+
+const isEven = derive([counter], (s) => s.count % 2 === 0);
+
+isEven.get(); // false
+counter.get().increment();
+isEven.get(); // true
+```
+
+## Persist State
+
+Pass `{ persist: { key, storage } }` as the third argument to save and load state through `localStorage`-shaped storage:
+
+```ts
+const counter = createStore(
+  { count: 0 },
+  (set) => ({ increment: () => set((s) => ({ count: s.count + 1 })) }),
+  { persist: { key: "counter", storage: localStorage } },
+);
+```
+
+See [Persist](/store/persist) for what gets saved and what does not.

@@ -1,0 +1,72 @@
+---
+title: set
+description: set only takes an updater function, and the result is always shallow-merged into state.
+---
+
+# `set`
+
+`set` is the setter passed into `actionsFactory` when you create a store. It only takes one form: an updater function.
+
+```ts
+set((prev) => partialOrFullState);
+```
+
+There is no `set({ ... })` shortcut. This is deliberate — see [Why No Bare-Object Form](#why-no-bare-object-form) below.
+
+## Shallow Merge
+
+Whatever the updater returns is shallow-merged into the current state — the same way `Object.assign` or object-spread would combine it with the previous state. Keys you don't mention are left untouched.
+
+```ts
+const user = createStore({ name: "Ada", age: 30 }, (set) => ({
+  haveBirthday: () => set((s) => ({ age: s.age + 1 })), // only `age` changes
+}));
+
+user.get().haveBirthday();
+user.getState(); // { name: "Ada", age: 31 }
+```
+
+## Reading the Previous State
+
+The updater always receives the current state as its only argument — no separate `get` call needed for a simple read-then-write update:
+
+```ts
+const counter = createStore({ count: 0 }, (set) => ({
+  increment: () => set((s) => ({ count: s.count + 1 })),
+}));
+```
+
+For an action that needs to read state without also writing it in the same call, use the `get` parameter from `actionsFactory` instead:
+
+```ts
+const counter = createStore({ count: 5 }, (set, get) => ({
+  double: () => set(() => ({ count: get().count * 2 })),
+}));
+```
+
+## Why No Bare-Object Form
+
+Zustand's `setState` accepts both a partial object and an updater function, and merges either way. That flexibility hides a real ambiguity: does `set({ count: 1 })` merge `count` into the existing state, or replace the whole state with `{ count: 1 }`? Zustand answers "merge," but that answer is not visible at the call site — you have to know the library's convention.
+
+`@zap-studio/store` removes the ambiguity by only accepting the updater form. It stays a one-liner for simple updates (`set(() => ({ count: 1 }))`), and every call site is unambiguous about being a merge.
+
+## Nested State Is Not Deep-Merged
+
+Shallow merge means only the top level of state is merged — a nested object is replaced whole, not merged field by field:
+
+```ts
+const form = createStore({ user: { name: "Ada", age: 30 } }, (set) => ({
+  // Wrong: this replaces `user` entirely, dropping `age`.
+  renameWrong: (name: string) => set(() => ({ user: { name } })),
+
+  // Right: spread the previous nested object first.
+  rename: (name: string) => set((s) => ({ user: { ...s.user, name } })),
+}));
+```
+
+This is the same rule Zustand and most state containers follow — it is called out here because `@zap-studio/store` removing the bare-object overload does not change it.
+
+## See Also
+
+- [Getting Started](/store/getting-started) — creating a store and adding actions
+- [Persist](/store/persist) — what happens to state written through `set` when persist is enabled

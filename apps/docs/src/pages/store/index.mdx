@@ -1,0 +1,63 @@
+---
+title: Overview
+description: A small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.
+---
+
+# @zap-studio/store
+
+`@zap-studio/store` is a small, framework-agnostic state container with auto-tracked derived values and simple built-in persist. It works with any framework, or no framework at all.
+
+## Motivation
+
+Zustand's `setState` does a shallow merge by default. This is a problem for nested state. It also has no built-in derived value: every selector runs again from scratch, with no caching.
+
+Jotai's atom model is nice, but `jotai/utils` alone has more than a dozen helper atoms. One simple idea ("a derived value") grew into a large API.
+
+TanStack Store has the best reactive core of the three. It uses an auto-tracked signal graph, so derived values only recompute when a real dependency changes. But `subscribe()` returns an object shaped like RxJS's `Subscription`, not a plain function. It also has no built-in persistence.
+
+`@zap-studio/store` takes TanStack's auto-tracked reactivity and Zustand's simple, single-factory style. The public API stays small on purpose: `createStore`, `derive`, and nothing else. No middleware chain, no Provider, no atom zoo.
+
+## Features
+
+- **[One factory per store](/store/getting-started)**, via `createStore(initialState, actionsFactory?, options?)`. Actions are created once, not on every render or every consumer.
+- **[`set` takes an updater only](/store/set)**: `set((prev) => partialOrFullState)`. The result is always shallow-merged. There is no `set({ ... })` shortcut, so there is no confusion between "merge" and "replace".
+- **[Auto-tracked derived values](/store/derive)**, via `derive(deps, fn)`. The value is cached. It only recomputes when something `fn` actually read last time has changed. `fn` can read from any store, even one not listed in `deps`, and it will still track correctly.
+- **Plain unsubscribe functions** — `subscribe(...)` returns `() => void`, not a `Subscription` object.
+- **[Simple built-in persist](/store/persist)** — pass `{ persist: { key, storage } }` to `createStore`. `storage` only needs `getItem`, `setItem`, and `removeItem`, so `localStorage` and `sessionStorage` work as-is.
+- **No required runtime dependencies.**
+- **Full TypeScript inference** for state, actions, and the values passed into `derive`. You do not need to write generic types by hand.
+
+## Quick Start
+
+```ts
+import { createStore } from "@zap-studio/store";
+
+const counter = createStore({ count: 0 }, (set, get) => ({
+  increment: () => set((s) => ({ count: s.count + 1 })),
+}));
+
+counter.get(); // { count: 0, increment: fn }
+counter.getState(); // { count: 0 }
+
+const unsubscribe = counter.subscribe((state) => console.log(state));
+counter.get().increment(); // logs { count: 1, increment: fn }
+```
+
+## Learn More
+
+- [Getting Started](/store/getting-started) — install and build your first store step by step
+- [`set`](/store/set) — the updater-only setter and how shallow merge works
+- [`derive`](/store/derive) — auto-tracked, cached derived values
+- [Persist](/store/persist) — save and load state through `localStorage`-shaped storage
+
+## Runtime Support
+
+| Runtime            | Minimum version                         |
+| ------------------ | --------------------------------------- |
+| Node.js            | 18.0.0                                  |
+| Bun                | 1.0.0                                   |
+| Deno               | 1.42                                    |
+| Cloudflare Workers | Any current release                     |
+| Browsers           | Chrome/Edge 98, Firefox 97, Safari 15.4 |
+
+The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/store`).
