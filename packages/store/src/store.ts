@@ -105,9 +105,18 @@ export function createStore<S extends object, A extends Record<string, unknown>>
   // check this on its own — we check it by hand instead.
   const actions = (actionsFactory?.(set, getState) ?? {}) as A;
 
+  let cache: { state: S; snapshot: S & A } | undefined;
+
+  const snapshot = (state: S): S & A => {
+    if (cache === undefined || cache.state !== state) {
+      cache = { state, snapshot: { ...state, ...actions } };
+    }
+    return cache.snapshot;
+  };
+
   return {
-    get: () => ({ ...node.get(), ...actions }),
+    get: () => snapshot(node.get()),
     getState: () => node.get(),
-    subscribe: (listener) => node.subscribe(() => listener({ ...node.peek(), ...actions })),
+    subscribe: (listener) => node.subscribe(() => listener(snapshot(node.peek()))),
   };
 }

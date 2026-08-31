@@ -25,6 +25,27 @@ describe("createStore get/getState", () => {
 
     expect(store.get()).toStrictEqual({ count: 0 });
   });
+
+  it("returns the same reference from get() across calls when nothing changed", () => {
+    const store = createStore({ count: 0 }, (set) => ({
+      increment: () => set((s) => ({ count: s.count + 1 })),
+    }));
+
+    expect(store.get()).toBe(store.get());
+  });
+
+  it("returns a new reference from get() after a real change", () => {
+    const store = createStore({ count: 0 }, (set) => ({
+      increment: () => set((s) => ({ count: s.count + 1 })),
+    }));
+
+    const before = store.get();
+    before.increment();
+    const after = store.get();
+
+    expect(after).not.toBe(before);
+    expect(after.count).toBe(1);
+  });
 });
 
 describe("createStore set", () => {

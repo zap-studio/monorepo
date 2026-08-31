@@ -23,6 +23,7 @@ npm install @zap-studio/store
 ## Features
 
 - **One factory per store**, via `createStore(initialState, actionsFactory?, options?)`. Actions are created once, not on every render or every consumer.
+- **`get()` is stable** — it returns the same reference across calls, until the state actually changes. Safe to use as a snapshot source for things like React's `useSyncExternalStore`.
 - **`set` takes an updater only**: `set((prev) => partialOrFullState)`. The result is always shallow-merged. There is no `set({ ... })` shortcut, so there is no confusion between "merge" and "replace".
 - **Auto-tracked derived values**, via `derive(deps, fn)`. The value is cached. It only recomputes when something `fn` actually read last time has changed. `fn` can read from any store, even one not listed in `deps`, and it will still track correctly. `deps` only sets the order and the types of the arguments.
 - **Plain unsubscribe functions** — `subscribe(...)` returns `() => void`, not a `Subscription` object.
