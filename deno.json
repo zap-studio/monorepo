@@ -1,5 +1,6 @@
 {
   "workspace": [
+    "./packages/cache",
     "./packages/validation",
     "./packages/fetch",
     "./packages/logger",
