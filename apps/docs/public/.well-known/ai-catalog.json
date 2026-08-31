@@ -83,6 +83,13 @@
       "description": "Composable, tree-shakeable retry policies for resilient async operations."
     },
     {
+      "identifier": "urn:air:zapstudio.dev:package:store",
+      "displayName": "@zap-studio/store",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/store",
+      "description": "A small, tree-shakeable, framework-agnostic state container with auto-tracked derived values and optional built-in persist."
+    },
+    {
       "identifier": "urn:air:zapstudio.dev:package:validation",
       "displayName": "@zap-studio/validation",
       "type": "application/json",
