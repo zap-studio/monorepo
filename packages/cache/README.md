@@ -16,6 +16,17 @@ A hand-rolled `Map`-based cache without a capacity limit is a memory leak waitin
 npm install @zap-studio/cache
 ```
 
+## Features
+
+- **Eviction policies**: `lru()` (default), `lfu()`, and `fifo()`, swappable via `createCache(capacity, { policy })`.
+- **Capacity and eviction**: a count-based `capacity` evicts one entry — chosen by the configured policy — right before an insert that would exceed it.
+- **TTL**: optional and lazy, checked on `get`/`has`/`peek`, no background sweep timer. A cache-wide default and a per-entry override.
+- **`onEvict`**: fires on capacity or TTL eviction — not on manual `delete()` or `clear()`.
+- **`peek`**: reads a value without affecting eviction order.
+- **Custom policies**: `EvictionPolicy<K>` is a public interface — implement your own algorithm (MRU, random replacement, ...) as a plain object, no subclassing.
+- **Iteration**: `keys()`, `values()`, `entries()`, and `[Symbol.iterator]()` walk live entries in insertion order.
+- **Tree-shakeable** — every policy has its own subpath export (`@zap-studio/cache/lru`, `/lfu`, `/fifo`); unused policies are dropped by any modern bundler.
+
 ## Quick Start
 
 ```ts

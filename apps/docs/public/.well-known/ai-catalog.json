@@ -20,6 +20,13 @@
       "description": "The complete Zap Studio documentation for all packages in one Markdown file, for agents that need full context in a single request."
     },
     {
+      "identifier": "urn:air:zapstudio.dev:package:cache",
+      "displayName": "@zap-studio/cache",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/cache",
+      "description": "A zero-dependency, tree-shakeable in-memory key-value cache with pluggable eviction policies (LRU, LFU, FIFO), capacity limits, and optional TTL."
+    },
+    {
       "identifier": "urn:air:zapstudio.dev:package:fetch",
       "displayName": "@zap-studio/fetch",
       "type": "application/json",
