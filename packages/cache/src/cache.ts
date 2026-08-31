@@ -54,6 +54,16 @@ export const createCache = <K, V>(
     onEvict?.(key, entry.value);
   };
 
+  const liveSize = (): number => {
+    let count = 0;
+    for (const entry of store.values()) {
+      if (!isExpired(entry)) {
+        count += 1;
+      }
+    }
+    return count;
+  };
+
   return {
     capacity,
 
@@ -137,7 +147,7 @@ export const createCache = <K, V>(
       const ttl = setOptions?.ttl ?? defaultTtl;
       const expiresAt = ttl === undefined ? undefined : Date.now() + ttl;
 
-      if (!store.has(key) && store.size >= capacity) {
+      if (!store.has(key) && liveSize() >= capacity) {
         const victimKey = policy.evict();
         if (victimKey !== undefined) {
           const victimEntry = store.get(victimKey);
@@ -153,7 +163,7 @@ export const createCache = <K, V>(
     },
 
     get size(): number {
-      return store.size;
+      return liveSize();
     },
 
     values(): IterableIterator<V> {
