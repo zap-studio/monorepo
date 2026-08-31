@@ -1,0 +1,115 @@
+---
+title: Eviction Policies
+description: The built-in lru(), lfu(), mru(), mfu(), and fifo() eviction policies, and how to swap between them.
+---
+
+# Eviction Policies
+
+`createCache(capacity, options?)` delegates the choice of victim key to an `EvictionPolicy<K>` — a plain object implementing five hooks (`onGet`, `onSet`, `onDelete`, `evict`, `clear`). Five are built in, each from its own subpath so unused ones stay out of your bundle.
+
+```ts
+import { createCache } from "@zap-studio/cache";
+import { fifo } from "@zap-studio/cache/fifo";
+import { lfu } from "@zap-studio/cache/lfu";
+import { lru } from "@zap-studio/cache/lru";
+import { mfu } from "@zap-studio/cache/mfu";
+import { mru } from "@zap-studio/cache/mru";
+
+const lruCache = createCache<string, number>(100, { policy: lru() });
+const lfuCache = createCache<string, number>(100, { policy: lfu() });
+const mruCache = createCache<string, number>(100, { policy: mru() });
+const mfuCache = createCache<string, number>(100, { policy: mfu() });
+const fifoCache = createCache<string, number>(100, { policy: fifo() });
+```
+
+## `lru()` — Least Recently Used
+
+The default when `policy` is omitted. Both `get` and `set` count as use and move the key to the most-recently-used end. Implemented with a `Map`, whose keys iterate in insertion order — a delete-then-reinsert moves a key to the end in O(1), giving exact (not approximate) LRU ordering.
+
+```ts
+const cache = createCache<string, number>(2); // lru() by default
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.get("a"); // "a" is now most-recently-used
+cache.set("c", 3); // evicts "b", not "a"
+
+cache.has("a"); // true
+cache.has("b"); // false
+```
+
+## `lfu()` — Least Frequently Used
+
+Evicts the key with the lowest access frequency, tracked with per-frequency bucket lists for O(1) `evict()`. Both `onGet` and a repeated `onSet` bump a key's frequency. Ties within the same frequency break by oldest insertion.
+
+```ts
+import { lfu } from "@zap-studio/cache/lfu";
+
+const cache = createCache<string, number>(2, { policy: lfu() });
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.get("a"); // "a" now has frequency 2, "b" has frequency 1
+cache.set("c", 3); // evicts "b" (lowest frequency)
+
+cache.has("a"); // true
+cache.has("b"); // false
+```
+
+## `mru()` — Most Recently Used
+
+The inverse of `lru()`: evicts the most-recently-used key instead of the oldest. Useful when the entry you just touched is the least likely to be reused — for example, a one-pass scan over a large sequence, where each key is used once and never again. Implemented with a doubly-linked key list for O(1) touch and O(1) eviction, giving exact (not approximate) MRU ordering.
+
+```ts
+import { mru } from "@zap-studio/cache/mru";
+
+const cache = createCache<string, number>(2, { policy: mru() });
+
+cache.set("a", 1);
+cache.set("b", 2); // "b" is now most-recently-used
+cache.set("c", 3); // evicts "b", not "a"
+
+cache.has("a"); // true
+cache.has("b"); // false
+```
+
+## `mfu()` — Most Frequently Used
+
+The inverse of `lfu()`: evicts the key with the highest access frequency instead of the lowest, tracked with the same per-frequency bucket lists for O(1) `evict()`. Ties within the same frequency break by oldest insertion.
+
+```ts
+import { mfu } from "@zap-studio/cache/mfu";
+
+const cache = createCache<string, number>(2, { policy: mfu() });
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.get("a"); // "a" now has frequency 2, "b" has frequency 1
+cache.set("c", 3); // evicts "a" (highest frequency)
+
+cache.has("a"); // false
+cache.has("b"); // true
+```
+
+## `fifo()` — First In, First Out
+
+Evicts the oldest inserted key, regardless of access pattern. `get` never affects eviction order, and a repeated `set` on an already-tracked key does not move it.
+
+```ts
+import { fifo } from "@zap-studio/cache/fifo";
+
+const cache = createCache<string, number>(2, { policy: fifo() });
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.get("a"); // ignored by fifo — does not save "a"
+cache.set("c", 3); // evicts "a" (oldest inserted)
+
+cache.has("a"); // false
+cache.has("b"); // true
+```
+
+## See Also
+
+- [Capacity and Eviction](/cache/capacity-and-eviction) — when eviction runs
+- [Custom Policies](/cache/custom-policies) — implement `EvictionPolicy<K>` yourself

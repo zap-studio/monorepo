@@ -1,0 +1,78 @@
+---
+title: Custom Policies
+description: EvictionPolicy<K> is a public interface — implement your own algorithm as a plain object, no subclassing.
+---
+
+# Custom Policies
+
+`EvictionPolicy<K>` is the public interface `createCache(...)` consumes for eviction decisions. Implementations own all ordering/eviction state privately — the core cache never inspects it directly, only calls its hooks. Write one when the built-in [`lru()`, `lfu()`, `mru()`, `mfu()` and `fifo()`](/cache/eviction-policies) don't match your eviction rules.
+
+## Implement `EvictionPolicy<K>`
+
+All five hooks are required — there are no optional members or defaults to fall back on.
+
+```ts
+import type { EvictionPolicy } from "@zap-studio/cache/types";
+
+interface EvictionPolicy<K> {
+  onGet: (key: K) => void;
+  onSet: (key: K) => void;
+  onDelete: (key: K) => void;
+  evict: () => K | undefined;
+  clear: () => void;
+}
+```
+
+| Hook       | Called by the cache when...                                                                                |
+| ---------- | ---------------------------------------------------------------------------------------------------------- |
+| `onGet`    | a live (non-expired) read via `get(key)` succeeds. Not called for `peek(key)`.                             |
+| `onSet`    | `set(key, value)` inserts or updates `key`.                                                                |
+| `onDelete` | `delete(key)` removes `key`. Not called for capacity or TTL evictions.                                     |
+| `evict`    | the cache needs a victim key on an over-capacity insert. Return `undefined` when there's nothing to evict. |
+| `clear`    | `clear()` is called on the cache — reset all internal policy state.                                        |
+
+## Example: Random Replacement
+
+Evicts a uniformly random live key — cheap to implement, no per-access bookkeeping.
+
+```ts
+import type { EvictionPolicy } from "@zap-studio/cache/types";
+
+const random = <K>(): EvictionPolicy<K> => {
+  const keys = new Set<K>();
+
+  return {
+    onGet: () => {
+      // random replacement ignores access pattern
+    },
+    onSet: (key) => {
+      keys.add(key);
+    },
+    onDelete: (key) => {
+      keys.delete(key);
+    },
+    evict: () => {
+      const values = [...keys];
+      if (values.length === 0) return undefined;
+      const victim = values[Math.floor(Math.random() * values.length)];
+      keys.delete(victim);
+      return victim;
+    },
+    clear: () => {
+      keys.clear();
+    },
+  };
+};
+```
+
+## Guidelines
+
+- `evict()` must remove its own bookkeeping for the returned key — the cache does not call `onDelete` for you after eviction.
+- Return `undefined` from `evict()` only when the policy has genuinely nothing to evict; returning a key not present in the cache is safe (the cache ignores it) but skips eviction that call.
+- Keep hooks side-effect free beyond internal bookkeeping — they run synchronously inside `get`/`set`/`delete`/`clear`.
+- Prefer O(1) or O(log n) operations in `onGet`/`onSet`/`evict` — they run on every cache access.
+
+## See Also
+
+- [Eviction Policies](/cache/eviction-policies) — the built-in `lru()`, `lfu()`, `mru()`, `mfu()`, `fifo()` for reference implementations
+- [Capacity and Eviction](/cache/capacity-and-eviction) — when `evict()` is called

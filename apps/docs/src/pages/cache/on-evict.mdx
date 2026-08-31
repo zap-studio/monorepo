@@ -1,0 +1,71 @@
+---
+title: onEvict
+description: Fires on capacity or TTL eviction — not on manual delete() or clear().
+---
+
+# `onEvict`
+
+`onEvict(key, value)` is an optional callback passed to `createCache(...)`. It fires whenever an entry is removed automatically — by capacity eviction or TTL expiry — and never for a removal you asked for explicitly.
+
+```ts
+const cache = createCache<string, number>(2, {
+  onEvict: (key, value) => console.log("evicted", key, value),
+});
+```
+
+## When It Fires
+
+| Trigger                                     | `onEvict` called?  |
+| ------------------------------------------- | ------------------ |
+| Capacity eviction (`set` over capacity)     | Yes                |
+| TTL expiry discovered by `get`/`has`/`peek` | Yes                |
+| Manual `delete(key)`                        | No                 |
+| `clear()`                                   | No (not per entry) |
+
+### Capacity Eviction
+
+```ts
+const evicted: Array<[string, number]> = [];
+const cache = createCache<string, number>(1, {
+  onEvict: (key, value) => evicted.push([key, value]),
+});
+
+cache.set("a", 1);
+cache.set("b", 2); // evicts "a"
+
+evicted; // [["a", 1]]
+```
+
+### TTL Expiry
+
+Fires the first time an expired entry is discovered — via `get`, `has`, or `peek` — not at the moment it actually expires, since there is no background timer.
+
+```ts
+const cache = createCache<string, number>(2, {
+  onEvict: (key, value) => console.log("expired", key, value),
+  ttl: 100,
+});
+
+cache.set("a", 1);
+
+// ... 101ms later ...
+cache.get("a"); // logs "expired a 1", then returns undefined
+```
+
+### Not Called for `delete` or `clear`
+
+```ts
+const onEvict = vi.fn();
+const cache = createCache<string, number>(2, { onEvict });
+cache.set("a", 1);
+
+cache.delete("a"); // onEvict not called
+cache.clear(); // onEvict not called, even with more entries present
+```
+
+`delete` and `clear` are actions you took directly, not something the cache decided on its own — `onEvict` is reserved for evictions the cache initiates.
+
+## See Also
+
+- [Capacity and Eviction](/cache/capacity-and-eviction)
+- [TTL](/cache/ttl)

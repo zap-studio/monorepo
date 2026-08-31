@@ -1,0 +1,19 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@zap-studio/cache",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cache": "./src/cache.ts",
+    "./fifo": "./src/fifo.ts",
+    "./lfu": "./src/lfu.ts",
+    "./lru": "./src/lru.ts",
+    "./mfu": "./src/mfu.ts",
+    "./mru": "./src/mru.ts",
+    "./types": "./src/types.ts"
+  },
+  "publish": {
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
+}

@@ -1,0 +1,63 @@
+---
+title: Iteration
+description: keys(), values(), entries(), and [Symbol.iterator]() walk live entries in insertion order without affecting eviction state.
+---
+
+# Iteration
+
+`Cache<K, V>` exposes `keys()`, `values()`, `entries()`, and `[Symbol.iterator]()`. All four walk live (non-expired) entries in insertion order, and none of them notify the eviction policy — iterating never changes what gets evicted next.
+
+```ts
+for (const [key, value] of cache) {
+  console.log(key, value);
+}
+```
+
+## `keys()`, `values()`, `entries()`
+
+Each returns an `IterableIterator` you can spread or loop over directly:
+
+```ts
+const cache = createCache<string, number>(3);
+cache.set("a", 1);
+cache.set("b", 2);
+
+[...cache.keys()]; // ["a", "b"]
+[...cache.values()]; // [1, 2]
+[...cache.entries()]; // [["a", 1], ["b", 2]]
+```
+
+## `[Symbol.iterator]()`
+
+Makes `Cache<K, V>` itself iterable, delegating to `entries()`:
+
+```ts
+for (const [key, value] of cache) {
+  console.log(key, value);
+}
+
+[...cache]; // [["a", 1], ["b", 2]]
+```
+
+## Expired Entries Are Skipped
+
+Iteration checks TTL the same way `get`/`has`/`peek` do, but skips an expired entry instead of removing it from the store — no `onEvict` fires during iteration.
+
+```ts
+const cache = createCache<string, number>(3);
+cache.set("a", 1, { ttl: 100 });
+cache.set("b", 2);
+
+// ... 101ms later ...
+
+[...cache.keys()]; // ["b"] — "a" is skipped, not removed
+```
+
+## Insertion Order, Not Access Order
+
+Iteration order always follows insertion order, regardless of the configured eviction policy — even with `lru()`, `lfu()`, `mru()`, or `mfu()` active, `entries()` does not reorder itself by recency or frequency. Only `evict()` consults the policy's own internal order.
+
+## See Also
+
+- [TTL](/cache/ttl) — how expiry is determined
+- [Capacity and Eviction](/cache/capacity-and-eviction)

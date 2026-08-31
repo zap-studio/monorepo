@@ -15,6 +15,24 @@ const sidebar = [
       {
         collapsed: true,
         items: [
+          { link: "/cache", text: "Overview" },
+          { link: "/cache/getting-started", text: gettingStarted },
+          { link: "/cache/eviction-policies", text: "Eviction Policies" },
+          {
+            link: "/cache/capacity-and-eviction",
+            text: "Capacity and Eviction",
+          },
+          { link: "/cache/ttl", text: "TTL" },
+          { link: "/cache/on-evict", text: "onEvict" },
+          { link: "/cache/peek", text: "peek" },
+          { link: "/cache/custom-policies", text: "Custom Policies" },
+          { link: "/cache/iteration", text: "Iteration" },
+        ],
+        text: "cache",
+      },
+      {
+        collapsed: true,
+        items: [
           { link: "/fetch", text: "Overview" },
           { link: "/fetch/getting-started", text: gettingStarted },
           { link: "/fetch/raw-fetch-mode", text: "Raw Fetch Mode" },
@@ -210,6 +228,13 @@ export default defineConfig({
 
     const getPackages = () => [
       {
+        slug: "cache",
+        name: "@zap-studio/cache",
+        version: "1.0.0",
+        description:
+          "Zero-dependency in-memory key-value cache with pluggable eviction policies (LRU, LFU, FIFO), capacity limits, and optional TTL.",
+      },
+      {
         slug: "fetch",
         name: "@zap-studio/fetch",
         version: "2.1.1",
@@ -317,7 +342,7 @@ export default defineConfig({
           ),
           question(
             "What packages does Zap Studio provide?",
-            "fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), validation (Standard Schema utilities), and webhooks (type-safe webhook routing).",
+            "cache (in-memory cache with pluggable eviction), fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), validation (Standard Schema utilities), and webhooks (type-safe webhook routing).",
           ),
           question(
             "Which runtimes does Zap Studio support?",
@@ -411,6 +436,7 @@ export default defineConfig({
   socials: [{ icon: "github", link: repoUrl }],
   title: "Zap Studio",
   topNav: [
+    { link: "/cache", text: "cache" },
     { link: "/fetch", text: "fetch" },
     { link: "/logger", text: "logger" },
     { link: "/monads", text: "monads" },

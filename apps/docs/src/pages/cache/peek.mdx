@@ -1,0 +1,59 @@
+---
+title: peek
+description: Reads a value without affecting eviction order — useful for inspection or metrics without disturbing LRU/LFU/MRU/MFU state.
+---
+
+# `peek`
+
+`peek(key)` reads a value the same way `get(key)` does, but without notifying the eviction policy — so it never affects `lru()`/`mru()` recency or `lfu()`/`mfu()` frequency. It still respects TTL: an expired entry is removed and `undefined` is returned, same as `get`.
+
+```ts
+cache.peek("a"); // same as get(), but no recency/frequency bump
+```
+
+## Why It Exists
+
+Sometimes you need to look at a cached value without that look counting as "use" — for example, inspecting cache contents for metrics or debugging, or checking a value opportunistically without wanting it to outlive entries that are actually being used.
+
+```ts
+const cache = createCache<string, number>(2); // lru() by default
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.peek("a"); // does not mark "a" as recently used
+cache.set("c", 3); // evicts "a" anyway — peek didn't save it
+
+cache.has("a"); // false
+cache.has("b"); // true
+```
+
+Compare with `get`, which would have kept `"a"` alive by bumping its recency:
+
+```ts
+const cache = createCache<string, number>(2);
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.get("a"); // marks "a" as recently used
+cache.set("c", 3); // evicts "b" instead
+
+cache.has("a"); // true
+cache.has("b"); // false
+```
+
+## Missing and Expired Keys
+
+`peek` returns `undefined` for a missing key, and also for an expired key — removing it from the store and firing [`onEvict`](/cache/on-evict) if configured, exactly like `get` does.
+
+```ts
+cache.peek("missing"); // undefined
+
+cache.set("a", 1, { ttl: 100 });
+// ... 101ms later ...
+cache.peek("a"); // undefined — expired and removed, onEvict fires
+```
+
+## See Also
+
+- [Eviction Policies](/cache/eviction-policies) — what `get`/`set` bump that `peek` skips
+- [TTL](/cache/ttl)

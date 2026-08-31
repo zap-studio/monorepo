@@ -1,0 +1,72 @@
+---
+title: Capacity and Eviction
+description: createCache evicts one entry, chosen by the configured policy, right before an insert that would exceed capacity.
+---
+
+# Capacity and Eviction
+
+`createCache(capacity, options?)` bounds the cache to `capacity` live entries. `capacity` must be a positive integer — a non-integer or non-positive value throws a `RangeError`.
+
+```ts
+createCache<string, number>(0); // throws RangeError
+createCache<string, number>(1.5); // throws RangeError
+createCache<string, number>(100); // ok
+```
+
+## When Eviction Runs
+
+Eviction happens inside `set(...)`, only when **both** are true:
+
+- the key being set is new (not already in the cache), and
+- the cache is already at `capacity`.
+
+The configured [eviction policy](/cache/eviction-policies) picks the victim key via `evict()`, and it is removed before the new entry is inserted.
+
+```ts
+const cache = createCache<string, number>(2);
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.set("c", 3); // over capacity + new key -> evicts one entry first
+
+cache.size; // 2
+```
+
+## Updating an Existing Key Never Evicts
+
+A `set(...)` call for a key already present only updates its value — it never grows `size`, so it never triggers eviction, no matter how full the cache is.
+
+```ts
+const cache = createCache<string, number>(2);
+
+cache.set("a", 1);
+cache.set("b", 2);
+cache.set("a", 10); // "a" already exists — no eviction
+
+cache.size; // 2
+cache.get("a"); // 10
+cache.has("b"); // true
+```
+
+## When the Policy Has Nothing to Evict
+
+If `evict()` returns `undefined` (an empty policy) or a key no longer present in the store, `createCache` inserts the new entry anyway without removing anything — `size` can then exceed `capacity`. This only happens with a hand-written [custom policy](/cache/custom-policies); the built-in `lru()`, `lfu()`, `mru()`, `mfu()`, and `fifo()` always return a live key when the cache isn't empty.
+
+## `capacity` and `size`
+
+Both are exposed as readonly properties on the returned `Cache<K, V>`:
+
+```ts
+const cache = createCache<string, number>(3);
+cache.set("a", 1);
+cache.set("b", 2);
+
+cache.capacity; // 3
+cache.size; // 2, live entries only — expired entries don't count
+```
+
+## See Also
+
+- [Eviction Policies](/cache/eviction-policies) — `lru()`, `lfu()`, `mru()`, `mfu()`, `fifo()`
+- [TTL](/cache/ttl) — the other way entries leave the cache
+- [`onEvict`](/cache/on-evict) — observe capacity and TTL evictions
