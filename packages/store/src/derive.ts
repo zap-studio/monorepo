@@ -75,12 +75,12 @@ export const derive = <const Deps extends readonly Dependency[], T>(
       }
     }
 
+    dirty = false;
     if (node === undefined) {
       node = new ReactiveNode<T>(value);
     } else {
       node.set(value);
     }
-    dirty = false;
     return node;
   };
 

@@ -93,7 +93,7 @@ export function createStore<S extends object, A extends Record<string, unknown>>
     const prev = node.peek();
     const next = { ...prev, ...updater(prev) };
     node.set(next);
-    persist?.storage.setItem(persist.key, JSON.stringify(next));
+    persist?.storage.setItem(persist.key, JSON.stringify(node.peek()));
   };
 
   const getState: GetState<S> = () => node.peek();

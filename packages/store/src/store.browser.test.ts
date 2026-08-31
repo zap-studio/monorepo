@@ -135,6 +135,28 @@ describe("createStore persist", () => {
 
     expect(JSON.parse(storage.getItem("counter") ?? "null")).toStrictEqual({ count: 1 });
   });
+
+  it("persists the latest state when a subscriber calls set again synchronously", () => {
+    const storage = memoryStorage();
+    const store = createStore(
+      { count: 0 },
+      (set) => ({ bump: () => set((s) => ({ count: s.count + 1 })) }),
+      { persist: { key: "counter", storage } },
+    );
+
+    // Re-entrant: this listener fires from inside the first bump()'s own set()
+    // call, and calls bump() again before that outer set() call has returned.
+    store.subscribe((state) => {
+      if (state.count === 1) {
+        state.bump();
+      }
+    });
+
+    store.get().bump();
+
+    expect(store.getState()).toStrictEqual({ count: 2 });
+    expect(JSON.parse(storage.getItem("counter") ?? "null")).toStrictEqual({ count: 2 });
+  });
 });
 
 describe("createStore actions", () => {

@@ -143,4 +143,21 @@ describe("derive subscribe", () => {
     expect(listenerA).not.toHaveBeenCalled();
     expect(listenerB).toHaveBeenCalledExactlyOnceWith(2);
   });
+
+  it("recomputes again after the last subscriber unsubscribes from inside its own listener", () => {
+    const counter = createStore({ count: 0 }, (set) => ({
+      increment: () => set((s) => ({ count: s.count + 1 })),
+    }));
+    const double = derive([counter], (s) => s.count * 2);
+
+    let unsubscribe: (() => void) | undefined;
+    unsubscribe = double.subscribe(() => {
+      unsubscribe?.();
+    });
+
+    counter.get().increment();
+    counter.get().increment();
+
+    expect(double.get()).toBe(4);
+  });
 });
