@@ -31,41 +31,6 @@ interface EvictionPolicy<K> {
 | `evict`    | the cache needs a victim key on an over-capacity insert. Return `undefined` when there's nothing to evict. |
 | `clear`    | `clear()` is called on the cache — reset all internal policy state.                                        |
 
-## Example: MRU (Most Recently Used)
-
-Evicts the most-recently-used key instead of the least — useful for access patterns where the most recent entry is the least likely to be reused (e.g. scanning a large sequence once).
-
-```ts
-import { createCache } from "@zap-studio/cache";
-import type { EvictionPolicy } from "@zap-studio/cache/types";
-
-const mru = <K>(): EvictionPolicy<K> => {
-  const order: K[] = [];
-
-  return {
-    onGet: (key) => {
-      order.splice(order.indexOf(key), 1);
-      order.push(key);
-    },
-    onSet: (key) => {
-      const index = order.indexOf(key);
-      if (index !== -1) order.splice(index, 1);
-      order.push(key);
-    },
-    onDelete: (key) => {
-      const index = order.indexOf(key);
-      if (index !== -1) order.splice(index, 1);
-    },
-    evict: () => order.pop(), // evict most-recently-used
-    clear: () => {
-      order.length = 0;
-    },
-  };
-};
-
-const cache = createCache<string, number>(100, { policy: mru() });
-```
-
 ## Example: Random Replacement
 
 Evicts a uniformly random live key — cheap to implement, no per-access bookkeeping.
@@ -109,5 +74,5 @@ const random = <K>(): EvictionPolicy<K> => {
 
 ## See Also
 
-- [Eviction Policies](/cache/eviction-policies) — the built-in `lru()`, `lfu()`, `fifo()` for reference implementations
+- [Eviction Policies](/cache/eviction-policies) — the built-in `lru()`, `lfu()`, `mru()`, `mfu()`, `fifo()` for reference implementations
 - [Capacity and Eviction](/cache/capacity-and-eviction) — when `evict()` is called
