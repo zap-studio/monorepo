@@ -643,6 +643,42 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
 
+  packages/store-react:
+    devDependencies:
+      '@testing-library/dom':
+        specifier: 'catalog:'
+        version: 10.4.1
+      '@testing-library/react':
+        specifier: 'catalog:'
+        version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.5(@types/react@19.2.18)
+      '@zap-studio/store':
+        specifier: workspace:*
+        version: link:../store
+      '@zap-studio/typescript':
+        specifier: workspace:*
+        version: link:../../configs/typescript
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.22.14(@arethetypeswrong/core@0.18.5)(publint@0.3.24)(tsx@4.23.13)(typescript@7.0.2)(unplugin-unused@0.5.7(esbuild@0.28.2)(rolldown@1.2.6)(rollup@4.63.1)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))(webpack@5.110.1(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.26)))
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@26.4.0)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.0))
+
   packages/validation:
     dependencies:
       '@standard-schema/spec':
