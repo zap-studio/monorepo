@@ -23,6 +23,7 @@ the same logic per project.
 - **@zap-studio/react-hooks** — you need a specific React hook (sensors, DOM interaction, media, PWA, state, ...) without pulling in a whole hooks bundle.
 - **@zap-studio/retry** — you need composable retry policies (fixed delay, linear/exponential backoff, jitter) with cancellation support.
 - **@zap-studio/store** — you need a small state container with auto-tracked derived values and optional built-in persist, for any framework or none.
+- **@zap-studio/store-react** — you use React and want a `useStore` hook to subscribe a component to a `@zap-studio/store` store or derived value.
 - **@zap-studio/validation** — you need shared Standard Schema validation utilities and a consistent ValidationError shape across libraries.
 - **@zap-studio/webhooks** — you need a type-safe webhook router with signature verification and lifecycle hooks on the standard Request/Response API.
 
