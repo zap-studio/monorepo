@@ -2,7 +2,7 @@
   "name": "@zap-studio/cache",
   "version": "1.0.0",
   "private": false,
-  "description": "Zero-dependency in-memory key-value cache with pluggable eviction policies (LRU, LFU, FIFO), capacity limits, and optional TTL.",
+  "description": "Zero-dependency in-memory key-value cache with pluggable eviction policies (LRU, LFU, MRU, MFU, FIFO), capacity limits, and optional TTL.",
   "keywords": [
     "cache",
     "eviction",
@@ -10,6 +10,8 @@
     "lfu",
     "lru",
     "memoization",
+    "mfu",
+    "mru",
     "ttl",
     "typescript"
   ],
@@ -35,6 +37,8 @@
     "./fifo": "./dist/fifo.js",
     "./lfu": "./dist/lfu.js",
     "./lru": "./dist/lru.js",
+    "./mfu": "./dist/mfu.js",
+    "./mru": "./dist/mru.js",
     "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },

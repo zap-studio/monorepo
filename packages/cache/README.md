@@ -8,7 +8,7 @@ Full documentation: [zapstudio.dev/cache](https://www.zapstudio.dev/cache)
 
 A hand-rolled `Map`-based cache without a capacity limit is a memory leak waiting to happen — nothing ever gets removed. Reaching for a library instead usually means choosing between something that bakes in one eviction algorithm (LRU only, no LFU or FIFO) or a full-featured cache far bigger than a lean cache needs (cost-based sizing, stale-while-revalidate).
 
-`@zap-studio/cache` keeps the core cache policy-agnostic: `createCache(capacity, options?)` handles storage, capacity, and TTL, while the eviction algorithm is a small object you pass in. Three are built in — `lru()`, `lfu()`, and `fifo()` — and the `EvictionPolicy` interface is public, so you can write your own (MRU, random replacement, ...) without forking the package.
+`@zap-studio/cache` keeps the core cache policy-agnostic: `createCache(capacity, options?)` handles storage, capacity, and TTL, while the eviction algorithm is a small object you pass in. Five are built in — `lru()`, `lfu()`, `mru()`, `mfu()`, and `fifo()` — and the `EvictionPolicy` interface is public, so you can write your own (random replacement, ...) without forking the package.
 
 ## Installation
 
@@ -31,21 +31,27 @@ cache.size; // 1
 
 ## Eviction Policies
 
-`lru()` (default), `lfu()`, and `fifo()`.
+`lru()` (default), `lfu()`, `mru()`, `mfu()`, and `fifo()`.
 
 ```ts
 import { createCache } from "@zap-studio/cache";
 import { fifo } from "@zap-studio/cache/fifo";
 import { lfu } from "@zap-studio/cache/lfu";
 import { lru } from "@zap-studio/cache/lru";
+import { mfu } from "@zap-studio/cache/mfu";
+import { mru } from "@zap-studio/cache/mru";
 
 const lruCache = createCache<string, number>(100, { policy: lru() });
 const lfuCache = createCache<string, number>(100, { policy: lfu() });
+const mruCache = createCache<string, number>(100, { policy: mru() });
+const mfuCache = createCache<string, number>(100, { policy: mfu() });
 const fifoCache = createCache<string, number>(100, { policy: fifo() });
 ```
 
 - **`lru()`** — evicts the least recently used key. Both `get` and `set` count as use.
 - **`lfu()`** — evicts the least frequently used key, O(1) via frequency buckets. Ties within the same frequency break by oldest insertion.
+- **`mru()`** — evicts the most recently used key, O(1) via a doubly-linked key list. The inverse of `lru()`; useful when the most recently touched entry is the least likely to be reused (e.g. cyclic scans).
+- **`mfu()`** — evicts the most frequently used key, O(1) via frequency buckets. The inverse of `lfu()`; ties within the same frequency break by oldest insertion.
 - **`fifo()`** — evicts the oldest inserted key. `get` never affects eviction order.
 
 ## Capacity and Eviction
@@ -95,36 +101,37 @@ cache.peek("a"); // same as get(), but no recency/frequency bump
 
 ## Custom Policies
 
-`EvictionPolicy<K>` is a public interface — implement your own algorithm (MRU, random replacement, ...) as a plain object, no subclassing.
+`EvictionPolicy<K>` is a public interface — implement your own algorithm (random replacement, ...) as a plain object, no subclassing.
 
 ```ts
 import { createCache } from "@zap-studio/cache";
 import type { EvictionPolicy } from "@zap-studio/cache/types";
 
-const mru = <K>(): EvictionPolicy<K> => {
-  const order: K[] = [];
+const random = <K>(): EvictionPolicy<K> => {
+  const keys = new Set<K>();
   return {
-    onGet: (key) => {
-      order.splice(order.indexOf(key), 1);
-      order.push(key);
+    onGet: () => {
+      // random replacement ignores access pattern
     },
     onSet: (key) => {
-      const index = order.indexOf(key);
-      if (index !== -1) order.splice(index, 1);
-      order.push(key);
+      keys.add(key);
     },
     onDelete: (key) => {
-      const index = order.indexOf(key);
-      if (index !== -1) order.splice(index, 1);
+      keys.delete(key);
     },
-    evict: () => order.pop(), // evict most-recently-used
+    evict: () => {
+      const index = Math.floor(Math.random() * keys.size);
+      const victim = [...keys][index];
+      if (victim !== undefined) keys.delete(victim);
+      return victim;
+    },
     clear: () => {
-      order.length = 0;
+      keys.clear();
     },
   };
 };
 
-const cache = createCache<string, number>(100, { policy: mru() });
+const cache = createCache<string, number>(100, { policy: random() });
 ```
 
 ## Iteration
