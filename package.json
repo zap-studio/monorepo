@@ -22,6 +22,7 @@
     "@vitest/coverage-v8": "catalog:",
     "@zap-studio/oxfmt": "workspace:*",
     "@zap-studio/oxlint": "workspace:*",
+    "eslint": "catalog:",
     "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",

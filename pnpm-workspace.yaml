@@ -33,6 +33,7 @@ catalog:
   "@vitest/browser-playwright": ^4.1.11
   "@vitest/coverage-v8": ^4.1.11
   arktype: ^2.2.3
+  eslint: ^10.9.1
   eslint-plugin-cypress: ^7.0.1
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
