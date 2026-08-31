@@ -60,5 +60,5 @@ catalog:
   vocs: ^2.8.5
   waku: 1.0.0-beta.6
   wrangler: ^4.127.1
-  zod: ^4.5.2
+  zod: ^4.5.4
   unplugin-unused: ^0.5.7
