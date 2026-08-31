@@ -168,6 +168,17 @@ const sidebar = [
       {
         collapsed: true,
         items: [
+          { link: "/store", text: "Overview" },
+          { link: "/store/getting-started", text: gettingStarted },
+          { link: "/store/set", text: "set" },
+          { link: "/store/derive", text: "derive" },
+          { link: "/store/persist", text: "Persist" },
+        ],
+        text: "store",
+      },
+      {
+        collapsed: true,
+        items: [
           { link: "/validation", text: "Overview" },
           { link: "/validation/getting-started", text: gettingStarted },
           { link: "/validation/async-validation", text: "Async Validation" },
@@ -290,6 +301,13 @@ export default defineConfig({
           "Composable retry policies with a built-in runner, structured terminal errors, and AbortSignal cancellation.",
       },
       {
+        slug: "store",
+        name: "@zap-studio/store",
+        version: "1.0.0",
+        description:
+          "A small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.",
+      },
+      {
         slug: "validation",
         name: "@zap-studio/validation",
         version: "1.1.1",
@@ -342,7 +360,7 @@ export default defineConfig({
           ),
           question(
             "What packages does Zap Studio provide?",
-            "cache (in-memory cache with pluggable eviction), fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), validation (Standard Schema utilities), and webhooks (type-safe webhook routing).",
+            "cache (in-memory cache with pluggable eviction), fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), store (state container with derived values and persist), validation (Standard Schema utilities), and webhooks (type-safe webhook routing).",
           ),
           question(
             "Which runtimes does Zap Studio support?",
@@ -445,6 +463,7 @@ export default defineConfig({
     { link: "/permit", text: "permit" },
     { link: "/react-hooks", text: "react-hooks" },
     { link: "/retry", text: "retry" },
+    { link: "/store", text: "store" },
     { link: "/validation", text: "validation" },
     { link: "/webhooks", text: "webhooks" },
     { link: repoUrl, text: "GitHub" },
