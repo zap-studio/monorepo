@@ -1,0 +1,17 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@zap-studio/store-react",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./use-store": "./src/use-store.ts"
+  },
+  "imports": {
+    "@zap-studio/store": "jsr:@zap-studio/store@^1.0.0",
+    "react": "npm:react@^19.2.8"
+  },
+  "publish": {
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
+}
