@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/store",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": false,
   "description": "Small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.",
   "keywords": [
