@@ -50,6 +50,7 @@ export const createCache = <K, V>(
 
   const dropExpired = (key: K, entry: Entry<V>): void => {
     store.delete(key);
+    policy.onDelete(key);
     onEvict?.(key, entry.value);
   };
 
