@@ -66,6 +66,28 @@ describe("derive get", () => {
     counter.get().increment();
     expect(quadruple.get()).toBe(12);
   });
+
+  it("stops listening to a dependency that stops being read", () => {
+    const mode = createStore({ useA: true }, (set) => ({
+      toggle: () => set((s) => ({ useA: !s.useA })),
+    }));
+    const a = createStore({ value: 1 }, (set) => ({
+      bump: () => set((s) => ({ value: s.value + 1 })),
+    }));
+    const b = createStore({ value: 100 });
+    // `deps` is just `[mode]`; `a`/`b` are read from closures, so only one of
+    // them is a real dependency at a time — auto-tracking discovers that.
+    const picked = derive([mode], (m) => (m.useA ? a.getState().value : b.getState().value));
+
+    expect(picked.get()).toBe(1);
+
+    mode.get().toggle();
+    expect(picked.get()).toBe(100);
+
+    // `a` is no longer a dependency, so a change to it must not reach `picked`.
+    a.get().bump();
+    expect(picked.get()).toBe(100);
+  });
 });
 
 describe("derive subscribe", () => {
@@ -102,5 +124,23 @@ describe("derive subscribe", () => {
     counter.get().increment();
 
     expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("keeps listening to dependencies when another subscriber remains", () => {
+    const counter = createStore({ count: 0 }, (set) => ({
+      increment: () => set((s) => ({ count: s.count + 1 })),
+    }));
+    const double = derive([counter], (s) => s.count * 2);
+    const listenerA = vi.fn<(value: number) => void>();
+    const listenerB = vi.fn<(value: number) => void>();
+
+    const unsubscribeA = double.subscribe(listenerA);
+    double.subscribe(listenerB);
+    unsubscribeA();
+
+    counter.get().increment();
+
+    expect(listenerA).not.toHaveBeenCalled();
+    expect(listenerB).toHaveBeenCalledExactlyOnceWith(2);
   });
 });

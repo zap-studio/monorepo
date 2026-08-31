@@ -145,4 +145,14 @@ describe("createStore actions", () => {
 
     expect(store.get().increment).toBe(store.get().increment);
   });
+
+  it("lets an action read the current state through get", () => {
+    const store = createStore({ count: 5 }, (set, get) => ({
+      double: () => set(() => ({ count: get().count * 2 })),
+    }));
+
+    store.get().double();
+
+    expect(store.getState()).toStrictEqual({ count: 10 });
+  });
 });
