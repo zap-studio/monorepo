@@ -282,6 +282,20 @@ describe("createCache size/capacity", () => {
 
     expect(cache.capacity).toBe(3);
   });
+
+  it("excludes an expired entry from size before it is lazily removed", () => {
+    vi.useFakeTimers();
+    const cache = createCache<string, number>(3);
+    cache.set("a", 1, { ttl: 100 });
+    cache.set("b", 2);
+
+    vi.advanceTimersByTime(101);
+
+    // "a" is still physically present until a get/has/peek/set lazily drops it,
+    // but size must not count it.
+    expect(cache.size).toBe(1);
+    vi.useRealTimers();
+  });
 });
 
 describe("createCache iteration", () => {
