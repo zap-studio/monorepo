@@ -1,0 +1,121 @@
+---
+title: derive
+description: An auto-tracked, cached computed value built from one or more stores.
+---
+
+# `derive`
+
+`derive(deps, fn)` creates a computed value from one or more stores (or other `derive` values). It is cached, and it recomputes only when something it actually read has changed.
+
+## Import
+
+```ts
+import { derive } from "@zap-studio/store";
+```
+
+## Basic Usage
+
+```ts
+const counter = createStore({ count: 2 }, (set) => ({
+  increment: () => set((s) => ({ count: s.count + 1 })),
+}));
+
+const double = derive([counter], (s) => s.count * 2);
+
+double.get(); // 4
+counter.get().increment();
+double.get(); // 6
+```
+
+`deps` gives `fn` typed, positional arguments — `s` above is `counter`'s state, typed as `{ count: number }` with no manual generics.
+
+## Multiple Dependencies
+
+Each dependency's state is passed to `fn` in the same order as `deps`:
+
+```ts
+const a = createStore({ value: 2 });
+const b = createStore({ value: 3 });
+
+const sum = derive([a, b], (av, bv) => av.value + bv.value);
+
+sum.get(); // 5
+```
+
+## Auto-Tracking
+
+Dependency tracking is automatic and does not stop at `deps`. While `fn` runs, every store it reads gets tracked — including one not listed in `deps` at all:
+
+```ts
+// `deps` is empty on purpose: fn reads `counter` directly.
+const double = derive([], () => counter.getState().count * 2);
+
+double.get(); // tracks `counter` even though it is not in `deps`
+counter.get().increment();
+double.get(); // recomputes correctly
+```
+
+This also means the dependency set can change between recomputes, if `fn` reads different stores depending on some condition:
+
+```ts
+const mode = createStore({ useA: true }, (set) => ({
+  toggle: () => set((s) => ({ useA: !s.useA })),
+}));
+
+const picked = derive([mode], (m) => (m.useA ? a.getState().value : b.getState().value));
+
+picked.get(); // reads `a`
+mode.get().toggle();
+picked.get(); // now reads `b` instead — `derive` stops listening to `a`
+```
+
+`deps` only drives argument order and typing here, not correctness — treat it as documentation of the common-case inputs, not the full list of what `fn` may read.
+
+## Caching
+
+`derive`'s value is computed lazily and cached: reading it twice in a row without a dependency changing runs `fn` only once.
+
+```ts
+const compute = vi.fn((s: { count: number }) => s.count * 2);
+const double = derive([counter], compute);
+
+double.get();
+double.get();
+
+compute; // called exactly once
+```
+
+## `derive`-of-`derive`
+
+A `derive` value can depend on another `derive` value, so computed values compose:
+
+```ts
+const double = derive([counter], (s) => s.count * 2);
+const quadruple = derive([double], (v) => v * 2);
+
+quadruple.get(); // 8
+counter.get().increment();
+quadruple.get(); // 12
+```
+
+## Subscribing
+
+`subscribe(listener)` calls `listener` with the new value, but only when the computed value actually changed (compared with `Object.is`) — not on every upstream change:
+
+```ts
+const isEven = derive([counter], (s) => s.count % 2 === 0);
+
+const unsubscribe = isEven.subscribe((value) => console.log(value));
+
+counter.get().increment(); // count: 1, isEven: false -> logs false
+counter.get().increment(); // count: 2, isEven: true -> logs true
+
+unsubscribe();
+```
+
+Unsubscribing the last listener also stops listening to every dependency, until the value is read or subscribed to again.
+
+## See Also
+
+- [Getting Started](/store/getting-started) — creating a store to derive values from
+- [`set`](/store/set) — how the state a `derive` reads gets updated

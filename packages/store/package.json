@@ -1,0 +1,54 @@
+{
+  "name": "@zap-studio/store",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.",
+  "keywords": [
+    "derive",
+    "persist",
+    "reactive",
+    "signals",
+    "state",
+    "state-management",
+    "store",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/store",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/store"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./derive": "./dist/derive.js",
+    "./store": "./dist/store.js",
+    "./types": "./dist/types.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
+  "devDependencies": {
+    "@zap-studio/typescript": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

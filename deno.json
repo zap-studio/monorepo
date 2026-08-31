@@ -8,6 +8,8 @@
     "./packages/permit",
     "./packages/react-hooks",
     "./packages/retry",
+    "./packages/store",
+    "./packages/store-react",
     "./packages/webhooks"
   ]
 }

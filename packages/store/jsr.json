@@ -1,0 +1,15 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@zap-studio/store",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./store": "./src/store.ts",
+    "./derive": "./src/derive.ts",
+    "./types": "./src/types.ts"
+  },
+  "publish": {
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
+}
