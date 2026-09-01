@@ -8,11 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Initial release of `@zap-studio/env`.
-  - `createEnv(...)` with the `server`/`client`/`shared` split, `clientPrefix` enforcement, `runtimeEnv`/`runtimeEnvStrict`, `isServer`, `skipValidation`, `emptyStringAsUndefined`, and `onValidationError`/`onInvalidAccess` callbacks.
-  - Schema-level `extends` composition with reference-equality conflict detection.
-  - Platform presets: `vercel`, `netlify`, `render`, `railway`, `fly`, `coolify`, `cloudflare`, `denoDeploy`.
-  - `generateEnvExample(...)` for schema-driven `.env.example` generation.
-  - `EnvError` for validation and configuration failures.
-  - Native OpenTelemetry support via an optional `env.validate` span.
-  - Standard Schema support (Zod, Valibot, ArkType, and more).
+- First release of `@zap-studio/env`.
+- `createEnv(...)`, with a `server`/`client`/`shared` split. `clientPrefix` checks client keys. `runtimeEnv`/`runtimeEnvStrict` set the env object to check. Other options: `isServer`, `skipValidation`, `emptyStringAsUndefined`, `onValidationError`, and `onInvalidAccess`.
+- `extends`, to reuse a schema from another package. If two sources use the same key with different schemas, `createEnv` throws.
+- Presets for common hosting platforms: `vercel`, `netlify`, `render`, `railway`, `fly`, `coolify`, `cloudflare`, `denoDeploy`.
+- `generateEnvExample(...)`, which builds a `.env.example` file from a schema.
+- Three error types: `EnvError` for bad setup, `EnvValidationError` for failed checks, and `EnvAccessError` for reading a server-only key from client code.
+- Optional OpenTelemetry support through an `env.validate` span.
+- Support for any [Standard Schema](https://standardschema.dev) library, such as Zod, Valibot, or ArkType.
