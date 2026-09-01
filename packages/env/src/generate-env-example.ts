@@ -1,5 +1,5 @@
 /**
- * `generateEnvExample`: schema-driven `.env.example` generation.
+ * `generateEnvExample`: builds a `.env.example` file from a schema.
  *
  * @module @zap-studio/env/generate-env-example
  */
@@ -14,26 +14,27 @@ import { mergeEnvSchemas } from "./_merge.ts";
 const keyCollator = new Intl.Collator("en");
 
 /**
- * Duck-types a value as a thenable, matching the check
- * `@zap-studio/validation` uses internally, so an async schema is detected
- * even for a Promise constructed in a different JavaScript realm.
+ * Checks if a value looks like a thenable (it has a `then` function). This
+ * matches the check that `@zap-studio/validation` uses internally, so it
+ * also detects an async schema when the Promise comes from a different
+ * JavaScript realm.
  */
 const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
   typeof value === "object" &&
   value !== null &&
   "then" in value &&
-  // oxlint-disable-next-line github/no-then -- detecting a thenable, not chaining a Promise.
+  // oxlint-disable-next-line github/no-then -- checking for a thenable value here, not chaining a Promise.
   typeof value.then === "function";
 
 /**
- * Best-effort check for whether a key can be omitted from the resolved env:
- * calls the schema with `undefined` and reports whether that passes. A
- * schema with a default value (`z.string().default("x")`) or that's
- * genuinely optional (`z.string().optional()`) both pass; a schema with no
- * default and no `.optional()` fails. Standard Schema exposes no
- * introspection API for "has a default", so this is the only
- * vendor-agnostic signal available — an async schema can't be checked
- * synchronously and is conservatively reported as required.
+ * Checks, as well as it can, if a key can be left out of the resolved env.
+ * It calls the schema with `undefined` and checks if that passes. A
+ * schema with a default value (`z.string().default("x")`) passes, and so
+ * does a schema that is truly optional (`z.string().optional()`). A
+ * schema with no default and no `.optional()` fails. Standard Schema has
+ * no way to ask "does this have a default", so this check is the only
+ * option that works across all schema libraries. An async schema cannot
+ * be checked right away, so it is treated as required, to be safe.
  */
 const isOptionalOrHasDefault = (schema: StandardSchemaV1): boolean => {
   try {
@@ -45,7 +46,8 @@ const isOptionalOrHasDefault = (schema: StandardSchemaV1): boolean => {
 };
 
 /**
- * Renders one merged entry as its `.env.example` comment + assignment.
+ * Renders one merged entry as a `.env.example` comment plus an assignment
+ * line.
  */
 const renderEntry = (key: string, entry: MergedEnvEntry): string => {
   const parts = [entry.bucket, isOptionalOrHasDefault(entry.schema) ? "optional" : "required"];
@@ -57,14 +59,15 @@ const renderEntry = (key: string, entry: MergedEnvEntry): string => {
 };
 
 /**
- * Walks an env schema (the same `shared`/`server`/`client`/`extends` shape
- * `createEnv` accepts, minus the runtime-specific options) and emits a
- * `.env.example` file: one line per declared key, commented with whether
- * it's `shared`/`server`/`client`, required vs optional/has-a-default, and
- * (for `client` keys) the enforced prefix.
+ * Walks through an env schema (the same `shared`/`server`/`client`/`extends`
+ * shape that `createEnv` accepts, without the runtime-only options) and
+ * builds a `.env.example` file. It writes one line per declared key, with
+ * a comment for whether it is `shared`, `server`, or `client`, whether it
+ * is required or optional / has a default, and, for `client` keys, the
+ * required prefix.
  *
- * No values are read from any actual environment — the output is derived
- * from the schema shape alone, so it's safe to run in CI and commit.
+ * It never reads values from a real environment. The output comes only
+ * from the schema shape, so it is safe to run in CI and commit.
  *
  * @example
  * ```ts

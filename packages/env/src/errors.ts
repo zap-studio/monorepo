@@ -1,6 +1,6 @@
 /**
- * Error primitives for env schema composition, validation, and access
- * failures.
+ * Error types for env schema problems, validation failures, and access
+ * errors.
  *
  * @module @zap-studio/env/errors
  */
@@ -8,9 +8,9 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
- * Error thrown when `createEnv` is misconfigured: a key declared by more
- * than one composed `extends` source with two different schemas, or a
- * `client` key that does not start with the configured `clientPrefix`.
+ * Error thrown when `createEnv` is set up wrong. For example: a key is
+ * declared by more than one `extends` source with two different schemas,
+ * or a `client` key does not start with the configured `clientPrefix`.
  *
  * @example
  * ```ts
@@ -29,9 +29,9 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  */
 export class EnvError extends Error {
   /**
-   * Creates an env configuration error with a human-readable message.
+   * Creates an env configuration error with a clear message.
    *
-   * @param message - Error message describing the configuration failure.
+   * @param message - A message that explains the configuration problem.
    */
   constructor(message: string) {
     super(message);
@@ -42,12 +42,12 @@ export class EnvError extends Error {
 /**
  * Error thrown when one or more env vars fail Standard Schema validation.
  *
- * The error contains the list of invalid keys (never their values, so the
- * message is safe to log) and the full Standard Schema issues per key for
- * programmatic inspection.
+ * The error holds the list of invalid keys, but never their values, so it
+ * is safe to log. It also holds the full Standard Schema issues for each
+ * key, so code can inspect them.
  *
- * Thrown by `createEnv` when validation fails and no `onValidationError`
- * callback is provided.
+ * `createEnv` throws this error when validation fails and no
+ * `onValidationError` callback is given.
  *
  * @example
  * ```ts
@@ -64,19 +64,19 @@ export class EnvError extends Error {
  */
 export class EnvValidationError extends Error {
   /**
-   * The keys that failed validation. Never includes the offending values.
+   * The keys that failed validation. Never includes their values.
    */
   invalidKeys: readonly string[];
 
   /**
-   * The Standard Schema issues per invalid key.
+   * The Standard Schema issues for each invalid key.
    */
   issues: Readonly<Record<string, readonly StandardSchemaV1.Issue[]>>;
 
   /**
    * Creates a new `EnvValidationError`.
    *
-   * @param issues - The validation issues per key, as returned by the Standard Schema.
+   * @param issues - The validation issues for each key, as returned by the Standard Schema.
    */
   constructor(issues: Readonly<Record<string, readonly StandardSchemaV1.Issue[]>>) {
     const invalidKeys = Object.keys(issues).sort();
@@ -88,10 +88,10 @@ export class EnvValidationError extends Error {
 }
 
 /**
- * Error thrown when client-side code accesses a server-only env var.
+ * Error thrown when client-side code reads a server-only env var.
  *
- * Thrown by the object `createEnv` returns when `isServer` is `false` and
- * no `onInvalidAccess` callback is provided.
+ * The object that `createEnv` returns throws this error when `isServer` is
+ * `false` and no `onInvalidAccess` callback is given.
  *
  * @example
  * ```ts

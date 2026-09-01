@@ -1,8 +1,8 @@
 /**
- * Internal schema-level merge shared by `createEnv` and
- * `generateEnvExample`: composes `extends` sources (and a call's own
- * `shared`/`server`/`client`) into one flat key -> schema map, enforcing
- * `clientPrefix` and reference-equality conflict detection.
+ * Internal schema merge used by both `createEnv` and `generateEnvExample`.
+ * It combines `extends` sources, and a call's own `shared`/`server`/`client`,
+ * into one flat map from key to schema. It also checks `clientPrefix` and
+ * finds conflicts by comparing schema references.
  *
  * @module @zap-studio/env/merge
  */
@@ -14,8 +14,8 @@ import type { EnvSchema, EnvVarSchemas } from "./types.ts";
 import { EnvError } from "./errors.ts";
 
 /**
- * One merged env var: which bucket it was declared in, its schema, and
- * (for a `client` var) the prefix its source enforced.
+ * One merged env var: which bucket it came from, its schema, and, for a
+ * `client` var, the prefix its source used.
  */
 export interface MergedEnvEntry {
   readonly bucket: "client" | "server" | "shared";
@@ -25,9 +25,9 @@ export interface MergedEnvEntry {
 
 /**
  * Every `client` key in `source` must start with `source.clientPrefix`.
- * Checked per source, not on the merged result, since each composed
- * `EnvSchema` (an `extends` entry or the call's own config) carries its own
- * prefix.
+ * This is checked for each source on its own, not on the merged result,
+ * because each `EnvSchema` (an `extends` entry or the call's own config)
+ * has its own prefix.
  */
 const assertClientPrefix = (source: EnvSchema): void => {
   const keys = source.client === undefined ? [] : Object.keys(source.client);
@@ -49,12 +49,12 @@ const assertClientPrefix = (source: EnvSchema): void => {
 };
 
 /**
- * Merges one bucket's shape into `merged`. A key already present must
- * resolve to the exact same schema object reference and the same bucket —
- * Standard Schema has no generic introspection API, so structural
- * schema-equivalence can't be reliably detected, and reference equality is
- * the honest, buildable signal for "safe duplicate" (for example, two
- * packages both importing one shared constant).
+ * Merges one bucket's shape into `merged`. If a key already exists, it
+ * must use the exact same schema object and the same bucket. Standard
+ * Schema has no general way to check if two schemas are the same, so we
+ * compare object references instead. This is a simple and reliable way to
+ * detect a safe duplicate — for example, when two packages import the
+ * same shared constant.
  */
 const mergeBucket = (
   merged: Map<string, MergedEnvEntry>,
@@ -87,9 +87,9 @@ const mergeBucket = (
 };
 
 /**
- * Merges a list of `EnvSchema` sources (in order — typically `extends`
- * entries followed by the call's own `shared`/`server`/`client`) into one
- * flat key -> schema map.
+ * Merges a list of `EnvSchema` sources, in order, into one flat map from
+ * key to schema. This is usually the `extends` entries, followed by the
+ * call's own `shared`, `server`, and `client`.
  *
  * @throws {EnvError} If a `client` var is declared without a `clientPrefix`,
  *   a `client` var doesn't start with its source's `clientPrefix`, or a key

@@ -65,7 +65,7 @@ describe("presets", () => {
       createEnv({
         extends: [vercel],
         runtimeEnv: {},
-        // @ts-expect-error VERCEL is deliberately given an object value to test the runtime guard.
+        // @ts-expect-error VERCEL is given an object value on purpose, to test the runtime check.
         runtimeEnvStrict: { VERCEL: { nested: true } },
       });
     } catch (error) {

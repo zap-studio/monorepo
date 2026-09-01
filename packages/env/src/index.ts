@@ -1,9 +1,9 @@
 /**
- * Public entrypoint for the env package.
+ * Public entry point for the env package.
  *
  * Re-exports the full public API. `./presets` and `./errors` are also
- * available as dedicated subpaths for consumers who prefer granular
- * imports. All exports are side-effect free and tree-shakeable.
+ * available as separate subpaths, for anyone who wants smaller imports.
+ * Every export is side-effect free and tree-shakeable.
  *
  * @module @zap-studio/env
  */

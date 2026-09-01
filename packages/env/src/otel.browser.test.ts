@@ -46,7 +46,7 @@ describe("env OpenTelemetry", () => {
         runtimeEnv: { PORT: INVALID_PORT, SECRET: "" },
       });
     } catch {
-      // expected: EnvValidationError, asserted via the span below.
+      // expected: EnvValidationError, checked with the span below.
     }
 
     const [span] = spanExporter.getFinishedSpans();

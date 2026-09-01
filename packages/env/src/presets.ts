@@ -1,12 +1,12 @@
 /**
- * Presets for env vars a hosting platform injects automatically. Compose
- * one into a `createEnv` call via `extends` to type and validate a
- * platform's vars alongside the app's own.
+ * Presets for env vars that a hosting platform sets automatically. Add one
+ * to a `createEnv` call with `extends`, to type and check a platform's
+ * vars along with your own app's vars.
  *
- * Every preset key is optional and typed `string | undefined`: these vars
- * are only present when the app is actually running on that platform, and
- * this package never reads or parses files, so it can't detect the
- * platform itself — the caller decides which presets apply.
+ * Every preset key is optional, with type `string | undefined`. These vars
+ * are only present when the app runs on that platform. This package never
+ * reads or parses files, so it cannot detect the platform by itself — you
+ * choose which presets to use.
  *
  * @module @zap-studio/env/presets
  */
@@ -16,16 +16,16 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import type { EnvSchema, EnvVarSchemas } from "./types.ts";
 
 /**
- * A Standard Schema that accepts any value, coerces it to a `string`, and
- * passes `undefined` through unchanged. Platform-injected vars are always
- * plain strings when present; presets never validate a specific format
- * since platforms don't document one beyond "some string".
+ * A Standard Schema that accepts any value, turns it into a `string`, and
+ * lets `undefined` pass through unchanged. Platform-set vars are always
+ * plain strings when present; presets never check for a specific format,
+ * since platforms only promise "some string".
  */
 const optionalString = (): StandardSchemaV1<string | undefined, string | undefined> => ({
   "~standard": {
     validate: (value: unknown) => {
       if (value === undefined) {
-        // oxlint-disable-next-line sonarjs/no-undefined-assignment -- Standard Schema's `SuccessResult.value` is the schema's `Output` type (`string | undefined` here); `undefined` is the valid "absent" output, not an accidental omission.
+        // oxlint-disable-next-line sonarjs/no-undefined-assignment -- Standard Schema's `SuccessResult.value` has the schema's `Output` type (here `string | undefined`). `undefined` is a valid "absent" output here, not a mistake.
         return { value: undefined };
       }
       if (typeof value === "boolean" || typeof value === "number" || typeof value === "string") {
@@ -118,7 +118,7 @@ export const render: EnvSchema = preset([
 ]);
 
 /**
- * Railway's system-provided environment variables.
+ * Railway's system environment variables.
  *
  * @see https://docs.railway.com/variables/reference
  */
@@ -160,7 +160,7 @@ export const fly: EnvSchema = preset([
 ]);
 
 /**
- * Coolify's predefined environment variables.
+ * Coolify's default environment variables.
  *
  * @see https://coolify.io/docs/knowledge-base/environment-variables
  */

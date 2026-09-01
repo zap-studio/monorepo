@@ -1,5 +1,5 @@
 /**
- * Public type contracts for env schema composition and `createEnv`.
+ * Public types for env schemas and the `createEnv` function.
  *
  * @module @zap-studio/env/types
  */
@@ -17,29 +17,29 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 export type EnvVarSchemas = Record<string, StandardSchemaV1>;
 
 /**
- * The value type an already-resolved env object (`process.env`,
- * `import.meta.env`, dotenv output, ...) can hold for one key, before
+ * The type a value can have for one key in a resolved env object (for
+ * example `process.env` or `import.meta.env`, or dotenv output), before
  * validation.
  */
 export type EnvVarValue = boolean | number | string | undefined;
 
 /**
- * Constrains a `client` shape so every key starts with `TClientPrefix`,
- * enforced at the type level in addition to the runtime check `createEnv`
- * performs.
+ * Makes sure every key in a `client` shape starts with `TClientPrefix`.
+ * This is checked at the type level, and also at runtime by `createEnv`.
  */
 type ClientVarSchemas<TClient extends EnvVarSchemas, TClientPrefix extends string> = {
   [K in keyof TClient]: K extends `${TClientPrefix}${string}` ? TClient[K] : never;
 };
 
 /**
- * A reusable, runtime-independent env schema: the `shared`/`server`/`client`
- * shape and `clientPrefix` a `createEnv` call needs, without the
- * `runtimeEnv` a schema-only definition can't provide.
+ * A reusable env schema, without a runtime env object. It has the
+ * `shared`/`server`/`client` shape and `clientPrefix` that `createEnv`
+ * needs, but not `runtimeEnv` — a schema-only definition cannot provide
+ * that.
  *
- * Plain object literals satisfy this interface, so a shared base package
- * can export one directly and an app-specific `createEnv` call composes it
- * via `extends` — the same mental model as `tsconfig.json`'s `extends`.
+ * A plain object can be an `EnvSchema`. So a shared base package can export
+ * one directly, and an app-specific `createEnv` call can use it with
+ * `extends` — the same idea as `extends` in `tsconfig.json`.
  *
  * @example
  * ```ts
@@ -62,26 +62,28 @@ export interface EnvSchema<
   TClient extends EnvVarSchemas = EnvVarSchemas,
   TClientPrefix extends string = string,
 > {
-  /** Vars shared between server and client; validated once, never prefix-checked. */
+  /** Vars used by both server and client. Validated once. No prefix check. */
   readonly shared?: TShared;
-  /** Server-only vars; inaccessible from client bundles at runtime. */
+  /** Server-only vars. Not available in client bundles at runtime. */
   readonly server?: TServer;
-  /** Client-exposed vars; every key must start with `clientPrefix`. */
+  /** Vars exposed to the client. Every key must start with `clientPrefix`. */
   readonly client?: ClientVarSchemas<TClient, TClientPrefix>;
-  /** Required prefix for every `client` key, enforced at both type level and runtime. */
+  /** Required prefix for every `client` key. Checked at both type level and runtime. */
   readonly clientPrefix?: TClientPrefix;
 }
 
 /**
- * Infers the parsed output type of a shape map, or `{}` when the shape is
- * `undefined` (an omitted `shared`/`server`/`client` bucket).
+ * Gets the parsed output type of a shape map. Returns `{}` when the shape
+ * is `undefined`, for example when `shared`, `server`, or `client` is left
+ * out.
  */
 export type InferEnvVarsOutput<TSchemas> = TSchemas extends EnvVarSchemas
   ? { [K in keyof TSchemas]: StandardSchemaV1.InferOutput<TSchemas[K]> }
   : Record<string, never>;
 
 /**
- * Infers one `EnvSchema`'s combined `shared`/`server`/`client` output type.
+ * Gets the combined output type of one `EnvSchema`'s `shared`, `server`,
+ * and `client` parts.
  */
 type InferEnvSchemaOutput<T> =
   T extends EnvSchema<infer TShared, infer TServer, infer TClient>
@@ -89,9 +91,9 @@ type InferEnvSchemaOutput<T> =
     : never;
 
 /**
- * Converts a union type to an intersection of its members. Used to turn the
- * (distributed) union of each `extends` entry's output into the
- * intersection a merged env object actually has.
+ * Turns a union type into an intersection of its members. Used to turn the
+ * union of each `extends` entry's output into the intersection that the
+ * merged env object really has.
  */
 type UnionToIntersection<TUnion> = (
   TUnion extends unknown ? (key: TUnion) => void : never
@@ -100,17 +102,17 @@ type UnionToIntersection<TUnion> = (
   : never;
 
 /**
- * Infers the merged output type of every schema composed via `extends`.
+ * Gets the merged output type of every schema added through `extends`.
  */
 export type InferExtendsOutput<TExtends> = TExtends extends readonly EnvSchema[]
   ? UnionToIntersection<InferEnvSchemaOutput<TExtends[number]>>
   : Record<string, never>;
 
 /**
- * Options accepted by `createEnv`. Extends `EnvSchema` with the
- * runtime-specific pieces a schema-only definition can't carry: the
- * resolved env object to validate, access/validation behavior, and
- * composition via `extends`.
+ * Options for `createEnv`. Extends `EnvSchema` with the runtime parts a
+ * schema-only definition cannot have: the resolved env object to check,
+ * the access and validation behavior, and schema composing through
+ * `extends`.
  */
 export interface CreateEnvOptions<
   TShared extends EnvVarSchemas = EnvVarSchemas,
@@ -120,61 +122,60 @@ export interface CreateEnvOptions<
   TExtends extends readonly EnvSchema[] = readonly EnvSchema[],
 > extends EnvSchema<TShared, TServer, TClient, TClientPrefix> {
   /**
-   * The resolved env object to validate against (`process.env`,
-   * `import.meta.env`, dotenv output, ...). Never scanned or introspected
-   * dynamically — only the keys declared by the schema are read from it, so
-   * static `import.meta.env`/`process.env` bundler replacement keeps
-   * working.
+   * The resolved env object to check (for example `process.env` or
+   * `import.meta.env`). It is never scanned at runtime — only the keys the
+   * schema declares are read from it. This keeps static bundler
+   * replacement of `import.meta.env`/`process.env` working.
    */
   readonly runtimeEnv: Readonly<Record<string, EnvVarValue>>;
   /**
-   * Like `runtimeEnv`, but used in place of it when provided. Useful when
-   * the object to validate can only be assembled after `runtimeEnv` would
-   * otherwise need to be spread (for example, framework-injected values
-   * merged with `process.env`).
+   * Works like `runtimeEnv`, but is used instead of it when given. Useful
+   * when you can only build the object to check after `runtimeEnv` would
+   * otherwise need to be spread — for example, when framework-injected
+   * values are merged with `process.env`.
    */
   readonly runtimeEnvStrict?: Readonly<Record<string, EnvVarValue>>;
   /**
-   * Composes other reusable `EnvSchema` definitions into this one before
-   * validation. A key declared by more than one source (across `extends`
-   * entries and this call's own `shared`/`server`/`client`) throws unless
-   * every declaration is the exact same schema object reference.
+   * Adds other reusable `EnvSchema` definitions to this one before
+   * validation. If a key is declared in more than one source (an `extends`
+   * entry, or this call's own `shared`/`server`/`client`), `createEnv`
+   * throws, unless every declaration uses the exact same schema object.
    */
   readonly extends?: TExtends;
   /**
-   * How to detect a server context. Defaults to `typeof window ===
-   * "undefined"`. Override for edge/SSR contexts where that default
-   * doesn't hold.
+   * How to detect if the code runs on the server. Default:
+   * `typeof window === "undefined"`. Set this yourself for edge or SSR
+   * contexts where that default is wrong.
    */
   readonly isServer?: boolean;
   /**
-   * Bypasses validation entirely and returns the (unvalidated,
-   * unprefixed-checked) declared keys read from `runtimeEnv` as-is. Useful
-   * for partial build steps (for example, a Docker build stage) where not
-   * every var is available yet.
+   * Skips validation and returns the declared keys from `runtimeEnv` as
+   * they are, with no checks. Useful for partial build steps, for example
+   * a Docker build stage, where not every var is set yet.
    */
   readonly skipValidation?: boolean;
-  /** Treats `""` as `undefined` for every declared key before validation. */
+  /** Treats an empty string (`""`) as `undefined` for every declared key, before validation. */
   readonly emptyStringAsUndefined?: boolean;
   /**
-   * Called with the per-key Standard Schema issues when validation fails.
-   * Must throw or otherwise never return; when omitted, `createEnv` throws
-   * an `EnvValidationError`.
+   * Called with the Standard Schema issues for each key when validation
+   * fails. Must throw, or never return in any other way. If you leave this
+   * out, `createEnv` throws an `EnvValidationError`.
    */
   readonly onValidationError?: (
     issues: Readonly<Record<string, readonly StandardSchemaV1.Issue[]>>,
   ) => never;
   /**
-   * Called when client-side code accesses a server-only key. Must throw or
-   * otherwise never return; when omitted, `createEnv` throws an
-   * `EnvAccessError`.
+   * Called when client-side code reads a server-only key. Must throw, or
+   * never return in any other way. If you leave this out, `createEnv`
+   * throws an `EnvAccessError`.
    */
   readonly onInvalidAccess?: (key: string) => never;
 }
 
 /**
- * Infers the parsed, merged output type `createEnv` returns for a given
- * options object: `extends` sources, then `shared`, `server`, and `client`.
+ * Gets the parsed, merged output type that `createEnv` returns for a given
+ * options object: first the `extends` sources, then `shared`, `server`,
+ * and `client`.
  */
 export type InferCreateEnvOutput<TOptions extends CreateEnvOptions> = InferExtendsOutput<
   TOptions["extends"]
