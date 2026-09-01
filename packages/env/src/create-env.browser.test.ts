@@ -115,9 +115,21 @@ describe("createEnvironment: skipValidation", () => {
       server: { PORT: z.coerce.number() },
       runtimeEnvironment: { PORT: INVALID_PORT },
       skipValidation: true,
+      isServer: true,
     });
 
     expect(env.PORT).toBe(INVALID_PORT);
+  });
+
+  it("still throws an EnvironmentAccessError for a server var off the server", () => {
+    const env = createEnvironment({
+      server: { PORT: z.coerce.number() },
+      runtimeEnvironment: { PORT: INVALID_PORT },
+      skipValidation: true,
+      isServer: false,
+    });
+
+    expect(() => env.PORT).toThrow(EnvironmentAccessError);
   });
 });
 

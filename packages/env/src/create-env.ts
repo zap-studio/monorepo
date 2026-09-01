@@ -119,26 +119,25 @@ const createEnvironmentImpl = (options: CreateEnvironmentOptions): unknown => {
   const merged = mergeEnvironmentSchemas([...(options.extends ?? []), options]);
   const keys = [...merged.keys()];
 
-  if (options.skipValidation === true) {
-    return readDeclaredEnvironment(keys, options);
-  }
+  const parsed =
+    options.skipValidation === true
+      ? readDeclaredEnvironment(keys, options)
+      : withValidateSpan(() => {
+          const declared = readDeclaredEnvironment(keys, options);
+          const { issues, parsed: validated } = validateDeclaredEnvironment(merged, declared);
 
-  const parsed = withValidateSpan(() => {
-    const declared = readDeclaredEnvironment(keys, options);
-    const { issues, parsed: validated } = validateDeclaredEnvironment(merged, declared);
+          if (Object.keys(issues).length > 0) {
+            if (options.onValidationError) {
+              options.onValidationError(issues);
+              throw new Error(
+                "onValidationError did not throw; it must throw or otherwise never return.",
+              );
+            }
+            throw new EnvironmentValidationError(issues);
+          }
 
-    if (Object.keys(issues).length > 0) {
-      if (options.onValidationError) {
-        options.onValidationError(issues);
-        throw new Error(
-          "onValidationError did not throw; it must throw or otherwise never return.",
-        );
-      }
-      throw new EnvironmentValidationError(issues);
-    }
-
-    return validated;
-  });
+          return validated;
+        });
 
   const isServer = options.isServer ?? typeof window === "undefined";
   if (isServer) {
