@@ -21,7 +21,7 @@ const getPackages = () => [
     name: "@zap-studio/env",
     version: "1.0.0",
     description:
-      "A runtime- and framework-agnostic environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation.",
+      "A runtime and framework-agnostic environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation.",
   },
   {
     slug: "fetch",

@@ -31,7 +31,7 @@
       "displayName": "@zap-studio/env",
       "type": "application/json",
       "url": "https://registry.npmjs.org/@zap-studio/env",
-      "description": "A runtime- and framework-agnostic, tree-shakeable environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation."
+      "description": "A runtime and framework-agnostic, tree-shakeable environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation."
     },
     {
       "identifier": "urn:air:zapstudio.dev:package:fetch",
