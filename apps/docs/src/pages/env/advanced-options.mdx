@@ -9,7 +9,7 @@ These `createEnvironment` options cover less common setups — partial build ste
 
 ## `skipValidation`
 
-Bypasses validation entirely and returns the declared keys read from `runtimeEnv` as-is, unvalidated and unprefix-checked:
+Bypasses validation and parsing — the declared keys are read from `runtimeEnv` and returned as-is, unvalidated. `clientPrefix` checks, `extends` conflict checks, and the server-only access guard on the client still run:
 
 ```ts
 createEnvironment({

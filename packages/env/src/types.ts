@@ -76,9 +76,9 @@ export interface EnvironmentSchema<
 }
 
 /**
- * Gets the parsed output type of a shape map. Returns `{}` when the shape
- * is `undefined`, for example when `shared`, `server`, or `client` is left
- * out.
+ * Gets the parsed output type of a shape map. Returns `Record<string, never>`
+ * when the shape is `undefined`, for example when `shared`, `server`, or
+ * `client` is left out.
  */
 export type InferEnvironmentVariableSchemaMapOutput<TSchemas> =
   TSchemas extends EnvironmentVariableSchemaMap
