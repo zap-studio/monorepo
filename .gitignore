@@ -25,6 +25,9 @@ coverage/
 .env.*
 !.env.example
 
+# npm auth token
+.npmrc
+
 # Runtime and diagnostic files
 logs/
 *.log
