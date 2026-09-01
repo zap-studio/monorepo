@@ -28,7 +28,7 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 
@@ -42,7 +42,7 @@ As soon as a schema declares any `client` key, `clientPrefix` becomes required. 
 createEnvironment({
   client: { API_URL: z.string().url() }, // ❌ type error: does not start with "NEXT_PUBLIC_"
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 
@@ -67,7 +67,7 @@ This mirrors, at runtime, the same split that build-time tools (bundler dead-cod
 ```ts
 createEnvironment({
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
   isServer: process.env["RUNTIME"] === "edge-with-server-access",
 });
 ```
@@ -79,7 +79,7 @@ Pass `onInvalidAccess` to run your own logic instead of throwing `EnvironmentAcc
 ```ts
 createEnvironment({
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
   onInvalidAccess: (key) => {
     reportError(`Server-only env var "${key}" was read from the client.`);
     throw new Error(`Blocked client access to "${key}".`);

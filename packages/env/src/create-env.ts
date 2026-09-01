@@ -25,7 +25,7 @@ import { withValidateSpan } from "./_otel.ts";
 import { EnvironmentAccessError, EnvironmentValidationError } from "./errors.ts";
 
 /**
- * Reads `runtimeEnvironmentStrict` if it is given, or `runtimeEnvironment` otherwise.
+ * Reads `runtimeEnvStrict` if it is given, or `runtimeEnv` otherwise.
  * Applies `emptyStringAsUndefined` to every value that the merged schema
  * declares.
  */
@@ -33,10 +33,10 @@ const readDeclaredEnvironment = (
   keys: readonly string[],
   options: Pick<
     CreateEnvironmentOptions,
-    "emptyStringAsUndefined" | "runtimeEnvironment" | "runtimeEnvironmentStrict"
+    "emptyStringAsUndefined" | "runtimeEnv" | "runtimeEnvStrict"
   >,
 ) => {
-  const source = options.runtimeEnvironmentStrict ?? options.runtimeEnvironment;
+  const source = options.runtimeEnvStrict ?? options.runtimeEnv;
   const declared: Record<string, RawEnvironmentVariableValue> = {};
 
   for (const key of keys) {
@@ -166,7 +166,7 @@ const createEnvironmentImpl = (options: CreateEnvironmentOptions): unknown => {
  *   server: { DATABASE_URL: z.string().url() },
  *   client: { NEXT_PUBLIC_API_URL: z.string().url() },
  *   clientPrefix: "NEXT_PUBLIC_",
- *   runtimeEnvironment: process.env,
+ *   runtimeEnv: process.env,
  * });
  *
  * env.DATABASE_URL; // server-only, throws if read from a client bundle

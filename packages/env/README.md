@@ -50,7 +50,7 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 
 env.DATABASE_URL; // server-only: throws if read from a client bundle
@@ -67,8 +67,8 @@ env.NEXT_PUBLIC_API_URL; // readable everywhere
 | `server`                   | Server-only vars; throws if read from the client.                                                                  |
 | `client`                   | Client-exposed vars; every key must start with `clientPrefix`.                                                     |
 | `clientPrefix`             | Required prefix for every `client` key.                                                                            |
-| `runtimeEnvironment`       | The resolved env object to validate (`process.env`, `import.meta.env`, ...).                                       |
-| `runtimeEnvironmentStrict` | Used instead of `runtimeEnvironment` when provided.                                                                |
+| `runtimeEnv`       | The resolved env object to validate (`process.env`, `import.meta.env`, ...).                                       |
+| `runtimeEnvStrict` | Used instead of `runtimeEnv` when provided.                                                                |
 | `extends`                  | Composes other `EnvironmentSchema` sources (see below).                                                            |
 | `isServer`                 | How to detect a server context. Defaults to `typeof window === "undefined"`.                                       |
 | `skipValidation`           | Skips validation and returns the declared keys as-is. Useful for partial Docker build steps.                       |
@@ -97,7 +97,7 @@ import { z } from "zod";
 export const env = createEnvironment({
   extends: [dbEnvironmentSchema],
   server: { PORT: z.coerce.number().default(3000) },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 
@@ -115,7 +115,7 @@ import { z } from "zod";
 export const env = createEnvironment({
   extends: [vercel],
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 
 env["VERCEL_GIT_COMMIT_SHA"]; // string | undefined
@@ -164,7 +164,7 @@ import { createEnvironment, EnvironmentValidationError } from "@zap-studio/env";
 try {
   const env = createEnvironment({
     server: { PORT: z.coerce.number() },
-    runtimeEnvironment: process.env,
+    runtimeEnv: process.env,
   });
 } catch (error) {
   if (error instanceof EnvironmentValidationError) {
@@ -190,7 +190,7 @@ import { createEnvironment } from "@zap-studio/env";
 // span. If not, it does nothing. No extra setup is needed either way.
 export const env = createEnvironment({
   server: { PORT: z.coerce.number() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 

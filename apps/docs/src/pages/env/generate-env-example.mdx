@@ -5,7 +5,7 @@ description: Schema-driven .env.example generation — no dev server, safe to ru
 
 # `generateEnvironmentExample`
 
-`generateEnvironmentExample(...)` reads a schema and returns a `.env.example` file as a string. The schema has the same `shared`/`server`/`client`/`extends` shape as `createEnvironment`, minus the runtime-only options — no `runtimeEnvironment` is needed, since no real values are ever read.
+`generateEnvironmentExample(...)` reads a schema and returns a `.env.example` file as a string. The schema has the same `shared`/`server`/`client`/`extends` shape as `createEnvironment`, minus the runtime-only options — no `runtimeEnv` is needed, since no real values are ever read.
 
 ```ts
 import { writeFileSync } from "node:fs";

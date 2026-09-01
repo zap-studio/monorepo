@@ -41,7 +41,7 @@ import { z } from "zod";
 // span. If not, it does nothing. No extra setup is needed either way.
 export const env = createEnvironment({
   server: { PORT: z.coerce.number() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 

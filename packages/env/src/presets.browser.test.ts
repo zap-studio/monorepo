@@ -32,7 +32,7 @@ describe("presets", () => {
   it("treats every preset key as optional (absent on other platforms)", () => {
     const env = createEnvironment({
       extends: [vercel],
-      runtimeEnvironment: {},
+      runtimeEnv: {},
       isServer: true,
     });
 
@@ -42,7 +42,7 @@ describe("presets", () => {
   it("passes through the value when the platform var is present", () => {
     const env = createEnvironment({
       extends: [cloudflare],
-      runtimeEnvironment: {
+      runtimeEnv: {
         CF_PAGES: "1",
         CF_PAGES_BRANCH: "main",
         CF_PAGES_COMMIT_SHA: "abc123",
@@ -64,9 +64,9 @@ describe("presets", () => {
     try {
       createEnvironment({
         extends: [vercel],
-        runtimeEnvironment: {},
+        runtimeEnv: {},
         // @ts-expect-error VERCEL is given an object value on purpose, to test the runtime check.
-        runtimeEnvironmentStrict: { VERCEL: { nested: true } },
+        runtimeEnvStrict: { VERCEL: { nested: true } },
       });
     } catch (error) {
       caught = error;
@@ -79,7 +79,7 @@ describe("presets", () => {
     const env = createEnvironment({
       extends: [denoDeploy],
       shared: { APP_NAME: z.string() },
-      runtimeEnvironment: { DENO_DEPLOYMENT_ID: "dep_123", APP_NAME: "my-app" },
+      runtimeEnv: { DENO_DEPLOYMENT_ID: "dep_123", APP_NAME: "my-app" },
       isServer: true,
     });
 

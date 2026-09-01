@@ -43,7 +43,7 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 
 env.DATABASE_URL; // server-only: throws if read from a client bundle
@@ -58,7 +58,7 @@ env.NEXT_PUBLIC_API_URL; // readable everywhere
 - [Presets](/env/presets) — env vars hosting platforms set automatically
 - [`generateEnvironmentExample`](/env/generate-env-example) — schema-driven `.env.example` generation
 - [Errors](/env/errors) — `EnvironmentError`, `EnvironmentValidationError`, `EnvironmentAccessError`
-- [Advanced Options](/env/advanced-options) — `skipValidation`, `emptyStringAsUndefined`, `runtimeEnvironmentStrict`
+- [Advanced Options](/env/advanced-options) — `skipValidation`, `emptyStringAsUndefined`, `runtimeEnvStrict`
 - [OpenTelemetry](/env/opentelemetry) — the `env.validate` span
 
 ## Runtime Support

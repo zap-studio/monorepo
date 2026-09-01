@@ -37,7 +37,7 @@ type PrefixedClientVariableSchemas<
 /**
  * A reusable env schema, without a runtime env object. It has the
  * `shared`/`server`/`client` shape and `clientPrefix` that `createEnvironment`
- * needs, but not `runtimeEnvironment` — a schema-only definition cannot provide
+ * needs, but not `runtimeEnv` — a schema-only definition cannot provide
  * that.
  *
  * A plain object can be an `EnvironmentSchema`. So a shared base package can export
@@ -55,7 +55,7 @@ type PrefixedClientVariableSchemas<
  * export const env = createEnvironment({
  *   extends: [dbEnvironmentSchema],
  *   server: { PORT: z.coerce.number() },
- *   runtimeEnvironment: process.env,
+ *   runtimeEnv: process.env,
  * });
  * ```
  */
@@ -133,14 +133,14 @@ export interface CreateEnvironmentOptions<
    * schema declares are read from it. This keeps static bundler
    * replacement of `import.meta.env`/`process.env` working.
    */
-  readonly runtimeEnvironment: Readonly<Record<string, RawEnvironmentVariableValue>>;
+  readonly runtimeEnv: Readonly<Record<string, RawEnvironmentVariableValue>>;
   /**
-   * Works like `runtimeEnvironment`, but is used instead of it when given. Useful
-   * when you can only build the object to check after `runtimeEnvironment` would
+   * Works like `runtimeEnv`, but is used instead of it when given. Useful
+   * when you can only build the object to check after `runtimeEnv` would
    * otherwise need to be spread — for example, when framework-injected
    * values are merged with `process.env`.
    */
-  readonly runtimeEnvironmentStrict?: Readonly<Record<string, RawEnvironmentVariableValue>>;
+  readonly runtimeEnvStrict?: Readonly<Record<string, RawEnvironmentVariableValue>>;
   /**
    * Adds other reusable `EnvironmentSchema` definitions to this one before
    * validation. If a key is declared in more than one source (an `extends`
@@ -155,7 +155,7 @@ export interface CreateEnvironmentOptions<
    */
   readonly isServer?: boolean;
   /**
-   * Skips validation and returns the declared keys from `runtimeEnvironment` as
+   * Skips validation and returns the declared keys from `runtimeEnv` as
    * they are, with no checks. Useful for partial build steps, for example
    * a Docker build stage, where not every var is set yet.
    */

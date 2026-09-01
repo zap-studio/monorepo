@@ -30,7 +30,7 @@ import { z } from "zod";
 export const env = createEnvironment({
   extends: [dbEnvironmentSchema],
   server: { PORT: z.coerce.number().default(3000) },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 
 env.DATABASE_URL; // typed and validated, from dbEnvironmentSchema
@@ -47,7 +47,7 @@ If two composed sources declare the same key with two different schemas, `create
 createEnvironment({
   extends: [{ server: { PORT: z.string() } }],
   server: { PORT: z.coerce.number() }, // ❌ EnvironmentError: "PORT" declared with two different schemas
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 
@@ -61,7 +61,7 @@ const cacheEnvironmentSchema = { server: { PORT: PORT_SCHEMA } } satisfies Envir
 
 createEnvironment({
   extends: [dbEnvironmentSchema, cacheEnvironmentSchema], // fine — same schema object, no conflict
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 

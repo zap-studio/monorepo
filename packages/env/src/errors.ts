@@ -17,7 +17,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * import { EnvironmentError } from "@zap-studio/env/errors";
  *
  * try {
- *   createEnvironment({ extends: [base, override], runtimeEnvironment: process.env });
+ *   createEnvironment({ extends: [base, override], runtimeEnv: process.env });
  * } catch (error) {
  *   if (error instanceof EnvironmentError) {
  *     console.error(error.message);
@@ -52,7 +52,7 @@ export class EnvironmentError extends Error {
  * @example
  * ```ts
  * try {
- *   const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
+ *   const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnv: process.env });
  * } catch (error) {
  *   if (error instanceof EnvironmentValidationError) {
  *     console.error("Invalid env vars:", error.invalidKeys);

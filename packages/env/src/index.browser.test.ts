@@ -13,7 +13,7 @@ describe("index re-exports", () => {
   it("re-exports createEnvironment", () => {
     const env = createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnvironment: { PORT: "3000" },
+      runtimeEnv: { PORT: "3000" },
       isServer: true,
     });
 

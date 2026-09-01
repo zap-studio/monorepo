@@ -15,7 +15,7 @@ import { z } from "zod";
 export const env = createEnvironment({
   extends: [vercel],
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 
 env.VERCEL_GIT_COMMIT_SHA; // string | undefined
@@ -51,7 +51,7 @@ Presets compose like any other `EnvironmentSchema` — pass more than one to `ex
 ```ts
 createEnvironment({
   extends: [vercel, cloudflare],
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
 });
 ```
 

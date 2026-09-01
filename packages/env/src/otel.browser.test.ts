@@ -29,7 +29,7 @@ describe("env OpenTelemetry", () => {
   it("creates an INTERNAL env.validate span with an OK status on success", () => {
     createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnvironment: { PORT: "3000" },
+      runtimeEnv: { PORT: "3000" },
       isServer: true,
     });
 
@@ -43,7 +43,7 @@ describe("env OpenTelemetry", () => {
     try {
       createEnvironment({
         server: { PORT: z.coerce.number(), SECRET: z.string().min(1) },
-        runtimeEnvironment: { PORT: INVALID_PORT, SECRET: "" },
+        runtimeEnv: { PORT: INVALID_PORT, SECRET: "" },
       });
     } catch {
       // expected: EnvironmentValidationError, checked with the span below.
@@ -58,7 +58,7 @@ describe("env OpenTelemetry", () => {
   it("does not create a span when validation is skipped", () => {
     createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnvironment: { PORT: INVALID_PORT },
+      runtimeEnv: { PORT: INVALID_PORT },
       skipValidation: true,
     });
 
@@ -69,7 +69,7 @@ describe("env OpenTelemetry", () => {
     expect(() =>
       createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnvironment: { PORT: "nope" },
+        runtimeEnv: { PORT: "nope" },
         onValidationError: (): never => {
           throw new Error("custom");
         },
@@ -85,7 +85,7 @@ describe("env OpenTelemetry", () => {
     try {
       createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnvironment: { PORT: "nope" },
+        runtimeEnv: { PORT: "nope" },
         onValidationError: (): never => {
           throw "custom string failure";
         },
@@ -104,7 +104,7 @@ describe("env OpenTelemetry", () => {
     try {
       createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnvironment: { PORT: "nope" },
+        runtimeEnv: { PORT: "nope" },
       });
     } catch (error) {
       caught = error;

@@ -19,7 +19,7 @@ Thrown by `createEnvironment` and [`generateEnvironmentExample`](/env/generate-e
 import { EnvironmentError } from "@zap-studio/env/errors";
 
 try {
-  createEnvironment({ extends: [base, override], runtimeEnvironment: process.env });
+  createEnvironment({ extends: [base, override], runtimeEnv: process.env });
 } catch (error) {
   if (error instanceof EnvironmentError) {
     console.error(error.message);
@@ -43,7 +43,7 @@ import { z } from "zod";
 try {
   const env = createEnvironment({
     server: { PORT: z.coerce.number() },
-    runtimeEnvironment: process.env,
+    runtimeEnv: process.env,
   });
 } catch (error) {
   if (error instanceof EnvironmentValidationError) {
@@ -61,7 +61,7 @@ Pass `onValidationError` to run your own logic instead of throwing `EnvironmentV
 ```ts
 createEnvironment({
   server: { PORT: z.coerce.number() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
   onValidationError: (issues) => {
     console.error("Invalid environment variables:", Object.keys(issues).join(", "));
     process.exit(1);

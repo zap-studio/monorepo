@@ -1,6 +1,6 @@
 ---
 title: Advanced Options
-description: skipValidation for partial build steps, emptyStringAsUndefined for blank vars, and runtimeEnvironmentStrict for pre-assembled env objects.
+description: skipValidation for partial build steps, emptyStringAsUndefined for blank vars, and runtimeEnvStrict for pre-assembled env objects.
 ---
 
 # Advanced Options
@@ -9,12 +9,12 @@ These `createEnvironment` options cover less common setups — partial build ste
 
 ## `skipValidation`
 
-Bypasses validation entirely and returns the declared keys read from `runtimeEnvironment` as-is, unvalidated and unprefix-checked:
+Bypasses validation entirely and returns the declared keys read from `runtimeEnv` as-is, unvalidated and unprefix-checked:
 
 ```ts
 createEnvironment({
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
   skipValidation: process.env["SKIP_ENV_VALIDATION"] === "true",
 });
 ```
@@ -28,29 +28,29 @@ Treats `""` as `undefined` for every declared key, before validation:
 ```ts
 createEnvironment({
   server: { PORT: z.coerce.number().default(3000) },
-  runtimeEnvironment: process.env,
+  runtimeEnv: process.env,
   emptyStringAsUndefined: true,
 });
 ```
 
 Some deployment tools set an env var to an empty string instead of leaving it unset. Without this option, `z.coerce.number()` would try to coerce `""`, which produces `NaN` rather than falling back to a schema default.
 
-## `runtimeEnvironmentStrict`
+## `runtimeEnvStrict`
 
-Used instead of `runtimeEnvironment` when provided. Useful when the object to validate can only be assembled after `runtimeEnvironment` would otherwise need to be spread — for example, framework-injected values merged with `process.env`:
+Used instead of `runtimeEnv` when provided. Useful when the object to validate can only be assembled after `runtimeEnv` would otherwise need to be spread — for example, framework-injected values merged with `process.env`:
 
 ```ts
 createEnvironment({
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnvironment: process.env,
-  runtimeEnvironmentStrict: {
+  runtimeEnv: process.env,
+  runtimeEnvStrict: {
     ...process.env,
     ...frameworkInjectedVars,
   },
 });
 ```
 
-`runtimeEnvironment` is still required even when `runtimeEnvironmentStrict` is set — it keeps the option's type shape anchored to a plain env object.
+`runtimeEnv` is still required even when `runtimeEnvStrict` is set — it keeps the option's type shape anchored to a plain env object.
 
 ## See Also
 
