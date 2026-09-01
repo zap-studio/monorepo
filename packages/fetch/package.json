@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "private": false,
   "description": "A type-safe, tree-shakeable fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
