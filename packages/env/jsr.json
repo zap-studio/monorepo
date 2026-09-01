@@ -12,7 +12,8 @@
     "./types": "./src/types.ts"
   },
   "imports": {
-    "@zap-studio/validation": "jsr:@zap-studio/validation@^1.1.1"
+    "@zap-studio/validation": "jsr:@zap-studio/validation@^1.1.1",
+    "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.1"
   },
   "publish": {
     "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
