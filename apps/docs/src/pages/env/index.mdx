@@ -7,7 +7,7 @@ description: A runtime and framework-agnostic environment variable validator, bu
 
 `@zap-studio/env` checks an env object you already have (`process.env`, `import.meta.env`, dotenv output, or anything else) against a [Standard Schema](https://standardschema.dev/schema)-based `shared`/`server`/`client` shape. It does not read or parse files itself.
 
-It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and the browser, with any bundler or framework. It never scans or looks up env keys dynamically at runtime, so it does not break the static `process.env`/`import.meta.env` replacement that bundlers use.
+It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and the browser, with any bundler or framework. It does not scan env vars itself. This is why it does not break the static `process.env`/`import.meta.env` replacement that bundlers use. But that replacement only works on a literal `process.env.X` line in your own code. For `client` vars, use [`runtimeEnvStrict`](/env/advanced-options#runtimeenvstrict) and write each key on its own line. Do not pass the whole object instead.
 
 ## Motivation
 
@@ -43,7 +43,10 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnv: process.env,
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
 });
 
 env.DATABASE_URL; // server-only: throws if read from a client bundle

@@ -28,9 +28,15 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnv: process.env,
+  runtimeEnvStrict: {
+    NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
 });
 ```
+
+`client` vars need `runtimeEnvStrict`, with each key on its own `process.env.X` line. See [Advanced Options](/env/advanced-options#runtimeenvstrict) for why a plain `runtimeEnv: process.env` does not survive bundling.
 
 `shared` vars are validated once and carry no prefix requirement — use them for values that aren't secrets and don't need the client/server split at all, such as `NODE_ENV`.
 

@@ -71,9 +71,14 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnv: process.env,
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
 });
 ```
+
+Each var is on its own line. Bundlers (webpack, Next.js, Vite) replace a literal `process.env.X` line at build time — they cannot do this with a spread of the whole object. This matters for `client` vars, since they must end up in the browser bundle. See [Advanced Options](/env/advanced-options#runtimeenvstrict) for when `runtimeEnv: process.env` is fine instead.
 
 If any declared var fails validation, `createEnvironment` throws an [`EnvironmentValidationError`](/env/errors) listing every invalid key.
 

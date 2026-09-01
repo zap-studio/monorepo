@@ -8,7 +8,7 @@ Full documentation: [zapstudio.dev/env](https://www.zapstudio.dev/env)
 
 `@zap-studio/env` checks an env object you already have (`process.env`, `import.meta.env`, dotenv output, or anything else) against a schema. It does not read or parse files itself.
 
-It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and the browser, and with any bundler or framework. It never scans or looks up env keys at runtime. This means it does not break the static `process.env`/`import.meta.env` replacement that bundlers use.
+It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and the browser, and with any bundler or framework. It does not scan env vars itself. This is why it does not break the static `process.env`/`import.meta.env` replacement that bundlers use. But that replacement only works on a literal `process.env.X` line in your own code. For any `client` var, use `runtimeEnvStrict` and write each key on its own line (see Quick Start below). Do not pass the whole object instead.
 
 It uses the same `server`/`client`/`shared` split as [t3-env](https://env.t3.gg), the package most people use for this job today. A server secret cannot leak into a client bundle by accident. But t3-env still has real problems. Its `extends` does a flat merge of schemas, with no conflict check, so a key can silently get dropped or overwritten. Its presets do not cover Cloudflare Workers or Deno Deploy. And framework support needs its own packages, like `env-nextjs` and `env-nuxt`. This ties the core package to one framework.
 
@@ -50,31 +50,36 @@ export const env = createEnvironment({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnv: process.env,
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
 });
 
 env.DATABASE_URL; // server-only: throws if read from a client bundle
 env.NEXT_PUBLIC_API_URL; // readable everywhere
 ```
 
+Each var is on its own line — `process.env.DATABASE_URL`, not `process.env` as a whole. Bundlers like webpack, Next.js, and Vite (`import.meta.env.X`) replace `process.env.X` at build time, and they need this exact pattern to do it. That is how `NEXT_PUBLIC_API_URL` still makes it into the client bundle. If your schema has no `client` vars, you can pass the whole object with `runtimeEnv: process.env` instead — see [`runtimeEnvStrict`](#options) below.
+
 `isServer` defaults to `typeof window === "undefined"`. Set it yourself when that default is wrong, such as in some edge or SSR contexts.
 
 ## Options
 
-| Option                   | Purpose                                                                                                            |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `shared`                 | Vars readable on both server and client; validated once.                                                           |
-| `server`                 | Server-only vars; throws if read from the client.                                                                  |
-| `client`                 | Client-exposed vars; every key must start with `clientPrefix`.                                                     |
-| `clientPrefix`           | Required prefix for every `client` key.                                                                            |
-| `runtimeEnv`             | The resolved env object to validate (`process.env`, `import.meta.env`, ...).                                       |
-| `runtimeEnvStrict`       | Used instead of `runtimeEnv` when provided.                                                                        |
-| `extends`                | Composes other `EnvironmentSchema` sources (see below).                                                            |
-| `isServer`               | How to detect a server context. Defaults to `typeof window === "undefined"`.                                       |
-| `skipValidation`         | Skips validation and returns the declared keys as-is. Useful for partial Docker build steps.                       |
-| `emptyStringAsUndefined` | Treats `""` as `undefined` before validation.                                                                      |
-| `onValidationError`      | Called with the per-key issues instead of throwing `EnvironmentValidationError`. Must throw or exit.               |
-| `onInvalidAccess`        | Called when client code reads a server-only key, instead of throwing `EnvironmentAccessError`. Must throw or exit. |
+| Option                   | Purpose                                                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `shared`                 | Vars readable on both server and client; validated once.                                                                                    |
+| `server`                 | Server-only vars; throws if read from the client.                                                                                           |
+| `client`                 | Client-exposed vars; every key must start with `clientPrefix`.                                                                              |
+| `clientPrefix`           | Required prefix for every `client` key.                                                                                                     |
+| `runtimeEnv`             | The env object to check (`process.env`, `import.meta.env`, ...). OK to pass the whole object when there is no `client` bucket.              |
+| `runtimeEnvStrict`       | Used instead of `runtimeEnv` when set. Needed for `client` vars — write each key on its own `process.env.X` line so bundlers can inline it. |
+| `extends`                | Composes other `EnvironmentSchema` sources (see below).                                                                                     |
+| `isServer`               | How to detect a server context. Defaults to `typeof window === "undefined"`.                                                                |
+| `skipValidation`         | Skips validation and returns the declared keys as-is. Useful for partial Docker build steps.                                                |
+| `emptyStringAsUndefined` | Treats `""` as `undefined` before validation.                                                                                               |
+| `onValidationError`      | Called with the per-key issues instead of throwing `EnvironmentValidationError`. Must throw or exit.                                        |
+| `onInvalidAccess`        | Called when client code reads a server-only key, instead of throwing `EnvironmentAccessError`. Must throw or exit.                          |
 
 ## `extends`: composing schemas
 

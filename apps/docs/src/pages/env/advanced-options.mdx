@@ -37,20 +37,38 @@ Some deployment tools set an env var to an empty string instead of leaving it un
 
 ## `runtimeEnvStrict`
 
-Used instead of `runtimeEnv` when provided. Useful when the object to validate can only be assembled after `runtimeEnv` would otherwise need to be spread — for example, framework-injected values merged with `process.env`:
+Used instead of `runtimeEnv` when set. Its main job is `client` vars. A bundler (webpack, Next.js, Vite) only inlines a var into the browser bundle when it sees a literal `process.env.X` (or `import.meta.env.X`) line in your own code. `runtimeEnv: process.env` does not give it that — it is one runtime object, and the bundler cannot see inside it at build time. So the var never makes it into the client bundle. Instead, list each key on its own line:
+
+```ts
+createEnvironment({
+  server: { DATABASE_URL: z.string().url() },
+  client: { NEXT_PUBLIC_API_URL: z.string().url() },
+  clientPrefix: "NEXT_PUBLIC_",
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
+});
+```
+
+TypeScript requires every declared `server`/`client`/`shared` key to be there, so you cannot miss one by accident.
+
+A schema with no `client` bucket has nothing for a bundler to inline. A plain `runtimeEnv: process.env` is fine there.
+
+`runtimeEnvStrict` is also useful when you can only build the object from several sources — for example, framework-injected values merged with `process.env`. Just keep every var a client bundle needs on its own literal line, not inside a spread:
 
 ```ts
 createEnvironment({
   server: { DATABASE_URL: z.string().url() },
   runtimeEnv: process.env,
   runtimeEnvStrict: {
-    ...process.env,
-    ...frameworkInjectedVars,
+    DATABASE_URL: process.env.DATABASE_URL,
+    REQUEST_ID: frameworkInjectedVars.REQUEST_ID,
   },
 });
 ```
 
-`runtimeEnv` is still required even when `runtimeEnvStrict` is set — it keeps the option's type shape anchored to a plain env object.
+`runtimeEnv` is still required even when `runtimeEnvStrict` is set. This keeps the type of both options tied to a plain env object.
 
 ## See Also
 
