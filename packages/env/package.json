@@ -34,8 +34,11 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./create-env": "./dist/create-env.js",
     "./errors": "./dist/errors.js",
+    "./generate-env-example": "./dist/generate-env-example.js",
     "./presets": "./dist/presets.js",
+    "./types": "./dist/types.js",
     "./package.json": "./package.json"
   },
   "publishConfig": {
