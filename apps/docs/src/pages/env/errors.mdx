@@ -41,7 +41,10 @@ import { createEnvironment, EnvironmentValidationError } from "@zap-studio/env";
 import { z } from "zod";
 
 try {
-  const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
+  const env = createEnvironment({
+    server: { PORT: z.coerce.number() },
+    runtimeEnvironment: process.env,
+  });
 } catch (error) {
   if (error instanceof EnvironmentValidationError) {
     console.error("Invalid env vars:", error.invalidKeys);
@@ -91,7 +94,11 @@ try {
 All three errors are also available from the dedicated `@zap-studio/env/errors` subpath, for consumers who prefer granular imports:
 
 ```ts
-import { EnvironmentAccessError, EnvironmentError, EnvironmentValidationError } from "@zap-studio/env/errors";
+import {
+  EnvironmentAccessError,
+  EnvironmentError,
+  EnvironmentValidationError,
+} from "@zap-studio/env/errors";
 ```
 
 ## See Also

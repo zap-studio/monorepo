@@ -61,19 +61,19 @@ env.NEXT_PUBLIC_API_URL; // readable everywhere
 
 ## Options
 
-| Option                     | Purpose                                                                                               |
-| -------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `shared`                   | Vars readable on both server and client; validated once.                                              |
-| `server`                   | Server-only vars; throws if read from the client.                                                     |
-| `client`                   | Client-exposed vars; every key must start with `clientPrefix`.                                        |
-| `clientPrefix`             | Required prefix for every `client` key.                                                                |
-| `runtimeEnvironment`       | The resolved env object to validate (`process.env`, `import.meta.env`, ...).                          |
-| `runtimeEnvironmentStrict` | Used instead of `runtimeEnvironment` when provided.                                                    |
-| `extends`                  | Composes other `EnvironmentSchema` sources (see below).                                                |
-| `isServer`                 | How to detect a server context. Defaults to `typeof window === "undefined"`.                          |
-| `skipValidation`           | Skips validation and returns the declared keys as-is. Useful for partial Docker build steps.          |
-| `emptyStringAsUndefined`   | Treats `""` as `undefined` before validation.                                                          |
-| `onValidationError`        | Called with the per-key issues instead of throwing `EnvironmentValidationError`. Must throw or exit.  |
+| Option                     | Purpose                                                                                                            |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `shared`                   | Vars readable on both server and client; validated once.                                                           |
+| `server`                   | Server-only vars; throws if read from the client.                                                                  |
+| `client`                   | Client-exposed vars; every key must start with `clientPrefix`.                                                     |
+| `clientPrefix`             | Required prefix for every `client` key.                                                                            |
+| `runtimeEnvironment`       | The resolved env object to validate (`process.env`, `import.meta.env`, ...).                                       |
+| `runtimeEnvironmentStrict` | Used instead of `runtimeEnvironment` when provided.                                                                |
+| `extends`                  | Composes other `EnvironmentSchema` sources (see below).                                                            |
+| `isServer`                 | How to detect a server context. Defaults to `typeof window === "undefined"`.                                       |
+| `skipValidation`           | Skips validation and returns the declared keys as-is. Useful for partial Docker build steps.                       |
+| `emptyStringAsUndefined`   | Treats `""` as `undefined` before validation.                                                                      |
+| `onValidationError`        | Called with the per-key issues instead of throwing `EnvironmentValidationError`. Must throw or exit.               |
 | `onInvalidAccess`          | Called when client code reads a server-only key, instead of throwing `EnvironmentAccessError`. Must throw or exit. |
 
 ## `extends`: composing schemas
@@ -162,7 +162,10 @@ A key is marked optional when its schema accepts `undefined`. This is true for a
 import { createEnvironment, EnvironmentValidationError } from "@zap-studio/env";
 
 try {
-  const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
+  const env = createEnvironment({
+    server: { PORT: z.coerce.number() },
+    runtimeEnvironment: process.env,
+  });
 } catch (error) {
   if (error instanceof EnvironmentValidationError) {
     console.error("Invalid env vars:", error.invalidKeys);
@@ -185,7 +188,10 @@ import { createEnvironment } from "@zap-studio/env";
 
 // If your app has registered an OpenTelemetry SDK, this call now produces a
 // span. If not, it does nothing. No extra setup is needed either way.
-export const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
+export const env = createEnvironment({
+  server: { PORT: z.coerce.number() },
+  runtimeEnvironment: process.env,
+});
 ```
 
 ## Runtime Support

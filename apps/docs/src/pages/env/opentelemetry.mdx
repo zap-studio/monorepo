@@ -39,7 +39,10 @@ import { z } from "zod";
 
 // If your app has registered an OpenTelemetry SDK, this call now produces a
 // span. If not, it does nothing. No extra setup is needed either way.
-export const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
+export const env = createEnvironment({
+  server: { PORT: z.coerce.number() },
+  runtimeEnvironment: process.env,
+});
 ```
 
 ## The `env.validate` Span
