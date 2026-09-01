@@ -13,11 +13,11 @@ import { standardValidateSync } from "@zap-studio/validation";
 import type {
   CreateEnvOptions,
   EnvSchema,
-  EnvVarSchemas,
-  EnvVarValue,
-  InferExtendsOutput,
-  InferEnvVarsOutput,
-  MergedEnvEntry,
+  EnvironmentVariableSchemaMap,
+  RawEnvironmentVariableValue,
+  InferExtendsMergedOutput,
+  InferEnvironmentVariableSchemaMapOutput,
+  ResolvedEnvVarEntry,
 } from "./types.ts";
 
 import { mergeEnvSchemas } from "./_merge.ts";
@@ -34,7 +34,7 @@ const readDeclaredEnv = (
   options: Pick<CreateEnvOptions, "emptyStringAsUndefined" | "runtimeEnv" | "runtimeEnvStrict">,
 ) => {
   const source = options.runtimeEnvStrict ?? options.runtimeEnv;
-  const declared: Record<string, EnvVarValue> = {};
+  const declared: Record<string, RawEnvironmentVariableValue> = {};
 
   for (const key of keys) {
     const value = source[key];
@@ -49,8 +49,8 @@ const readDeclaredEnv = (
  * of stopping at the first one.
  */
 const validateDeclaredEnv = (
-  merged: ReadonlyMap<string, MergedEnvEntry>,
-  declared: Readonly<Record<string, EnvVarValue>>,
+  merged: ReadonlyMap<string, ResolvedEnvVarEntry>,
+  declared: Readonly<Record<string, RawEnvironmentVariableValue>>,
 ) => {
   const parsed: Record<string, unknown> = {};
   const issues: Record<string, readonly StandardSchemaV1.Issue[]> = {};
@@ -74,7 +74,7 @@ const validateDeclaredEnv = (
  */
 const guardClientAccess = (
   parsed: Record<string, unknown>,
-  merged: ReadonlyMap<string, MergedEnvEntry>,
+  merged: ReadonlyMap<string, ResolvedEnvVarEntry>,
   onInvalidAccess: ((key: string) => never) | undefined,
 ) =>
   new Proxy(parsed, {
@@ -174,14 +174,14 @@ export const createEnv =
   // parameters (through `options`). So the real value always matches this
   // declared type.
   createEnvImpl as <
-    TShared extends EnvVarSchemas = EnvVarSchemas,
-    TServer extends EnvVarSchemas = EnvVarSchemas,
-    TClient extends EnvVarSchemas = EnvVarSchemas,
+    TShared extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
+    TServer extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
+    TClient extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
     const TClientPrefix extends string = string,
     const TExtends extends readonly EnvSchema[] = readonly EnvSchema[],
   >(
     options: CreateEnvOptions<TShared, TServer, TClient, TClientPrefix, TExtends>,
-  ) => InferExtendsOutput<TExtends> &
-    InferEnvVarsOutput<TShared> &
-    InferEnvVarsOutput<TServer> &
-    InferEnvVarsOutput<TClient>;
+  ) => InferExtendsMergedOutput<TExtends> &
+    InferEnvironmentVariableSchemaMapOutput<TShared> &
+    InferEnvironmentVariableSchemaMapOutput<TServer> &
+    InferEnvironmentVariableSchemaMapOutput<TClient>;

@@ -11,23 +11,26 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  *
  * @example
  * ```ts
- * const vars: EnvVarSchemas = { PORT: z.coerce.number() };
+ * const vars: EnvironmentVariableSchemaMap = { PORT: z.coerce.number() };
  * ```
  */
-export type EnvVarSchemas = Record<string, StandardSchemaV1>;
+export type EnvironmentVariableSchemaMap = Record<string, StandardSchemaV1>;
 
 /**
  * The type a value can have for one key in a resolved env object (for
  * example `process.env` or `import.meta.env`, or dotenv output), before
  * validation.
  */
-export type EnvVarValue = boolean | number | string | undefined;
+export type RawEnvironmentVariableValue = boolean | number | string | undefined;
 
 /**
  * Makes sure every key in a `client` shape starts with `TClientPrefix`.
  * This is checked at the type level, and also at runtime by `createEnv`.
  */
-type ClientVarSchemas<TClient extends EnvVarSchemas, TClientPrefix extends string> = {
+type PrefixedClientVariableSchemas<
+  TClient extends EnvironmentVariableSchemaMap,
+  TClientPrefix extends string,
+> = {
   [K in keyof TClient]: K extends `${TClientPrefix}${string}` ? TClient[K] : never;
 };
 
@@ -57,9 +60,9 @@ type ClientVarSchemas<TClient extends EnvVarSchemas, TClientPrefix extends strin
  * ```
  */
 export interface EnvSchema<
-  TShared extends EnvVarSchemas = EnvVarSchemas,
-  TServer extends EnvVarSchemas = EnvVarSchemas,
-  TClient extends EnvVarSchemas = EnvVarSchemas,
+  TShared extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
+  TServer extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
+  TClient extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
   TClientPrefix extends string = string,
 > {
   /** Vars used by both server and client. Validated once. No prefix check. */
@@ -67,7 +70,7 @@ export interface EnvSchema<
   /** Server-only vars. Not available in client bundles at runtime. */
   readonly server?: TServer;
   /** Vars exposed to the client. Every key must start with `clientPrefix`. */
-  readonly client?: ClientVarSchemas<TClient, TClientPrefix>;
+  readonly client?: PrefixedClientVariableSchemas<TClient, TClientPrefix>;
   /** Required prefix for every `client` key. Checked at both type level and runtime. */
   readonly clientPrefix?: TClientPrefix;
 }
@@ -77,9 +80,10 @@ export interface EnvSchema<
  * is `undefined`, for example when `shared`, `server`, or `client` is left
  * out.
  */
-export type InferEnvVarsOutput<TSchemas> = TSchemas extends EnvVarSchemas
-  ? { [K in keyof TSchemas]: StandardSchemaV1.InferOutput<TSchemas[K]> }
-  : Record<string, never>;
+export type InferEnvironmentVariableSchemaMapOutput<TSchemas> =
+  TSchemas extends EnvironmentVariableSchemaMap
+    ? { [K in keyof TSchemas]: StandardSchemaV1.InferOutput<TSchemas[K]> }
+    : Record<string, never>;
 
 /**
  * Gets the combined output type of one `EnvSchema`'s `shared`, `server`,
@@ -87,7 +91,9 @@ export type InferEnvVarsOutput<TSchemas> = TSchemas extends EnvVarSchemas
  */
 type InferEnvSchemaOutput<T> =
   T extends EnvSchema<infer TShared, infer TServer, infer TClient>
-    ? InferEnvVarsOutput<TShared> & InferEnvVarsOutput<TServer> & InferEnvVarsOutput<TClient>
+    ? InferEnvironmentVariableSchemaMapOutput<TShared> &
+        InferEnvironmentVariableSchemaMapOutput<TServer> &
+        InferEnvironmentVariableSchemaMapOutput<TClient>
     : never;
 
 /**
@@ -104,7 +110,7 @@ type UnionToIntersection<TUnion> = (
 /**
  * Gets the merged output type of every schema added through `extends`.
  */
-export type InferExtendsOutput<TExtends> = TExtends extends readonly EnvSchema[]
+export type InferExtendsMergedOutput<TExtends> = TExtends extends readonly EnvSchema[]
   ? UnionToIntersection<InferEnvSchemaOutput<TExtends[number]>>
   : Record<string, never>;
 
@@ -115,9 +121,9 @@ export type InferExtendsOutput<TExtends> = TExtends extends readonly EnvSchema[]
  * `extends`.
  */
 export interface CreateEnvOptions<
-  TShared extends EnvVarSchemas = EnvVarSchemas,
-  TServer extends EnvVarSchemas = EnvVarSchemas,
-  TClient extends EnvVarSchemas = EnvVarSchemas,
+  TShared extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
+  TServer extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
+  TClient extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
   TClientPrefix extends string = string,
   TExtends extends readonly EnvSchema[] = readonly EnvSchema[],
 > extends EnvSchema<TShared, TServer, TClient, TClientPrefix> {
@@ -127,14 +133,14 @@ export interface CreateEnvOptions<
    * schema declares are read from it. This keeps static bundler
    * replacement of `import.meta.env`/`process.env` working.
    */
-  readonly runtimeEnv: Readonly<Record<string, EnvVarValue>>;
+  readonly runtimeEnv: Readonly<Record<string, RawEnvironmentVariableValue>>;
   /**
    * Works like `runtimeEnv`, but is used instead of it when given. Useful
    * when you can only build the object to check after `runtimeEnv` would
    * otherwise need to be spread — for example, when framework-injected
    * values are merged with `process.env`.
    */
-  readonly runtimeEnvStrict?: Readonly<Record<string, EnvVarValue>>;
+  readonly runtimeEnvStrict?: Readonly<Record<string, RawEnvironmentVariableValue>>;
   /**
    * Adds other reusable `EnvSchema` definitions to this one before
    * validation. If a key is declared in more than one source (an `extends`
@@ -177,18 +183,18 @@ export interface CreateEnvOptions<
  * options object: first the `extends` sources, then `shared`, `server`,
  * and `client`.
  */
-export type InferCreateEnvOutput<TOptions extends CreateEnvOptions> = InferExtendsOutput<
+export type InferCreateEnvOutput<TOptions extends CreateEnvOptions> = InferExtendsMergedOutput<
   TOptions["extends"]
 > &
-  InferEnvVarsOutput<TOptions["shared"]> &
-  InferEnvVarsOutput<TOptions["server"]> &
-  InferEnvVarsOutput<TOptions["client"]>;
+  InferEnvironmentVariableSchemaMapOutput<TOptions["shared"]> &
+  InferEnvironmentVariableSchemaMapOutput<TOptions["server"]> &
+  InferEnvironmentVariableSchemaMapOutput<TOptions["client"]>;
 
 /**
  * One merged env var: which bucket it came from, its schema, and, for a
  * `client` var, the prefix its source used.
  */
-export interface MergedEnvEntry {
+export interface ResolvedEnvVarEntry {
   readonly bucket: "client" | "server" | "shared";
   readonly clientPrefix?: string;
   readonly schema: StandardSchemaV1;

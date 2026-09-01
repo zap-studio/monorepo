@@ -13,7 +13,7 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-import type { EnvSchema, EnvVarSchemas } from "./types.ts";
+import type { EnvSchema, EnvironmentVariableSchemaMap } from "./types.ts";
 
 /**
  * A Standard Schema that accepts any value, turns it into a `string`, and
@@ -38,8 +38,8 @@ const optionalString = (): StandardSchemaV1<string | undefined, string | undefin
   },
 });
 
-const toEnvVarSchemas = (keys: readonly string[]): EnvVarSchemas => {
-  const schemas: EnvVarSchemas = {};
+const toEnvVarSchemas = (keys: readonly string[]): EnvironmentVariableSchemaMap => {
+  const schemas: EnvironmentVariableSchemaMap = {};
   for (const key of keys) {
     schemas[key] = optionalString();
   }

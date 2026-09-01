@@ -16,8 +16,8 @@ export { generateEnvExample } from "./generate-env-example.ts";
 export type {
   CreateEnvOptions,
   EnvSchema,
-  EnvVarSchemas,
+  EnvironmentVariableSchemaMap,
   InferCreateEnvOutput,
-  InferExtendsOutput,
-  InferEnvVarsOutput,
+  InferExtendsMergedOutput,
+  InferEnvironmentVariableSchemaMapOutput,
 } from "./types.ts";
