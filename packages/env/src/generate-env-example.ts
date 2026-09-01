@@ -6,8 +6,7 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-import type { MergedEnvEntry } from "./_merge.ts";
-import type { EnvSchema } from "./types.ts";
+import type { EnvSchema, MergedEnvEntry } from "./types.ts";
 
 import { mergeEnvSchemas } from "./_merge.ts";
 

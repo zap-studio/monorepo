@@ -7,21 +7,9 @@
  * @module @zap-studio/env/merge
  */
 
-import type { StandardSchemaV1 } from "@zap-studio/validation";
-
-import type { EnvSchema, EnvVarSchemas } from "./types.ts";
+import type { EnvSchema, EnvVarSchemas, MergedEnvEntry } from "./types.ts";
 
 import { EnvError } from "./errors.ts";
-
-/**
- * One merged env var: which bucket it came from, its schema, and, for a
- * `client` var, the prefix its source used.
- */
-export interface MergedEnvEntry {
-  readonly bucket: "client" | "server" | "shared";
-  readonly clientPrefix?: string;
-  readonly schema: StandardSchemaV1;
-}
 
 /**
  * Every `client` key in `source` must start with `source.clientPrefix`.
