@@ -1,39 +1,39 @@
 ---
 title: extends
-description: Compose reusable EnvSchema definitions across packages, with reference-equality conflict detection.
+description: Compose reusable EnvironmentSchema definitions across packages, with reference-equality conflict detection.
 ---
 
 # `extends`
 
-`extends` reuses an `EnvSchema` object — a plain object with the same `shared`/`server`/`client`/`clientPrefix` shape `createEnv` accepts, minus the runtime-specific options. This works like `tsconfig.json`'s `extends`, which reuses a base config.
+`extends` reuses an `EnvironmentSchema` object — a plain object with the same `shared`/`server`/`client`/`clientPrefix` shape `createEnvironment` accepts, minus the runtime-specific options. This works like `tsconfig.json`'s `extends`, which reuses a base config.
 
-A shared package exports a plain object satisfying `EnvSchema`:
+A shared package exports a plain object satisfying `EnvironmentSchema`:
 
 ```ts
 // packages/db/src/env-schema.ts
-import type { EnvSchema } from "@zap-studio/env";
+import type { EnvironmentSchema } from "@zap-studio/env";
 import { z } from "zod";
 
-export const dbEnvSchema = {
+export const dbEnvironmentSchema = {
   server: { DATABASE_URL: z.string().url() },
-} satisfies EnvSchema;
+} satisfies EnvironmentSchema;
 ```
 
 An app composes it in via `extends`:
 
 ```ts
 // apps/api/src/env.ts
-import { createEnv } from "@zap-studio/env";
-import { dbEnvSchema } from "@your-org/db";
+import { createEnvironment } from "@zap-studio/env";
+import { dbEnvironmentSchema } from "@your-org/db";
 import { z } from "zod";
 
-export const env = createEnv({
-  extends: [dbEnvSchema],
+export const env = createEnvironment({
+  extends: [dbEnvironmentSchema],
   server: { PORT: z.coerce.number().default(3000) },
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
 });
 
-env.DATABASE_URL; // typed and validated, from dbEnvSchema
+env.DATABASE_URL; // typed and validated, from dbEnvironmentSchema
 env.PORT; // typed and validated, from this call's own schema
 ```
 
@@ -41,13 +41,13 @@ env.PORT; // typed and validated, from this call's own schema
 
 ## Conflict Detection
 
-If two composed sources declare the same key with two different schemas, `createEnv` throws an [`EnvError`](/env/errors) right away, instead of silently letting one overwrite the other:
+If two composed sources declare the same key with two different schemas, `createEnvironment` throws an [`EnvironmentError`](/env/errors) right away, instead of silently letting one overwrite the other:
 
 ```ts
-createEnv({
+createEnvironment({
   extends: [{ server: { PORT: z.string() } }],
-  server: { PORT: z.coerce.number() }, // ❌ EnvError: "PORT" declared with two different schemas
-  runtimeEnv: process.env,
+  server: { PORT: z.coerce.number() }, // ❌ EnvironmentError: "PORT" declared with two different schemas
+  runtimeEnvironment: process.env,
 });
 ```
 
@@ -56,12 +56,12 @@ There is one exception: when both sources use the **exact same schema object ref
 ```ts
 import { PORT_SCHEMA } from "@your-org/shared-schemas";
 
-const dbEnvSchema = { server: { PORT: PORT_SCHEMA } } satisfies EnvSchema;
-const cacheEnvSchema = { server: { PORT: PORT_SCHEMA } } satisfies EnvSchema;
+const dbEnvironmentSchema = { server: { PORT: PORT_SCHEMA } } satisfies EnvironmentSchema;
+const cacheEnvironmentSchema = { server: { PORT: PORT_SCHEMA } } satisfies EnvironmentSchema;
 
-createEnv({
-  extends: [dbEnvSchema, cacheEnvSchema], // fine — same schema object, no conflict
-  runtimeEnv: process.env,
+createEnvironment({
+  extends: [dbEnvironmentSchema, cacheEnvironmentSchema], // fine — same schema object, no conflict
+  runtimeEnvironment: process.env,
 });
 ```
 
@@ -69,13 +69,13 @@ Standard Schema has no generic introspection API, so structural schema-equivalen
 
 ## `clientPrefix` Per Source
 
-Each composed `EnvSchema` carries its own `clientPrefix`, checked independently — see [`server`/`client`/`shared`](/env/server-client-shared) for the full rule.
+Each composed `EnvironmentSchema` carries its own `clientPrefix`, checked independently — see [`server`/`client`/`shared`](/env/server-client-shared) for the full rule.
 
-## `generateEnvExample` Also Accepts `extends`
+## `generateEnvironmentExample` Also Accepts `extends`
 
-`extends` works the same way for [`generateEnvExample`](/env/generate-env-example), so a generated `.env.example` includes every var from every composed source.
+`extends` works the same way for [`generateEnvironmentExample`](/env/generate-env-example), so a generated `.env.example` includes every var from every composed source.
 
 ## See Also
 
-- [Presets](/env/presets) — ready-made `EnvSchema` objects for hosting platforms, composed the same way
-- [Errors](/env/errors) — the exact `EnvError` messages thrown on conflict
+- [Presets](/env/presets) — ready-made `EnvironmentSchema` objects for hosting platforms, composed the same way
+- [Errors](/env/errors) — the exact `EnvironmentError` messages thrown on conflict

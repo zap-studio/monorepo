@@ -1,21 +1,21 @@
 ---
 title: Presets
-description: Ready-made EnvSchema objects for env vars that hosting platforms set automatically.
+description: Ready-made EnvironmentSchema objects for env vars that hosting platforms set automatically.
 ---
 
 # Presets
 
-Presets cover env vars that a hosting platform sets on its own — deployment IDs, git metadata, region, and so on. Compose one into `createEnv` (or `generateEnvExample`) via [`extends`](/env/extends) to type and validate a platform's vars alongside your app's own:
+Presets cover env vars that a hosting platform sets on its own — deployment IDs, git metadata, region, and so on. Compose one into `createEnvironment` (or `generateEnvironmentExample`) via [`extends`](/env/extends) to type and validate a platform's vars alongside your app's own:
 
 ```ts
-import { createEnv } from "@zap-studio/env";
+import { createEnvironment } from "@zap-studio/env";
 import { vercel } from "@zap-studio/env/presets";
 import { z } from "zod";
 
-export const env = createEnv({
+export const env = createEnvironment({
   extends: [vercel],
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
 });
 
 env.VERCEL_GIT_COMMIT_SHA; // string | undefined
@@ -46,12 +46,12 @@ import { cloudflare, denoDeploy, netlify, vercel } from "@zap-studio/env/presets
 
 ## Composing Multiple Presets
 
-Presets compose like any other `EnvSchema` — pass more than one to `extends` if your app can run on more than one platform:
+Presets compose like any other `EnvironmentSchema` — pass more than one to `extends` if your app can run on more than one platform:
 
 ```ts
-createEnv({
+createEnvironment({
   extends: [vercel, cloudflare],
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
 });
 ```
 

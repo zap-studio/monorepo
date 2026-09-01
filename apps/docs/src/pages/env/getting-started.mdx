@@ -57,13 +57,13 @@ const schema = {
 
 ## Validate Your Env
 
-Call `createEnv(...)` with the schema and the resolved env object to validate against.
+Call `createEnvironment(...)` with the schema and the resolved env object to validate against.
 
 ```ts
-import { createEnv } from "@zap-studio/env";
+import { createEnvironment } from "@zap-studio/env";
 import { z } from "zod";
 
-export const env = createEnv({
+export const env = createEnvironment({
   server: {
     DATABASE_URL: z.string().url(),
   },
@@ -71,11 +71,11 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: z.string().url(),
   },
   clientPrefix: "NEXT_PUBLIC_",
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
 });
 ```
 
-If any declared var fails validation, `createEnv` throws an [`EnvValidationError`](/env/errors) listing every invalid key.
+If any declared var fails validation, `createEnvironment` throws an [`EnvironmentValidationError`](/env/errors) listing every invalid key.
 
 ## Read Values
 
@@ -93,4 +93,4 @@ env.NEXT_PUBLIC_API_URL; // string — readable everywhere
 - [`server`/`client`/`shared`](/env/server-client-shared) — the full split, `clientPrefix`, and the access guard
 - [`extends`](/env/extends) — reuse schemas across packages and apps
 - [Presets](/env/presets) — type vars your hosting platform already sets
-- [`generateEnvExample`](/env/generate-env-example) — keep `.env.example` in sync with your schema
+- [`generateEnvironmentExample`](/env/generate-env-example) — keep `.env.example` in sync with your schema

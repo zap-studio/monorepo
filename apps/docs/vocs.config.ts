@@ -131,7 +131,7 @@ const sidebar = [
           { link: "/env/server-client-shared", text: "server / client / shared" },
           { link: "/env/extends", text: "extends" },
           { link: "/env/presets", text: "Presets" },
-          { link: "/env/generate-env-example", text: "generateEnvExample" },
+          { link: "/env/generate-env-example", text: "generateEnvironmentExample" },
           { link: "/env/errors", text: "Errors" },
           { link: "/env/advanced-options", text: "Advanced Options" },
           { link: "/env/opentelemetry", text: "OpenTelemetry" },

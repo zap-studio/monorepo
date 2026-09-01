@@ -1,20 +1,20 @@
 ---
 title: Advanced Options
-description: skipValidation for partial build steps, emptyStringAsUndefined for blank vars, and runtimeEnvStrict for pre-assembled env objects.
+description: skipValidation for partial build steps, emptyStringAsUndefined for blank vars, and runtimeEnvironmentStrict for pre-assembled env objects.
 ---
 
 # Advanced Options
 
-These `createEnv` options cover less common setups — partial build steps, blank env vars, and env objects that can't be spread from `process.env` directly.
+These `createEnvironment` options cover less common setups — partial build steps, blank env vars, and env objects that can't be spread from `process.env` directly.
 
 ## `skipValidation`
 
-Bypasses validation entirely and returns the declared keys read from `runtimeEnv` as-is, unvalidated and unprefix-checked:
+Bypasses validation entirely and returns the declared keys read from `runtimeEnvironment` as-is, unvalidated and unprefix-checked:
 
 ```ts
-createEnv({
+createEnvironment({
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
   skipValidation: process.env["SKIP_ENV_VALIDATION"] === "true",
 });
 ```
@@ -26,33 +26,33 @@ Useful for partial build steps — for example, a Docker build stage where not e
 Treats `""` as `undefined` for every declared key, before validation:
 
 ```ts
-createEnv({
+createEnvironment({
   server: { PORT: z.coerce.number().default(3000) },
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
   emptyStringAsUndefined: true,
 });
 ```
 
 Some deployment tools set an env var to an empty string instead of leaving it unset. Without this option, `z.coerce.number()` would try to coerce `""`, which produces `NaN` rather than falling back to a schema default.
 
-## `runtimeEnvStrict`
+## `runtimeEnvironmentStrict`
 
-Used instead of `runtimeEnv` when provided. Useful when the object to validate can only be assembled after `runtimeEnv` would otherwise need to be spread — for example, framework-injected values merged with `process.env`:
+Used instead of `runtimeEnvironment` when provided. Useful when the object to validate can only be assembled after `runtimeEnvironment` would otherwise need to be spread — for example, framework-injected values merged with `process.env`:
 
 ```ts
-createEnv({
+createEnvironment({
   server: { DATABASE_URL: z.string().url() },
-  runtimeEnv: process.env,
-  runtimeEnvStrict: {
+  runtimeEnvironment: process.env,
+  runtimeEnvironmentStrict: {
     ...process.env,
     ...frameworkInjectedVars,
   },
 });
 ```
 
-`runtimeEnv` is still required even when `runtimeEnvStrict` is set — it keeps the option's type shape anchored to a plain env object.
+`runtimeEnvironment` is still required even when `runtimeEnvironmentStrict` is set — it keeps the option's type shape anchored to a plain env object.
 
 ## See Also
 
 - [Getting Started](/env/getting-started) — the core options
-- [Errors](/env/errors) — what `EnvValidationError` looks like when `skipValidation` is off
+- [Errors](/env/errors) — what `EnvironmentValidationError` looks like when `skipValidation` is off

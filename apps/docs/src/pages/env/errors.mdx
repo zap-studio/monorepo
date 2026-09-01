@@ -1,35 +1,35 @@
 ---
 title: Errors
-description: EnvError for setup mistakes, EnvValidationError for failed validation, and EnvAccessError for client-side reads of server-only keys.
+description: EnvironmentError for setup mistakes, EnvironmentValidationError for failed validation, and EnvironmentAccessError for client-side reads of server-only keys.
 ---
 
 # Errors
 
 `@zap-studio/env` throws three structured errors, each covering a different failure: a bad setup, a failed validation, and an out-of-bounds read. All three extend `Error`.
 
-## `EnvError`
+## `EnvironmentError`
 
-Thrown by `createEnv` and [`generateEnvExample`](/env/generate-env-example) when the schema itself is misconfigured — not a runtime validation failure:
+Thrown by `createEnvironment` and [`generateEnvironmentExample`](/env/generate-env-example) when the schema itself is misconfigured — not a runtime validation failure:
 
 - a `client` key declared without a `clientPrefix`
 - a `client` key that doesn't start with the configured `clientPrefix`
 - a key declared by more than one composed [`extends`](/env/extends) source with two different schemas
 
 ```ts
-import { EnvError } from "@zap-studio/env/errors";
+import { EnvironmentError } from "@zap-studio/env/errors";
 
 try {
-  createEnv({ extends: [base, override], runtimeEnv: process.env });
+  createEnvironment({ extends: [base, override], runtimeEnvironment: process.env });
 } catch (error) {
-  if (error instanceof EnvError) {
+  if (error instanceof EnvironmentError) {
     console.error(error.message);
   }
 }
 ```
 
-## `EnvValidationError`
+## `EnvironmentValidationError`
 
-Thrown by `createEnv` when one or more declared vars fail Standard Schema validation, and no [`onValidationError`](#custom-validation-handling) callback is provided.
+Thrown by `createEnvironment` when one or more declared vars fail Standard Schema validation, and no [`onValidationError`](#custom-validation-handling) callback is provided.
 
 | Property      | Type                                                | Description                                          |
 | ------------- | --------------------------------------------------- | ---------------------------------------------------- |
@@ -37,13 +37,13 @@ Thrown by `createEnv` when one or more declared vars fail Standard Schema valida
 | `issues`      | `Record<string, readonly StandardSchemaV1.Issue[]>` | The full Standard Schema issues, per invalid key.    |
 
 ```ts
-import { createEnv, EnvValidationError } from "@zap-studio/env";
+import { createEnvironment, EnvironmentValidationError } from "@zap-studio/env";
 import { z } from "zod";
 
 try {
-  const env = createEnv({ server: { PORT: z.coerce.number() }, runtimeEnv: process.env });
+  const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
 } catch (error) {
-  if (error instanceof EnvValidationError) {
+  if (error instanceof EnvironmentValidationError) {
     console.error("Invalid env vars:", error.invalidKeys);
   }
 }
@@ -53,12 +53,12 @@ Every key's issues are collected — the error is not thrown on the first invali
 
 ### Custom Validation Handling
 
-Pass `onValidationError` to run your own logic instead of throwing `EnvValidationError` — for example, to format a startup error message. It receives the same per-key issues and must throw or otherwise never return:
+Pass `onValidationError` to run your own logic instead of throwing `EnvironmentValidationError` — for example, to format a startup error message. It receives the same per-key issues and must throw or otherwise never return:
 
 ```ts
-createEnv({
+createEnvironment({
   server: { PORT: z.coerce.number() },
-  runtimeEnv: process.env,
+  runtimeEnvironment: process.env,
   onValidationError: (issues) => {
     console.error("Invalid environment variables:", Object.keys(issues).join(", "));
     process.exit(1);
@@ -66,21 +66,21 @@ createEnv({
 });
 ```
 
-## `EnvAccessError`
+## `EnvironmentAccessError`
 
-Thrown by the object `createEnv` returns when client-side code reads a `server`-only key, and no `onInvalidAccess` callback is provided. See [`server`/`client`/`shared`](/env/server-client-shared#the-access-guard) for when this fires and how to override it with `onInvalidAccess`.
+Thrown by the object `createEnvironment` returns when client-side code reads a `server`-only key, and no `onInvalidAccess` callback is provided. See [`server`/`client`/`shared`](/env/server-client-shared#the-access-guard) for when this fires and how to override it with `onInvalidAccess`.
 
 | Property | Type     | Description                            |
 | -------- | -------- | -------------------------------------- |
 | `key`    | `string` | The server-only key that was accessed. |
 
 ```ts
-import { EnvAccessError } from "@zap-studio/env";
+import { EnvironmentAccessError } from "@zap-studio/env";
 
 try {
   env.DATABASE_URL; // server-only key, accessed from the browser
 } catch (error) {
-  if (error instanceof EnvAccessError) {
+  if (error instanceof EnvironmentAccessError) {
     console.error(error.message);
   }
 }
@@ -91,11 +91,11 @@ try {
 All three errors are also available from the dedicated `@zap-studio/env/errors` subpath, for consumers who prefer granular imports:
 
 ```ts
-import { EnvAccessError, EnvError, EnvValidationError } from "@zap-studio/env/errors";
+import { EnvironmentAccessError, EnvironmentError, EnvironmentValidationError } from "@zap-studio/env/errors";
 ```
 
 ## See Also
 
-- [`server`/`client`/`shared`](/env/server-client-shared) — where `EnvError` and `EnvAccessError` come from
-- [`extends`](/env/extends) — the conflict case that throws `EnvError`
-- [Advanced Options](/env/advanced-options) — `skipValidation` to bypass `EnvValidationError` entirely
+- [`server`/`client`/`shared`](/env/server-client-shared) — where `EnvironmentError` and `EnvironmentAccessError` come from
+- [`extends`](/env/extends) — the conflict case that throws `EnvironmentError`
+- [Advanced Options](/env/advanced-options) — `skipValidation` to bypass `EnvironmentValidationError` entirely
