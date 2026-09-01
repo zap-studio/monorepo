@@ -36,7 +36,7 @@ export const withValidateSpan = <T>(run: () => T): T => {
     return result;
   } catch (error) {
     if (error instanceof EnvValidationError) {
-      span.setAttribute("env.invalid_keys", error.invalidKeys as string[]);
+      span.setAttribute("env.invalid_keys", [...error.invalidKeys]);
     }
     if (error instanceof Error) {
       span.recordException(error);
