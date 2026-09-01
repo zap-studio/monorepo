@@ -79,26 +79,37 @@ const guardClientAccess = (
   parsed: Record<string, unknown>,
   merged: ReadonlyMap<string, ResolvedEnvironmentVariableEntry>,
   onInvalidAccess: ((key: string) => never) | undefined,
-) =>
-  new Proxy(parsed, {
+) => {
+  const assertReadable = (prop: string): void => {
+    if (merged.get(prop)?.bucket === "server") {
+      if (onInvalidAccess) {
+        onInvalidAccess(prop);
+        throw new Error(
+          `onInvalidAccess did not throw for "${prop}"; it must throw or otherwise never return.`,
+        );
+      }
+      throw new EnvironmentAccessError(prop);
+    }
+  };
+
+  return new Proxy(parsed, {
     get(target, prop) {
       if (typeof prop !== "string") {
         return undefined;
       }
 
-      if (merged.get(prop)?.bucket === "server") {
-        if (onInvalidAccess) {
-          onInvalidAccess(prop);
-          throw new Error(
-            `onInvalidAccess did not throw for "${prop}"; it must throw or otherwise never return.`,
-          );
-        }
-        throw new EnvironmentAccessError(prop);
-      }
-
+      assertReadable(prop);
       return target[prop];
     },
+    getOwnPropertyDescriptor(target, prop) {
+      if (typeof prop === "string") {
+        assertReadable(prop);
+      }
+
+      return Object.getOwnPropertyDescriptor(target, prop);
+    },
   });
+};
 
 /**
  * Implementation behind the exported `createEnvironment`. Kept untyped (`unknown`

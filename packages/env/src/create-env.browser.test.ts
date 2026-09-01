@@ -186,6 +186,20 @@ describe("createEnvironment: server/client access", () => {
     expect(() => env.DATABASE_URL).toThrow(EnvironmentAccessError);
   });
 
+  it("throws an EnvironmentAccessError from Object.getOwnPropertyDescriptor for a server var", () => {
+    const env = createEnvironment({ ...options, isServer: false });
+
+    expect(() => Object.getOwnPropertyDescriptor(env, "DATABASE_URL")).toThrow(
+      EnvironmentAccessError,
+    );
+  });
+
+  it("throws an EnvironmentAccessError from Object.getOwnPropertyDescriptors when a server var is declared", () => {
+    const env = createEnvironment({ ...options, isServer: false });
+
+    expect(() => Object.getOwnPropertyDescriptors(env)).toThrow(EnvironmentAccessError);
+  });
+
   it("passes symbol-keyed access straight through without a bucket check", () => {
     // SAFETY: this test only reads a symbol key. createEnvironment's declared return
     // type does not, and cannot, model symbol keys. Widening to a plain
