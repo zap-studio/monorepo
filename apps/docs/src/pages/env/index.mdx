@@ -1,0 +1,74 @@
+---
+title: Overview
+description: A runtime- and framework-agnostic environment variable validator, built on Standard Schema.
+---
+
+# @zap-studio/env
+
+`@zap-studio/env` checks an env object you already have (`process.env`, `import.meta.env`, dotenv output, or anything else) against a [Standard Schema](https://standardschema.dev/schema)-based `shared`/`server`/`client` shape. It does not read or parse files itself.
+
+It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and the browser, with any bundler or framework. It never scans or looks up env keys dynamically at runtime, so it does not break the static `process.env`/`import.meta.env` replacement that bundlers use.
+
+## Motivation
+
+It uses the same `server`/`client`/`shared` split as [t3-env](https://env.t3.gg), the package most people use for this job today. A server secret cannot leak into a client bundle by accident. But t3-env still has real problems: its `extends` does a flat merge with no conflict check, so a key can silently get dropped or overwritten. Its presets do not cover Cloudflare Workers or Deno Deploy. And framework support needs its own packages, like `env-nextjs` and `env-nuxt`, tying the core package to one framework.
+
+[envin](https://envin.turbostarter.dev) already fixes some of this. It adds a CLI, better preset and `extends` support, and a live env preview. `@zap-studio/env` goes further in two ways: its `extends` merges schemas at the key level and throws right away if two sources use the same key with two different schemas, and it ships presets for Cloudflare Workers and Deno Deploy, which neither t3-env nor envin do.
+
+Instead of a live preview through a dev server, `@zap-studio/env` takes a simpler, static approach: [`generateEnvExample`](/env/generate-env-example) builds a `.env.example` file straight from your schema. No dev server needed, so it's safe to run in CI and commit.
+
+## Features
+
+- **Full type safety** — the parsed env object is inferred from your schemas.
+- **Standard Schema support** — works with Zod, Valibot, ArkType, or any compatible library.
+- **[`server`/`client`/`shared` split](/env/server-client-shared)** with `clientPrefix`, checked at both the type level and at runtime.
+- **[Schema composition](/env/extends)** via `extends`, with reference-equality conflict detection.
+- **[Platform presets](/env/presets)** for common hosting providers.
+- **[`.env.example` generation](/env/generate-env-example)** via `generateEnvExample(...)`.
+- **[Structured errors](/env/errors)**: `EnvError`, `EnvValidationError`, and `EnvAccessError`.
+- **[Optional OpenTelemetry support](/env/opentelemetry)** through a single `env.validate` span — zero cost until an app registers an SDK.
+- **Tree-shakeable** — `createEnv`, `generateEnvExample`, presets, and errors are plain functions and objects.
+
+## Quick Start
+
+```ts
+import { createEnv } from "@zap-studio/env";
+import { z } from "zod";
+
+export const env = createEnv({
+  server: {
+    DATABASE_URL: z.string().url(),
+  },
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().url(),
+  },
+  clientPrefix: "NEXT_PUBLIC_",
+  runtimeEnv: process.env,
+});
+
+env.DATABASE_URL; // server-only: throws if read from a client bundle
+env.NEXT_PUBLIC_API_URL; // readable everywhere
+```
+
+## Learn More
+
+- [Getting Started](/env/getting-started) — install and validate your first env schema
+- [`server`/`client`/`shared`](/env/server-client-shared) — the split, `clientPrefix`, and the access guard
+- [`extends`](/env/extends) — composing reusable schemas across packages
+- [Presets](/env/presets) — env vars hosting platforms set automatically
+- [`generateEnvExample`](/env/generate-env-example) — schema-driven `.env.example` generation
+- [Errors](/env/errors) — `EnvError`, `EnvValidationError`, `EnvAccessError`
+- [Advanced Options](/env/advanced-options) — `skipValidation`, `emptyStringAsUndefined`, `runtimeEnvStrict`
+- [OpenTelemetry](/env/opentelemetry) — the `env.validate` span
+
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0                                           |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/env`).

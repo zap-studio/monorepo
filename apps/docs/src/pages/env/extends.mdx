@@ -1,0 +1,81 @@
+---
+title: extends
+description: Compose reusable EnvSchema definitions across packages, with reference-equality conflict detection.
+---
+
+# `extends`
+
+`extends` reuses an `EnvSchema` object — a plain object with the same `shared`/`server`/`client`/`clientPrefix` shape `createEnv` accepts, minus the runtime-specific options. This works like `tsconfig.json`'s `extends`, which reuses a base config.
+
+A shared package exports a plain object satisfying `EnvSchema`:
+
+```ts
+// packages/db/src/env-schema.ts
+import type { EnvSchema } from "@zap-studio/env";
+import { z } from "zod";
+
+export const dbEnvSchema = {
+  server: { DATABASE_URL: z.string().url() },
+} satisfies EnvSchema;
+```
+
+An app composes it in via `extends`:
+
+```ts
+// apps/api/src/env.ts
+import { createEnv } from "@zap-studio/env";
+import { dbEnvSchema } from "@your-org/db";
+import { z } from "zod";
+
+export const env = createEnv({
+  extends: [dbEnvSchema],
+  server: { PORT: z.coerce.number().default(3000) },
+  runtimeEnv: process.env,
+});
+
+env.DATABASE_URL; // typed and validated, from dbEnvSchema
+env.PORT; // typed and validated, from this call's own schema
+```
+
+`extends` accepts a list, composed in order — typically the `extends` entries followed by the call's own `shared`/`server`/`client`.
+
+## Conflict Detection
+
+If two composed sources declare the same key with two different schemas, `createEnv` throws an [`EnvError`](/env/errors) right away, instead of silently letting one overwrite the other:
+
+```ts
+createEnv({
+  extends: [{ server: { PORT: z.string() } }],
+  server: { PORT: z.coerce.number() }, // ❌ EnvError: "PORT" declared with two different schemas
+  runtimeEnv: process.env,
+});
+```
+
+There is one exception: when both sources use the **exact same schema object reference**. This can happen when two packages import one shared constant:
+
+```ts
+import { PORT_SCHEMA } from "@your-org/shared-schemas";
+
+const dbEnvSchema = { server: { PORT: PORT_SCHEMA } } satisfies EnvSchema;
+const cacheEnvSchema = { server: { PORT: PORT_SCHEMA } } satisfies EnvSchema;
+
+createEnv({
+  extends: [dbEnvSchema, cacheEnvSchema], // fine — same schema object, no conflict
+  runtimeEnv: process.env,
+});
+```
+
+Standard Schema has no generic introspection API, so structural schema-equivalence (two different `z.string()` calls that happen to produce the same rules) can't be reliably detected. Reference equality is the honest, buildable signal for "this is safe to merge."
+
+## `clientPrefix` Per Source
+
+Each composed `EnvSchema` carries its own `clientPrefix`, checked independently — see [`server`/`client`/`shared`](/env/server-client-shared) for the full rule.
+
+## `generateEnvExample` Also Accepts `extends`
+
+`extends` works the same way for [`generateEnvExample`](/env/generate-env-example), so a generated `.env.example` includes every var from every composed source.
+
+## See Also
+
+- [Presets](/env/presets) — ready-made `EnvSchema` objects for hosting platforms, composed the same way
+- [Errors](/env/errors) — the exact `EnvError` messages thrown on conflict

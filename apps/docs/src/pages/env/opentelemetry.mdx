@@ -1,0 +1,62 @@
+---
+title: OpenTelemetry
+description: Every createEnv validation pass surfaced as an env.validate span through @opentelemetry/api.
+---
+
+# OpenTelemetry
+
+`@opentelemetry/api` is a required peer dependency of `@zap-studio/env`. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
+
+:::code-group
+
+```bash [npm]
+npm install @opentelemetry/api
+```
+
+```bash [yarn]
+yarn add @opentelemetry/api
+```
+
+```bash [pnpm]
+pnpm add @opentelemetry/api
+```
+
+```bash [bun]
+bun add @opentelemetry/api
+```
+
+```bash [deno]
+deno add npm:@opentelemetry/api
+```
+
+:::
+
+There's no option to configure — instrumentation is always on, and does nothing observable until your app registers an OpenTelemetry SDK:
+
+```ts
+import { createEnv } from "@zap-studio/env";
+import { z } from "zod";
+
+// If your app has registered an OpenTelemetry SDK, this call now produces a
+// span. If not, it does nothing. No extra setup is needed either way.
+export const env = createEnv({ server: { PORT: z.coerce.number() }, runtimeEnv: process.env });
+```
+
+## The `env.validate` Span
+
+Each `createEnv` validation pass gets an `INTERNAL` span named `env.validate`. On failure, the span carries the invalid key names — never their values — as the `env.invalid_keys` attribute, and is marked as an error, with the thrown error recorded via `recordException`.
+
+Validation itself runs once at startup, not per-request, so the span cost is negligible.
+
+## Skipped Validation, No Span
+
+When [`skipValidation`](/env/advanced-options#skipvalidation) is `true`, `createEnv` returns early before the `env.validate` span is created — there's nothing to trace, since no validation actually runs.
+
+## Log Correlation
+
+Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so anything you log around startup lines up with the `env.validate` span.
+
+## See Also
+
+- [Errors](/env/errors) — `EnvValidationError`, whose `invalidKeys` end up on the span
+- [Advanced Options](/env/advanced-options) — `skipValidation` and when the span is skipped

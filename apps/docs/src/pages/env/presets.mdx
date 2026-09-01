@@ -1,0 +1,63 @@
+---
+title: Presets
+description: Ready-made EnvSchema objects for env vars that hosting platforms set automatically.
+---
+
+# Presets
+
+Presets cover env vars that a hosting platform sets on its own — deployment IDs, git metadata, region, and so on. Compose one into `createEnv` (or `generateEnvExample`) via [`extends`](/env/extends) to type and validate a platform's vars alongside your app's own:
+
+```ts
+import { createEnv } from "@zap-studio/env";
+import { vercel } from "@zap-studio/env/presets";
+import { z } from "zod";
+
+export const env = createEnv({
+  extends: [vercel],
+  server: { DATABASE_URL: z.string().url() },
+  runtimeEnv: process.env,
+});
+
+env.VERCEL_GIT_COMMIT_SHA; // string | undefined
+```
+
+## Every Key Is Optional
+
+Every preset key is typed `string | undefined`. These vars are only present when the app is actually running on that platform, and this package never reads or parses files, so it can't detect the platform itself — you decide which presets apply, usually by knowing where the app deploys.
+
+## Available Presets
+
+| Preset       | Platform         | Docs                                                                                                       |
+| ------------ | ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| `vercel`     | Vercel           | [System environment variables](https://vercel.com/docs/environment-variables/system-environment-variables) |
+| `netlify`    | Netlify          | [Read-only build variables](https://docs.netlify.com/build/configure-builds/environment-variables/)        |
+| `render`     | Render           | [Environment variables](https://render.com/docs/environment-variables)                                     |
+| `railway`    | Railway          | [Variables reference](https://docs.railway.com/variables/reference)                                        |
+| `fly`        | Fly.io Machines  | [Runtime environment](https://fly.io/docs/machines/runtime-environment/)                                   |
+| `coolify`    | Coolify          | [Predefined variables](https://coolify.io/docs/knowledge-base/environment-variables)                       |
+| `cloudflare` | Cloudflare Pages | [Build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/)          |
+| `denoDeploy` | Deno Deploy      | [Env vars and contexts](https://docs.deno.com/deploy/reference/env_vars_and_contexts/)                     |
+
+All eight are available from `@zap-studio/env/presets` and can be imported individually — only the ones you import end up in your bundle.
+
+```ts
+import { cloudflare, denoDeploy, netlify, vercel } from "@zap-studio/env/presets";
+```
+
+## Composing Multiple Presets
+
+Presets compose like any other `EnvSchema` — pass more than one to `extends` if your app can run on more than one platform:
+
+```ts
+createEnv({
+  extends: [vercel, cloudflare],
+  runtimeEnv: process.env,
+});
+```
+
+Presets never share keys with each other, so there's no conflict risk between them — see [`extends`](/env/extends) for how conflicts are detected in general.
+
+## See Also
+
+- [`extends`](/env/extends) — how schema composition and conflict detection work
+- [Getting Started](/env/getting-started) — your first schema, without presets
