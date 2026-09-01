@@ -1,0 +1,69 @@
+{
+  "name": "@zap-studio/env",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A runtime and framework-agnostic, Standard Schema-based environment variable validator.",
+  "keywords": [
+    "arktype",
+    "config",
+    "env",
+    "environment-variables",
+    "runtime-agnostic",
+    "standard-schema",
+    "type-safe",
+    "typescript",
+    "valibot",
+    "validation",
+    "zod"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/env",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/env"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./create-env": "./dist/create-env.js",
+    "./errors": "./dist/errors.js",
+    "./generate-env-example": "./dist/generate-env-example.js",
+    "./presets": "./dist/presets.js",
+    "./types": "./dist/types.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
+  "dependencies": {
+    "@zap-studio/validation": "workspace:*"
+  },
+  "devDependencies": {
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/context-async-hooks": "catalog:",
+    "@opentelemetry/sdk-trace-base": "catalog:",
+    "@zap-studio/typescript": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "zod": "catalog:"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

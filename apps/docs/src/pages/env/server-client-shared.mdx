@@ -1,0 +1,101 @@
+---
+title: server / client / shared
+description: The three buckets a schema can declare, the clientPrefix rule, and the runtime access guard that keeps server secrets out of client bundles.
+---
+
+# `server` / `client` / `shared`
+
+Every schema — passed to `createEnvironment` or `generateEnvironmentExample` — can declare up to three buckets:
+
+| Bucket   | Readable on server | Readable on client | Prefix required     |
+| -------- | ------------------ | ------------------ | ------------------- |
+| `shared` | Yes                | Yes                | No                  |
+| `server` | Yes                | No — throws        | No                  |
+| `client` | Yes                | Yes                | Yes, `clientPrefix` |
+
+```ts
+import { createEnvironment } from "@zap-studio/env";
+import { z } from "zod";
+
+export const env = createEnvironment({
+  shared: {
+    NODE_ENV: z.enum(["development", "production", "test"]),
+  },
+  server: {
+    DATABASE_URL: z.string().url(),
+  },
+  client: {
+    NEXT_PUBLIC_API_URL: z.string().url(),
+  },
+  clientPrefix: "NEXT_PUBLIC_",
+  runtimeEnvStrict: {
+    NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
+});
+```
+
+`client` vars need `runtimeEnvStrict`, with each key on its own `process.env.X` line. See [Advanced Options](/env/advanced-options#runtimeenvstrict) for why a plain `runtimeEnv: process.env` does not survive bundling.
+
+`shared` vars are validated once and carry no prefix requirement — use them for values that aren't secrets and don't need the client/server split at all, such as `NODE_ENV`.
+
+## `clientPrefix` Is Required With `client`
+
+As soon as a schema declares any `client` key, `clientPrefix` becomes required. Every `client` key must start with it, checked both at the type level and at runtime:
+
+```ts
+createEnvironment({
+  client: { API_URL: z.string().url() }, // ❌ type error: does not start with "NEXT_PUBLIC_"
+  clientPrefix: "NEXT_PUBLIC_",
+  runtimeEnv: process.env,
+});
+```
+
+At runtime, a mismatched key or a missing `clientPrefix` throws an [`EnvironmentError`](/env/errors) — this is a setup mistake, not a validation failure.
+
+## The Access Guard
+
+Off the server — `isServer: false`, or the default `typeof window === "undefined"` check evaluating to `false` — the object `createEnvironment` returns is wrapped in a `Proxy`. Reading a `server`-only key through that proxy throws an [`EnvironmentAccessError`](/env/errors) instead of silently returning the value (or `undefined`):
+
+```ts
+// In a browser bundle, isServer defaults to false:
+env.DATABASE_URL; // throws EnvironmentAccessError
+env.NEXT_PUBLIC_API_URL; // fine — client and shared vars are always readable
+```
+
+This mirrors, at runtime, the same split that build-time tools (bundler dead-code elimination, `NEXT_PUBLIC_` inlining, and so on) already try to enforce — except it holds even when a bundler doesn't catch it.
+
+## Detecting "Server"
+
+`isServer` defaults to `typeof window === "undefined"`. Override it for contexts where that default doesn't hold, such as some edge runtimes or custom SSR setups:
+
+```ts
+createEnvironment({
+  server: { DATABASE_URL: z.string().url() },
+  runtimeEnv: process.env,
+  isServer: process.env["RUNTIME"] === "edge-with-server-access",
+});
+```
+
+## Custom Access Handling
+
+Pass `onInvalidAccess` to run your own logic instead of throwing `EnvironmentAccessError` — for example, to log the offending key before crashing, or to integrate with an error-reporting service. It must throw or otherwise never return:
+
+```ts
+createEnvironment({
+  server: { DATABASE_URL: z.string().url() },
+  runtimeEnv: process.env,
+  onInvalidAccess: (key) => {
+    reportError(`Server-only env var "${key}" was read from the client.`);
+    throw new Error(`Blocked client access to "${key}".`);
+  },
+});
+```
+
+See [Errors](/env/errors) for the full error and callback reference.
+
+## See Also
+
+- [`extends`](/env/extends) — each composed source carries its own `clientPrefix`
+- [Errors](/env/errors) — `EnvironmentError` and `EnvironmentAccessError` in detail

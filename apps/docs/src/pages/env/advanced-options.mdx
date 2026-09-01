@@ -1,0 +1,76 @@
+---
+title: Advanced Options
+description: skipValidation for partial build steps, emptyStringAsUndefined for blank vars, and runtimeEnvStrict for pre-assembled env objects.
+---
+
+# Advanced Options
+
+These `createEnvironment` options cover less common setups — partial build steps, blank env vars, and env objects that can't be spread from `process.env` directly.
+
+## `skipValidation`
+
+Bypasses validation and parsing — the declared keys are read from `runtimeEnv` and returned as-is, unvalidated. `clientPrefix` checks, `extends` conflict checks, and the server-only access guard on the client still run:
+
+```ts
+createEnvironment({
+  server: { DATABASE_URL: z.string().url() },
+  runtimeEnv: process.env,
+  skipValidation: process.env["SKIP_ENV_VALIDATION"] === "true",
+});
+```
+
+Useful for partial build steps — for example, a Docker build stage where not every var is available yet, but the build still needs to run without crashing on missing secrets.
+
+## `emptyStringAsUndefined`
+
+Treats `""` as `undefined` for every declared key, before validation:
+
+```ts
+createEnvironment({
+  server: { PORT: z.coerce.number().default(3000) },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
+});
+```
+
+Some deployment tools set an env var to an empty string instead of leaving it unset. Without this option, `z.coerce.number()` would try to coerce `""`, which produces `NaN` rather than falling back to a schema default.
+
+## `runtimeEnvStrict`
+
+Used instead of `runtimeEnv` when set. Its main job is `client` vars. A bundler (webpack, Next.js, Vite) only inlines a var into the browser bundle when it sees a literal `process.env.X` (or `import.meta.env.X`) line in your own code. `runtimeEnv: process.env` does not give it that — it is one runtime object, and the bundler cannot see inside it at build time. So the var never makes it into the client bundle. Instead, list each key on its own line:
+
+```ts
+createEnvironment({
+  server: { DATABASE_URL: z.string().url() },
+  client: { NEXT_PUBLIC_API_URL: z.string().url() },
+  clientPrefix: "NEXT_PUBLIC_",
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  },
+});
+```
+
+TypeScript requires every declared `server`/`client`/`shared` key to be there, so you cannot miss one by accident.
+
+A schema with no `client` bucket has nothing for a bundler to inline. A plain `runtimeEnv: process.env` is fine there.
+
+`runtimeEnvStrict` is also useful when you can only build the object from several sources — for example, framework-injected values merged with `process.env`. Just keep every var a client bundle needs on its own literal line, not inside a spread:
+
+```ts
+createEnvironment({
+  server: { DATABASE_URL: z.string().url() },
+  runtimeEnv: process.env,
+  runtimeEnvStrict: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    REQUEST_ID: frameworkInjectedVars.REQUEST_ID,
+  },
+});
+```
+
+`runtimeEnv` is still required even when `runtimeEnvStrict` is set. This keeps the type of both options tied to a plain env object.
+
+## See Also
+
+- [Getting Started](/env/getting-started) — the core options
+- [Errors](/env/errors) — what `EnvironmentValidationError` looks like when `skipValidation` is off

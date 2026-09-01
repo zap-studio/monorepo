@@ -1,0 +1,75 @@
+---
+title: generateEnvironmentExample
+description: Schema-driven .env.example generation — no dev server, safe to run in CI and commit.
+---
+
+# `generateEnvironmentExample`
+
+`generateEnvironmentExample(...)` reads a schema and returns a `.env.example` file as a string. The schema has the same `shared`/`server`/`client`/`extends` shape as `createEnvironment`, minus the runtime-only options — no `runtimeEnv` is needed, since no real values are ever read.
+
+```ts
+import { writeFileSync } from "node:fs";
+import { generateEnvironmentExample } from "@zap-studio/env";
+import { z } from "zod";
+
+writeFileSync(
+  ".env.example",
+  generateEnvironmentExample({
+    server: { DATABASE_URL: z.string().url() },
+    client: { NEXT_PUBLIC_API_URL: z.string().url() },
+    clientPrefix: "NEXT_PUBLIC_",
+  }),
+);
+```
+
+```ini
+# server, required
+DATABASE_URL=
+
+# client, required, prefix: NEXT_PUBLIC_
+NEXT_PUBLIC_API_URL=
+```
+
+Because it never touches an actual environment, this is safe to run as a CI step and commit the result — your `.env.example` stays in sync with the schema without anyone maintaining it by hand.
+
+## One Line Per Key
+
+Keys are sorted alphabetically, and each one gets a comment stating:
+
+- its bucket — `shared`, `server`, or `client`
+- whether it's `required` or `optional`
+- for `client` keys, the enforced `prefix`
+
+## Required vs. Optional
+
+A key is marked `optional` when its schema accepts `undefined`. `generateEnvironmentExample` checks this by calling the schema with `undefined` and seeing whether that passes:
+
+- `z.string().optional()` — passes, marked `optional`
+- `z.string().default("x")` — passes (the default fills in), marked `optional`
+- `z.string()` — fails, marked `required`
+
+An async schema can't be checked this way synchronously, so it's conservatively reported as `required`.
+
+## Composing With `extends`
+
+`extends` works the same way it does for `createEnvironment` — see [`extends`](/env/extends) and [Presets](/env/presets). A generated `.env.example` includes every var from every composed source:
+
+```ts
+import { generateEnvironmentExample } from "@zap-studio/env";
+import { vercel } from "@zap-studio/env/presets";
+import { z } from "zod";
+
+generateEnvironmentExample({
+  extends: [vercel],
+  server: { DATABASE_URL: z.string().url() },
+});
+```
+
+## Errors
+
+`generateEnvironmentExample` throws the same [`EnvironmentError`](/env/errors) as `createEnvironment` for a bad setup: a missing `clientPrefix`, a `client` key that doesn't match it, or a conflicting `extends` key.
+
+## See Also
+
+- [`server`/`client`/`shared`](/env/server-client-shared) — what each bucket comment means
+- [`extends`](/env/extends) — composing schemas before generating the file

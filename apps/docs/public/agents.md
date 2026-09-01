@@ -14,6 +14,7 @@ the same logic per project.
 ## When to use which package
 
 - **@zap-studio/cache** — you need an in-memory key-value cache with pluggable eviction (LRU, LFU, FIFO), a capacity limit, and optional TTL.
+- **@zap-studio/env** — you need to validate and type environment variables against a Standard Schema, with a server/client/shared split and platform presets.
 - **@zap-studio/fetch** — you need a fetch wrapper that validates JSON responses at runtime against a Standard Schema (Zod, Valibot, ArkType, ...).
 - **@zap-studio/logger** — you need a lean logging abstraction that adapts to Node, Bun, Deno, browsers, and Cloudflare Workers without extra config.
 - **@zap-studio/monads** — you want explicit, type-safe error handling with Result/Option types instead of throwing.

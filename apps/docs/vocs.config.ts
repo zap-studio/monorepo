@@ -17,6 +17,13 @@ const getPackages = () => [
       "Zero-dependency in-memory key-value cache with pluggable eviction policies (LRU, LFU, FIFO), capacity limits, and optional TTL.",
   },
   {
+    slug: "env",
+    name: "@zap-studio/env",
+    version: "1.0.0",
+    description:
+      "A runtime and framework-agnostic environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation.",
+  },
+  {
     slug: "fetch",
     name: "@zap-studio/fetch",
     version: "2.1.1",
@@ -115,6 +122,21 @@ const sidebar = [
           { link: "/cache/iteration", text: "Iteration" },
         ],
         text: "cache",
+      },
+      {
+        collapsed: true,
+        items: [
+          { link: "/env", text: "Overview" },
+          { link: "/env/getting-started", text: gettingStarted },
+          { link: "/env/server-client-shared", text: "server / client / shared" },
+          { link: "/env/extends", text: "extends" },
+          { link: "/env/presets", text: "Presets" },
+          { link: "/env/generate-env-example", text: "generateEnvironmentExample" },
+          { link: "/env/errors", text: "Errors" },
+          { link: "/env/advanced-options", text: "Advanced Options" },
+          { link: "/env/opentelemetry", text: "OpenTelemetry" },
+        ],
+        text: "env",
       },
       {
         collapsed: true,
@@ -361,7 +383,7 @@ export default defineConfig({
           ),
           question(
             "What packages does Zap Studio provide?",
-            "cache (in-memory cache with pluggable eviction), fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), store (state container with derived values and persist), validation (Standard Schema utilities), and webhooks (type-safe webhook routing).",
+            "cache (in-memory cache with pluggable eviction), env (environment variable validation), fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), store (state container with derived values and persist), validation (Standard Schema utilities), and webhooks (type-safe webhook routing).",
           ),
           question(
             "Which runtimes does Zap Studio support?",
@@ -456,6 +478,7 @@ export default defineConfig({
   title: "Zap Studio",
   topNav: [
     { link: "/cache", text: "cache" },
+    { link: "/env", text: "env" },
     { link: "/fetch", text: "fetch" },
     { link: "/logger", text: "logger" },
     { link: "/monads", text: "monads" },

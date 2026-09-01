@@ -1,0 +1,20 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@zap-studio/env",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./create-env": "./src/create-env.ts",
+    "./errors": "./src/errors.ts",
+    "./generate-env-example": "./src/generate-env-example.ts",
+    "./presets": "./src/presets.ts",
+    "./types": "./src/types.ts"
+  },
+  "imports": {
+    "@zap-studio/validation": "jsr:@zap-studio/validation@^1.1.1"
+  },
+  "publish": {
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+  }
+}
