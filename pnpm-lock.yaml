@@ -366,13 +366,13 @@ importers:
 
   packages/env:
     dependencies:
-      '@opentelemetry/api':
-        specifier: 'catalog:'
-        version: 1.9.1
       '@zap-studio/validation':
         specifier: workspace:*
         version: link:../validation
     devDependencies:
+      '@opentelemetry/api':
+        specifier: 'catalog:'
+        version: 1.9.1
       '@opentelemetry/context-async-hooks':
         specifier: 'catalog:'
         version: 2.10.0(@opentelemetry/api@1.9.1)
