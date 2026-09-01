@@ -200,6 +200,19 @@ describe("createEnvironment: server/client access", () => {
     expect(() => Object.getOwnPropertyDescriptors(env)).toThrow(EnvironmentAccessError);
   });
 
+  it("returns the real descriptor from Object.getOwnPropertyDescriptor for a client var", () => {
+    const env = createEnvironment({ ...options, isServer: false });
+
+    expect(Object.getOwnPropertyDescriptor(env, "PUBLIC_X")).toMatchObject({ value: "public" });
+  });
+
+  it("does not bucket-check a symbol key in Object.getOwnPropertyDescriptor", () => {
+    const env = createEnvironment({ ...options, isServer: false });
+    const symbolKey = Symbol("not-a-declared-key");
+
+    expect(Object.getOwnPropertyDescriptor(env, symbolKey)).toBeUndefined();
+  });
+
   it("passes symbol-keyed access straight through without a bucket check", () => {
     // SAFETY: this test only reads a symbol key. createEnvironment's declared return
     // type does not, and cannot, model symbol keys. Widening to a plain
