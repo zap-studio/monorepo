@@ -7,7 +7,11 @@
  * @module @zap-studio/env/merge
  */
 
-import type { EnvSchema, EnvironmentVariableSchemaMap, ResolvedEnvVarEntry } from "./types.ts";
+import type {
+  EnvSchema,
+  EnvironmentVariableSchemaMap,
+  ResolvedEnvironmentVariableEntry,
+} from "./types.ts";
 
 import { EnvError } from "./errors.ts";
 
@@ -45,8 +49,8 @@ const assertClientPrefix = (source: EnvSchema): void => {
  * same shared constant.
  */
 const mergeBucket = (
-  merged: Map<string, ResolvedEnvVarEntry>,
-  bucket: ResolvedEnvVarEntry["bucket"],
+  merged: Map<string, ResolvedEnvironmentVariableEntry>,
+  bucket: ResolvedEnvironmentVariableEntry["bucket"],
   schemas: EnvironmentVariableSchemaMap | undefined,
   clientPrefix: string | undefined,
 ): void => {
@@ -85,12 +89,12 @@ const mergeBucket = (
  */
 export const mergeEnvSchemas = (
   sources: readonly EnvSchema[],
-): Map<string, ResolvedEnvVarEntry> => {
+): Map<string, ResolvedEnvironmentVariableEntry> => {
   for (const source of sources) {
     assertClientPrefix(source);
   }
 
-  const merged = new Map<string, ResolvedEnvVarEntry>();
+  const merged = new Map<string, ResolvedEnvironmentVariableEntry>();
   for (const source of sources) {
     mergeBucket(merged, "shared", source.shared, undefined);
     mergeBucket(merged, "server", source.server, undefined);

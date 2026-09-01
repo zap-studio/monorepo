@@ -194,7 +194,7 @@ export type InferCreateEnvOutput<TOptions extends CreateEnvOptions> = InferExten
  * One merged env var: which bucket it came from, its schema, and, for a
  * `client` var, the prefix its source used.
  */
-export interface ResolvedEnvVarEntry {
+export interface ResolvedEnvironmentVariableEntry {
   readonly bucket: "client" | "server" | "shared";
   readonly clientPrefix?: string;
   readonly schema: StandardSchemaV1;

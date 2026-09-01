@@ -6,7 +6,7 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-import type { EnvSchema, ResolvedEnvVarEntry } from "./types.ts";
+import type { EnvSchema, ResolvedEnvironmentVariableEntry } from "./types.ts";
 
 import { mergeEnvSchemas } from "./_merge.ts";
 
@@ -48,7 +48,7 @@ const isOptionalOrHasDefault = (schema: StandardSchemaV1): boolean => {
  * Renders one merged entry as a `.env.example` comment plus an assignment
  * line.
  */
-const renderEntry = (key: string, entry: ResolvedEnvVarEntry): string => {
+const renderEntry = (key: string, entry: ResolvedEnvironmentVariableEntry): string => {
   const parts = [entry.bucket, isOptionalOrHasDefault(entry.schema) ? "optional" : "required"];
   if (entry.bucket === "client" && entry.clientPrefix !== undefined) {
     parts.push(`prefix: ${entry.clientPrefix}`);

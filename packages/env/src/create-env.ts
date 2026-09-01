@@ -17,7 +17,7 @@ import type {
   RawEnvironmentVariableValue,
   InferExtendsMergedOutput,
   InferEnvironmentVariableSchemaMapOutput,
-  ResolvedEnvVarEntry,
+  ResolvedEnvironmentVariableEntry,
 } from "./types.ts";
 
 import { mergeEnvSchemas } from "./_merge.ts";
@@ -49,7 +49,7 @@ const readDeclaredEnv = (
  * of stopping at the first one.
  */
 const validateDeclaredEnv = (
-  merged: ReadonlyMap<string, ResolvedEnvVarEntry>,
+  merged: ReadonlyMap<string, ResolvedEnvironmentVariableEntry>,
   declared: Readonly<Record<string, RawEnvironmentVariableValue>>,
 ) => {
   const parsed: Record<string, unknown> = {};
@@ -74,7 +74,7 @@ const validateDeclaredEnv = (
  */
 const guardClientAccess = (
   parsed: Record<string, unknown>,
-  merged: ReadonlyMap<string, ResolvedEnvVarEntry>,
+  merged: ReadonlyMap<string, ResolvedEnvironmentVariableEntry>,
   onInvalidAccess: ((key: string) => never) | undefined,
 ) =>
   new Proxy(parsed, {
