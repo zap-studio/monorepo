@@ -8,99 +8,6 @@ const repoUrl = "https://github.com/zap-studio/monorepo";
 const description =
   "Type-safe, framework-agnostic and composable TypeScript libraries for the web.";
 
-const getPackages = () => [
-  {
-    slug: "cache",
-    name: "@zap-studio/cache",
-    version: "1.0.0",
-    description:
-      "Zero-dependency in-memory key-value cache with pluggable eviction policies (LRU, LFU, FIFO), capacity limits, and optional TTL.",
-  },
-  {
-    slug: "env",
-    name: "@zap-studio/env",
-    version: "1.0.0",
-    description:
-      "A runtime and framework-agnostic environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation.",
-  },
-  {
-    slug: "fetch",
-    name: "@zap-studio/fetch",
-    version: "2.1.1",
-    description:
-      "A type-safe fetch wrapper that validates JSON responses at runtime with any Standard Schema validator.",
-  },
-  {
-    slug: "logger",
-    name: "@zap-studio/logger",
-    version: "2.0.0",
-    description: "A lean logging abstraction with a console implementation.",
-  },
-  {
-    slug: "monads",
-    name: "@zap-studio/monads",
-    version: "1.0.0",
-    description:
-      "Result/Option types and Rust-style functional combinators for explicit, type-safe error handling.",
-  },
-  {
-    slug: "oxfmt",
-    name: "@zap-studio/oxfmt",
-    version: "1.0.0",
-    description:
-      "A decided oxfmt preset for sorted imports, sorted package.json, and optional Tailwind CSS class sorting.",
-  },
-  {
-    slug: "oxlint",
-    name: "@zap-studio/oxlint",
-    version: "2.2.1",
-    description:
-      "Exclusive, single-owner oxlint presets — pick exactly the plugins and framework rules your project needs, nothing implied.",
-  },
-  {
-    slug: "permit",
-    name: "@zap-studio/permit",
-    version: "2.0.0",
-    description:
-      "A type-safe, declarative authorization library for TypeScript with Standard Schema validation and composable conditions.",
-  },
-  {
-    slug: "react-hooks",
-    name: "@zap-studio/react-hooks",
-    version: "1.1.0",
-    description:
-      "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle.",
-  },
-  {
-    slug: "retry",
-    name: "@zap-studio/retry",
-    version: "2.1.1",
-    description:
-      "Composable retry policies with a built-in runner, structured terminal errors, and AbortSignal cancellation.",
-  },
-  {
-    slug: "store",
-    name: "@zap-studio/store",
-    version: "1.0.0",
-    description:
-      "A small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.",
-  },
-  {
-    slug: "validation",
-    name: "@zap-studio/validation",
-    version: "1.1.1",
-    description:
-      "Standard Schema utilities and ValidationError helpers for one consistent validation flow across schema libraries.",
-  },
-  {
-    slug: "webhooks",
-    name: "@zap-studio/webhooks",
-    version: "2.0.0",
-    description:
-      "Schema-first, type-safe webhook routing built on the standard Web API Request and Response primitives, with runtime-agnostic signature verification support.",
-  },
-];
-
 const sidebar = [
   { link: "/", text: gettingStarted },
   {
@@ -335,7 +242,100 @@ export default defineConfig({
     link: `${repoUrl}/edit/main/apps/docs/src/pages/:path`,
     text: "Edit on GitHub",
   },
+  // oxlint-disable-next-line sonarjs/max-lines-per-function -- vocs runs this function alone in the browser, without the rest of the file. So getPackages must be defined inside it, not outside.
   head: (path) => {
+    const getPackages = () => [
+      {
+        slug: "cache",
+        name: "@zap-studio/cache",
+        version: "1.0.0",
+        description:
+          "Zero-dependency in-memory key-value cache with pluggable eviction policies (LRU, LFU, FIFO), capacity limits, and optional TTL.",
+      },
+      {
+        slug: "env",
+        name: "@zap-studio/env",
+        version: "1.0.0",
+        description:
+          "A runtime and framework-agnostic environment variable validator built on Standard Schema, with a server/client/shared split, schema composition, and .env.example generation.",
+      },
+      {
+        slug: "fetch",
+        name: "@zap-studio/fetch",
+        version: "2.1.1",
+        description:
+          "A type-safe fetch wrapper that validates JSON responses at runtime with any Standard Schema validator.",
+      },
+      {
+        slug: "logger",
+        name: "@zap-studio/logger",
+        version: "2.0.0",
+        description: "A lean logging abstraction with a console implementation.",
+      },
+      {
+        slug: "monads",
+        name: "@zap-studio/monads",
+        version: "1.0.0",
+        description:
+          "Result/Option types and Rust-style functional combinators for explicit, type-safe error handling.",
+      },
+      {
+        slug: "oxfmt",
+        name: "@zap-studio/oxfmt",
+        version: "1.0.0",
+        description:
+          "A decided oxfmt preset for sorted imports, sorted package.json, and optional Tailwind CSS class sorting.",
+      },
+      {
+        slug: "oxlint",
+        name: "@zap-studio/oxlint",
+        version: "2.2.1",
+        description:
+          "Exclusive, single-owner oxlint presets — pick exactly the plugins and framework rules your project needs, nothing implied.",
+      },
+      {
+        slug: "permit",
+        name: "@zap-studio/permit",
+        version: "2.0.0",
+        description:
+          "A type-safe, declarative authorization library for TypeScript with Standard Schema validation and composable conditions.",
+      },
+      {
+        slug: "react-hooks",
+        name: "@zap-studio/react-hooks",
+        version: "1.1.0",
+        description:
+          "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle.",
+      },
+      {
+        slug: "retry",
+        name: "@zap-studio/retry",
+        version: "2.1.1",
+        description:
+          "Composable retry policies with a built-in runner, structured terminal errors, and AbortSignal cancellation.",
+      },
+      {
+        slug: "store",
+        name: "@zap-studio/store",
+        version: "1.0.0",
+        description:
+          "A small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.",
+      },
+      {
+        slug: "validation",
+        name: "@zap-studio/validation",
+        version: "1.1.1",
+        description:
+          "Standard Schema utilities and ValidationError helpers for one consistent validation flow across schema libraries.",
+      },
+      {
+        slug: "webhooks",
+        name: "@zap-studio/webhooks",
+        version: "2.0.0",
+        description:
+          "Schema-first, type-safe webhook routing built on the standard Web API Request and Response primitives, with runtime-agnostic signature verification support.",
+      },
+    ];
     const siteBaseUrl = "https://www.zapstudio.dev";
     const siteRepoUrl = "https://github.com/zap-studio/monorepo";
     const siteName = "Zap Studio";
