@@ -98,6 +98,43 @@ const guardClientAccess = (
   });
 
 /**
+ * Implementation behind the exported `createEnv`. Kept untyped (`unknown`
+ * return) on purpose.
+ */
+const createEnvImpl = (options: CreateEnvOptions): unknown => {
+  const merged = mergeEnvSchemas([...(options.extends ?? []), options]);
+  const keys = [...merged.keys()];
+
+  if (options.skipValidation === true) {
+    return readDeclaredEnv(keys, options);
+  }
+
+  const parsed = withValidateSpan(() => {
+    const declared = readDeclaredEnv(keys, options);
+    const { issues, parsed: validated } = validateDeclaredEnv(merged, declared);
+
+    if (Object.keys(issues).length > 0) {
+      if (options.onValidationError) {
+        options.onValidationError(issues);
+        throw new Error(
+          "onValidationError did not throw; it must throw or otherwise never return.",
+        );
+      }
+      throw new EnvValidationError(issues);
+    }
+
+    return validated;
+  });
+
+  const isServer = options.isServer ?? typeof window === "undefined";
+  if (isServer) {
+    return parsed;
+  }
+
+  return guardClientAccess(parsed, merged, options.onInvalidAccess);
+};
+
+/**
  * Creates a validated env object from a `shared`/`server`/`client` shape
  * built from Standard Schema.
  *
@@ -129,60 +166,22 @@ const guardClientAccess = (
  * @throws {EnvValidationError} If validation fails and `onValidationError`
  *   is not provided.
  */
-export const createEnv = <
-  TShared extends EnvVarSchemas = EnvVarSchemas,
-  TServer extends EnvVarSchemas = EnvVarSchemas,
-  TClient extends EnvVarSchemas = EnvVarSchemas,
-  const TClientPrefix extends string = string,
-  const TExtends extends readonly EnvSchema[] = readonly EnvSchema[],
->(
-  options: CreateEnvOptions<TShared, TServer, TClient, TClientPrefix, TExtends>,
-): InferExtendsOutput<TExtends> &
-  InferEnvVarsOutput<TShared> &
-  InferEnvVarsOutput<TServer> &
-  InferEnvVarsOutput<TClient> => {
-  const merged = mergeEnvSchemas([...(options.extends ?? []), options]);
-  const keys = [...merged.keys()];
-
-  if (options.skipValidation === true) {
-    // SAFETY: TypeScript builds the return type from `TExtends`, `TShared`,
-    // `TServer`, and `TClient` using conditional and mapped types. It cannot
-    // write that type as the plain `Record<string, EnvVarValue>` this branch
-    // builds at runtime. But `readDeclaredEnv` reads exactly the keys that
-    // `merged` declares, through `mergeEnvSchemas`, using those same type
-    // parameters. So the runtime value and the declared type match.
-    return readDeclaredEnv(keys, options) as never;
-  }
-
-  const parsed = withValidateSpan(() => {
-    const declared = readDeclaredEnv(keys, options);
-    const { issues, parsed: validated } = validateDeclaredEnv(merged, declared);
-
-    if (Object.keys(issues).length > 0) {
-      if (options.onValidationError) {
-        options.onValidationError(issues);
-        throw new Error(
-          "onValidationError did not throw; it must throw or otherwise never return.",
-        );
-      }
-      throw new EnvValidationError(issues);
-    }
-
-    return validated;
-  });
-
-  const isServer = options.isServer ?? typeof window === "undefined";
-  if (isServer) {
-    // SAFETY: `parsed` holds exactly the validated output of `merged`'s
-    // schemas. `mergeEnvSchemas` built `merged` from `TExtends`, `TShared`,
-    // `TServer`, and `TClient` — the same type parameters used to compute
-    // the declared return type. So the runtime value and the type match.
-    return parsed as never;
-  }
-
-  // SAFETY: `guardClientAccess` returns a `Proxy` around that same validated
-  // `parsed` object. It only adds a runtime check on server-only keys and
-  // does not change the object's shape. So the same reasoning as the
-  // `isServer` branch above applies.
-  return guardClientAccess(parsed, merged, options.onInvalidAccess) as never;
-};
+export const createEnv =
+  // SAFETY: this declared type comes from `TExtends`, `TShared`, `TServer`,
+  // and `TClient`. TypeScript cannot write that type as the plain
+  // `unknown` that `createEnvImpl` returns. But `createEnvImpl` reads and
+  // checks exactly the keys `mergeEnvSchemas` builds from those same type
+  // parameters (through `options`). So the real value always matches this
+  // declared type.
+  createEnvImpl as <
+    TShared extends EnvVarSchemas = EnvVarSchemas,
+    TServer extends EnvVarSchemas = EnvVarSchemas,
+    TClient extends EnvVarSchemas = EnvVarSchemas,
+    const TClientPrefix extends string = string,
+    const TExtends extends readonly EnvSchema[] = readonly EnvSchema[],
+  >(
+    options: CreateEnvOptions<TShared, TServer, TClient, TClientPrefix, TExtends>,
+  ) => InferExtendsOutput<TExtends> &
+    InferEnvVarsOutput<TShared> &
+    InferEnvVarsOutput<TServer> &
+    InferEnvVarsOutput<TClient>;
