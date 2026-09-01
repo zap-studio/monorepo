@@ -5,11 +5,13 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
+    "./create-env": "./src/create-env.ts",
     "./errors": "./src/errors.ts",
-    "./presets": "./src/presets.ts"
+    "./generate-env-example": "./src/generate-env-example.ts",
+    "./presets": "./src/presets.ts",
+    "./types": "./src/types.ts"
   },
   "imports": {
-    "@standard-schema/spec": "npm:@standard-schema/spec@^1.1.0",
     "@zap-studio/validation": "jsr:@zap-studio/validation@^1.1.1"
   },
   "publish": {
