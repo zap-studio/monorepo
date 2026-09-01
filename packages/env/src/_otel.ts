@@ -11,7 +11,7 @@ import type { Tracer } from "@opentelemetry/api";
 import { SpanKind, SpanStatusCode, trace } from "@opentelemetry/api";
 
 import pkg from "../package.json" with { type: "json" };
-import { EnvValidationError } from "./errors.ts";
+import { EnvironmentValidationError } from "./errors.ts";
 
 /**
  * OpenTelemetry tracer for this package. Fetched once from the global
@@ -21,7 +21,7 @@ import { EnvValidationError } from "./errors.ts";
 const tracer: Tracer = trace.getTracer(pkg.name, pkg.version);
 
 /**
- * Wraps one `createEnv` validation pass in an `INTERNAL` span named
+ * Wraps one `createEnvironment` validation pass in an `INTERNAL` span named
  * `env.validate`. On failure, it stores the invalid key names, never their
  * values, as the `env.invalid_keys` attribute, and marks the span as an
  * error. Validation runs once at startup, not on every request, so the
@@ -35,7 +35,7 @@ export const withValidateSpan = <T>(run: () => T): T => {
     span.setStatus({ code: SpanStatusCode.OK });
     return result;
   } catch (error) {
-    if (error instanceof EnvValidationError) {
+    if (error instanceof EnvironmentValidationError) {
       span.setAttribute("env.invalid_keys", [...error.invalidKeys]);
     }
     if (error instanceof Error) {

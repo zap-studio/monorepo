@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { createEnv } from "./create-env.ts";
-import { EnvValidationError } from "./errors.ts";
+import { createEnvironment } from "./create-env.ts";
+import { EnvironmentValidationError } from "./errors.ts";
 import {
   cloudflare,
   coolify,
@@ -30,9 +30,9 @@ describe("presets", () => {
   });
 
   it("treats every preset key as optional (absent on other platforms)", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       extends: [vercel],
-      runtimeEnv: {},
+      runtimeEnvironment: {},
       isServer: true,
     });
 
@@ -40,9 +40,9 @@ describe("presets", () => {
   });
 
   it("passes through the value when the platform var is present", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       extends: [cloudflare],
-      runtimeEnv: {
+      runtimeEnvironment: {
         CF_PAGES: "1",
         CF_PAGES_BRANCH: "main",
         CF_PAGES_COMMIT_SHA: "abc123",
@@ -62,24 +62,24 @@ describe("presets", () => {
   it("rejects a preset value that isn't a string, number, or boolean", () => {
     let caught: unknown;
     try {
-      createEnv({
+      createEnvironment({
         extends: [vercel],
-        runtimeEnv: {},
+        runtimeEnvironment: {},
         // @ts-expect-error VERCEL is given an object value on purpose, to test the runtime check.
-        runtimeEnvStrict: { VERCEL: { nested: true } },
+        runtimeEnvironmentStrict: { VERCEL: { nested: true } },
       });
     } catch (error) {
       caught = error;
     }
 
-    expect(caught).toBeInstanceOf(EnvValidationError);
+    expect(caught).toBeInstanceOf(EnvironmentValidationError);
   });
 
   it("composes cleanly with an app's own vars via extends", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       extends: [denoDeploy],
       shared: { APP_NAME: z.string() },
-      runtimeEnv: { DENO_DEPLOYMENT_ID: "dep_123", APP_NAME: "my-app" },
+      runtimeEnvironment: { DENO_DEPLOYMENT_ID: "dep_123", APP_NAME: "my-app" },
       isServer: true,
     });
 

@@ -1,6 +1,6 @@
 /**
  * Presets for env vars that a hosting platform sets automatically. Add one
- * to a `createEnv` call with `extends`, to type and check a platform's
+ * to a `createEnvironment` call with `extends`, to type and check a platform's
  * vars along with your own app's vars.
  *
  * Every preset key is optional, with type `string | undefined`. These vars
@@ -13,7 +13,7 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-import type { EnvSchema, EnvironmentVariableSchemaMap } from "./types.ts";
+import type { EnvironmentSchema, EnvironmentVariableSchemaMap } from "./types.ts";
 
 /**
  * A Standard Schema that accepts any value, turns it into a `string`, and
@@ -38,7 +38,7 @@ const optionalString = (): StandardSchemaV1<string | undefined, string | undefin
   },
 });
 
-const toEnvVarSchemas = (keys: readonly string[]): EnvironmentVariableSchemaMap => {
+const toEnvironmentVariableSchemas = (keys: readonly string[]): EnvironmentVariableSchemaMap => {
   const schemas: EnvironmentVariableSchemaMap = {};
   for (const key of keys) {
     schemas[key] = optionalString();
@@ -46,14 +46,16 @@ const toEnvVarSchemas = (keys: readonly string[]): EnvironmentVariableSchemaMap 
   return schemas;
 };
 
-const preset = (keys: readonly string[]): EnvSchema => ({ shared: toEnvVarSchemas(keys) });
+const preset = (keys: readonly string[]): EnvironmentSchema => ({
+  shared: toEnvironmentVariableSchemas(keys),
+});
 
 /**
  * Vercel's system environment variables.
  *
  * @see https://vercel.com/docs/environment-variables/system-environment-variables
  */
-export const vercel: EnvSchema = preset([
+export const vercel: EnvironmentSchema = preset([
   "VERCEL",
   "VERCEL_ENV",
   "VERCEL_TARGET_ENV",
@@ -80,7 +82,7 @@ export const vercel: EnvSchema = preset([
  *
  * @see https://docs.netlify.com/build/configure-builds/environment-variables/
  */
-export const netlify: EnvSchema = preset([
+export const netlify: EnvironmentSchema = preset([
   "NETLIFY",
   "BUILD_ID",
   "CONTEXT",
@@ -103,7 +105,7 @@ export const netlify: EnvSchema = preset([
  *
  * @see https://render.com/docs/environment-variables
  */
-export const render: EnvSchema = preset([
+export const render: EnvironmentSchema = preset([
   "RENDER",
   "RENDER_SERVICE_ID",
   "RENDER_SERVICE_NAME",
@@ -122,7 +124,7 @@ export const render: EnvSchema = preset([
  *
  * @see https://docs.railway.com/variables/reference
  */
-export const railway: EnvSchema = preset([
+export const railway: EnvironmentSchema = preset([
   "RAILWAY_PUBLIC_DOMAIN",
   "RAILWAY_PRIVATE_DOMAIN",
   "RAILWAY_PROJECT_NAME",
@@ -145,7 +147,7 @@ export const railway: EnvSchema = preset([
  *
  * @see https://fly.io/docs/machines/runtime-environment/
  */
-export const fly: EnvSchema = preset([
+export const fly: EnvironmentSchema = preset([
   "FLY_APP_NAME",
   "FLY_MACHINE_ID",
   "FLY_ALLOC_ID",
@@ -164,7 +166,7 @@ export const fly: EnvSchema = preset([
  *
  * @see https://coolify.io/docs/knowledge-base/environment-variables
  */
-export const coolify: EnvSchema = preset([
+export const coolify: EnvironmentSchema = preset([
   "COOLIFY_FQDN",
   "COOLIFY_URL",
   "COOLIFY_BRANCH",
@@ -178,7 +180,7 @@ export const coolify: EnvSchema = preset([
  *
  * @see https://developers.cloudflare.com/pages/configuration/build-configuration/
  */
-export const cloudflare: EnvSchema = preset([
+export const cloudflare: EnvironmentSchema = preset([
   "CF_PAGES",
   "CF_PAGES_BRANCH",
   "CF_PAGES_COMMIT_SHA",
@@ -190,7 +192,7 @@ export const cloudflare: EnvSchema = preset([
  *
  * @see https://docs.deno.com/deploy/reference/env_vars_and_contexts/
  */
-export const denoDeploy: EnvSchema = preset([
+export const denoDeploy: EnvironmentSchema = preset([
   "DENO_DEPLOY",
   "DENO_DEPLOY_ORG_ID",
   "DENO_DEPLOY_ORG_SLUG",

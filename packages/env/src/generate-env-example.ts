@@ -1,14 +1,14 @@
 /**
- * `generateEnvExample`: builds a `.env.example` file from a schema.
+ * `generateEnvironmentExample`: builds a `.env.example` file from a schema.
  *
  * @module @zap-studio/env/generate-env-example
  */
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-import type { EnvSchema, ResolvedEnvironmentVariableEntry } from "./types.ts";
+import type { EnvironmentSchema, ResolvedEnvironmentVariableEntry } from "./types.ts";
 
-import { mergeEnvSchemas } from "./_merge.ts";
+import { mergeEnvironmentSchemas } from "./_merge.ts";
 
 const keyCollator = new Intl.Collator("en");
 
@@ -59,7 +59,7 @@ const renderEntry = (key: string, entry: ResolvedEnvironmentVariableEntry): stri
 
 /**
  * Walks through an env schema (the same `shared`/`server`/`client`/`extends`
- * shape that `createEnv` accepts, without the runtime-only options) and
+ * shape that `createEnvironment` accepts, without the runtime-only options) and
  * builds a `.env.example` file. It writes one line per declared key, with
  * a comment for whether it is `shared`, `server`, or `client`, whether it
  * is required or optional / has a default, and, for `client` keys, the
@@ -71,23 +71,23 @@ const renderEntry = (key: string, entry: ResolvedEnvironmentVariableEntry): stri
  * @example
  * ```ts
  * import { writeFileSync } from "node:fs";
- * import { generateEnvExample } from "@zap-studio/env";
+ * import { generateEnvironmentExample } from "@zap-studio/env";
  *
- * writeFileSync(".env.example", generateEnvExample({
+ * writeFileSync(".env.example", generateEnvironmentExample({
  *   server: { DATABASE_URL: z.string().url() },
  *   client: { NEXT_PUBLIC_API_URL: z.string().url() },
  *   clientPrefix: "NEXT_PUBLIC_",
  * }));
  * ```
  *
- * @throws {EnvError} If `client` vars are declared without a matching
+ * @throws {EnvironmentError} If `client` vars are declared without a matching
  *   `clientPrefix`, or if a key is declared by more than one composed
  *   source with a different schema.
  */
-export const generateEnvExample = (
-  options: EnvSchema & { readonly extends?: readonly EnvSchema[] },
+export const generateEnvironmentExample = (
+  options: EnvironmentSchema & { readonly extends?: readonly EnvironmentSchema[] },
 ): string => {
-  const merged = mergeEnvSchemas([...(options.extends ?? []), options]);
+  const merged = mergeEnvironmentSchemas([...(options.extends ?? []), options]);
   const entries = [...merged.entries()].sort((a, b) => keyCollator.compare(a[0], b[0]));
 
   if (entries.length === 0) {

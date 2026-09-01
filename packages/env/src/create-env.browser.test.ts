@@ -1,23 +1,23 @@
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-import type { EnvSchema } from "./types.ts";
+import type { EnvironmentSchema } from "./types.ts";
 
-import { createEnv } from "./create-env.ts";
-import { EnvAccessError, EnvError, EnvValidationError } from "./errors.ts";
+import { createEnvironment } from "./create-env.ts";
+import { EnvironmentAccessError, EnvironmentError, EnvironmentValidationError } from "./errors.ts";
 
 const DATABASE_URL_SCHEMA = z.string();
 const PREFIX_MESSAGE_PATTERN = /does not start with the required prefix/u;
 const INVALID_PORT = "not-a-number";
 
-describe("createEnv: shared/server/client", () => {
+describe("createEnvironment: shared/server/client", () => {
   it("validates and returns shared, server, and client vars on the server", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       shared: { NODE_ENV: z.enum(["development", "production"]) },
       server: { DATABASE_URL: DATABASE_URL_SCHEMA },
       client: { PUBLIC_API_URL: z.string().url() },
       clientPrefix: "PUBLIC_",
-      runtimeEnv: {
+      runtimeEnvironment: {
         NODE_ENV: "production",
         DATABASE_URL: "https://db.example.com",
         PUBLIC_API_URL: "https://api.example.com",
@@ -33,20 +33,20 @@ describe("createEnv: shared/server/client", () => {
   });
 
   it("coerces and applies schema defaults", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       server: { PORT: z.coerce.number().default(3000) },
-      runtimeEnv: {},
+      runtimeEnvironment: {},
       isServer: true,
     });
 
     expect(env.PORT).toBe(3000);
   });
 
-  it("prefers runtimeEnvStrict over runtimeEnv when both are provided", () => {
-    const env = createEnv({
+  it("prefers runtimeEnvironmentStrict over runtimeEnvironment when both are provided", () => {
+    const env = createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnv: { PORT: "1" },
-      runtimeEnvStrict: { PORT: "2" },
+      runtimeEnvironment: { PORT: "1" },
+      runtimeEnvironmentStrict: { PORT: "2" },
       isServer: true,
     });
 
@@ -54,54 +54,54 @@ describe("createEnv: shared/server/client", () => {
   });
 });
 
-describe("createEnv: clientPrefix", () => {
-  it("throws an EnvError when client vars are declared without a clientPrefix", () => {
+describe("createEnvironment: clientPrefix", () => {
+  it("throws an EnvironmentError when client vars are declared without a clientPrefix", () => {
     expect(() =>
-      createEnv({
+      createEnvironment({
         client: { PUBLIC_X: z.string() },
-        runtimeEnv: { PUBLIC_X: "x" },
+        runtimeEnvironment: { PUBLIC_X: "x" },
       }),
-    ).toThrow(EnvError);
+    ).toThrow(EnvironmentError);
   });
 
-  it("throws an EnvError when a client key doesn't start with clientPrefix", () => {
+  it("throws an EnvironmentError when a client key doesn't start with clientPrefix", () => {
     expect(() =>
-      createEnv({
+      createEnvironment({
         // @ts-expect-error API_URL does not start with clientPrefix on purpose, to test the runtime check.
         client: { API_URL: z.string() },
         clientPrefix: "PUBLIC_",
-        runtimeEnv: { API_URL: "x" },
+        runtimeEnvironment: { API_URL: "x" },
       }),
     ).toThrow(PREFIX_MESSAGE_PATTERN);
   });
 });
 
-describe("createEnv: validation failures", () => {
-  it("throws an EnvValidationError listing every invalid key", () => {
+describe("createEnvironment: validation failures", () => {
+  it("throws an EnvironmentValidationError listing every invalid key", () => {
     let caught: unknown;
     try {
-      createEnv({
+      createEnvironment({
         server: { PORT: z.coerce.number(), DATABASE_URL: DATABASE_URL_SCHEMA.min(1) },
-        runtimeEnv: { PORT: INVALID_PORT, DATABASE_URL: "" },
+        runtimeEnvironment: { PORT: INVALID_PORT, DATABASE_URL: "" },
       });
     } catch (error) {
       caught = error;
     }
 
-    expect(caught).toBeInstanceOf(EnvValidationError);
-    // SAFETY: the check above confirms that `caught` is an `EnvValidationError`.
-    expect((caught as EnvValidationError).invalidKeys).toEqual(["DATABASE_URL", "PORT"]);
+    expect(caught).toBeInstanceOf(EnvironmentValidationError);
+    // SAFETY: the check above confirms that `caught` is an `EnvironmentValidationError`.
+    expect((caught as EnvironmentValidationError).invalidKeys).toEqual(["DATABASE_URL", "PORT"]);
   });
 
-  it("calls onValidationError instead of throwing EnvValidationError", () => {
+  it("calls onValidationError instead of throwing EnvironmentValidationError", () => {
     const onValidationError = vi.fn<(issues: unknown) => never>(() => {
       throw new Error("custom handler");
     });
 
     expect(() =>
-      createEnv({
+      createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnv: { PORT: "nope" },
+        runtimeEnvironment: { PORT: "nope" },
         onValidationError,
       }),
     ).toThrow("custom handler");
@@ -109,11 +109,11 @@ describe("createEnv: validation failures", () => {
   });
 });
 
-describe("createEnv: skipValidation", () => {
+describe("createEnvironment: skipValidation", () => {
   it("returns declared keys unvalidated", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnv: { PORT: INVALID_PORT },
+      runtimeEnvironment: { PORT: INVALID_PORT },
       skipValidation: true,
     });
 
@@ -121,11 +121,11 @@ describe("createEnv: skipValidation", () => {
   });
 });
 
-describe("createEnv: emptyStringAsUndefined", () => {
+describe("createEnvironment: emptyStringAsUndefined", () => {
   it("treats an empty string as undefined before validation", () => {
-    const env = createEnv({
+    const env = createEnvironment({
       server: { NAME: z.string().default("fallback") },
-      runtimeEnv: { NAME: "" },
+      runtimeEnvironment: { NAME: "" },
       emptyStringAsUndefined: true,
       isServer: true,
     });
@@ -136,76 +136,76 @@ describe("createEnv: emptyStringAsUndefined", () => {
   it("leaves an empty string as-is when the option is off", () => {
     let caught: unknown;
     try {
-      createEnv({
+      createEnvironment({
         server: { NAME: z.string().min(1) },
-        runtimeEnv: { NAME: "" },
+        runtimeEnvironment: { NAME: "" },
       });
     } catch (error) {
       caught = error;
     }
 
-    expect(caught).toBeInstanceOf(EnvValidationError);
+    expect(caught).toBeInstanceOf(EnvironmentValidationError);
   });
 });
 
-describe("createEnv: server/client access", () => {
+describe("createEnvironment: server/client access", () => {
   const options = {
     server: { DATABASE_URL: DATABASE_URL_SCHEMA },
     client: { PUBLIC_X: z.string() },
     clientPrefix: "PUBLIC_",
-    runtimeEnv: { DATABASE_URL: "secret", PUBLIC_X: "public" },
+    runtimeEnvironment: { DATABASE_URL: "secret", PUBLIC_X: "public" },
   } as const;
 
   it("exposes client vars off the server", () => {
-    const env = createEnv({ ...options, isServer: false });
+    const env = createEnvironment({ ...options, isServer: false });
 
     expect(env.PUBLIC_X).toBe("public");
   });
 
-  it("throws an EnvAccessError when a server var is read off the server", () => {
-    const env = createEnv({ ...options, isServer: false });
+  it("throws an EnvironmentAccessError when a server var is read off the server", () => {
+    const env = createEnvironment({ ...options, isServer: false });
 
-    expect(() => env.DATABASE_URL).toThrow(EnvAccessError);
+    expect(() => env.DATABASE_URL).toThrow(EnvironmentAccessError);
   });
 
-  it("calls onInvalidAccess instead of throwing EnvAccessError", () => {
+  it("calls onInvalidAccess instead of throwing EnvironmentAccessError", () => {
     const onInvalidAccess = vi.fn<(key: string) => never>(() => {
       throw new Error("blocked");
     });
-    const env = createEnv({ ...options, isServer: false, onInvalidAccess });
+    const env = createEnvironment({ ...options, isServer: false, onInvalidAccess });
 
     expect(() => env.DATABASE_URL).toThrow("blocked");
     expect(onInvalidAccess).toHaveBeenCalledWith("DATABASE_URL");
   });
 
   it("defaults isServer to typeof window === 'undefined'", () => {
-    const env = createEnv(options);
+    const env = createEnvironment(options);
 
     // In this browser test, `window` is defined, so this acts like a
     // client bundle. Reading the server-only key throws.
-    expect(() => env.DATABASE_URL).toThrow(EnvAccessError);
+    expect(() => env.DATABASE_URL).toThrow(EnvironmentAccessError);
   });
 
   it("passes symbol-keyed access straight through without a bucket check", () => {
-    // SAFETY: this test only reads a symbol key. createEnv's declared return
+    // SAFETY: this test only reads a symbol key. createEnvironment's declared return
     // type does not, and cannot, model symbol keys. Widening to a plain
     // index type is the point of this test, not an unchecked guess about
     // its shape.
-    const env = createEnv({ ...options, isServer: false }) as Record<PropertyKey, unknown>;
+    const env = createEnvironment({ ...options, isServer: false }) as Record<PropertyKey, unknown>;
     const symbolKey = Symbol("not-a-declared-key");
 
     expect(env[symbolKey]).toBeUndefined();
   });
 });
 
-describe("createEnv: extends", () => {
-  const dbSchema = { server: { DATABASE_URL: DATABASE_URL_SCHEMA } } satisfies EnvSchema;
+describe("createEnvironment: extends", () => {
+  const dbSchema = { server: { DATABASE_URL: DATABASE_URL_SCHEMA } } satisfies EnvironmentSchema;
 
-  it("composes a reusable EnvSchema via extends", () => {
-    const env = createEnv({
+  it("composes a reusable EnvironmentSchema via extends", () => {
+    const env = createEnvironment({
       extends: [dbSchema],
       server: { PORT: z.coerce.number() },
-      runtimeEnv: { DATABASE_URL: "postgres://x", PORT: "3000" },
+      runtimeEnvironment: { DATABASE_URL: "postgres://x", PORT: "3000" },
       isServer: true,
     });
 
@@ -214,50 +214,52 @@ describe("createEnv: extends", () => {
 
   it("allows the exact same schema reference reused across sources", () => {
     const sharedSchema = z.string();
-    const base = { server: { NAME: sharedSchema } } satisfies EnvSchema;
+    const base = { server: { NAME: sharedSchema } } satisfies EnvironmentSchema;
 
-    const env = createEnv({
+    const env = createEnvironment({
       extends: [base],
       server: { NAME: sharedSchema },
-      runtimeEnv: { NAME: "x" },
+      runtimeEnvironment: { NAME: "x" },
       isServer: true,
     });
 
     expect(env.NAME).toBe("x");
   });
 
-  it("throws an EnvError when two sources declare the same key with different schemas", () => {
-    const base = { server: { NAME: z.string() } } satisfies EnvSchema;
+  it("throws an EnvironmentError when two sources declare the same key with different schemas", () => {
+    const base = { server: { NAME: z.string() } } satisfies EnvironmentSchema;
 
     expect(() =>
-      createEnv({
+      createEnvironment({
         extends: [base],
         server: { NAME: z.number() },
-        runtimeEnv: {},
+        runtimeEnvironment: {},
       }),
-    ).toThrow(EnvError);
+    ).toThrow(EnvironmentError);
   });
 
-  it("throws an EnvError when the same key moves buckets across sources", () => {
+  it("throws an EnvironmentError when the same key moves buckets across sources", () => {
     const sharedSchema = z.string();
-    const base = { shared: { NAME: sharedSchema } } satisfies EnvSchema;
+    const base = { shared: { NAME: sharedSchema } } satisfies EnvironmentSchema;
 
     expect(() =>
-      createEnv({
+      createEnvironment({
         extends: [base],
         server: { NAME: sharedSchema },
-        runtimeEnv: {},
+        runtimeEnvironment: {},
       }),
-    ).toThrow(EnvError);
+    ).toThrow(EnvironmentError);
   });
 
   it("composes multiple extends sources together", () => {
-    const dbEnv = { server: { DATABASE_URL: DATABASE_URL_SCHEMA } } satisfies EnvSchema;
-    const cacheEnv = { server: { REDIS_URL: z.string() } } satisfies EnvSchema;
+    const dbEnvironment = {
+      server: { DATABASE_URL: DATABASE_URL_SCHEMA },
+    } satisfies EnvironmentSchema;
+    const cacheEnvironment = { server: { REDIS_URL: z.string() } } satisfies EnvironmentSchema;
 
-    const env = createEnv({
-      extends: [dbEnv, cacheEnv],
-      runtimeEnv: { DATABASE_URL: "db", REDIS_URL: "redis" },
+    const env = createEnvironment({
+      extends: [dbEnvironment, cacheEnvironment],
+      runtimeEnvironment: { DATABASE_URL: "db", REDIS_URL: "redis" },
       isServer: true,
     });
 

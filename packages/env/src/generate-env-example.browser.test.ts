@@ -3,10 +3,10 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import type { EnvSchema } from "./types.ts";
+import type { EnvironmentSchema } from "./types.ts";
 
-import { EnvError } from "./errors.ts";
-import { generateEnvExample } from "./generate-env-example.ts";
+import { EnvironmentError } from "./errors.ts";
+import { generateEnvironmentExample } from "./generate-env-example.ts";
 
 const throwingSchema: StandardSchemaV1<string> = {
   "~standard": {
@@ -26,31 +26,33 @@ const asyncSchema: StandardSchemaV1<string> = {
   },
 };
 
-describe("generateEnvExample", () => {
+describe("generateEnvironmentExample", () => {
   it("returns an empty string for an empty schema", () => {
-    expect(generateEnvExample({})).toBe("");
+    expect(generateEnvironmentExample({})).toBe("");
   });
 
   it("marks a key with no default as required", () => {
-    const output = generateEnvExample({ server: { DATABASE_URL: z.string() } });
+    const output = generateEnvironmentExample({ server: { DATABASE_URL: z.string() } });
 
     expect(output).toBe("# server, required\nDATABASE_URL=\n");
   });
 
   it("marks an optional key as optional", () => {
-    const output = generateEnvExample({ server: { PORT: z.string().optional() } });
+    const output = generateEnvironmentExample({ server: { PORT: z.string().optional() } });
 
     expect(output).toContain("# server, optional\nPORT=");
   });
 
   it("marks a key with a default value as optional", () => {
-    const output = generateEnvExample({ server: { PORT: z.coerce.number().default(3000) } });
+    const output = generateEnvironmentExample({
+      server: { PORT: z.coerce.number().default(3000) },
+    });
 
     expect(output).toContain("# server, optional\nPORT=");
   });
 
   it("labels the bucket for shared and client keys", () => {
-    const output = generateEnvExample({
+    const output = generateEnvironmentExample({
       shared: { NODE_ENV: z.enum(["development", "production"]) },
       client: { PUBLIC_API_URL: z.string() },
       clientPrefix: "PUBLIC_",
@@ -61,7 +63,7 @@ describe("generateEnvExample", () => {
   });
 
   it("sorts keys alphabetically regardless of declaration order", () => {
-    const output = generateEnvExample({
+    const output = generateEnvironmentExample({
       server: { ZULU: z.string(), ALPHA: z.string() },
     });
 
@@ -69,9 +71,9 @@ describe("generateEnvExample", () => {
   });
 
   it("composes extends sources into the output", () => {
-    const dbSchema = { server: { DATABASE_URL: z.string() } } satisfies EnvSchema;
+    const dbSchema = { server: { DATABASE_URL: z.string() } } satisfies EnvironmentSchema;
 
-    const output = generateEnvExample({
+    const output = generateEnvironmentExample({
       extends: [dbSchema],
       server: { PORT: z.coerce.number() },
     });
@@ -80,29 +82,29 @@ describe("generateEnvExample", () => {
     expect(output).toContain("PORT=");
   });
 
-  it("throws an EnvError for the same conflicts createEnv rejects", () => {
+  it("throws an EnvironmentError for the same conflicts createEnvironment rejects", () => {
     expect(() =>
-      generateEnvExample({
+      generateEnvironmentExample({
         client: { API_URL: z.string() },
         clientPrefix: "PUBLIC_",
       }),
-    ).toThrow(EnvError);
+    ).toThrow(EnvironmentError);
   });
 
   it("marks a key as required when its schema throws synchronously on undefined", () => {
-    const output = generateEnvExample({ server: { WEIRD: throwingSchema } });
+    const output = generateEnvironmentExample({ server: { WEIRD: throwingSchema } });
 
     expect(output).toBe("# server, required\nWEIRD=\n");
   });
 
   it("conservatively marks an async schema's key as required", () => {
-    const output = generateEnvExample({ server: { ASYNC_VAR: asyncSchema } });
+    const output = generateEnvironmentExample({ server: { ASYNC_VAR: asyncSchema } });
 
     expect(output).toBe("# server, required\nASYNC_VAR=\n");
   });
 
   it("never reads from any actual environment", () => {
-    const output = generateEnvExample({ server: { SECRET: z.string() } });
+    const output = generateEnvironmentExample({ server: { SECRET: z.string() } });
 
     expect(output).toBe("# server, required\nSECRET=\n");
   });

@@ -1,7 +1,7 @@
 /**
- * `createEnv`: checks a resolved env object against a `shared`/`server`/
+ * `createEnvironment`: checks a resolved env object against a `shared`/`server`/
  * `client` shape built from Standard Schema. It can combine reusable
- * `EnvSchema` sources through `extends`.
+ * `EnvironmentSchema` sources through `extends`.
  *
  * @module @zap-studio/env/create-env
  */
@@ -11,8 +11,8 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidateSync } from "@zap-studio/validation";
 
 import type {
-  CreateEnvOptions,
-  EnvSchema,
+  CreateEnvironmentOptions,
+  EnvironmentSchema,
   EnvironmentVariableSchemaMap,
   RawEnvironmentVariableValue,
   InferExtendsMergedOutput,
@@ -20,20 +20,23 @@ import type {
   ResolvedEnvironmentVariableEntry,
 } from "./types.ts";
 
-import { mergeEnvSchemas } from "./_merge.ts";
+import { mergeEnvironmentSchemas } from "./_merge.ts";
 import { withValidateSpan } from "./_otel.ts";
-import { EnvAccessError, EnvValidationError } from "./errors.ts";
+import { EnvironmentAccessError, EnvironmentValidationError } from "./errors.ts";
 
 /**
- * Reads `runtimeEnvStrict` if it is given, or `runtimeEnv` otherwise.
+ * Reads `runtimeEnvironmentStrict` if it is given, or `runtimeEnvironment` otherwise.
  * Applies `emptyStringAsUndefined` to every value that the merged schema
  * declares.
  */
-const readDeclaredEnv = (
+const readDeclaredEnvironment = (
   keys: readonly string[],
-  options: Pick<CreateEnvOptions, "emptyStringAsUndefined" | "runtimeEnv" | "runtimeEnvStrict">,
+  options: Pick<
+    CreateEnvironmentOptions,
+    "emptyStringAsUndefined" | "runtimeEnvironment" | "runtimeEnvironmentStrict"
+  >,
 ) => {
-  const source = options.runtimeEnvStrict ?? options.runtimeEnv;
+  const source = options.runtimeEnvironmentStrict ?? options.runtimeEnvironment;
   const declared: Record<string, RawEnvironmentVariableValue> = {};
 
   for (const key of keys) {
@@ -48,7 +51,7 @@ const readDeclaredEnv = (
  * Checks `declared` against `merged`. Collects every key's issues instead
  * of stopping at the first one.
  */
-const validateDeclaredEnv = (
+const validateDeclaredEnvironment = (
   merged: ReadonlyMap<string, ResolvedEnvironmentVariableEntry>,
   declared: Readonly<Record<string, RawEnvironmentVariableValue>>,
 ) => {
@@ -69,7 +72,7 @@ const validateDeclaredEnv = (
 
 /**
  * Wraps `parsed` in a `Proxy` that throws when client-side code reads a
- * server-only key. This matches, at runtime, the split that `createEnv`'s
+ * server-only key. This matches, at runtime, the split that `createEnvironment`'s
  * `server`/`client` options enforce at build time.
  */
 const guardClientAccess = (
@@ -90,7 +93,7 @@ const guardClientAccess = (
             `onInvalidAccess did not throw for "${prop}"; it must throw or otherwise never return.`,
           );
         }
-        throw new EnvAccessError(prop);
+        throw new EnvironmentAccessError(prop);
       }
 
       return target[prop];
@@ -98,20 +101,20 @@ const guardClientAccess = (
   });
 
 /**
- * Implementation behind the exported `createEnv`. Kept untyped (`unknown`
+ * Implementation behind the exported `createEnvironment`. Kept untyped (`unknown`
  * return) on purpose.
  */
-const createEnvImpl = (options: CreateEnvOptions): unknown => {
-  const merged = mergeEnvSchemas([...(options.extends ?? []), options]);
+const createEnvironmentImpl = (options: CreateEnvironmentOptions): unknown => {
+  const merged = mergeEnvironmentSchemas([...(options.extends ?? []), options]);
   const keys = [...merged.keys()];
 
   if (options.skipValidation === true) {
-    return readDeclaredEnv(keys, options);
+    return readDeclaredEnvironment(keys, options);
   }
 
   const parsed = withValidateSpan(() => {
-    const declared = readDeclaredEnv(keys, options);
-    const { issues, parsed: validated } = validateDeclaredEnv(merged, declared);
+    const declared = readDeclaredEnvironment(keys, options);
+    const { issues, parsed: validated } = validateDeclaredEnvironment(merged, declared);
 
     if (Object.keys(issues).length > 0) {
       if (options.onValidationError) {
@@ -120,7 +123,7 @@ const createEnvImpl = (options: CreateEnvOptions): unknown => {
           "onValidationError did not throw; it must throw or otherwise never return.",
         );
       }
-      throw new EnvValidationError(issues);
+      throw new EnvironmentValidationError(issues);
     }
 
     return validated;
@@ -141,46 +144,46 @@ const createEnvImpl = (options: CreateEnvOptions): unknown => {
  * On the server, every declared var (`shared`, `server`, and `client`) can
  * be read. Off the server (`isServer: false`, or when the `typeof window
  * === "undefined"` default is `false`), reading a `server`-only key
- * throws. By default it throws an `EnvAccessError`, or does whatever
+ * throws. By default it throws an `EnvironmentAccessError`, or does whatever
  * `onInvalidAccess` does instead.
  *
  * @example
  * ```ts
- * import { createEnv } from "@zap-studio/env";
+ * import { createEnvironment } from "@zap-studio/env";
  * import { z } from "zod";
  *
- * export const env = createEnv({
+ * export const env = createEnvironment({
  *   server: { DATABASE_URL: z.string().url() },
  *   client: { NEXT_PUBLIC_API_URL: z.string().url() },
  *   clientPrefix: "NEXT_PUBLIC_",
- *   runtimeEnv: process.env,
+ *   runtimeEnvironment: process.env,
  * });
  *
  * env.DATABASE_URL; // server-only, throws if read from a client bundle
  * env.NEXT_PUBLIC_API_URL; // readable everywhere
  * ```
  *
- * @throws {EnvError} If `client` vars are declared without a matching
+ * @throws {EnvironmentError} If `client` vars are declared without a matching
  *   `clientPrefix`, or if a key is declared by more than one composed
  *   source with a different schema.
- * @throws {EnvValidationError} If validation fails and `onValidationError`
+ * @throws {EnvironmentValidationError} If validation fails and `onValidationError`
  *   is not provided.
  */
-export const createEnv =
+export const createEnvironment =
   // SAFETY: this declared type comes from `TExtends`, `TShared`, `TServer`,
   // and `TClient`. TypeScript cannot write that type as the plain
-  // `unknown` that `createEnvImpl` returns. But `createEnvImpl` reads and
-  // checks exactly the keys `mergeEnvSchemas` builds from those same type
+  // `unknown` that `createEnvironmentImpl` returns. But `createEnvironmentImpl` reads and
+  // checks exactly the keys `mergeEnvironmentSchemas` builds from those same type
   // parameters (through `options`). So the real value always matches this
   // declared type.
-  createEnvImpl as <
+  createEnvironmentImpl as <
     TShared extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
     TServer extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
     TClient extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
     const TClientPrefix extends string = string,
-    const TExtends extends readonly EnvSchema[] = readonly EnvSchema[],
+    const TExtends extends readonly EnvironmentSchema[] = readonly EnvironmentSchema[],
   >(
-    options: CreateEnvOptions<TShared, TServer, TClient, TClientPrefix, TExtends>,
+    options: CreateEnvironmentOptions<TShared, TServer, TClient, TClientPrefix, TExtends>,
   ) => InferExtendsMergedOutput<TExtends> &
     InferEnvironmentVariableSchemaMapOutput<TShared> &
     InferEnvironmentVariableSchemaMapOutput<TServer> &

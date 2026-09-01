@@ -10,14 +10,14 @@
 
 export type { StandardSchemaV1 } from "@zap-studio/validation";
 
-export { createEnv } from "./create-env.ts";
-export { EnvAccessError, EnvError, EnvValidationError } from "./errors.ts";
-export { generateEnvExample } from "./generate-env-example.ts";
+export { createEnvironment } from "./create-env.ts";
+export { EnvironmentAccessError, EnvironmentError, EnvironmentValidationError } from "./errors.ts";
+export { generateEnvironmentExample } from "./generate-env-example.ts";
 export type {
-  CreateEnvOptions,
-  EnvSchema,
+  CreateEnvironmentOptions,
+  EnvironmentSchema,
   EnvironmentVariableSchemaMap,
-  InferCreateEnvOutput,
+  InferCreateEnvironmentOutput,
   InferExtendsMergedOutput,
   InferEnvironmentVariableSchemaMapOutput,
 } from "./types.ts";

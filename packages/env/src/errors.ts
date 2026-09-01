@@ -8,18 +8,18 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**
- * Error thrown when `createEnv` is set up wrong. For example: a key is
+ * Error thrown when `createEnvironment` is set up wrong. For example: a key is
  * declared by more than one `extends` source with two different schemas,
  * or a `client` key does not start with the configured `clientPrefix`.
  *
  * @example
  * ```ts
- * import { EnvError } from "@zap-studio/env/errors";
+ * import { EnvironmentError } from "@zap-studio/env/errors";
  *
  * try {
- *   createEnv({ extends: [base, override], runtimeEnv: process.env });
+ *   createEnvironment({ extends: [base, override], runtimeEnvironment: process.env });
  * } catch (error) {
- *   if (error instanceof EnvError) {
+ *   if (error instanceof EnvironmentError) {
  *     console.error(error.message);
  *   }
  * }
@@ -27,7 +27,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  *
  * @public
  */
-export class EnvError extends Error {
+export class EnvironmentError extends Error {
   /**
    * Creates an env configuration error with a clear message.
    *
@@ -35,7 +35,7 @@ export class EnvError extends Error {
    */
   constructor(message: string) {
     super(message);
-    this.name = "EnvError";
+    this.name = "EnvironmentError";
   }
 }
 
@@ -46,15 +46,15 @@ export class EnvError extends Error {
  * is safe to log. It also holds the full Standard Schema issues for each
  * key, so code can inspect them.
  *
- * `createEnv` throws this error when validation fails and no
+ * `createEnvironment` throws this error when validation fails and no
  * `onValidationError` callback is given.
  *
  * @example
  * ```ts
  * try {
- *   const env = createEnv({ server: { PORT: z.coerce.number() }, runtimeEnv: process.env });
+ *   const env = createEnvironment({ server: { PORT: z.coerce.number() }, runtimeEnvironment: process.env });
  * } catch (error) {
- *   if (error instanceof EnvValidationError) {
+ *   if (error instanceof EnvironmentValidationError) {
  *     console.error("Invalid env vars:", error.invalidKeys);
  *   }
  * }
@@ -62,7 +62,7 @@ export class EnvError extends Error {
  *
  * @public
  */
-export class EnvValidationError extends Error {
+export class EnvironmentValidationError extends Error {
   /**
    * The keys that failed validation. Never includes their values.
    */
@@ -74,14 +74,14 @@ export class EnvValidationError extends Error {
   issues: Readonly<Record<string, readonly StandardSchemaV1.Issue[]>>;
 
   /**
-   * Creates a new `EnvValidationError`.
+   * Creates a new `EnvironmentValidationError`.
    *
    * @param issues - The validation issues for each key, as returned by the Standard Schema.
    */
   constructor(issues: Readonly<Record<string, readonly StandardSchemaV1.Issue[]>>) {
     const invalidKeys = Object.keys(issues).sort();
     super(`Invalid environment variables: ${invalidKeys.join(", ")}`);
-    this.name = "EnvValidationError";
+    this.name = "EnvironmentValidationError";
     this.invalidKeys = invalidKeys;
     this.issues = issues;
   }
@@ -90,7 +90,7 @@ export class EnvValidationError extends Error {
 /**
  * Error thrown when client-side code reads a server-only env var.
  *
- * The object that `createEnv` returns throws this error when `isServer` is
+ * The object that `createEnvironment` returns throws this error when `isServer` is
  * `false` and no `onInvalidAccess` callback is given.
  *
  * @example
@@ -98,7 +98,7 @@ export class EnvValidationError extends Error {
  * try {
  *   env.DATABASE_URL; // server-only key, accessed from the browser
  * } catch (error) {
- *   if (error instanceof EnvAccessError) {
+ *   if (error instanceof EnvironmentAccessError) {
  *     console.error(error.message);
  *   }
  * }
@@ -106,14 +106,14 @@ export class EnvValidationError extends Error {
  *
  * @public
  */
-export class EnvAccessError extends Error {
+export class EnvironmentAccessError extends Error {
   /**
    * The key that was accessed from client-side code.
    */
   key: string;
 
   /**
-   * Creates a new `EnvAccessError`.
+   * Creates a new `EnvironmentAccessError`.
    *
    * @param key - The server-only key that was accessed.
    */
@@ -121,7 +121,7 @@ export class EnvAccessError extends Error {
     super(
       `Attempted to access server-side environment variable "${key}" on the client. This is a server-only variable and is not exposed to the client bundle.`,
     );
-    this.name = "EnvAccessError";
+    this.name = "EnvironmentAccessError";
     this.key = key;
   }
 }

@@ -7,8 +7,8 @@ import {
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { createEnv } from "./create-env.ts";
-import { EnvValidationError } from "./errors.ts";
+import { createEnvironment } from "./create-env.ts";
+import { EnvironmentValidationError } from "./errors.ts";
 
 const INVALID_PORT = "not-a-number";
 
@@ -27,9 +27,9 @@ describe("env OpenTelemetry", () => {
   });
 
   it("creates an INTERNAL env.validate span with an OK status on success", () => {
-    createEnv({
+    createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnv: { PORT: "3000" },
+      runtimeEnvironment: { PORT: "3000" },
       isServer: true,
     });
 
@@ -41,12 +41,12 @@ describe("env OpenTelemetry", () => {
 
   it("records the invalid keys and an ERROR status on failure, never the values", () => {
     try {
-      createEnv({
+      createEnvironment({
         server: { PORT: z.coerce.number(), SECRET: z.string().min(1) },
-        runtimeEnv: { PORT: INVALID_PORT, SECRET: "" },
+        runtimeEnvironment: { PORT: INVALID_PORT, SECRET: "" },
       });
     } catch {
-      // expected: EnvValidationError, checked with the span below.
+      // expected: EnvironmentValidationError, checked with the span below.
     }
 
     const [span] = spanExporter.getFinishedSpans();
@@ -56,9 +56,9 @@ describe("env OpenTelemetry", () => {
   });
 
   it("does not create a span when validation is skipped", () => {
-    createEnv({
+    createEnvironment({
       server: { PORT: z.coerce.number() },
-      runtimeEnv: { PORT: INVALID_PORT },
+      runtimeEnvironment: { PORT: INVALID_PORT },
       skipValidation: true,
     });
 
@@ -67,9 +67,9 @@ describe("env OpenTelemetry", () => {
 
   it("still ends the span when onValidationError throws synchronously", () => {
     expect(() =>
-      createEnv({
+      createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnv: { PORT: "nope" },
+        runtimeEnvironment: { PORT: "nope" },
         onValidationError: (): never => {
           throw new Error("custom");
         },
@@ -83,9 +83,9 @@ describe("env OpenTelemetry", () => {
   it("still marks the span as an error when a non-Error value is thrown", () => {
     let caught: unknown;
     try {
-      createEnv({
+      createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnv: { PORT: "nope" },
+        runtimeEnvironment: { PORT: "nope" },
         onValidationError: (): never => {
           throw "custom string failure";
         },
@@ -99,17 +99,17 @@ describe("env OpenTelemetry", () => {
     expect(span?.status.code).toBe(SpanStatusCode.ERROR);
   });
 
-  it("EnvValidationError is still the error type when no onValidationError is given", () => {
+  it("EnvironmentValidationError is still the error type when no onValidationError is given", () => {
     let caught: unknown;
     try {
-      createEnv({
+      createEnvironment({
         server: { PORT: z.coerce.number() },
-        runtimeEnv: { PORT: "nope" },
+        runtimeEnvironment: { PORT: "nope" },
       });
     } catch (error) {
       caught = error;
     }
 
-    expect(caught).toBeInstanceOf(EnvValidationError);
+    expect(caught).toBeInstanceOf(EnvironmentValidationError);
   });
 });
