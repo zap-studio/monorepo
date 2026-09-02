@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### Added
+
+Route-level `verify` on `register()`. Previously `verify` was only a router-wide `createWebhookRouter({ verify })` option, applied to every route — a router handling more than one provider had to hand-roll a dispatcher keyed on `ctx.path` to give each route its own verifier. Now each route can carry its own `verify` directly:
+
+```ts
+router.register("/stripe", {
+  schema: stripeEventSchema,
+  verify: createHmacVerifier({ headerName: "stripe-signature", secret: stripeSecret }),
+  handler: stripeHandler,
+});
+
+router.register("/github", {
+  schema: githubEventSchema,
+  verify: createHmacVerifier({ headerName: "x-hub-signature-256", secret: githubSecret }),
+  handler: githubHandler,
+});
+```
+
+A route's own `verify` overrides the router-level one when both are set; the router-level `verify` still applies as the default for routes that don't set their own. Fully backward compatible — existing single-provider setups using only the router-level option are unaffected.
+
 ## [2.0.1]
 
 ### Fixed

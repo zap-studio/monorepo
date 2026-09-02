@@ -119,6 +119,22 @@ const router = createWebhookRouter({
 });
 ```
 
+`verify` also works per-route on `register()`, overriding the router-level one — useful for a router handling multiple providers, each with its own signing scheme:
+
+```ts
+router.register("/github", {
+  verify: createHmacVerifier({ headerName: "x-hub-signature-256", secret: githubSecret }),
+  schema: githubEventSchema,
+  handler: githubHandler,
+});
+
+router.register("/stripe", {
+  verify: stripeVerify, // a different scheme entirely
+  schema: stripeEventSchema,
+  handler: stripeHandler,
+});
+```
+
 ## Lifecycle Hooks
 
 Global `before`, `after`, and `onError` hooks for cross-cutting behavior.

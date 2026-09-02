@@ -56,6 +56,8 @@ export interface HandlerEntry<TPayload = unknown> {
   handler: WebhookHandler<TPayload>;
   /** Optional Standard Schema validator to validate the webhook payload. */
   schema?: StandardSchemaV1<unknown, TPayload>;
+  /** Route-specific request verifier. Overrides the router-level `verify` for this route only. */
+  verify?: VerifyFn;
 }
 
 /**
@@ -90,7 +92,11 @@ export interface WebhookRouterOptions {
    * duplicate slashes collapsed. Use `""` or `"/"` to mount at the root.
    */
   prefix?: string;
-  /** Optional request verification function (for signature checks, auth, etc.). */
+  /**
+   * Optional request verification function (for signature checks, auth, etc.),
+   * used as the default for any route that doesn't set its own `verify` in
+   * {@link RegisterOptions}.
+   */
   verify?: VerifyFn;
 }
 
@@ -101,6 +107,7 @@ export interface WebhookRouterOptions {
  * ```ts
  * const options: RegisterOptions<{ type: string }> = {
  *   schema: stripeEventSchema,
+ *   verify: createHmacVerifier({ headerName: "stripe-signature", secret }),
  *   handler: ({ payload }) => console.log(payload.type),
  * };
  * ```
@@ -114,6 +121,12 @@ export interface RegisterOptions<T> {
   handler: WebhookHandler<T>;
   /** Optional Standard Schema validator to validate the webhook payload */
   schema?: StandardSchemaV1<unknown, T>;
+  /**
+   * Route-specific request verifier. When set, overrides the router-level
+   * `verify` (`WebhookRouterOptions.verify`) for this route only — useful when
+   * different routes on the same router are signed by different providers.
+   */
+  verify?: VerifyFn;
 }
 
 /**

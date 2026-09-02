@@ -23,6 +23,8 @@ const ROUTE_BEFORE_STEP = "route-before";
 const GLOBAL_AFTER_STEP = "global-after";
 const ROUTE_AFTER_STEP = "route-after";
 const REQUEST_BASE_URL = "https://example.com";
+const FIRST_ROUTE_SECRET = "first-secret";
+const SECOND_ROUTE_SECRET = "second-secret";
 
 interface ObservedErrorFixture {
   error: Error | null;
@@ -505,6 +507,141 @@ describe("Request verification", () => {
     const response = await router.handle(createRequest("/webhooks/async-verify", { id: "1" }));
 
     expect(response.status).toBe(200);
+  });
+
+  it("should use a route-level verify function instead of the router-level one", async () => {
+    const router = createWebhookRouter({
+      verify: () => {
+        throw new Error("router-level should not run");
+      },
+    });
+
+    router.register("/route-verify", {
+      handler: () => Response.json("verified"),
+      verify: (ctx) => {
+        if (ctx.request.headers.get("x-api-key") !== "secret") {
+          throw new Error("Unauthorized");
+        }
+      },
+    });
+
+    const okResponse = await router.handle(
+      createRequest("/webhooks/route-verify", { id: "1" }, { headers: { "x-api-key": "secret" } }),
+    );
+    await expect(okResponse.json()).resolves.toBe("verified");
+
+    const badResponse = await router.handle(createRequest("/webhooks/route-verify", { id: "1" }));
+    expect(badResponse.status).toBe(500);
+    await expect(badResponse.json()).resolves.toStrictEqual({
+      error: "Unauthorized",
+    });
+  });
+
+  it("should fall back to the router-level verify when a route sets none", async () => {
+    const router = createWebhookRouter({
+      verify: (ctx) => {
+        if (ctx.request.headers.get("x-api-key") !== "secret") {
+          throw new Error("Unauthorized");
+        }
+      },
+    });
+
+    router.register("/no-route-verify", () => Response.json("verified"));
+
+    const okResponse = await router.handle(
+      createRequest(
+        "/webhooks/no-route-verify",
+        { id: "1" },
+        { headers: { "x-api-key": "secret" } },
+      ),
+    );
+    await expect(okResponse.json()).resolves.toBe("verified");
+
+    const badResponse = await router.handle(
+      createRequest("/webhooks/no-route-verify", { id: "1" }),
+    );
+    expect(badResponse.status).toBe(500);
+  });
+
+  it("should let different routes on the same router use different verify functions", async () => {
+    const router = createWebhookRouter();
+
+    router.register("/first", {
+      handler: () => Response.json("first"),
+      verify: (ctx) => {
+        if (ctx.request.headers.get("x-first-key") !== FIRST_ROUTE_SECRET) {
+          throw new Error("first unauthorized");
+        }
+      },
+    });
+
+    router.register("/second", {
+      handler: () => Response.json("second"),
+      verify: (ctx) => {
+        if (ctx.request.headers.get("x-second-key") !== SECOND_ROUTE_SECRET) {
+          throw new Error("second unauthorized");
+        }
+      },
+    });
+
+    const firstOk = await router.handle(
+      createRequest(
+        "/webhooks/first",
+        { id: "1" },
+        { headers: { "x-first-key": FIRST_ROUTE_SECRET } },
+      ),
+    );
+    await expect(firstOk.json()).resolves.toBe("first");
+
+    const firstBadWithSecondKey = await router.handle(
+      createRequest(
+        "/webhooks/first",
+        { id: "1" },
+        { headers: { "x-second-key": SECOND_ROUTE_SECRET } },
+      ),
+    );
+    expect(firstBadWithSecondKey.status).toBe(500);
+
+    const secondOk = await router.handle(
+      createRequest(
+        "/webhooks/second",
+        { id: "1" },
+        { headers: { "x-second-key": SECOND_ROUTE_SECRET } },
+      ),
+    );
+    await expect(secondOk.json()).resolves.toBe("second");
+  });
+
+  it("should run route-level verify before schema validation", async () => {
+    const order: string[] = [];
+
+    const schema: StandardSchemaV1<unknown, { id: string }> = {
+      "~standard": {
+        validate: (value) => {
+          order.push("validate");
+          return { value: asTestDouble<{ id: string }>(value) };
+        },
+        vendor: "test",
+        version: 1,
+      },
+    };
+
+    const router = createWebhookRouter();
+
+    router.register("/route-ordered", {
+      handler: () => {
+        order.push("handler");
+        return undefined;
+      },
+      schema,
+      verify: () => {
+        order.push("route-verify");
+      },
+    });
+
+    await router.handle(createRequest("/webhooks/route-ordered", { id: "1" }));
+
+    expect(order).toStrictEqual(["route-verify", "validate", "handler"]);
   });
 });
 

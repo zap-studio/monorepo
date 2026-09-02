@@ -119,6 +119,10 @@ const createHandlerEntry = (options: RegisterOptions<unknown>): HandlerEntry => 
     entry.after = toArray(options.after);
   }
 
+  if (options.verify !== undefined) {
+    entry.verify = options.verify;
+  }
+
   return entry;
 };
 
@@ -216,8 +220,19 @@ const dispatchHandler = async (
  *
  * router.register("/stripe", {
  *   schema: stripeEventSchema,
+ *   verify: createHmacVerifier({ headerName: "stripe-signature", secret: stripeSecret }),
  *   handler: async ({ payload }) => {
  *     console.log("Stripe event:", payload.type);
+ *   },
+ * });
+ *
+ * // Each route can carry its own verifier for multi-provider setups —
+ * // no router-level `verify` needed unless routes should share a default.
+ * router.register("/github", {
+ *   schema: githubEventSchema,
+ *   verify: createHmacVerifier({ headerName: "x-hub-signature-256", secret: githubSecret }),
+ *   handler: async ({ payload }) => {
+ *     console.log("GitHub event:", payload.ref);
  *   },
  * });
  *
@@ -408,9 +423,10 @@ export class WebhookRouter<TMap = unknown> {
       await runBeforeHooks(ctx, this.globalBeforeHooks);
       await runBeforeHooks(ctx, handlerEntry.before);
 
-      if (this.verify) {
+      const verify = handlerEntry.verify ?? this.verify;
+      if (verify) {
         try {
-          await this.verify(ctx);
+          await verify(ctx);
         } catch (error) {
           this.logger?.warn("webhook verification failed", { error, path });
           throw error;
