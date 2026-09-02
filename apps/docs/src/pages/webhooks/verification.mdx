@@ -127,6 +127,39 @@ const isValid = constantTimeEquals(
 );
 ```
 
+## Per-Route Verification
+
+`verify` also works on `register()`, not just `createWebhookRouter()`. A route-level `verify` overrides the router-level one for that route only — useful when a single router handles multiple providers, each with its own signing scheme:
+
+```ts
+import { createHmacVerifier, createWebhookRouter } from "@zap-studio/webhooks";
+
+const router = createWebhookRouter();
+
+router.register("/github", {
+  schema: githubEventSchema,
+  verify: createHmacVerifier({
+    headerName: "x-hub-signature-256",
+    secret: process.env.GITHUB_WEBHOOK_SECRET!,
+  }),
+  handler: async ({ payload }) => {
+    console.log("GitHub event:", payload.ref);
+  },
+});
+
+router.register("/stripe", {
+  schema: stripeEventSchema,
+  verify: ({ request, rawBody }) => {
+    // Stripe's own signing scheme — see "Write a Custom Verifier" above
+  },
+  handler: async ({ payload }) => {
+    console.log("Stripe event:", payload.type);
+  },
+});
+```
+
+No router-level `verify` is needed here — each route carries its own, right next to its `schema` and `handler`. If a router-level `verify` is also set, it only applies to routes that don't set their own; a route-level `verify` always takes priority when present.
+
 :::warning[Replay protection]
 
 An HMAC signature proves who sent a request, not when. An attacker who captures a valid delivery can replay it later and it will still verify. If your provider includes a signed timestamp (as Stripe does), reject requests older than a few minutes; otherwise, track processed event IDs and make your handlers idempotent.
