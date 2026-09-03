@@ -15,7 +15,15 @@ export interface ToolRegistry {
   add: (tool: ModelContextTool, options?: RegisterToolOptions) => ToolRegistry;
   /** Every tool added so far, in insertion order. */
   list: () => ModelContextTool[];
-  /** Registers every added tool. Call `unmount` first to re-register from scratch. */
+  /**
+   * Registers every added tool. Call `unmount` first to re-register from scratch.
+   *
+   * All-or-nothing: if any tool fails to register, every tool that did
+   * succeed is unregistered again before this rejects with the first
+   * failure's reason. If `unmount` runs while this is still pending, any
+   * tool that finishes registering afterward is unregistered immediately
+   * instead of being left agent-callable with no way to reach it.
+   */
   mount: () => Promise<void>;
   /** Unregisters every tool this registry mounted. Idempotent, and safe pre-mount. */
   unmount: () => void;
@@ -42,6 +50,7 @@ export interface ToolRegistry {
 export const createToolRegistry = (): ToolRegistry => {
   const entries: { options: RegisterToolOptions | undefined; tool: ModelContextTool }[] = [];
   let unregisterFns: (() => void)[] = [];
+  let generation = 0;
 
   const registry: ToolRegistry = {
     add: (tool, options) => {
@@ -50,11 +59,37 @@ export const createToolRegistry = (): ToolRegistry => {
     },
     list: () => entries.map((entry) => entry.tool),
     mount: async () => {
-      unregisterFns = await Promise.all(
+      generation++;
+      const ownGeneration = generation;
+      const settled = await Promise.allSettled(
         entries.map((entry) => registerTool(entry.tool, entry.options)),
       );
+      const fulfilled = settled.filter(
+        (result): result is PromiseFulfilledResult<() => void> => result.status === "fulfilled",
+      );
+
+      // `unmount` (or a newer `mount`) ran while this call was still pending —
+      // don't let these registrations outlive it; unregister and stop here
+      // instead of overwriting whatever state that later call left behind.
+      if (ownGeneration !== generation) {
+        for (const result of fulfilled) {
+          result.value();
+        }
+        return;
+      }
+
+      unregisterFns = fulfilled.map((result) => result.value);
+
+      const rejected = settled.find(
+        (result): result is PromiseRejectedResult => result.status === "rejected",
+      );
+      if (rejected) {
+        registry.unmount();
+        throw rejected.reason;
+      }
     },
     unmount: () => {
+      generation++;
       for (const unregister of unregisterFns) {
         unregister();
       }

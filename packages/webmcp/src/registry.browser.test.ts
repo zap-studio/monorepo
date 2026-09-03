@@ -78,4 +78,45 @@ describe("createToolRegistry (browser)", () => {
 
     expect(await document.modelContext?.getTools()).toHaveLength(1);
   });
+
+  it("unregisters already-succeeded tools when another tool fails to register", async () => {
+    const modelContext = createFakeModelContext();
+    const register = modelContext.registerTool;
+    modelContext.registerTool = vi.fn<ModelContext["registerTool"]>(async (tool, options) => {
+      if (tool.name === shareTool.name) {
+        throw new Error("boom");
+      }
+      return register(tool, options);
+    });
+    document.modelContext = modelContext;
+
+    const registry = createToolRegistry();
+    registry.add(likeTool).add(shareTool);
+
+    await expect(registry.mount()).rejects.toThrow("boom");
+    expect(await document.modelContext?.getTools()).toHaveLength(0);
+  });
+
+  it("unregisters a registration that resolves after unmount ran while mount was pending", async () => {
+    let resolveRegistration: (() => void) | undefined;
+    const modelContext = createFakeModelContext();
+    const register = modelContext.registerTool;
+    modelContext.registerTool = vi.fn<ModelContext["registerTool"]>(async (tool, options) => {
+      await new Promise<void>((resolve) => {
+        resolveRegistration = resolve;
+      });
+      return register(tool, options);
+    });
+    document.modelContext = modelContext;
+
+    const registry = createToolRegistry();
+    registry.add(likeTool);
+
+    const mounting = registry.mount();
+    registry.unmount();
+    resolveRegistration?.();
+    await mounting;
+
+    expect(await document.modelContext?.getTools()).toHaveLength(0);
+  });
 });
