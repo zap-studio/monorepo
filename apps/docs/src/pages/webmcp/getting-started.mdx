@@ -1,0 +1,89 @@
+---
+title: Getting Started
+description: Install @zap-studio/webmcp and register your first tool step by step.
+---
+
+# Getting Started
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm install @zap-studio/webmcp
+```
+
+```bash [yarn]
+yarn add @zap-studio/webmcp
+```
+
+```bash [pnpm]
+pnpm add @zap-studio/webmcp
+```
+
+```bash [bun]
+bun add @zap-studio/webmcp
+```
+
+```bash [deno]
+deno add jsr:@zap-studio/webmcp
+```
+
+:::
+
+## Define a Tool
+
+`defineTool(tool)` validates a tool's shape and returns it unchanged. `name` must be 1-128 characters (letters, digits, `_`, `-`, `.`), and `description` must be non-empty — both are read by the calling agent to decide whether, and how, to call the tool.
+
+```ts
+import { defineTool } from "@zap-studio/webmcp";
+
+const likeTool = defineTool({
+  name: "posts_like",
+  description: "Like a post by ID",
+  execute: async ({ id }: { id: string }) => {
+    await likePost(id);
+    return { liked: true };
+  },
+});
+```
+
+`defineTool` throws a `TypeError` immediately if `name` or `description` is invalid, instead of letting a malformed tool reach the browser.
+
+## Register a Tool
+
+`registerTool(tool, options?)` does the actual work of exposing the tool to the native WebMCP API:
+
+```ts
+import { registerTool } from "@zap-studio/webmcp";
+
+const unregister = await registerTool(likeTool);
+```
+
+It behaves differently depending on the environment:
+
+- **During server rendering** (no `document`) — resolves immediately with a no-op unregister function. Safe to call from a component that also renders on the server.
+- **In a browser without WebMCP support** — rejects with `WebMCPNotSupportedError`. See [Errors](/webmcp/errors) for how to check ahead of time instead.
+- **In a browser with WebMCP support** — registers the tool and returns a real unregister function.
+
+## Unregister a Tool
+
+The function `registerTool` resolves to is idempotent — calling it more than once is safe:
+
+```ts
+unregister();
+unregister(); // no-op, does not throw
+```
+
+Internally, unregistration is signal-based, per the WebMCP spec: `registerTool` creates its own `AbortController` and returns a function that aborts it. Pass your own `signal` in `options` and `registerTool` combines it with its internal one, so aborting either one unregisters the tool:
+
+```ts
+const controller = new AbortController();
+await registerTool(likeTool, { signal: controller.signal });
+
+controller.abort(); // also unregisters the tool
+```
+
+## Register More Than One Tool
+
+For a single tool, call `registerTool` directly. For a group of tools that share a lifecycle — e.g. every tool a route exposes — see [Tool Registry](/webmcp/registry) instead of tracking each unregister function by hand.

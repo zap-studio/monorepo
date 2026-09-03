@@ -1,0 +1,78 @@
+---
+title: Tool Registry
+description: createToolRegistry batches a group of tools behind one mount/unmount pair.
+---
+
+# Tool Registry
+
+`createToolRegistry()` groups tools that share a lifecycle — e.g. every tool a route exposes — so they mount and unmount together, instead of managing one `registerTool` call (and one cleanup function) per tool by hand.
+
+## Creating a Registry
+
+```ts
+import { createToolRegistry } from "@zap-studio/webmcp";
+
+const registry = createToolRegistry();
+```
+
+## Adding Tools
+
+`add(tool, options?)` returns the registry, so calls can be chained:
+
+```ts
+registry.add(likeTool).add(shareTool);
+```
+
+`add` only stores the tool — nothing is registered with WebMCP yet.
+
+## Mounting
+
+`mount()` registers every added tool, in the order they were added, and resolves once all of them have settled:
+
+```ts
+await registry.mount();
+```
+
+Like `registerTool`, this is SSR-safe: during server rendering, `mount()` resolves without registering anything.
+
+## Unmounting
+
+`unmount()` unregisters every tool this registry mounted, and clears its internal state:
+
+```ts
+registry.unmount();
+```
+
+`unmount()` is idempotent — calling it more than once, or before `mount()` has ever run, does not throw:
+
+```ts
+const empty = createToolRegistry();
+empty.unmount(); // no-op, does not throw
+```
+
+## Listing Tools
+
+`list()` returns every tool added so far, in insertion order — useful for debugging, or for rendering a UI that mirrors what an agent can currently call:
+
+```ts
+registry.list(); // [likeTool, shareTool]
+```
+
+## Route-Scoped Example
+
+A common pattern: mount a route's tools when it becomes active, and unmount them when the user navigates away.
+
+```ts
+import { createToolRegistry } from "@zap-studio/webmcp";
+
+const postToolsRegistry = createToolRegistry();
+postToolsRegistry.add(likeTool).add(shareTool).add(flagTool);
+
+// on route enter
+await postToolsRegistry.mount();
+
+// on route leave
+postToolsRegistry.unmount();
+```
+
+In a React app, [`useWebMCPTool`](/webmcp/react) already handles this per-component — reach for a registry when you need to group tools outside of a component's own lifecycle, e.g. in a router's loader/unload hooks.
