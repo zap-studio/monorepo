@@ -42,11 +42,14 @@ Registration runs in `useEffect`, so it happens after mount, in the browser only
 Pass `deps` to control when the tool re-registers — this works exactly like `useEffect`'s dependency array. With the default `[]`, the tool registers once, on mount, using the first render's `tool`:
 
 ```tsx
-useWebMCPTool({
-  name: "posts_like",
-  description: "Like a post by ID",
-  execute: async ({ id }: { id: string }) => ({ liked: await likePost(id) }),
-}, []);
+useWebMCPTool(
+  {
+    name: "posts_like",
+    description: "Like a post by ID",
+    execute: async ({ id }: { id: string }) => ({ liked: await likePost(id) }),
+  },
+  [],
+);
 ```
 
 Pass the values `tool` depends on to re-register when they change — for example, when a tool's `execute` closes over a prop:
