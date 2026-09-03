@@ -18,4 +18,5 @@ export type {
   ToolAnnotations,
   ToolExecuteCallback,
   ToolExecuteCallbackOptions,
+  WebMCPDocument,
 } from "./types.ts";

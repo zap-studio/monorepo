@@ -111,14 +111,14 @@ export interface ModelContext {
   ontoolchange: ((event: Event) => void) | null;
 }
 
-declare global {
-  interface Document {
-    /**
-     * The native WebMCP entrypoint. Not yet part of `lib.dom.d.ts` —
-     * experimental, and as of this package's release shipping only in
-     * Chrome/Edge behind a flag. Absent by default; narrow at the call
-     * site instead of assuming it exists.
-     */
-    modelContext?: ModelContext;
-  }
-}
+/**
+ * `Document`, narrowed with the native WebMCP entrypoint. Not yet part of
+ * `lib.dom.d.ts` — experimental, and as of this package's release shipping
+ * only in Chrome/Edge behind a flag.
+ *
+ * A plain type, not a `declare global` augmentation: global augmentations
+ * are unsupported by JSR's public API analysis (and would leak into every
+ * consumer's own `Document` type). Cast through this instead — `document as
+ * WebMCPDocument` — at any call site that needs `modelContext` directly.
+ */
+export type WebMCPDocument = Document & { modelContext?: ModelContext };

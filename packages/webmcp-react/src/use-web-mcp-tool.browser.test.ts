@@ -1,9 +1,13 @@
-import type { ModelContext, RegisteredTool } from "@zap-studio/webmcp";
+import type { ModelContext, RegisteredTool, WebMCPDocument } from "@zap-studio/webmcp";
 
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useWebMCPTool } from "./use-web-mcp-tool.ts";
+
+// SAFETY: WebMCPDocument only adds an optional `modelContext` field on top of the
+// real `Document` interface — it changes nothing about the object `document` refers to.
+const testDocument = document as WebMCPDocument;
 
 const LIKE_TOOL_NAME = "posts_like";
 const LIKE_TOOL_DESCRIPTION = "Like a post by ID";
@@ -35,7 +39,7 @@ const createFakeModelContext = (): ModelContext => {
 
 describe("useWebMCPTool (supported)", () => {
   beforeEach(() => {
-    document.modelContext = createFakeModelContext();
+    testDocument.modelContext = createFakeModelContext();
   });
 
   afterEach(() => {
@@ -52,7 +56,7 @@ describe("useWebMCPTool (supported)", () => {
     );
 
     await waitFor(() => {
-      expect(document.modelContext?.registerTool).toHaveBeenCalledOnce();
+      expect(testDocument.modelContext?.registerTool).toHaveBeenCalledOnce();
     });
     expect(result.current.error).toBeNull();
   });
@@ -67,7 +71,7 @@ describe("useWebMCPTool (supported)", () => {
     );
 
     await waitFor(async () => {
-      expect(await document.modelContext?.getTools()).toHaveLength(1);
+      expect(await testDocument.modelContext?.getTools()).toHaveLength(1);
     });
 
     act(() => {
@@ -75,7 +79,7 @@ describe("useWebMCPTool (supported)", () => {
     });
 
     await waitFor(async () => {
-      expect(await document.modelContext?.getTools()).toHaveLength(0);
+      expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
     });
   });
 
@@ -91,7 +95,7 @@ describe("useWebMCPTool (supported)", () => {
     unmount();
 
     await waitFor(async () => {
-      expect(await document.modelContext?.getTools()).toHaveLength(0);
+      expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
     });
   });
 
@@ -106,13 +110,13 @@ describe("useWebMCPTool (supported)", () => {
     );
 
     await waitFor(() => {
-      expect(document.modelContext?.registerTool).toHaveBeenCalledTimes(1);
+      expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(1);
     });
 
     rerender({ id: "b" });
 
     await waitFor(() => {
-      expect(document.modelContext?.registerTool).toHaveBeenCalledTimes(2);
+      expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -129,16 +133,16 @@ describe("useWebMCPTool (supported)", () => {
     );
 
     await waitFor(() => {
-      expect(document.modelContext?.registerTool).toHaveBeenCalledTimes(1);
+      expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(1);
     });
 
     rerender();
 
-    expect(document.modelContext?.registerTool).toHaveBeenCalledTimes(1);
+    expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(1);
   });
 
   it("wraps a non-Error rejection from registerTool in an Error", async () => {
-    document.modelContext = {
+    testDocument.modelContext = {
       ...createFakeModelContext(),
       registerTool: vi.fn<ModelContext["registerTool"]>(() => Promise.reject("boom")),
     };

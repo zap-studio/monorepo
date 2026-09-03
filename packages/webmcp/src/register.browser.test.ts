@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ModelContext, RegisteredTool } from "./types.ts";
+import type { ModelContext, RegisteredTool, WebMCPDocument } from "./types.ts";
 
 import { WebMCPNotSupportedError } from "./errors.ts";
 import { defineTool, hasWebMCPSupport, registerTool } from "./register.ts";
+
+// SAFETY: WebMCPDocument only adds an optional `modelContext` field on top of the
+// real `Document` interface — it changes nothing about the object `document` refers to.
+const testDocument = document as WebMCPDocument;
 
 const createFakeModelContext = (): ModelContext => {
   const tools = new Map<string, RegisteredTool>();
@@ -32,7 +36,7 @@ const createFakeModelContext = (): ModelContext => {
 
 describe("registerTool (browser, supported)", () => {
   beforeEach(() => {
-    document.modelContext = createFakeModelContext();
+    testDocument.modelContext = createFakeModelContext();
   });
 
   afterEach(() => {
@@ -52,7 +56,7 @@ describe("registerTool (browser, supported)", () => {
 
     await registerTool(tool);
 
-    expect(document.modelContext?.registerTool).toHaveBeenCalledExactlyOnceWith(
+    expect(testDocument.modelContext?.registerTool).toHaveBeenCalledExactlyOnceWith(
       tool,
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
@@ -67,11 +71,11 @@ describe("registerTool (browser, supported)", () => {
       }),
     );
 
-    expect(await document.modelContext?.getTools()).toHaveLength(1);
+    expect(await testDocument.modelContext?.getTools()).toHaveLength(1);
 
     unregister();
 
-    expect(await document.modelContext?.getTools()).toHaveLength(0);
+    expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
   });
 
   it("is idempotent: calling unregister twice does not throw", async () => {
@@ -85,7 +89,7 @@ describe("registerTool (browser, supported)", () => {
 
     unregister();
     expect(() => unregister()).not.toThrow();
-    expect(await document.modelContext?.getTools()).toHaveLength(0);
+    expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
   });
 
   it("combines a caller-provided signal with its own", async () => {
@@ -99,7 +103,7 @@ describe("registerTool (browser, supported)", () => {
     await registerTool(tool, { signal: controller.signal });
     controller.abort();
 
-    expect(await document.modelContext?.getTools()).toHaveLength(0);
+    expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
   });
 });
 

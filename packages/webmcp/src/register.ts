@@ -6,7 +6,7 @@
  * @module @zap-studio/webmcp/register
  */
 
-import type { ModelContextTool, RegisterToolOptions } from "./types.ts";
+import type { ModelContextTool, RegisterToolOptions, WebMCPDocument } from "./types.ts";
 
 import { WebMCPNotSupportedError } from "./errors.ts";
 
@@ -70,7 +70,9 @@ export const defineTool = <TInput = unknown>(
  * ```
  */
 export const hasWebMCPSupport = (): boolean =>
-  typeof document !== "undefined" && document.modelContext !== undefined;
+  // SAFETY: WebMCPDocument only adds an optional `modelContext` field on top of the
+  // real `Document` interface — it changes nothing about the object `document` refers to.
+  typeof document !== "undefined" && (document as WebMCPDocument).modelContext !== undefined;
 
 const noop = (): void => {};
 
@@ -117,7 +119,9 @@ export const registerTool = async <TInput = unknown>(
     return noop;
   }
 
-  const modelContext = document.modelContext;
+  // SAFETY: WebMCPDocument only adds an optional `modelContext` field on top of the
+  // real `Document` interface — it changes nothing about the object `document` refers to.
+  const modelContext = (document as WebMCPDocument).modelContext;
   if (modelContext === undefined) {
     throw new WebMCPNotSupportedError();
   }
