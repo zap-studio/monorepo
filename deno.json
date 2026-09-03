@@ -11,6 +11,8 @@
     "./packages/retry",
     "./packages/store",
     "./packages/store-react",
-    "./packages/webhooks"
+    "./packages/webhooks",
+    "./packages/webmcp",
+    "./packages/webmcp-react"
   ]
 }
