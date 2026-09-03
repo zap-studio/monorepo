@@ -1,0 +1,53 @@
+---
+title: Errors
+description: WebMCPNotSupportedError and hasWebMCPSupport, for handling browsers that don't support WebMCP yet.
+---
+
+# Errors
+
+WebMCP ships experimentally in Chrome/Edge only, as of this package's release. `@zap-studio/webmcp` gives you two ways to handle browsers without support: check ahead of time, or catch the rejection.
+
+## `hasWebMCPSupport`
+
+Returns `true` only when `document.modelContext` is actually available:
+
+```ts
+import { hasWebMCPSupport } from "@zap-studio/webmcp";
+
+if (hasWebMCPSupport()) {
+  await registerTool(likeTool);
+}
+```
+
+Always `false` during server rendering (no `document`), and `false` in any browser that hasn't shipped `document.modelContext` yet.
+
+## `WebMCPNotSupportedError`
+
+`registerTool` rejects with `WebMCPNotSupportedError` when called in a browser without WebMCP support:
+
+```ts
+import { registerTool, WebMCPNotSupportedError } from "@zap-studio/webmcp";
+
+try {
+  await registerTool(likeTool);
+} catch (error) {
+  if (error instanceof WebMCPNotSupportedError) {
+    // fall back to a regular button — no agent-callable tool here
+  }
+}
+```
+
+This only happens in an actual browser without support — `registerTool` never rejects with this error during server rendering, since it resolves to a no-op unregister function instead. See [Getting Started](/webmcp/getting-started) for the full behavior across environments.
+
+## Falling Back to a Polyfill
+
+`@zap-studio/webmcp` has no required dependency on any polyfill — it only wraps whatever `document.modelContext` your app's environment provides. If you want WebMCP to work in browsers beyond Chrome/Edge, install a community polyfill such as [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill) yourself, before this package's code runs — `hasWebMCPSupport()` and `registerTool` pick it up the same way they pick up a native implementation, with no extra configuration.
+
+## `defineTool` Validation Errors
+
+`defineTool` throws a plain `TypeError` — not a custom error class — when `name` or `description` is invalid, since this is caught during development, not at runtime in front of a user:
+
+```ts
+defineTool({ name: "invalid name!", description: "desc", execute: async () => "ok" });
+// TypeError: Invalid WebMCP tool name "invalid name!": ...
+```

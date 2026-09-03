@@ -1,0 +1,64 @@
+{
+  "name": "@zap-studio/webmcp-react",
+  "version": "1.0.0",
+  "private": false,
+  "description": "React bindings for @zap-studio/webmcp: a useWebMCPTool hook that registers a tool with the native WebMCP API for the lifetime of a component.",
+  "keywords": [
+    "ai",
+    "ai-agent",
+    "mcp",
+    "model-context-protocol",
+    "react",
+    "react-hooks",
+    "tools",
+    "typescript",
+    "webmcp"
+  ],
+  "homepage": "https://www.zapstudio.dev/webmcp/react",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/webmcp-react"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./use-web-mcp-tool": "./dist/use-web-mcp-tool.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@zap-studio/typescript": "workspace:*",
+    "@zap-studio/webmcp": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@zap-studio/webmcp": "^1.0.0",
+    "react": ">=18.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -116,6 +116,20 @@
       "type": "application/json",
       "url": "https://registry.npmjs.org/@zap-studio/webhooks",
       "description": "A lightweight, type-safe, tree-shakeable webhook router with Standard Schema validation, signature verification, and lifecycle hooks."
+    },
+    {
+      "identifier": "urn:air:zapstudio.dev:package:webmcp",
+      "displayName": "@zap-studio/webmcp",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/webmcp",
+      "description": "A framework-agnostic, SSR-safe wrapper around the native WebMCP document.modelContext API, with a batch tool registry for exposing JavaScript tools to AI agents."
+    },
+    {
+      "identifier": "urn:air:zapstudio.dev:package:webmcp-react",
+      "displayName": "@zap-studio/webmcp-react",
+      "type": "application/json",
+      "url": "https://registry.npmjs.org/@zap-studio/webmcp-react",
+      "description": "React bindings for @zap-studio/webmcp: a useWebMCPTool hook that registers a tool with the native WebMCP API for the lifetime of a component."
     }
   ]
 }
