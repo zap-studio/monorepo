@@ -27,6 +27,8 @@ the same logic per project.
 - **@zap-studio/store-react** — you use React and want a `useStore` hook to subscribe a component to a `@zap-studio/store` store or derived value.
 - **@zap-studio/validation** — you need shared Standard Schema validation utilities and a consistent ValidationError shape across libraries.
 - **@zap-studio/webhooks** — you need a type-safe webhook router with signature verification and lifecycle hooks on the standard Request/Response API.
+- **@zap-studio/webmcp** — you need to expose JavaScript functions as tools an AI agent can call through the native WebMCP `document.modelContext` API, safely across server rendering (Next.js, TanStack Start) and browsers that don't support it yet.
+- **@zap-studio/webmcp-react** — you use React and want a `useWebMCPTool` hook to register a WebMCP tool for the lifetime of a component.
 
 Every package is published to npm under the `@zap-studio` scope, is tree-shakeable,
 and has its own "Getting Started" page linked from the docs index above.

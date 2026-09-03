@@ -229,6 +229,17 @@ const sidebar = [
         ],
         text: "webhooks",
       },
+      {
+        collapsed: true,
+        items: [
+          { link: "/webmcp", text: "Overview" },
+          { link: "/webmcp/getting-started", text: gettingStarted },
+          { link: "/webmcp/registry", text: "Tool Registry" },
+          { link: "/webmcp/errors", text: "Errors" },
+          { link: "/webmcp/react", text: "React" },
+        ],
+        text: "webmcp",
+      },
     ],
     text: "Packages",
   },
@@ -334,6 +345,13 @@ export default defineConfig({
         version: "2.0.0",
         description:
           "Schema-first, type-safe webhook routing built on the standard Web API Request and Response primitives, with runtime-agnostic signature verification support.",
+      },
+      {
+        slug: "webmcp",
+        name: "@zap-studio/webmcp",
+        version: "1.0.0",
+        description:
+          "A framework-agnostic, SSR-safe wrapper around the native WebMCP document.modelContext API, with a batch tool registry for exposing JavaScript tools to AI agents.",
       },
     ];
     const siteBaseUrl = "https://www.zapstudio.dev";
@@ -490,6 +508,7 @@ export default defineConfig({
     { link: "/store", text: "store" },
     { link: "/validation", text: "validation" },
     { link: "/webhooks", text: "webhooks" },
+    { link: "/webmcp", text: "webmcp" },
     { link: repoUrl, text: "GitHub" },
   ],
 });
