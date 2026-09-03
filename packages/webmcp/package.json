@@ -1,0 +1,57 @@
+{
+  "name": "@zap-studio/webmcp",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A framework-agnostic, SSR-safe wrapper around the native WebMCP document.modelContext API, with a batch tool registry for exposing JavaScript tools to AI agents.",
+  "keywords": [
+    "ai",
+    "ai-agent",
+    "browser-api",
+    "framework-agnostic",
+    "mcp",
+    "model-context-protocol",
+    "ssr-safe",
+    "tools",
+    "typescript",
+    "webmcp"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/webmcp",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/webmcp"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./errors": "./dist/errors.js",
+    "./register": "./dist/register.js",
+    "./registry": "./dist/registry.js",
+    "./types": "./dist/types.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm -C ../.. run build"
+  },
+  "devDependencies": {
+    "@zap-studio/typescript": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
