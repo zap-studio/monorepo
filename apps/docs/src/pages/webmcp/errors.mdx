@@ -51,3 +51,14 @@ This only happens in an actual browser without support — `registerTool` never 
 defineTool({ name: "invalid name!", description: "desc", execute: async () => "ok" });
 // TypeError: Invalid WebMCP tool name "invalid name!": ...
 ```
+
+## Accessing `document.modelContext` Directly
+
+`@zap-studio/webmcp` never merges `modelContext` into the global `Document` type — a `declare global` augmentation like that is unsupported by JSR's public API analysis, and would leak into every consumer's own `Document` type whether they use WebMCP or not. `registerTool` and `hasWebMCPSupport` already handle this internally, so you only need to do anything extra if you want to call `document.modelContext` yourself — for example `getTools()` or `executeTool()`, for introspection outside of `registerTool`. Cast through the exported `WebMCPDocument` type instead of assuming the property exists:
+
+```ts
+import type { WebMCPDocument } from "@zap-studio/webmcp";
+
+const modelContext = (document as WebMCPDocument).modelContext;
+const tools = await modelContext?.getTools();
+```

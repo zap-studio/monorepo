@@ -26,6 +26,7 @@ npm install @zap-studio/webmcp
 - **[`createToolRegistry`](/webmcp/registry)** batches a group of tools (e.g. everything a route exposes) behind one `mount()`/`unmount()` pair.
 - **[Typed errors](/webmcp/errors)** — `WebMCPNotSupportedError` when the browser doesn't support WebMCP yet, plus `hasWebMCPSupport()` to check ahead of time.
 - **No required runtime dependencies**, and no assumption that the native API is stable — this package tracks the spec, it doesn't extend it.
+- **No global type augmentation** — `modelContext` is never merged into the ambient `Document` type (unsupported by JSR's public API checks, and it would leak into every consumer's own types); cast through the exported `WebMCPDocument` type for direct access.
 - **[React binding](/webmcp/react)** available separately as [`@zap-studio/webmcp-react`](https://www.npmjs.com/package/@zap-studio/webmcp-react).
 
 ## Quick Start
@@ -105,6 +106,15 @@ try {
     // fall back to a regular button — no agent-callable tool here
   }
 }
+```
+
+`document.modelContext` is never merged into the global `Document` type — cast through the exported `WebMCPDocument` type if you need to call it directly, beyond what `registerTool`/`hasWebMCPSupport` already cover:
+
+```ts
+import type { WebMCPDocument } from "@zap-studio/webmcp";
+
+const modelContext = (document as WebMCPDocument).modelContext;
+const tools = await modelContext?.getTools();
 ```
 
 ## Runtime Support

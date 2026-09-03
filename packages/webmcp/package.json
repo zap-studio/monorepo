@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/webmcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "A framework-agnostic, SSR-safe wrapper around the native WebMCP document.modelContext API, with a batch tool registry for exposing JavaScript tools to AI agents.",
   "keywords": [

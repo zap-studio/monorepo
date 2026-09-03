@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1]
+
+### Fixed
+
+- Removed the `declare global` augmentation of `Document.modelContext` — JSR's public API analysis (`slow-types`) rejects global module augmentations outright, which blocked `jsr publish` entirely. Replaced with an exported `WebMCPDocument` type (`Document & { modelContext?: ModelContext }`); cast through it — `document as WebMCPDocument` — at any call site that needs `modelContext` directly. The npm 1.0.0 release predates this fix and still carries the ambient global version, which works fine for npm/TypeScript consumers; only JSR publishing was affected.
+
 ## [1.0.0]
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/webmcp-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "React bindings for @zap-studio/webmcp: a useWebMCPTool hook that registers a tool with the native WebMCP API for the lifetime of a component.",
   "keywords": [
