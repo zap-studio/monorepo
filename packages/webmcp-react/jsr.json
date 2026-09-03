@@ -7,6 +7,10 @@
     ".": "./src/index.ts",
     "./use-web-mcp-tool": "./src/use-web-mcp-tool.ts"
   },
+  "imports": {
+    "@zap-studio/webmcp": "jsr:@zap-studio/webmcp@^1.0.0",
+    "react": "npm:react@^19.2.8"
+  },
   "publish": {
     "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
   }
