@@ -29,9 +29,9 @@ catalog:
   "@testing-library/react": ^16.3.3
   "@types/node": ^26.4.1
   "@types/react": ^19.2.18
-  "@types/react-dom": ^19.2.5
-  "@vitest/browser-playwright": ^4.1.11
-  "@vitest/coverage-v8": ^4.1.11
+  "@types/react-dom": ^19.2.7
+  "@vitest/browser-playwright": ^5.0.0
+  "@vitest/coverage-v8": ^5.0.0
   arktype: ^2.2.3
   eslint: ^10.9.1
   eslint-plugin-cypress: ^7.0.1
@@ -41,7 +41,7 @@ catalog:
   eslint-plugin-regexp: ^3.2.0
   eslint-plugin-solid: ^0.17.0
   eslint-plugin-sonarjs: ^4.2.0
-  eslint-plugin-storybook: ^10.5.10
+  eslint-plugin-storybook: ^10.6.0
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
   lefthook: ^2.1.12
@@ -57,7 +57,7 @@ catalog:
   typescript: ^7.0.2
   valibot: ^1.4.2
   vite: ^8.2.2
-  vitest: ^4.1.11
+  vitest: ^5.0.0
   vocs: ^2.8.5
   waku: 1.0.0-beta.6
   wrangler: ^4.128.0

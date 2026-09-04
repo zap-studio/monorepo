@@ -37,6 +37,7 @@ logs/
 report.[0-9]*.[0-9]*.json
 
 # Test artifacts
+.vitest/
 .vitest-attachments/
 **/__screenshots__/
 
