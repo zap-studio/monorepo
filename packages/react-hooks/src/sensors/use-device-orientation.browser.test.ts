@@ -56,9 +56,16 @@ describe("useDeviceOrientation", () => {
   });
 
   it("resolves true from requestPermission when no permission gate exists", async () => {
+    const gate = Reflect.getOwnPropertyDescriptor(DeviceOrientationEvent, "requestPermission");
+    Reflect.deleteProperty(DeviceOrientationEvent, "requestPermission");
+
     const { result } = renderHook(() => useDeviceOrientation());
 
     await expect(result.current.requestPermission()).resolves.toBe(true);
+
+    if (gate) {
+      Object.defineProperty(DeviceOrientationEvent, "requestPermission", gate);
+    }
   });
 
   it("resolves according to the iOS permission gate when present", async () => {
