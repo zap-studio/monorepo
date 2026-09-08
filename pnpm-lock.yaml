@@ -259,6 +259,9 @@ importers:
       '@arethetypeswrong/core':
         specifier: 'catalog:'
         version: 0.18.5
+      '@opentelemetry/api':
+        specifier: 'catalog:'
+        version: 1.9.1
       '@oxlint/plugins':
         specifier: 'catalog:'
         version: 1.81.0

@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",
+    "@opentelemetry/api": "catalog:",
     "@oxlint/plugins": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
