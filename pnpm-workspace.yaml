@@ -55,11 +55,11 @@ catalog:
   publint: ^0.3.24
   react: ^19.2.8
   react-dom: ^19.2.8
-  tsdown: ^0.22.14
+  tsdown: ^0.23.0
   typescript: ^7.0.2
   valibot: ^1.4.2
   vite: ^8.2.2
   vitest: ^5.0.0
   wrangler: ^4.129.0
   zod: ^4.5.4
-  unplugin-unused: ^0.5.7
+  unplugin-unused: ^0.6.0
