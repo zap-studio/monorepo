@@ -5,20 +5,12 @@ sidebar:
   label: Getting Started
 ---
 
-[![CI](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/zap-studio/monorepo/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/zap-studio/monorepo)](https://github.com/zap-studio/monorepo/blob/main/LICENSE)
-
 Small, type-safe TypeScript packages for the infrastructure code every app needs — HTTP calls, retries, auth checks, validation, logging, webhooks. Done once, correctly, so you don't rebuild it per project.
-
-```bash
-npm install fetch
-```
-
-[Start with `fetch` →](/fetch/getting-started)
 
 ## Quick Look
 
 ```ts
-import { api } from "fetch";
+import { api } from "@zap-studio/fetch";
 import { z } from "zod";
 
 const UserSchema = z.object({
