@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/validation"
+title: validation
 description: Standard Schema utilities and ValidationError helpers for one consistent validation flow across schema libraries.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/validation"
 ---
 
-`@zap-studio/validation` provides utilities for validating values using the [**Standard Schema**](https://standardschema.dev/schema) specification.
+`validation` provides utilities for validating values using the [**Standard Schema**](https://standardschema.dev/schema) specification.
 
 ## Motivation
 
@@ -15,7 +15,7 @@ Zod throws a `ZodError`. Valibot returns a result object. ArkType has its own sh
 
 And if you ever switch from one to another, every call site that touches validation needs to change too.
 
-`@zap-studio/validation` removes this difference. `standardValidate` and `standardValidateSync` give you one function and one `ValidationError` shape, no matter which Standard Schema library sits underneath.
+`validation` removes this difference. `standardValidate` and `standardValidateSync` give you one function and one `ValidationError` shape, no matter which Standard Schema library sits underneath.
 
 Validation code becomes portable: swap the schema library later, and the code that calls it does not need to change.
 

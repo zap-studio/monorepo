@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/oxlint"
+title: oxlint
 description: "Exclusive, single-owner oxlint presets — pick exactly the plugins and framework rules your project needs, nothing implied."
 sidebar:
   label: Overview
@@ -7,13 +7,13 @@ type: package
 package: "@zap-studio/oxlint"
 ---
 
-`@zap-studio/oxlint` is Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — exclusive, single-owner rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
+`oxlint` is Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — exclusive, single-owner rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
 
 ## Motivation
 
 `oxlint` runs zero-config out of the box, but that config only covers its own bundled rules. The moment a project needs React, Next.js, TanStack, or test-specific linting, that zero-config story ends — now it's on you to find the right plugins, wire them up, and decide which rules to turn on.
 
-`@zap-studio/oxlint` picks up where zero-config leaves off: one preset per plugin or framework integration, each owning a disjoint slice of rules. Nothing cascades — `extends: [react]` gets you the `react` plugin's hooks rules and nothing else, not accessibility, not React-Doctor's broader catalog, not any particular framework. You list every preset you want.
+`oxlint` picks up where zero-config leaves off: one preset per plugin or framework integration, each owning a disjoint slice of rules. Nothing cascades — `extends: [react]` gets you the `react` plugin's hooks rules and nothing else, not accessibility, not React-Doctor's broader catalog, not any particular framework. You list every preset you want.
 
 The one exception is `base`: JS/TS correctness and security rules that apply regardless of framework, bundled as a single preset since there's no meaningful way to want half of it.
 

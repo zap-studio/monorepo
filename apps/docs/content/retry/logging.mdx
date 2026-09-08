@@ -5,7 +5,7 @@ type: package
 package: "@zap-studio/retry"
 ---
 
-`runRetryPolicy(...)` accepts an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe retry internals; omit it and nothing is logged — zero overhead.
+`runRetryPolicy(...)` accepts an optional `logger?: Logger` option from [`logger`](/logger). Pass one to observe retry internals; omit it and nothing is logged — zero overhead.
 
 ```ts
 import { ConsoleLogger } from "@zap-studio/logger";
@@ -46,4 +46,4 @@ const logger: Logger = {
 await runRetryPolicy(policy, execute, { logger });
 ```
 
-See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.
+See [`logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.

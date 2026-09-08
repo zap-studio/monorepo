@@ -5,7 +5,7 @@ type: package
 package: "@zap-studio/webmcp"
 ---
 
-WebMCP ships experimentally in Chrome/Edge only, as of this package's release. `@zap-studio/webmcp` gives you two ways to handle browsers without support: check ahead of time, or catch the rejection.
+WebMCP ships experimentally in Chrome/Edge only, as of this package's release. `webmcp` gives you two ways to handle browsers without support: check ahead of time, or catch the rejection.
 
 ## `hasWebMCPSupport`
 
@@ -41,7 +41,7 @@ This only happens in an actual browser without support — `registerTool` never 
 
 ## Falling Back to a Polyfill
 
-`@zap-studio/webmcp` has no required dependency on any polyfill — it only wraps whatever `document.modelContext` your app's environment provides. If you want WebMCP to work in browsers beyond Chrome/Edge, install a community polyfill such as [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill) yourself, before this package's code runs — `hasWebMCPSupport()` and `registerTool` pick it up the same way they pick up a native implementation, with no extra configuration.
+`webmcp` has no required dependency on any polyfill — it only wraps whatever `document.modelContext` your app's environment provides. If you want WebMCP to work in browsers beyond Chrome/Edge, install a community polyfill such as [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill) yourself, before this package's code runs — `hasWebMCPSupport()` and `registerTool` pick it up the same way they pick up a native implementation, with no extra configuration.
 
 ## `defineTool` Validation Errors
 
@@ -54,7 +54,7 @@ defineTool({ name: "invalid name!", description: "desc", execute: async () => "o
 
 ## Accessing `document.modelContext` Directly
 
-`@zap-studio/webmcp` never merges `modelContext` into the global `Document` type — a `declare global` augmentation like that is unsupported by JSR's public API analysis, and would leak into every consumer's own `Document` type whether they use WebMCP or not. `registerTool` and `hasWebMCPSupport` already handle this internally, so you only need to do anything extra if you want to call `document.modelContext` yourself — for example `getTools()` or `executeTool()`, for introspection outside of `registerTool`. Cast through the exported `WebMCPDocument` type instead of assuming the property exists:
+`webmcp` never merges `modelContext` into the global `Document` type — a `declare global` augmentation like that is unsupported by JSR's public API analysis, and would leak into every consumer's own `Document` type whether they use WebMCP or not. `registerTool` and `hasWebMCPSupport` already handle this internally, so you only need to do anything extra if you want to call `document.modelContext` yourself — for example `getTools()` or `executeTool()`, for introspection outside of `registerTool`. Cast through the exported `WebMCPDocument` type instead of assuming the property exists:
 
 ```ts
 import type { WebMCPDocument } from "@zap-studio/webmcp";

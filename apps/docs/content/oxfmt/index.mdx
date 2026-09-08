@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/oxfmt"
+title: oxfmt
 description: A decided oxfmt preset for sorted imports, sorted package.json, and optional Tailwind CSS class sorting.
 sidebar:
   label: Overview
@@ -7,13 +7,13 @@ type: package
 package: "@zap-studio/oxfmt"
 ---
 
-`@zap-studio/oxfmt` is Zap Studio's [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) preset — sorted imports, sorted `package.json`, and an optional Tailwind CSS class-sorting extension.
+`oxfmt` is Zap Studio's [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) preset — sorted imports, sorted `package.json`, and an optional Tailwind CSS class-sorting extension.
 
 ## Motivation
 
 `oxfmt`'s `sortImports` option is powerful but unopinionated — it asks you to define your own group order, and most projects either skip it or improvise one per repo, so import order drifts between packages in the same monorepo and every PR review re-litigates it.
 
-`@zap-studio/oxfmt` ships one decided order: type-only imports first, then builtin/external values, then internal types, then internal values, then parent/sibling/index imports grouped by type then value, then anything unmatched — with a blank line between each group. `package.json` is sorted the same way every time, keys and `scripts` alphabetically. Adopt the preset once and stop deciding it per project.
+`oxfmt` ships one decided order: type-only imports first, then builtin/external values, then internal types, then internal values, then parent/sibling/index imports grouped by type then value, then anything unmatched — with a blank line between each group. `package.json` is sorted the same way every time, keys and `scripts` alphabetically. Adopt the preset once and stop deciding it per project.
 
 ## Features
 

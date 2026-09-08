@@ -1,7 +1,7 @@
 import { defineMeta } from "blume";
 
 export default defineMeta({
-  title: "@zap-studio/oxfmt",
+  title: "oxfmt",
   display: "page",
   pages: ["getting-started", "presets"],
 });

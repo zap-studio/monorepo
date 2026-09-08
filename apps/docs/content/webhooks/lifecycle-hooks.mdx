@@ -5,7 +5,7 @@ type: package
 package: "@zap-studio/webhooks"
 ---
 
-`@zap-studio/webhooks` exposes global `before`, `after`, and `onError` hooks for cross-cutting behavior. Hooks are shared interception points around route execution — they keep handlers focused on business logic while logging, metrics, and error policy live in one place.
+`webhooks` exposes global `before`, `after`, and `onError` hooks for cross-cutting behavior. Hooks are shared interception points around route execution — they keep handlers focused on business logic while logging, metrics, and error policy live in one place.
 
 ## Add Global Hooks
 
@@ -27,7 +27,7 @@ const router = createWebhookRouter({
 
 Every hook receives the webhook context — `{ request, rawBody, path }` — where `request` is the incoming Web API `Request` (body already consumed by the router), `rawBody` holds the exact body bytes, and `path` is the matched route key.
 
-Hook signatures (exported from `@zap-studio/webhooks`):
+Hook signatures (exported from `webhooks`):
 
 - `BeforeHook` — `(ctx: WebhookContext) => Promise<void> | void`
 - `AfterHook` — `(ctx: WebhookContext, response: Response) => Promise<void> | void`

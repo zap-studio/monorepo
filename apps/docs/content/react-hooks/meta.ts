@@ -1,7 +1,7 @@
 import { defineMeta } from "blume";
 
 export default defineMeta({
-  title: "@zap-studio/react-hooks",
+  title: "react-hooks",
   display: "page",
   pages: [
     "getting-started",

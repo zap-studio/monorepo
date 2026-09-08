@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/fetch"
+title: fetch
 description: A type-safe fetch wrapper that validates JSON responses at runtime with any Standard Schema validator.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/fetch"
 ---
 
-`@zap-studio/fetch` is a small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
+`fetch` is a small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
 
 ## Motivation
 
@@ -15,7 +15,7 @@ Raw `fetch` does not throw on HTTP errors like 404 or 500 — you must check `re
 
 So most projects add the same pattern at every call site: check the status, parse the JSON, then validate it with `schema.parse(await res.json())`. It is easy to forget one of these steps somewhere, and that is how bad data or a network error goes unnoticed until it breaks something downstream.
 
-`@zap-studio/fetch` makes this pattern the default, not something you write by hand. `api.get(url, UserSchema)` checks the response, validates the body, and throws a clear, typed error — `FetchError` for a bad HTTP status, `ValidationError` for a bad shape — so you always know what went wrong and where.
+`fetch` makes this pattern the default, not something you write by hand. `api.get(url, UserSchema)` checks the response, validates the body, and throws a clear, typed error — `FetchError` for a bad HTTP status, `ValidationError` for a bad shape — so you always know what went wrong and where.
 
 It uses [Standard Schema](https://standardschema.dev/schema), so you are not locked into one validation library: start with Zod, move to Valibot later, and the call sites do not change. And because it only wraps the global `fetch` function, it is not a Node-only HTTP client — it runs the same way on Bun, Deno, Cloudflare Workers, and in the browser.
 
@@ -28,7 +28,7 @@ It uses [Standard Schema](https://standardschema.dev/schema), so you are not loc
 - **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
 - **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
 - **Validator-agnostic** — works with any library that implements Standard Schema.
-- **[Optional logging](/fetch/logging)** through `createFetch({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
+- **[Optional logging](/fetch/logging)** through `createFetch({ logger })` from [`logger`](/logger) — omit it and there's zero logging overhead.
 - **[Native OpenTelemetry](/fetch/opentelemetry)** — a `CLIENT` span per request with trace context injected into outgoing headers, no-op until an SDK is registered.
 - **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
 

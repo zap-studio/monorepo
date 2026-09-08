@@ -45,7 +45,7 @@ await runRetryPolicy(policy, execute);
 
 Unlike [`fetch`](/fetch/opentelemetry), [`webhooks`](/webhooks/opentelemetry), and [`permit`](/permit/opentelemetry), this package never creates its own span. A retry loop wraps someone else's operation — usually a network call that's already producing its own span — so a whole extra span per attempt would just be noise nested inside that operation's span.
 
-Instead, each retry decision is recorded as an **event** on whatever span is already active when the decision happens (for example, the `CLIENT` span from a `@zap-studio/fetch` call being retried, or your own app-level span):
+Instead, each retry decision is recorded as an **event** on whatever span is already active when the decision happens (for example, the `CLIENT` span from a `fetch` call being retried, or your own app-level span):
 
 | Event             | When                        | Attributes                                  |
 | ----------------- | --------------------------- | ------------------------------------------- |
@@ -60,4 +60,4 @@ Every decision also increments a `retry.attempts` counter, tagged with `retry.de
 
 ## Log Correlation
 
-Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so retry decisions logged via [the `logger` option](/retry/logging) line up with the events on the active span.
+Pair this with [`logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so retry decisions logged via [the `logger` option](/retry/logging) line up with the events on the active span.

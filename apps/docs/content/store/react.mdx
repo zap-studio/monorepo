@@ -64,7 +64,7 @@ const increment = useStore(counter, (s) => s.increment);
 
 ## Prefer `derive` Over Manual Equality Checks
 
-Zustand's React binding needs a `selector` plus a manual `shallow` comparison to avoid re-rendering when a selector returns a new object or array every time. `@zap-studio/store` solves this at the source instead: build the exact value you need with `derive`, which caches its result and only changes reference when the value itself changes.
+Zustand's React binding needs a `selector` plus a manual `shallow` comparison to avoid re-rendering when a selector returns a new object or array every time. `store` solves this at the source instead: build the exact value you need with `derive`, which caches its result and only changes reference when the value itself changes.
 
 ```tsx
 // Prefer this — derive() caches the computed object:

@@ -1,7 +1,7 @@
 import { defineMeta } from "blume";
 
 export default defineMeta({
-  title: "@zap-studio/cache",
+  title: "cache",
   display: "page",
   pages: [
     "getting-started",

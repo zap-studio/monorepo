@@ -53,4 +53,4 @@ A `permit.checks` counter is incremented alongside every span, tagged with the s
 
 ## Log Correlation
 
-Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so the allow/deny logs from [the `logger` option](/permit/logging) line up with the check spans.
+Pair this with [`logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so the allow/deny logs from [the `logger` option](/permit/logging) line up with the check spans.

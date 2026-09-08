@@ -15,7 +15,7 @@ Always verify signatures against the **raw request body** (`ctx.rawBody`), exact
 
 ## Verify HMAC Signatures
 
-Use `createHmacVerifier` from `@zap-studio/webhooks` for providers that sign requests with a shared-secret HMAC (GitHub, and many others). It uses the Web Crypto API rather than Node `crypto`, so it works in any runtime that provides `globalThis.crypto.subtle`.
+Use `createHmacVerifier` from `webhooks` for providers that sign requests with a shared-secret HMAC (GitHub, and many others). It uses the Web Crypto API rather than Node `crypto`, so it works in any runtime that provides `globalThis.crypto.subtle`.
 
 ```ts
 import { createHmacVerifier, createWebhookRouter } from "@zap-studio/webhooks";
@@ -60,7 +60,7 @@ const verify = createHmacVerifier({
 
 ## Handle Verification Failures
 
-Import `VerificationError` from `@zap-studio/webhooks` to distinguish verification failures from other errors — for example, in an `onError` hook that maps them to a `401` instead of the default `500`.
+Import `VerificationError` from `webhooks` to distinguish verification failures from other errors — for example, in an `onError` hook that maps them to a `401` instead of the default `500`.
 
 ```ts
 import { createHmacVerifier, createWebhookRouter, VerificationError } from "@zap-studio/webhooks";
@@ -115,7 +115,7 @@ Write a custom verifier when a provider:
 - requires SDK-specific verification logic
 - includes timestamp or replay-protection checks
 
-If your custom verifier compares signatures itself, use `constantTimeEquals` from `@zap-studio/webhooks` instead of `===`. It compares byte arrays (`Uint8Array`), not strings — encode strings first.
+If your custom verifier compares signatures itself, use `constantTimeEquals` from `webhooks` instead of `===`. It compares byte arrays (`Uint8Array`), not strings — encode strings first.
 
 ```ts
 import { constantTimeEquals } from "@zap-studio/webhooks";
