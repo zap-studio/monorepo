@@ -58,4 +58,4 @@ Implicit context propagation — auto-linking the "active span" across `await` b
 
 ## Log Correlation
 
-Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so a delivery's spans and logs line up in whatever backend you send them to.
+Pair this with [`logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so a delivery's spans and logs line up in whatever backend you send them to.

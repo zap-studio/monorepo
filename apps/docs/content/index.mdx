@@ -10,7 +10,7 @@ sidebar:
 Small, type-safe TypeScript packages for the infrastructure code every app needs — HTTP calls, retries, auth checks, validation, logging, webhooks. Done once, correctly, so you don't rebuild it per project.
 
 ```bash
-npm install @zap-studio/fetch
+npm install fetch
 ```
 
 [Start with `fetch` →](/fetch/getting-started)
@@ -18,7 +18,7 @@ npm install @zap-studio/fetch
 ## Quick Look
 
 ```ts
-import { api } from "@zap-studio/fetch";
+import { api } from "fetch";
 import { z } from "zod";
 
 const UserSchema = z.object({
@@ -33,22 +33,22 @@ const user = await api.get("https://api.example.com/users/1", UserSchema);
 
 ## Packages
 
-| Package                                   | What you get                                                      |
-| ----------------------------------------- | ----------------------------------------------------------------- |
-| [`@zap-studio/cache`](/cache)             | An in-memory cache with pluggable eviction and optional TTL       |
-| [`@zap-studio/env`](/env)                 | Typed, validated env vars with a server/client/shared split       |
-| [`@zap-studio/fetch`](/fetch)             | Typed responses from any API — no manual casts                    |
-| [`@zap-studio/logger`](/logger)           | Structured logs anywhere — console today, any backend tomorrow    |
-| [`@zap-studio/monads`](/monads)           | Errors as values you can't forget to handle                       |
-| [`@zap-studio/oxfmt`](/oxfmt)             | One decided import/`package.json` order — no more per-repo debate |
-| [`@zap-studio/oxlint`](/oxlint)           | A preset per stack, zero-config linting beyond oxlint's defaults  |
-| [`@zap-studio/permit`](/permit)           | Every permission check in one auditable place                     |
-| [`@zap-studio/react-hooks`](/react-hooks) | Small, focused, tree-shakeable React hooks                        |
-| [`@zap-studio/retry`](/retry)             | Retries done right — backoff, jitter, cancellation included       |
-| [`@zap-studio/store`](/store)             | State with derived values that auto-track, and built-in persist   |
-| [`@zap-studio/validation`](/validation)   | One validation error shape, whatever schema library you use       |
-| [`@zap-studio/webhooks`](/webhooks)       | Verified, routed webhooks without a hand-rolled signature check   |
-| [`@zap-studio/webmcp`](/webmcp)           | SSR-safe tool registration for the native WebMCP browser API      |
+| Package                       | What you get                                                      |
+| ----------------------------- | ----------------------------------------------------------------- |
+| [`cache`](/cache)             | An in-memory cache with pluggable eviction and optional TTL       |
+| [`env`](/env)                 | Typed, validated env vars with a server/client/shared split       |
+| [`fetch`](/fetch)             | Typed responses from any API — no manual casts                    |
+| [`logger`](/logger)           | Structured logs anywhere — console today, any backend tomorrow    |
+| [`monads`](/monads)           | Errors as values you can't forget to handle                       |
+| [`oxfmt`](/oxfmt)             | One decided import/`package.json` order — no more per-repo debate |
+| [`oxlint`](/oxlint)           | A preset per stack, zero-config linting beyond oxlint's defaults  |
+| [`permit`](/permit)           | Every permission check in one auditable place                     |
+| [`react-hooks`](/react-hooks) | Small, focused, tree-shakeable React hooks                        |
+| [`retry`](/retry)             | Retries done right — backoff, jitter, cancellation included       |
+| [`store`](/store)             | State with derived values that auto-track, and built-in persist   |
+| [`validation`](/validation)   | One validation error shape, whatever schema library you use       |
+| [`webhooks`](/webhooks)       | Verified, routed webhooks without a hand-rolled signature check   |
+| [`webmcp`](/webmcp)           | SSR-safe tool registration for the native WebMCP browser API      |
 
 Install only the packages you need — each one works standalone.
 

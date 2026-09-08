@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/cache"
+title: cache
 description: Zero-dependency in-memory key-value cache with pluggable eviction policies, capacity limits, and optional TTL.
 sidebar:
   label: Overview
@@ -7,13 +7,13 @@ type: package
 package: "@zap-studio/cache"
 ---
 
-`@zap-studio/cache` is a zero-dependency in-memory key-value cache with pluggable eviction policies, capacity limits, and optional TTL.
+`cache` is a zero-dependency in-memory key-value cache with pluggable eviction policies, capacity limits, and optional TTL.
 
 ## Motivation
 
 A hand-rolled `Map`-based cache without a capacity limit is a memory leak waiting to happen — nothing ever gets removed. Reaching for a library instead usually means choosing between something that bakes in one eviction algorithm (LRU only, no LFU or FIFO) or a full-featured cache far bigger than a lean cache needs (cost-based sizing, stale-while-revalidate).
 
-`@zap-studio/cache` keeps the core cache policy-agnostic: `createCache(capacity, options?)` handles storage, capacity, and TTL, while the eviction algorithm is a small object you pass in. Five are built in — `lru()`, `lfu()`, `mru()`, `mfu()`, and `fifo()` — and the `EvictionPolicy` interface is public, so you can write your own without forking the package.
+`cache` keeps the core cache policy-agnostic: `createCache(capacity, options?)` handles storage, capacity, and TTL, while the eviction algorithm is a small object you pass in. Five are built in — `lru()`, `lfu()`, `mru()`, `mfu()`, and `fifo()` — and the `EvictionPolicy` interface is public, so you can write your own without forking the package.
 
 ## Features
 

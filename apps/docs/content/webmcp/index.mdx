@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/webmcp"
+title: webmcp
 description: A framework-agnostic, SSR-safe wrapper around the native WebMCP document.modelContext API, with a batch tool registry for exposing JavaScript tools to AI agents.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/webmcp"
 ---
 
-`@zap-studio/webmcp` is a framework-agnostic, SSR-safe wrapper around the native WebMCP `document.modelContext` API, with a batch tool registry for exposing JavaScript tools to AI agents. It works with any framework, or no framework at all.
+`webmcp` is a framework-agnostic, SSR-safe wrapper around the native WebMCP `document.modelContext` API, with a batch tool registry for exposing JavaScript tools to AI agents. It works with any framework, or no framework at all.
 
 ## Motivation
 
@@ -15,7 +15,7 @@ package: "@zap-studio/webmcp"
 
 Calling `document.modelContext` directly has three rough edges for a real app. First, it crashes during server rendering — Next.js and TanStack Start both render on the server first, where there is no `document` at all. Second, unregistration is signal-based (abort a `signal` you passed at registration), which is easy to get wrong by hand for every tool a route exposes. Third, there is no batch primitive: a route with five tools means five separate `registerTool` calls and five separate cleanup paths to track.
 
-`@zap-studio/webmcp` fixes all three: every function no-ops safely with no `document`, `registerTool` hands back a single idempotent unregister function per tool, and `createToolRegistry` groups a route's tools so they mount and unmount together. The public API stays small: `defineTool`, `registerTool`, `createToolRegistry`, and nothing else.
+`webmcp` fixes all three: every function no-ops safely with no `document`, `registerTool` hands back a single idempotent unregister function per tool, and `createToolRegistry` groups a route's tools so they mount and unmount together. The public API stays small: `defineTool`, `registerTool`, `createToolRegistry`, and nothing else.
 
 ## Features
 
@@ -52,7 +52,7 @@ unregister();
 - [Getting Started](/webmcp/getting-started) — install and register your first tool step by step
 - [Tool Registry](/webmcp/registry) — batch-register a route's tools together
 - [Errors](/webmcp/errors) — `WebMCPNotSupportedError` and `hasWebMCPSupport()`
-- [React](/webmcp/react) — the `useWebMCPTool` hook from `@zap-studio/webmcp-react`
+- [React](/webmcp/react) — the `useWebMCPTool` hook from `webmcp-react`
 
 ## Runtime Support
 

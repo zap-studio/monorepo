@@ -1,7 +1,7 @@
 import { defineMeta } from "blume";
 
 export default defineMeta({
-  title: "@zap-studio/retry",
+  title: "retry",
   display: "page",
   pages: [
     "getting-started",

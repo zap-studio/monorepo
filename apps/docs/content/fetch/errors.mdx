@@ -5,12 +5,12 @@ type: package
 package: "@zap-studio/fetch"
 ---
 
-`@zap-studio/fetch` throws `FetchError` for HTTP failures and `ValidationError` for schema failures. Platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
+`fetch` throws `FetchError` for HTTP failures and `ValidationError` for schema failures. Platform and schema errors can still propagate from native `fetch`, body parsing, request construction, or the validator itself.
 
-| Error             | Import path              | Thrown when                                                                                        |
-| ----------------- | ------------------------ | -------------------------------------------------------------------------------------------------- |
-| `FetchError`      | `@zap-studio/fetch`      | The response is not ok and `throwOnFetchError` is `true` (default).                                |
-| `ValidationError` | `@zap-studio/validation` | A schema is provided, validation returns issues, and `throwOnValidationError` is `true` (default). |
+| Error             | Import path  | Thrown when                                                                                        |
+| ----------------- | ------------ | -------------------------------------------------------------------------------------------------- |
+| `FetchError`      | `fetch`      | The response is not ok and `throwOnFetchError` is `true` (default).                                |
+| `ValidationError` | `validation` | A schema is provided, validation returns issues, and `throwOnValidationError` is `true` (default). |
 
 ```ts
 import { FetchError } from "@zap-studio/fetch";

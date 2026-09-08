@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/env"
+title: env
 description: A runtime and framework-agnostic environment variable validator, built on Standard Schema.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/env"
 ---
 
-`@zap-studio/env` checks an env object you already have (`process.env`, `import.meta.env`, dotenv output, or anything else) against a [Standard Schema](https://standardschema.dev/schema)-based `shared`/`server`/`client` shape. It does not read or parse files itself.
+`env` checks an env object you already have (`process.env`, `import.meta.env`, dotenv output, or anything else) against a [Standard Schema](https://standardschema.dev/schema)-based `shared`/`server`/`client` shape. It does not read or parse files itself.
 
 It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and the browser, with any bundler or framework. It does not scan env vars itself. This is why it does not break the static `process.env`/`import.meta.env` replacement that bundlers use. But that replacement only works on a literal `process.env.X` line in your own code. For `client` vars, use [`runtimeEnvStrict`](/env/advanced-options#runtimeenvstrict) and write each key on its own line. Do not pass the whole object instead.
 
@@ -15,9 +15,9 @@ It works the same way in Node, Deno, Bun, Cloudflare Workers, edge runtimes, and
 
 It uses the same `server`/`client`/`shared` split as [t3-env](https://env.t3.gg), the package most people use for this job today. A server secret cannot leak into a client bundle by accident. But t3-env still has real problems: its `extends` does a flat merge with no conflict check, so a key can silently get dropped or overwritten. Its presets do not cover Cloudflare Workers or Deno Deploy. And framework support needs its own packages, like `env-nextjs` and `env-nuxt`, tying the core package to one framework.
 
-[envin](https://envin.turbostarter.dev) already fixes some of this. It adds a CLI, better preset and `extends` support, and a live env preview. `@zap-studio/env` goes further in two ways: its `extends` merges schemas at the key level and throws right away if two sources use the same key with two different schemas, and it ships presets for Cloudflare Workers and Deno Deploy, which neither t3-env nor envin do.
+[envin](https://envin.turbostarter.dev) already fixes some of this. It adds a CLI, better preset and `extends` support, and a live env preview. `env` goes further in two ways: its `extends` merges schemas at the key level and throws right away if two sources use the same key with two different schemas, and it ships presets for Cloudflare Workers and Deno Deploy, which neither t3-env nor envin do.
 
-Instead of a live preview through a dev server, `@zap-studio/env` takes a simpler, static approach: [`generateEnvironmentExample`](/env/generate-env-example) builds a `.env.example` file straight from your schema. No dev server needed, so it's safe to run in CI and commit.
+Instead of a live preview through a dev server, `env` takes a simpler, static approach: [`generateEnvironmentExample`](/env/generate-env-example) builds a `.env.example` file straight from your schema. No dev server needed, so it's safe to run in CI and commit.
 
 ## Features
 

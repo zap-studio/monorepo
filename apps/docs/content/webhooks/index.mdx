@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/webhooks"
+title: webhooks
 description: Schema-first, type-safe webhook routing built on the standard Web API Request and Response primitives, with runtime-agnostic signature verification support.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/webhooks"
 ---
 
-`@zap-studio/webhooks` is schema-first, type-safe webhook routing built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives, with runtime-agnostic signature verification support.
+`webhooks` is schema-first, type-safe webhook routing built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives, with runtime-agnostic signature verification support.
 
 ## Motivation
 
@@ -15,7 +15,7 @@ Webhook endpoints are usually built by hand, per provider, and this tends to rep
 
 Second, signatures are often compared with `===`, which leaks timing information and opens a timing-attack risk that most teams do not know they have.
 
-`@zap-studio/webhooks` fixes both. It is built on the standard `Request`/`Response` objects, so the same router works on Bun, Deno, Cloudflare Workers, or any framework that accepts a `Request`.
+`webhooks` fixes both. It is built on the standard `Request`/`Response` objects, so the same router works on Bun, Deno, Cloudflare Workers, or any framework that accepts a `Request`.
 
 Signature verification is opt-in through the `verify` option, and the built-in HMAC verifier uses the Web Crypto API (`globalThis.crypto.subtle`) with a constant-time comparison, so once you turn it on, you get the safe comparison without writing it yourself. Payloads are validated and typed straight from your Standard Schema — no `any` from `JSON.parse`, no manual casts.
 
@@ -27,7 +27,7 @@ Signature verification is opt-in through the `verify` option, and the built-in H
 - **Signature verification** — built-in HMAC verifier with constant-time comparison, or plug in your own `verify` function.
 - **Lifecycle hooks** — global `before`, `after`, and `onError` hooks for cross-cutting behavior.
 - **Runtime-agnostic** — uses the Web Crypto API, not Node-specific APIs.
-- **[Optional logging](/webhooks/logging)** through `createWebhookRouter({ logger })` from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
+- **[Optional logging](/webhooks/logging)** through `createWebhookRouter({ logger })` from [`logger`](/logger) — omit it and there's zero logging overhead.
 - **[Native OpenTelemetry](/webhooks/opentelemetry)** — a `SERVER` span per delivery continuing the sender's trace, plus a child span per handler dispatch, no-op until an SDK is registered.
 - **Tree-shakeable** — validation and hook-running internals are standalone functions; unused exports are dropped by any modern bundler.
 

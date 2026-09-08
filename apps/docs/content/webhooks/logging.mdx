@@ -5,7 +5,7 @@ type: package
 package: "@zap-studio/webhooks"
 ---
 
-`createWebhookRouter(...)` (and `new WebhookRouter(...)`) accept an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe router internals; omit it and nothing is logged — zero overhead.
+`createWebhookRouter(...)` (and `new WebhookRouter(...)`) accept an optional `logger?: Logger` option from [`logger`](/logger). Pass one to observe router internals; omit it and nothing is logged — zero overhead.
 
 ```ts
 import { ConsoleLogger } from "@zap-studio/logger";
@@ -45,4 +45,4 @@ const logger: Logger = {
 const router = createWebhookRouter({ logger });
 ```
 
-See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.
+See [`logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.

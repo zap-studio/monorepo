@@ -48,7 +48,7 @@ const counter = createStore({ count: 5 }, (set, get) => ({
 
 Zustand's `setState` accepts both a partial object and an updater function, and merges either way. That flexibility hides a real ambiguity: does `set({ count: 1 })` merge `count` into the existing state, or replace the whole state with `{ count: 1 }`? Zustand answers "merge," but that answer is not visible at the call site — you have to know the library's convention.
 
-`@zap-studio/store` removes the ambiguity by only accepting the updater form. It stays a one-liner for simple updates (`set(() => ({ count: 1 }))`), and every call site is unambiguous about being a merge.
+`store` removes the ambiguity by only accepting the updater form. It stays a one-liner for simple updates (`set(() => ({ count: 1 }))`), and every call site is unambiguous about being a merge.
 
 ## Nested State Is Not Deep-Merged
 
@@ -64,7 +64,7 @@ const form = createStore({ user: { name: "Ada", age: 30 } }, (set) => ({
 }));
 ```
 
-This is the same rule Zustand and most state containers follow — it is called out here because `@zap-studio/store` removing the bare-object overload does not change it.
+This is the same rule Zustand and most state containers follow — it is called out here because `store` removing the bare-object overload does not change it.
 
 ## See Also
 

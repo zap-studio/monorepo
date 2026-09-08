@@ -38,7 +38,7 @@ const value = await runRetryPolicy(policy, async (attempt) => {
 
 ## Custom Sleep
 
-By default, delays use `defaultSleep` (a `setTimeout`-based helper exported from `@zap-studio/retry`). Inject your own `sleep` for deterministic tests or custom timing.
+By default, delays use `defaultSleep` (a `setTimeout`-based helper exported from `retry`). Inject your own `sleep` for deterministic tests or custom timing.
 
 ```ts
 const value = await runRetryPolicy(

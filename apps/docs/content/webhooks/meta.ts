@@ -1,7 +1,7 @@
 import { defineMeta } from "blume";
 
 export default defineMeta({
-  title: "@zap-studio/webhooks",
+  title: "webhooks",
   display: "page",
   pages: [
     "getting-started",

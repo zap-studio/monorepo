@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/react-hooks"
+title: react-hooks
 description: "Small, focused, tree-shakeable React hooks — one hook, one subpath, no forced bundle."
 sidebar:
   label: Overview
@@ -7,13 +7,13 @@ type: package
 package: "@zap-studio/react-hooks"
 ---
 
-`@zap-studio/react-hooks` is a collection of 100+ small, focused React hooks. Each hook ships as its own subpath export — importing one never pulls in unrelated hooks — with SSR-safe defaults and 100% test coverage.
+`react-hooks` is a collection of 100+ small, focused React hooks. Each hook ships as its own subpath export — importing one never pulls in unrelated hooks — with SSR-safe defaults and 100% test coverage.
 
 ## Motivation
 
 Reaching a browser API from React usually means hand-writing a `useEffect` — a resize listener, a `matchMedia` subscription, an `IntersectionObserver` — and each one carries the same two risks: forget the cleanup and you get a leaked listener that keeps firing after unmount, or forget to guard `window`/`document`/`navigator` and the same code throws on the server or hydrates to a value the client's first render did not have.
 
-`@zap-studio/react-hooks` wraps these APIs — `IntersectionObserver`, `ResizeObserver`, the Battery/Geolocation/Share/Wake Lock APIs, `matchMedia`, and more — behind a small, correct React interface instead of code you write from scratch. Every hook is SSR- and hydration-safe: nothing touches `window`, `document`, or `navigator` outside an effect or a guarded check, so server renders never throw and hydration never mismatches.
+`react-hooks` wraps these APIs — `IntersectionObserver`, `ResizeObserver`, the Battery/Geolocation/Share/Wake Lock APIs, `matchMedia`, and more — behind a small, correct React interface instead of code you write from scratch. Every hook is SSR- and hydration-safe: nothing touches `window`, `document`, or `navigator` outside an effect or a guarded check, so server renders never throw and hydration never mismatches.
 
 Every hook also ships as its own standalone, side-effect-free module — import it on its own and it tree-shakes cleanly. Public hooks never import each other; some share small internal helper modules, so pulling in `useIsMobile` never drags in unrelated hook code.
 

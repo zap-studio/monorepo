@@ -5,7 +5,7 @@ type: package
 package: "@zap-studio/fetch"
 ---
 
-Response validation works with any library that implements Standard Schema. `@zap-studio/fetch` validates responses through [`@zap-studio/validation`](/validation), so any [Standard Schema](https://standardschema.dev/schema)-compatible validator can be used.
+Response validation works with any library that implements Standard Schema. `fetch` validates responses through [`validation`](/validation), so any [Standard Schema](https://standardschema.dev/schema)-compatible validator can be used.
 
 :::note
 
@@ -69,7 +69,7 @@ const UserSchema = type({
 
 ## Throwing Mode
 
-By default (`throwOnValidationError: true`), a `ValidationError` is thrown when the response does not match the schema. Import it from `@zap-studio/validation`.
+By default (`throwOnValidationError: true`), a `ValidationError` is thrown when the response does not match the schema. Import it from `validation`.
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -138,7 +138,7 @@ const user = await api.post("https://api.example.com/users", UserSchema, {
 
 ## Standalone Validation
 
-For validation outside HTTP requests, use [`@zap-studio/validation`](/validation) directly. It also exports the `StandardSchemaV1` type when you need to type schema parameters yourself.
+For validation outside HTTP requests, use [`validation`](/validation) directly. It also exports the `StandardSchemaV1` type when you need to type schema parameters yourself.
 
 ```ts
 import { standardValidate } from "@zap-studio/validation";

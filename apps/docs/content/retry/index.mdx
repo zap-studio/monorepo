@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/retry"
+title: retry
 description: Composable retry policies with a built-in runner, structured terminal errors, and AbortSignal cancellation.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/retry"
 ---
 
-`@zap-studio/retry` gives you reusable retry policies and a built-in runner so you can add resilient retries to async operations without rewriting orchestration loops.
+`retry` gives you reusable retry policies and a built-in runner so you can add resilient retries to async operations without rewriting orchestration loops.
 
 ## Motivation
 
@@ -15,7 +15,7 @@ A hand-written retry loop is usually a `for` loop with `setTimeout`, and it is e
 
 Without cancellation, a retry loop can keep running — and keep hitting the network — after the result is no longer needed, for example after a user navigates away.
 
-`@zap-studio/retry` gives you this behavior as a built-in option, instead of something you write from scratch. `exponentialBackoff` and `linearBackoff` support jitter (`"full"` or `"equal"`, the same strategies AWS recommends) through the `jitter` option — turn it on and delays are randomized instead of fixed.
+`retry` gives you this behavior as a built-in option, instead of something you write from scratch. `exponentialBackoff` and `linearBackoff` support jitter (`"full"` or `"equal"`, the same strategies AWS recommends) through the `jitter` option — turn it on and delays are randomized instead of fixed.
 
 Every retry loop also accepts an `AbortSignal`, checked before each attempt and while waiting between attempts, so an abort stops the next attempt or delay from starting; it does not interrupt an attempt that is already running. You get retry policies as values you configure once and reuse, instead of logic you have to get right from scratch in every project.
 
@@ -28,7 +28,7 @@ Every retry loop also accepts an `AbortSignal`, checked before each attempt and 
 - **Non-throw mode** ([`throwOnExhausted: false`](/retry/non-throw-mode)) returns a `RetryRunResult` instead of throwing.
 - **Cancellation** through [`AbortSignal`](/retry/abort-signal), checked before, between, and during retries.
 - **Custom policies** as [plain objects implementing `RetryPolicy`](/retry/custom-policies) — just a `next(...)` function, no subclassing.
-- **[Optional logging](/retry/logging)** via a `logger?: Logger` option from [`@zap-studio/logger`](/logger) — omit it and there's zero logging overhead.
+- **[Optional logging](/retry/logging)** via a `logger?: Logger` option from [`logger`](/logger) — omit it and there's zero logging overhead.
 - **[Native OpenTelemetry](/retry/opentelemetry)** — retry decisions as events on the caller's active span, plus a `retry.attempts` counter, no-op until an SDK is registered.
 - **Tree-shakeable** — policies are functions returning plain objects, not classes; unused policies are dropped by any modern bundler.
 

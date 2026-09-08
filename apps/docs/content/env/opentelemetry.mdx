@@ -57,7 +57,7 @@ When [`skipValidation`](/env/advanced-options#skipvalidation) is `true`, `create
 
 ## Log Correlation
 
-Pair this with [`@zap-studio/logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so anything you log around startup lines up with the `env.validate` span.
+Pair this with [`logger`](/logger/opentelemetry): once a span is active, `ConsoleLogger` automatically stamps `trace_id`/`span_id` onto every log line, so anything you log around startup lines up with the `env.validate` span.
 
 ## See Also
 

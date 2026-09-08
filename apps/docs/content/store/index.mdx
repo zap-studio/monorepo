@@ -1,5 +1,5 @@
 ---
-title: "@zap-studio/store"
+title: store
 description: A small, framework-agnostic state container with auto-tracked derived values and optional built-in persist.
 sidebar:
   label: Overview
@@ -7,7 +7,7 @@ type: package
 package: "@zap-studio/store"
 ---
 
-`@zap-studio/store` is a small, framework-agnostic state container with auto-tracked derived values and simple built-in persist. It works with any framework, or no framework at all.
+`store` is a small, framework-agnostic state container with auto-tracked derived values and simple built-in persist. It works with any framework, or no framework at all.
 
 ## Motivation
 
@@ -17,7 +17,7 @@ Jotai's atom model is nice, but `jotai/utils` alone has more than a dozen helper
 
 TanStack Store has the best reactive core of the three. It uses an auto-tracked signal graph, so derived values only recompute when a real dependency changes. But `subscribe()` returns an object shaped like RxJS's `Subscription`, not a plain function. It also has no built-in persistence.
 
-`@zap-studio/store` takes TanStack's auto-tracked reactivity and Zustand's simple, single-factory style. The public API stays small on purpose: `createStore`, `derive`, and nothing else. No middleware chain, no Provider, no atom zoo.
+`store` takes TanStack's auto-tracked reactivity and Zustand's simple, single-factory style. The public API stays small on purpose: `createStore`, `derive`, and nothing else. No middleware chain, no Provider, no atom zoo.
 
 ## Features
 

@@ -5,7 +5,7 @@ type: package
 package: "@zap-studio/permit"
 ---
 
-`createPolicy(...)` accepts an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe policy evaluation; omit it and only the pre-existing internal-error warnings still print, unchanged.
+`createPolicy(...)` accepts an optional `logger?: Logger` option from [`logger`](/logger). Pass one to observe policy evaluation; omit it and only the pre-existing internal-error warnings still print, unchanged.
 
 ```ts
 import { ConsoleLogger } from "@zap-studio/logger";
@@ -47,4 +47,4 @@ const logger: Logger = {
 const policy = createPolicy({ resources, actions, rules, logger });
 ```
 
-See [`@zap-studio/logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.
+See [`logger`](/logger) for the full `Logger` interface and `ConsoleLogger` options.
