@@ -6,6 +6,7 @@ packages:
 catalogMode: prefer
 
 allowBuilds:
+  "@scarf/scarf": false
   es5-ext: true
   esbuild: true
   lefthook: true
@@ -33,6 +34,7 @@ catalog:
   "@vitest/browser-playwright": ^5.0.0
   "@vitest/coverage-v8": ^5.0.0
   arktype: ^2.2.3
+  blume: ^1.6.3
   eslint: ^10.9.1
   eslint-plugin-cypress: ^7.0.1
   eslint-plugin-github: ^6.1.2
@@ -58,8 +60,6 @@ catalog:
   valibot: ^1.4.2
   vite: ^8.2.2
   vitest: ^5.0.0
-  vocs: ^2.8.5
-  waku: 1.0.0-beta.6
   wrangler: ^4.128.0
   zod: ^4.5.4
   unplugin-unused: ^0.5.7

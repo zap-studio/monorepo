@@ -16,5 +16,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "vocs.config.ts"]
+  "include": ["blume.config.ts", "components.ts", "lib"]
 }

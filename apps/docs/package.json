@@ -5,26 +5,25 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "vocs build",
+    "audit": "blume audit",
+    "build": "blume build",
+    "check": "blume check",
     "deploy": "wrangler deploy",
-    "dev": "vocs dev",
-    "preview": "vocs preview",
-    "types:check": "tsc --noEmit"
+    "dev": "blume dev",
+    "preview": "blume preview",
+    "types:check": "tsc --noEmit",
+    "validate": "blume validate --strict"
   },
   "dependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "vocs": "catalog:",
-    "waku": "catalog:"
+    "blume": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
+    "@types/node": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
     "wrangler": "catalog:"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   }
 }

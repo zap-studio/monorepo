@@ -16,6 +16,7 @@ coverage/
 **/.out/
 **/.output/
 **/.source/
+.blume/
 
 # TypeScript
 *.tsbuildinfo
