@@ -49,7 +49,6 @@ export default defineConfig({
     selectors: [
       {
         items: packages.map((entry) => ({
-          description: entry.description,
           label: entry.slug,
           path: `/${entry.slug}`,
           tag: `v${entry.version}`,
