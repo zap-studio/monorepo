@@ -21,6 +21,12 @@ jobs:
         uses: ./.github/actions/setup-pnpm
       - name: Build docs
         run: pnpm --filter docs run build
+      - name: Type-check docs pages
+        run: pnpm --filter docs run check
+      - name: Validate docs links
+        run: pnpm --filter docs run validate
+      - name: Audit docs
+        run: pnpm --filter docs run audit
 
   check:
     name: Check
