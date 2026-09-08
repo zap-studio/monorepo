@@ -35,12 +35,12 @@ catalog:
   "@vitest/coverage-v8": ^5.0.0
   arktype: ^2.2.3
   blume: ^1.6.3
-  eslint: ^10.9.1
+  eslint: ^10.10.0
   eslint-plugin-cypress: ^7.0.1
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
   eslint-plugin-playwright: ^2.11.0
-  eslint-plugin-regexp: ^3.2.0
+  eslint-plugin-regexp: ^3.3.0
   eslint-plugin-solid: ^0.17.0
   eslint-plugin-sonarjs: ^4.2.0
   eslint-plugin-storybook: ^10.6.0
@@ -51,7 +51,7 @@ catalog:
   oxlint: ^1.81.0
   oxlint-plugin-react-doctor: ^0.9.13
   oxlint-tsgolint: ^7.0.2001
-  playwright: ^1.62.1
+  playwright: ^1.63.0
   publint: ^0.3.24
   react: ^19.2.8
   react-dom: ^19.2.8
@@ -60,6 +60,6 @@ catalog:
   valibot: ^1.4.2
   vite: ^8.2.2
   vitest: ^5.0.0
-  wrangler: ^4.128.0
+  wrangler: ^4.129.0
   zod: ^4.5.4
   unplugin-unused: ^0.5.7
