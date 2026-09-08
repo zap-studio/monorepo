@@ -1,9 +1,11 @@
 ---
 title: exponentialBackoff
 description: Retry with exponentially growing delays, capped at an upper bound.
+sidebar:
+  label: ExponentialBackoff
+type: package
+package: "@zap-studio/retry"
 ---
-
-# exponentialBackoff
 
 `exponentialBackoff(...)` creates a policy that doubles the delay after each failure, up to a hard cap, reducing pressure on unstable upstream services.
 

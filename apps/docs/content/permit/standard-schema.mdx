@@ -1,9 +1,9 @@
 ---
 title: Standard Schema Support
-description: permit resources work with any Standard Schema-compatible validation library — Zod, Valibot, ArkType, or your own.
+description: "permit resources work with any Standard Schema-compatible validation library — Zod, Valibot, ArkType, or your own."
+type: package
+package: "@zap-studio/permit"
 ---
-
-# Standard Schema Support
 
 `permit` works with Zod, Valibot, ArkType, or any compatible library.
 
@@ -11,9 +11,9 @@ description: permit resources work with any Standard Schema-compatible validatio
 
 ## Defining Resources
 
-:::code-group
+<CodeGroup>
 
-```ts [Zod]
+```ts Zod
 import { z } from "zod";
 import type { Resources } from "@zap-studio/permit";
 
@@ -26,7 +26,7 @@ const resources = {
 } satisfies Resources;
 ```
 
-```ts [Valibot]
+```ts Valibot
 import * as v from "valibot";
 import type { Resources } from "@zap-studio/permit";
 
@@ -39,7 +39,7 @@ const resources = {
 } satisfies Resources;
 ```
 
-```ts [ArkType]
+```ts ArkType
 import { type } from "arktype";
 import type { Resources } from "@zap-studio/permit";
 
@@ -52,7 +52,7 @@ const resources = {
 } satisfies Resources;
 ```
 
-:::
+</CodeGroup>
 
 :::warning
 

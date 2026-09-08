@@ -1,9 +1,9 @@
 ---
 title: Tool Registry
 description: createToolRegistry batches a group of tools behind one mount/unmount pair.
+type: package
+package: "@zap-studio/webmcp"
 ---
-
-# Tool Registry
 
 `createToolRegistry()` groups tools that share a lifecycle — e.g. every tool a route exposes — so they mount and unmount together, instead of managing one `registerTool` call (and one cleanup function) per tool by hand.
 

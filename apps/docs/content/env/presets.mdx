@@ -1,9 +1,9 @@
 ---
 title: Presets
 description: Ready-made EnvironmentSchema objects for env vars that hosting platforms set automatically.
+type: package
+package: "@zap-studio/env"
 ---
-
-# Presets
 
 Presets cover env vars that a hosting platform sets on its own — deployment IDs, git metadata, region, and so on. Compose one into `createEnvironment` (or `generateEnvironmentExample`) via [`extends`](/env/extends) to type and validate a platform's vars alongside your app's own:
 

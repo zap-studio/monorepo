@@ -1,9 +1,9 @@
 ---
 title: Iteration
-description: keys(), values(), entries(), and [Symbol.iterator]() walk live entries in insertion order without affecting eviction state.
+description: "keys(), values(), entries(), and [Symbol.iterator]() walk live entries in insertion order without affecting eviction state."
+type: package
+package: "@zap-studio/cache"
 ---
-
-# Iteration
 
 `Cache<K, V>` exposes `keys()`, `values()`, `entries()`, and `[Symbol.iterator]()`. All four walk live (non-expired) entries in insertion order, and none of them notify the eviction policy — iterating never changes what gets evicted next.
 

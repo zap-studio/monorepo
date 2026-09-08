@@ -1,9 +1,9 @@
 ---
 title: ResultAsync
-description: A thenable wrapper around Promise<Result<T, E>> for chaining async operations that can fail.
+description: "A thenable wrapper around Promise<Result<T, E>> for chaining async operations that can fail."
+type: package
+package: "@zap-studio/monads"
 ---
-
-# ResultAsync
 
 `ResultAsync<T, E>` wraps a `Promise<Result<T, E>>`. It's the one class in this package: it needs to be awaitable directly, and its combinators are instance methods so you can build an async chain before the final `await`. `Result` and `Option` stay plain discriminated unions with standalone functions — see [Result](/monads/result) and [Option](/monads/option).
 

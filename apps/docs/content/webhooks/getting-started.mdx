@@ -1,9 +1,9 @@
 ---
 title: Getting Started
 description: Install @zap-studio/webhooks and build your first schema-validated webhook router step by step.
+type: package
+package: "@zap-studio/webhooks"
 ---
-
-# Getting Started
 
 This page walks you through installing the package and building a working webhook router.
 
@@ -11,29 +11,29 @@ This page walks you through installing the package and building a working webhoo
 
 Install the router package. You also need a Standard Schema-compatible validator — this guide uses [Zod](https://zod.dev), but Valibot, ArkType, or any other compatible library works the same way.
 
-:::code-group
+<CodeGroup>
 
-```bash [npm]
+```bash npm
 npm install @zap-studio/webhooks zod
 ```
 
-```bash [yarn]
+```bash yarn
 yarn add @zap-studio/webhooks zod
 ```
 
-```bash [pnpm]
+```bash pnpm
 pnpm add @zap-studio/webhooks zod
 ```
 
-```bash [bun]
+```bash bun
 bun add @zap-studio/webhooks zod
 ```
 
-```bash [deno]
+```bash deno
 deno add jsr:@zap-studio/webhooks npm:zod
 ```
 
-:::
+</CodeGroup>
 
 ## Create a Router
 

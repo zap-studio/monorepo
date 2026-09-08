@@ -1,35 +1,35 @@
 ---
 title: OpenTelemetry
 description: Automatic trace-log correlation through @opentelemetry/api, with zero setup when no SDK is registered.
+type: package
+package: "@zap-studio/logger"
 ---
-
-# OpenTelemetry
 
 `@opentelemetry/api` is a required peer dependency of `@zap-studio/logger`. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
 
-:::code-group
+<CodeGroup>
 
-```bash [npm]
+```bash npm
 npm install @opentelemetry/api
 ```
 
-```bash [yarn]
+```bash yarn
 yarn add @opentelemetry/api
 ```
 
-```bash [pnpm]
+```bash pnpm
 pnpm add @opentelemetry/api
 ```
 
-```bash [bun]
+```bash bun
 bun add @opentelemetry/api
 ```
 
-```bash [deno]
+```bash deno
 deno add npm:@opentelemetry/api
 ```
 
-:::
+</CodeGroup>
 
 This is **not** a full bridge to the OTel Logs API — `Logger` already does that job well as its own abstraction, and duplicating it would be redundant. This is trace-log correlation: `ConsoleLogger` automatically stamps the active span's trace context onto every log call.
 

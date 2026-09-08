@@ -1,9 +1,9 @@
 ---
 title: onEvict
-description: Fires on capacity or TTL eviction — not on manual delete() or clear().
+description: "Fires on capacity or TTL eviction — not on manual delete() or clear()."
+type: package
+package: "@zap-studio/cache"
 ---
-
-# `onEvict`
 
 `onEvict(key, value)` is an optional callback passed to `createCache(...)`. It fires whenever an entry is removed automatically — by capacity eviction or TTL expiry — and never for a removal you asked for explicitly.
 

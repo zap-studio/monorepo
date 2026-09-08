@@ -1,9 +1,9 @@
 ---
 title: TTL
 description: Optional and lazy time-to-live, checked on get/has/peek, no background sweep timer.
+type: package
+package: "@zap-studio/cache"
 ---
-
-# TTL
 
 TTL (time-to-live) is optional and lazy — there is no background timer sweeping expired entries. Expiry is checked only when an entry is touched via `get`, `has`, or `peek`. An entry with no applicable `ttl` never expires.
 

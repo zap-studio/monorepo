@@ -1,37 +1,37 @@
 ---
 title: Getting Started
 description: Define resources, actions, context, and rules to build your first authorization policy with permit.
+type: package
+package: "@zap-studio/permit"
 ---
-
-# Getting Started
 
 A policy is the core building block of `permit`. It defines what actions users can perform on your application's resources based on the current context.
 
 ## Installation
 
-:::code-group
+<CodeGroup>
 
-```bash [npm]
+```bash npm
 npm install @zap-studio/permit
 ```
 
-```bash [yarn]
+```bash yarn
 yarn add @zap-studio/permit
 ```
 
-```bash [pnpm]
+```bash pnpm
 pnpm add @zap-studio/permit
 ```
 
-```bash [bun]
+```bash bun
 bun add @zap-studio/permit
 ```
 
-```bash [deno]
+```bash deno
 deno add jsr:@zap-studio/permit
 ```
 
-:::
+</CodeGroup>
 
 You also need a schema library that implements [Standard Schema](https://standardschema.dev/), such as Zod, Valibot, or ArkType.
 

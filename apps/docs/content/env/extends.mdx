@@ -1,9 +1,9 @@
 ---
 title: extends
 description: Compose reusable EnvironmentSchema definitions across packages, with reference-equality conflict detection.
+type: package
+package: "@zap-studio/env"
 ---
-
-# `extends`
 
 `extends` reuses an `EnvironmentSchema` object — a plain object with the same `shared`/`server`/`client`/`clientPrefix` shape `createEnvironment` accepts, minus the runtime-specific options. This works like `tsconfig.json`'s `extends`, which reuses a base config.
 

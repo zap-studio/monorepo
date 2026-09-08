@@ -1,9 +1,9 @@
 ---
 title: Shared Runner
 description: A shared runner via runRetryPolicy with attempt-aware callbacks and custom sleep injection.
+type: package
+package: "@zap-studio/retry"
 ---
-
-# Shared Runner
 
 `runRetryPolicy(policy, execute, options?)` is a shared runner with attempt-aware callbacks and custom sleep injection. Every `RetryPolicy` — built-in or custom — runs through this same function. It calls `execute` once per attempt, consults the policy after each failure, sleeps, and stops on success, exhaustion, or abort.
 

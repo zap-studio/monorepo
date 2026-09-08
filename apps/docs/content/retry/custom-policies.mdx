@@ -1,9 +1,9 @@
 ---
 title: Custom Policies
-description: Custom policies as plain objects implementing RetryPolicy and its next(...) function.
+description: "Custom policies as plain objects implementing RetryPolicy and its next(...) function."
+type: package
+package: "@zap-studio/retry"
 ---
-
-# Custom Policies
 
 Custom policies are plain objects implementing the `RetryPolicy` interface — just a `next(...)` function, no subclassing. Write one when the built-in [`fixedDelay`](/retry/fixed-delay), [`linearBackoff`](/retry/linear-backoff), and [`exponentialBackoff`](/retry/exponential-backoff) policies do not match your retry rules.
 

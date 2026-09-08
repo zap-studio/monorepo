@@ -1,9 +1,9 @@
 ---
 title: Validation
 description: Validate response bodies with Zod, Valibot, ArkType, or any other Standard Schema-compatible validator.
+type: package
+package: "@zap-studio/fetch"
 ---
-
-# Validation
 
 Response validation works with any library that implements Standard Schema. `@zap-studio/fetch` validates responses through [`@zap-studio/validation`](/validation), so any [Standard Schema](https://standardschema.dev/schema)-compatible validator can be used.
 
@@ -36,9 +36,9 @@ const user = await api.get("https://api.example.com/users/1", UserSchema);
 
 Any validator that implements Standard Schema works — the schema is passed straight through, so transforms, defaults, and refinements behave exactly as the library defines them.
 
-:::code-group
+<CodeGroup>
 
-```ts [Zod]
+```ts Zod
 import { z } from "zod";
 
 const UserSchema = z.object({
@@ -47,7 +47,7 @@ const UserSchema = z.object({
 });
 ```
 
-```ts [Valibot]
+```ts Valibot
 import * as v from "valibot";
 
 const UserSchema = v.object({
@@ -56,7 +56,7 @@ const UserSchema = v.object({
 });
 ```
 
-```ts [ArkType]
+```ts ArkType
 import { type } from "arktype";
 
 const UserSchema = type({
@@ -65,7 +65,7 @@ const UserSchema = type({
 });
 ```
 
-:::
+</CodeGroup>
 
 ## Throwing Mode
 

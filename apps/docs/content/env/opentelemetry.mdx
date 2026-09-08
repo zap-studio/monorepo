@@ -1,35 +1,35 @@
 ---
 title: OpenTelemetry
 description: Every createEnvironment validation pass surfaced as an env.validate span through @opentelemetry/api.
+type: package
+package: "@zap-studio/env"
 ---
-
-# OpenTelemetry
 
 `@opentelemetry/api` is a required peer dependency of `@zap-studio/env`. It's a tiny, side-effect-free package that's a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
 
-:::code-group
+<CodeGroup>
 
-```bash [npm]
+```bash npm
 npm install @opentelemetry/api
 ```
 
-```bash [yarn]
+```bash yarn
 yarn add @opentelemetry/api
 ```
 
-```bash [pnpm]
+```bash pnpm
 pnpm add @opentelemetry/api
 ```
 
-```bash [bun]
+```bash bun
 bun add @opentelemetry/api
 ```
 
-```bash [deno]
+```bash deno
 deno add npm:@opentelemetry/api
 ```
 
-:::
+</CodeGroup>
 
 There's no option to configure — instrumentation is always on, and does nothing observable until your app registers an OpenTelemetry SDK:
 

@@ -1,9 +1,9 @@
 ---
 title: Logging
 description: Observe delivery attempts, dispatch, verification failures, and unmatched routes with an optional logger.
+type: package
+package: "@zap-studio/webhooks"
 ---
-
-# Logging
 
 `createWebhookRouter(...)` (and `new WebhookRouter(...)`) accept an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe router internals; omit it and nothing is logged — zero overhead.
 

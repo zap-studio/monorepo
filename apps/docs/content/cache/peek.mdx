@@ -1,9 +1,9 @@
 ---
 title: peek
-description: Reads a value without affecting eviction order — useful for inspection or metrics without disturbing LRU/LFU/MRU/MFU state.
+description: "Reads a value without affecting eviction order — useful for inspection or metrics without disturbing LRU/LFU/MRU/MFU state."
+type: package
+package: "@zap-studio/cache"
 ---
-
-# `peek`
 
 `peek(key)` reads a value the same way `get(key)` does, but without notifying the eviction policy — so it never affects `lru()`/`mru()` recency or `lfu()`/`mfu()` frequency. It still respects TTL: an expired entry is removed and `undefined` is returned, same as `get`.
 

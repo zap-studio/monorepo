@@ -1,9 +1,9 @@
 ---
 title: Presets
-description: What each preset owns — one plugin or framework integration per preset, nothing implied by another.
+description: "What each preset owns — one plugin or framework integration per preset, nothing implied by another."
+type: package
+package: "@zap-studio/oxlint"
 ---
-
-# Presets
 
 Every preset owns a disjoint slice of rules and stands alone — none of them `extends` another. `rules` merge key-by-key and `plugins`/`jsPlugins` union when you list several in your own `extends` array, so pick every preset your project needs; nothing comes along for free.
 

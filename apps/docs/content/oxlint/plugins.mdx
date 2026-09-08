@@ -1,9 +1,9 @@
 ---
 title: Plugins
-description: Where every rule in every preset comes from — the upstream plugin or spec it's ported or wrapped from, and where to read why a rule is off.
+description: "Where every rule in every preset comes from — the upstream plugin or spec it's ported or wrapped from, and where to read why a rule is off."
+type: package
+package: "@zap-studio/oxlint"
 ---
-
-# Plugins
 
 Every rule in `@zap-studio/oxlint` traces back to one of two places: a plugin **built into oxlint itself** (ported from an upstream ESLint plugin into Rust, and run natively), or an **external ESLint plugin** loaded through `jsPlugins` and run as real JS. This page lists both, with a link to the upstream source and a link to the file in this repo where the rule is turned on or off — every `"off"` entry carries a comment explaining why, so you never have to guess.
 

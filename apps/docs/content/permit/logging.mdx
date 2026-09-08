@@ -1,9 +1,9 @@
 ---
 title: Logging
 description: Observe allow and deny decisions with an optional logger.
+type: package
+package: "@zap-studio/permit"
 ---
-
-# Logging
 
 `createPolicy(...)` accepts an optional `logger?: Logger` option from [`@zap-studio/logger`](/logger). Pass one to observe policy evaluation; omit it and only the pre-existing internal-error warnings still print, unchanged.
 

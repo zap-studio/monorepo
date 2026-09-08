@@ -1,9 +1,9 @@
 ---
 title: Capacity and Eviction
 description: createCache evicts one entry, chosen by the configured policy, right before an insert that would exceed capacity.
+type: package
+package: "@zap-studio/cache"
 ---
-
-# Capacity and Eviction
 
 `createCache(capacity, options?)` bounds the cache to `capacity` live entries. `capacity` must be a positive integer — a non-integer or non-positive value throws a `RangeError`.
 

@@ -1,9 +1,9 @@
 ---
 title: Scaling Policies
 description: Split a policy with many resources and actions across files while keeping one type-safe source of truth.
+type: package
+package: "@zap-studio/permit"
 ---
-
-# Scaling Policies
 
 A policy with a handful of resources fits comfortably in one file. Once your app has a dozen resources — each with several actions and rules referencing different parts of your domain — that one `createPolicy()` call becomes hard to navigate and merge-conflict-prone to edit. Split it by domain instead.
 
@@ -13,15 +13,15 @@ The recommended pattern: each domain owns a file that exports its own `resources
 
 Every domain file below imports one shared context type from `context.ts`:
 
-```ts [context.ts]
+```ts context.ts
 export type AppContext = {
   user: { id: string; role: "guest" | "user" | "admin" } | null;
 };
 ```
 
-:::code-group
+<CodeGroup>
 
-```ts [policies/post.ts]
+```ts policies/post.ts
 import { deny, when } from "@zap-studio/permit";
 import type { ActionPolicyMap, Actions, Resources } from "@zap-studio/permit";
 import { z } from "zod";
@@ -50,7 +50,7 @@ export const postRules: ActionPolicyMap<
 };
 ```
 
-```ts [policies/comment.ts]
+```ts policies/comment.ts
 import { allow, when } from "@zap-studio/permit";
 import type { ActionPolicyMap, Actions, Resources } from "@zap-studio/permit";
 import { z } from "zod";
@@ -78,7 +78,7 @@ export const commentRules: ActionPolicyMap<
 };
 ```
 
-```ts [policies/index.ts]
+```ts policies/index.ts
 import { createPolicy } from "@zap-studio/permit";
 import type { Actions, Resources, Rules } from "@zap-studio/permit";
 import type { AppContext } from "../context.js";
@@ -107,14 +107,14 @@ export const policy = createPolicy<AppContext, typeof resources, typeof actions>
 });
 ```
 
-```ts [usage]
+```ts usage
 import { policy } from "./policies/index.js";
 
 await policy.can(ctx, "post:read", post);
 await policy.can(ctx, "comment:write", comment);
 ```
 
-:::
+</CodeGroup>
 
 :::note
 
@@ -126,11 +126,11 @@ Add a new domain by adding a file and one spread in each of the three objects in
 
 ## When to Merge Separate Policies Instead
 
-If your domains are independent enough that they're built and owned separately — different packages, different teams, policies that only come together at the edge of your app — build each as its own `createPolicy()` with its own narrower `resources` and `actions`, then combine them with [`mergePoliciesOr()`](/permit/merging-policies#mergepoliciesor-or-strategy):
+If your domains are independent enough that they're built and owned separately — different packages, different teams, policies that only come together at the edge of your app — build each as its own `createPolicy()` with its own narrower `resources` and `actions`, then combine them with [`mergePoliciesOr()`](/permit/merging-policies#mergepoliciesor--or-strategy):
 
-:::code-group
+<CodeGroup>
 
-```ts [policies/post.ts]
+```ts policies/post.ts
 import { createPolicy, deny, when } from "@zap-studio/permit";
 import type { Actions, Resources } from "@zap-studio/permit";
 import { z } from "zod";
@@ -161,7 +161,7 @@ export const postPolicy = createPolicy<AppContext, typeof postResources, typeof 
 });
 ```
 
-```ts [usage]
+```ts usage
 import { mergePoliciesOr } from "@zap-studio/permit";
 import { postPolicy } from "./policies/post.js";
 import { commentPolicy } from "./policies/comment.js"; // built the same way
@@ -172,7 +172,7 @@ await policy.can(ctx, "post:read", post); // routed to postPolicy
 await policy.can(ctx, "comment:write", comment); // routed to commentPolicy
 ```
 
-:::
+</CodeGroup>
 
 This works because a policy denies any permission for a resource type it doesn't define — `postPolicy` only knows about `"post"`, so it denies every `"comment:*"` check without commentPolicy's rules ever coming into play. With `mergePoliciesOr()`, each permission check is effectively routed to the one policy that owns that resource type.
 

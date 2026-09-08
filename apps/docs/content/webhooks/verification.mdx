@@ -1,9 +1,9 @@
 ---
 title: Verification
-description: Verify webhook authenticity with createHmacVerifier or a custom verify function — built-in HMAC verification with constant-time comparison, runtime-agnostic via the Web Crypto API.
+description: "Verify webhook authenticity with createHmacVerifier or a custom verify function — built-in HMAC verification with constant-time comparison, runtime-agnostic via the Web Crypto API."
+type: package
+package: "@zap-studio/webhooks"
 ---
-
-# Verification
 
 The router ships a built-in HMAC verifier with constant-time comparison, or accepts a custom `verify` function. Its `verify` option is the authenticity gate for incoming requests: it runs after `before` hooks but before payload validation and the route handler, and if it throws, request handling stops. This prevents forged payloads from ever reaching your business logic.
 

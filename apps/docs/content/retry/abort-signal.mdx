@@ -1,9 +1,9 @@
 ---
 title: Cancellation
 description: Cancellation through AbortSignal, checked before, between, and during retries.
+type: package
+package: "@zap-studio/retry"
 ---
-
-# Cancellation
 
 `AbortSignal` cancels retries, checked before, between, and during attempts. `runRetryPolicy(...)` accepts an `AbortSignal` through the `signal` option. Use it to stop retrying on user navigation, request timeouts, shutdown, or parent workflow cancellation.
 

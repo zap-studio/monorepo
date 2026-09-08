@@ -1,9 +1,11 @@
 ---
 title: linearBackoff
 description: Retry with linearly growing delays, capped at an upper bound.
+sidebar:
+  label: LinearBackoff
+type: package
+package: "@zap-studio/retry"
 ---
-
-# linearBackoff
 
 `linearBackoff(...)` creates a policy that adds a fixed increment to the delay after each failure, up to a hard cap — growth is steadier and more predictable than [`exponentialBackoff`](/retry/exponential-backoff), while still spacing out later retries more than [`fixedDelay`](/retry/fixed-delay).
 

@@ -1,9 +1,9 @@
 ---
 title: Eviction Policies
-description: The built-in lru(), lfu(), mru(), mfu(), and fifo() eviction policies, and how to swap between them.
+description: "The built-in lru(), lfu(), mru(), mfu(), and fifo() eviction policies, and how to swap between them."
+type: package
+package: "@zap-studio/cache"
 ---
-
-# Eviction Policies
 
 `createCache(capacity, options?)` delegates the choice of victim key to an `EvictionPolicy<K>` — a plain object implementing five hooks (`onGet`, `onSet`, `onDelete`, `evict`, `clear`). Five are built in, each from its own subpath so unused ones stay out of your bundle.
 

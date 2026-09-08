@@ -1,9 +1,9 @@
 ---
 title: Jitter
 description: Randomize exponentialBackoff/linearBackoff delays to avoid synchronized retries against a shared upstream.
+type: package
+package: "@zap-studio/retry"
 ---
-
-# Jitter
 
 When many clients fail at the same time and retry on the same deterministic schedule, they hammer the upstream in synchronized waves. `jitter` randomizes the computed delay so retries spread out instead.
 

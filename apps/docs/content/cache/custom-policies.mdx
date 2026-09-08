@@ -1,9 +1,9 @@
 ---
 title: Custom Policies
-description: EvictionPolicy<K> is a public interface — implement your own algorithm as a plain object, no subclassing.
+description: "EvictionPolicy<K> is a public interface — implement your own algorithm as a plain object, no subclassing."
+type: package
+package: "@zap-studio/cache"
 ---
-
-# Custom Policies
 
 `EvictionPolicy<K>` is the public interface `createCache(...)` consumes for eviction decisions. Implementations own all ordering/eviction state privately — the core cache never inspects it directly, only calls its hooks. Write one when the built-in [`lru()`, `lfu()`, `mru()`, `mfu()` and `fifo()`](/cache/eviction-policies) don't match your eviction rules.
 
