@@ -1,0 +1,67 @@
+---
+import type { PageRecord } from "blume";
+
+import { findPackage } from "../lib/packages.ts";
+
+interface Props {
+  page: PageRecord;
+}
+
+const { page } = Astro.props;
+
+const siteUrl = "https://www.zapstudio.dev";
+const repoUrl = "https://github.com/zap-studio/monorepo";
+
+const pkg = findPackage(/^\/([^/]+)/u.exec(page.route)?.[1] ?? "");
+
+const softwareLd = pkg && {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  applicationCategory: "DeveloperApplication",
+  codeRepository: `${repoUrl}/tree/main/packages/${pkg.slug}`,
+  description: pkg.description,
+  downloadUrl: `https://www.npmjs.com/package/${pkg.name}`,
+  license: `${repoUrl}/blob/main/LICENSE`,
+  name: pkg.name,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  operatingSystem: "Cross-platform",
+  softwareVersion: pkg.version,
+  url: `${siteUrl}/${pkg.slug}`,
+};
+
+const question = (name: string, text: string) => ({
+  "@type": "Question",
+  acceptedAnswer: { "@type": "Answer", text },
+  name,
+});
+
+const faqLd = page.route === "/" && {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    question(
+      "What is Zap Studio?",
+      "Zap Studio is a collection of type-safe, framework-agnostic, composable, and tree-shakeable TypeScript libraries for the web, covering fetch, logging, retries, validation, webhooks, authorization, monads, React hooks, and lint/format presets.",
+    ),
+    question(
+      "Is Zap Studio free and open source?",
+      "Yes. Every package is MIT-licensed and published on GitHub, npm and JSR at no cost.",
+    ),
+    question(
+      "What packages does Zap Studio provide?",
+      "cache (in-memory cache with pluggable eviction), env (environment variable validation), fetch (type-safe fetch wrapper), logger (logging abstraction), monads (Result/Option types), oxfmt and oxlint (format/lint presets), permit (declarative authorization), react-hooks (tree-shakeable hooks), retry (retry policies), store (state container with derived values and persist), validation (Standard Schema utilities), webhooks (type-safe webhook routing), and webmcp (WebMCP tool registry).",
+    ),
+    question(
+      "Which runtimes does Zap Studio support?",
+      "All runtime packages ship standard ESM and target Node.js 18+, Bun 1.0+, Deno 1.42+, Cloudflare Workers, and the latest evergreen browsers.",
+    ),
+    question(
+      "How do I install a Zap Studio package?",
+      "Install the package you need from npm, e.g. `npm install @zap-studio/fetch`, or from JSR with `deno add jsr:@zap-studio/fetch`, then follow the getting-started guide for that package on zapstudio.dev.",
+    ),
+  ],
+};
+---
+
+{softwareLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(softwareLd)} />}
+{faqLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(faqLd)} />}

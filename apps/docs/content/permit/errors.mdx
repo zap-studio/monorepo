@@ -1,0 +1,98 @@
+---
+title: Error Handling
+description: PolicyError for invalid configuration or evaluation failures in permit.
+type: package
+package: "@zap-studio/permit"
+---
+
+`PolicyError` signals invalid configuration or evaluation failures. `permit` keeps error handling minimal by design: permission checks resolve to `false` instead of throwing. This page covers the `PolicyError` class and when the library throws it.
+
+## When permit Throws (and When It Doesn't)
+
+- `createPolicy()` **throws** a `PolicyError` at creation time if a resource key has no schema (`"Missing schema for resource: <name>"`).
+- `policy.can()` **never throws**. Malformed permission strings, unlisted actions, resources that fail schema validation, missing rules, and rules that throw all resolve to `false`. Rule and validation errors are logged with `console.warn`.
+
+:::info
+
+Because `can()` fails closed, you decide how to surface denials — return a 403, throw your own `PolicyError`, or redirect.
+
+:::
+
+## PolicyError
+
+The `PolicyError` class is a custom error type for policy-related failures. The library uses it for configuration errors, and you can throw it yourself to distinguish authorization errors from other application errors.
+
+```ts
+import { PolicyError } from "@zap-studio/permit";
+```
+
+:::note
+
+`PolicyError` is exported from the package root, and also from the `@zap-studio/permit/errors` subpath for granular imports.
+
+:::
+
+### Constructor
+
+```ts
+new PolicyError(message: string)
+```
+
+### Properties
+
+| Property  | Type     | Description             |
+| --------- | -------- | ----------------------- |
+| `name`    | `string` | Always `"PolicyError"`  |
+| `message` | `string` | Error description       |
+| `stack`   | `string` | Stack trace (inherited) |
+
+`PolicyError` extends `Error`, so `instanceof Error` checks also match it.
+
+### Throwing Policy Errors
+
+```ts
+import { PolicyError } from "@zap-studio/permit";
+
+// Throw when an authorization check fails
+throw new PolicyError("User is not authorized to delete this resource");
+
+// Throw for invalid policy configuration
+throw new PolicyError("Unknown resource type: 'invalid'");
+
+// Throw for missing context
+throw new PolicyError("User context is required for this action");
+```
+
+### Catching Policy Errors
+
+```ts
+import { PolicyError } from "@zap-studio/permit";
+
+async function deletePost(postId: string, context: AppContext) {
+  try {
+    const post = await getPost(postId);
+
+    if (!(await policy.can(context, "post:delete", post))) {
+      throw new PolicyError("Not authorized to delete this post");
+    }
+
+    await db.posts.delete(postId);
+    return { success: true };
+  } catch (error) {
+    if (error instanceof PolicyError) {
+      // Handle authorization errors
+      return { success: false, error: error.message, code: "FORBIDDEN" };
+    }
+
+    // Re-throw unexpected errors
+    throw error;
+  }
+}
+```
+
+## Best Practices
+
+1. **Use `PolicyError` for authorization failures** — Makes it easy to distinguish from other errors
+2. **Catch errors at boundaries** — Handle `PolicyError` in middleware or API handlers
+3. **Include context in error messages** — "Not authorized to delete post-123" is better than "Forbidden"
+4. **Log denied attempts** — Track authorization failures for security monitoring

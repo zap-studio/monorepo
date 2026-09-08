@@ -1,0 +1,41 @@
+---
+title: Network
+description: Connection state for WebSocket, Server-Sent Events, and WebTransport, with automatic teardown on unmount or URL change.
+type: package
+package: "@zap-studio/react-hooks"
+---
+
+Hooks for long-lived network connections — each wraps a browser connection object opened for a given URL and torn down on unmount or when the URL changes.
+
+## useWebSocket
+
+WebSocket connection state (`"connecting" | "open" | "closed"`) plus `send()`/`close()`, wrapping a [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) opened for `url` and torn down on unmount or when `url` changes. Pass `undefined` to stay disconnected (e.g. before an auth token is ready).
+
+```tsx
+const { status, lastMessage, send } = useWebSocket("wss://example.com");
+if (status === "open") send("ping");
+```
+
+## useEventSource
+
+Server-Sent Events connection state (`"connecting" | "open" | "closed"`) plus the latest `message` event's `data`, wrapping an [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) (part of the [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) spec) opened for `url` and torn down on unmount or when `url` changes. Pass `undefined` to stay disconnected.
+
+```tsx
+const { status, data } = useEventSource("https://example.com/stream");
+```
+
+## useWebTransport
+
+Connection status (`"connecting" | "connected" | "closed"`) for the [WebTransport API](https://developer.mozilla.org/en-US/docs/Web/API/WebTransport) — an HTTP/3 connection offering reliable and unreliable, bidirectional and unidirectional data transport — wrapping a `WebTransport` opened for `url` (an `"https://"` URL with an explicit port) and torn down on unmount or when `url` changes. Pass `undefined` to stay disconnected.
+
+`sendDatagram()`/`lastDatagram` cover the unreliable datagram channel, mirroring `useWebSocket`'s `send`/`lastMessage`. `createBidirectionalStream()`/`createUnidirectionalStream()` open a reliable stream on demand, handed back as the raw Web Streams objects. `supported: false` — the SSR-safe default — where the API doesn't exist; see [MDN's browser compatibility table](https://developer.mozilla.org/en-US/docs/Web/API/WebTransport#browser_compatibility).
+
+```tsx
+const { status, lastDatagram, sendDatagram } = useWebTransport("https://example.com:4999/wt");
+if (status === "connected") await sendDatagram(new TextEncoder().encode("ping"));
+```
+
+## See Also
+
+- [Getting Started](/react-hooks/getting-started)
+- [Overview](/react-hooks)

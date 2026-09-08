@@ -1,0 +1,83 @@
+---
+title: Getting Started
+description: Install @zap-studio/validation and validate your first payload in a few lines.
+type: package
+package: "@zap-studio/validation"
+---
+
+This page walks you through installing `@zap-studio/validation` and validating your first payload. For deeper details, check the other pages in this section.
+
+## Install
+
+<CodeGroup>
+
+```bash npm
+npm install @zap-studio/validation
+```
+
+```bash yarn
+yarn add @zap-studio/validation
+```
+
+```bash pnpm
+pnpm add @zap-studio/validation
+```
+
+```bash bun
+bun add @zap-studio/validation
+```
+
+```bash deno
+deno add jsr:@zap-studio/validation
+```
+
+</CodeGroup>
+
+## Define a Schema
+
+The helpers accept any [Standard Schema](https://standardschema.dev)-compatible schema. This example uses Zod, but Valibot, ArkType, or any other compatible library works the same way.
+
+```ts
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+```
+
+## Validate Data
+
+Use `standardValidate` to validate a value against the schema. By default it does not throw — it returns the raw Standard Schema result, which has either a `value` or an `issues` property.
+
+```ts
+import { standardValidate } from "@zap-studio/validation";
+
+const result = await standardValidate(input, userSchema);
+
+if (result.issues) {
+  console.error("Validation failed", result.issues);
+} else {
+  console.log("Validation passed", result.value);
+}
+```
+
+## Throw on Failure
+
+Pass `throwOnError: true` to get the parsed value directly. On failure, the helper throws a `ValidationError` instead of returning issues.
+
+```ts
+import { standardValidate, ValidationError } from "@zap-studio/validation";
+
+try {
+  const user = await standardValidate(input, userSchema, {
+    throwOnError: true,
+  });
+
+  console.log(user.name);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error("Validation failed", error.issues);
+  }
+}
+```

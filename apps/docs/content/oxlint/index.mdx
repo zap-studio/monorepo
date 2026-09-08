@@ -1,0 +1,45 @@
+---
+title: "@zap-studio/oxlint"
+description: "Exclusive, single-owner oxlint presets — pick exactly the plugins and framework rules your project needs, nothing implied."
+sidebar:
+  label: Overview
+type: package
+package: "@zap-studio/oxlint"
+---
+
+`@zap-studio/oxlint` is Zap Studio's [oxlint](https://oxc.rs/docs/guide/usage/linter.html) preset — exclusive, single-owner rule sets built from vetted ESLint plugins, plus a bundled `anti-slop` plugin.
+
+## Motivation
+
+`oxlint` runs zero-config out of the box, but that config only covers its own bundled rules. The moment a project needs React, Next.js, TanStack, or test-specific linting, that zero-config story ends — now it's on you to find the right plugins, wire them up, and decide which rules to turn on.
+
+`@zap-studio/oxlint` picks up where zero-config leaves off: one preset per plugin or framework integration, each owning a disjoint slice of rules. Nothing cascades — `extends: [react]` gets you the `react` plugin's hooks rules and nothing else, not accessibility, not React-Doctor's broader catalog, not any particular framework. You list every preset you want.
+
+The one exception is `base`: JS/TS correctness and security rules that apply regardless of framework, bundled as a single preset since there's no meaningful way to want half of it.
+
+## Features
+
+- **One preset, one owner** — no preset silently pulls another in, so two presets never fire the same check twice under different rule names.
+- **A preset per plugin and framework integration** — React, Next.js, React Router, TanStack, and more, composed explicitly instead of inherited through a chain.
+- **Bundled `anti-slop` plugin** — original rules for patterns that don't fit any upstream plugin.
+- **`extends` merges, it doesn't replace** — `rules` merge key-by-key and `plugins`/`jsPlugins` union, so overriding one rule in your own config doesn't require forking a preset.
+- **Cherry-pickable pieces** — every preset also exports its plugins and rules as plain values, for merging by hand instead of taking the default export.
+
+## Quick Start
+
+```ts
+// oxlint.config.ts
+import { defineConfig } from "oxlint";
+import { base, react, reactA11y, reactDoctor } from "@zap-studio/oxlint";
+
+export default defineConfig({
+  extends: [base, react, reactA11y, reactDoctor],
+});
+```
+
+## Learn More
+
+- [Getting Started](/oxlint/getting-started) — install, pick a preset, and override a rule
+- [Presets](/oxlint/presets) — what each preset adds and how they chain into each other
+- [Plugins](/oxlint/plugins) — where every rule comes from, and where to read why one is off
+- [Anti-Slop Plugin](/oxlint/anti-slop) — the bundled plugin with no upstream equivalent
