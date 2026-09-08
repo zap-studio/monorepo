@@ -1,0 +1,61 @@
+---
+title: Runtimes
+description: The runtimes every Zap Studio package supports, the shared baseline, and the four packages that ask for more.
+sidebar:
+  icon: cpu
+  order: 2
+---
+
+Every package targets the same baseline. Four packages need more than it, because of the browser API they build on.
+
+## The Baseline
+
+| Runtime            | Minimum version                         |
+| ------------------ | --------------------------------------- |
+| Node.js            | 18.0.0                                  |
+| Bun                | 1.0.0                                   |
+| Deno               | 1.42                                    |
+| Cloudflare Workers | Any current release                     |
+| Browsers           | Chrome/Edge 98, Firefox 97, Safari 15.4 |
+
+Nothing here uses a runtime-specific API. The packages are built on `fetch`, `Request`/`Response`, `AbortSignal` and `crypto.subtle` — web standards that every runtime above implements.
+
+Deno 1.42 is the first release that installs packages from JSR, which is how Deno gets them: `deno add jsr:@zap-studio/fetch`.
+
+## Where a Package Asks for More
+
+| Package    | Extra requirement                                                                                                                                                                                                                  |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fetch`    | A global `fetch`. Native from Node.js 18.                                                                                                                                                                                          |
+| `webhooks` | The verification helper needs `globalThis.crypto.subtle`: global from Node.js 19, or Node.js 18 with `--experimental-global-webcrypto`. Browsers need a secure context (HTTPS). The router itself only needs `Request`/`Response`. |
+| `retry`    | Cancellation reads `AbortSignal.reason`, which sets the browser minimums in the table above.                                                                                                                                       |
+| `webmcp`   | A browser with the native WebMCP API — today Chrome/Edge behind a flag. Everywhere else it is a safe no-op, so server rendering never breaks.                                                                                      |
+
+`react-hooks` runs wherever React runs. Individual hooks wrap browser APIs of varying maturity, and each one fails closed — a hook reports `supported: false` instead of throwing when its API is missing. The `useExperimental*` prefix marks those.
+
+`oxfmt` and `oxlint` are configuration presets. They run in your linter or formatter, not in your application, so the table above does not apply to them.
+
+## Server Rendering
+
+Nothing touches `window`, `document` or `navigator` at module scope, so importing any package on the server is safe. The two browser-facing packages go further:
+
+- `react-hooks` reads browser APIs inside effects or behind guards, so server renders never throw and hydration never mismatches.
+- `webmcp` registers tools only when a real `document.modelContext` exists.
+
+## Modules
+
+Every package ships standard ESM only, with no CommonJS build. Node.js resolves it through the `exports` field, so a `require()` call fails on purpose rather than loading a stale bundle.
+
+## Next
+
+<CardGroup>
+
+<Card href="/installation" icon="download" title="Installation">
+  Install from npm or JSR, and the peer dependencies each package expects.
+</Card>
+
+<Card href="/composition" icon="blocks" title="Composition">
+  Put several packages together on one request.
+</Card>
+
+</CardGroup>

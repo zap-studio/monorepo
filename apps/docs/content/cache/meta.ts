@@ -2,6 +2,7 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "cache",
+  icon: "database",
   display: "page",
   pages: [
     "getting-started",

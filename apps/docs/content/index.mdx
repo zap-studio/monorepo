@@ -1,11 +1,53 @@
 ---
 title: Zap Studio
-description: "Type-safe, framework-agnostic TypeScript packages for HTTP calls, retries, auth, validation, logging, and webhooks — what Zap Studio is and how it compares."
+description: "Type-safe, framework-agnostic TypeScript packages for HTTP calls, retries, auth, validation, logging, and webhooks — install one and make your first typed call."
 sidebar:
   label: Getting Started
 ---
 
-## Quick Look
+Zap Studio is a set of small TypeScript packages for the code every app needs: HTTP calls, retries, permission checks, validation, logs, webhooks. Pick the one you need, install it, use it. No new runtime, no framework.
+
+This page takes about five minutes. At the end you will have a typed HTTP call that retries on failure.
+
+## Before You Start
+
+You need Node.js 18, Bun 1.0, Deno 1.42, a current Cloudflare Workers release, or an evergreen browser. [Runtimes](/runtimes) has the full matrix, including the four packages that ask for more.
+
+TypeScript 5 or later is recommended — the packages work in plain JavaScript, but the types are the point.
+
+## Install Your First Package
+
+Start with [`fetch`](/fetch). It makes an HTTP call and validates the response against a schema.
+
+<CodeGroup>
+
+```bash npm
+npm install @zap-studio/fetch zod
+```
+
+```bash yarn
+yarn add @zap-studio/fetch zod
+```
+
+```bash pnpm
+pnpm add @zap-studio/fetch zod
+```
+
+```bash bun
+bun add @zap-studio/fetch zod
+```
+
+```bash deno
+deno add jsr:@zap-studio/fetch npm:zod
+```
+
+</CodeGroup>
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, or ArkType. This page uses Zod.
+
+## Make a Typed Call
+
+A **schema** describes the shape you expect back. You pass it to `api.get`, which validates the response at runtime and infers the type from it.
 
 ```ts
 import { api } from "@zap-studio/fetch";
@@ -18,10 +60,76 @@ const UserSchema = z.object({
 });
 
 // `user` is typed from UserSchema — no manual annotations, no `as` casts
-const user = await api.get("https://api.example.com/users/1", UserSchema);
+const user = await api.get("https://jsonplaceholder.typicode.com/users/1", UserSchema);
+
+console.log(user.name);
 ```
 
-## Packages
+Run it. You get:
+
+```txt
+Leanne Graham
+```
+
+Change `name: z.string()` to `name: z.number()` and run it again. The call throws a `ValidationError` instead of handing you bad data. That is the whole idea: the response is checked before your code touches it.
+
+## Add a Second Package
+
+Packages compose. Wrap the same call in a retry policy so a flaky network does not break it.
+
+<CodeGroup>
+
+```bash npm
+npm install @zap-studio/retry
+```
+
+```bash yarn
+yarn add @zap-studio/retry
+```
+
+```bash pnpm
+pnpm add @zap-studio/retry
+```
+
+```bash bun
+bun add @zap-studio/retry
+```
+
+```bash deno
+deno add jsr:@zap-studio/retry
+```
+
+</CodeGroup>
+
+A **retry policy** decides how many attempts to make and how long to wait between them. `exponentialBackoff` doubles the delay after each failure, up to a cap.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.email(),
+});
+
+const policy = exponentialBackoff({
+  maxAttempts: 3, // total attempts, including the first
+  baseDelayMs: 100, // first retry waits 100 ms
+  maxDelayMs: 2_000, // later retries never wait longer than 2 s
+});
+
+const user = await runRetryPolicy(policy, () =>
+  api.get("https://jsonplaceholder.typicode.com/users/1", UserSchema),
+);
+
+console.log(user.name);
+```
+
+Same output, three attempts instead of one. Point the URL at `https://jsonplaceholder.typicode.com/nope` and watch it try three times before it throws.
+
+## Pick Your Package
 
 | Package                       | What you get                                                      |
 | ----------------------------- | ----------------------------------------------------------------- |
@@ -42,29 +150,26 @@ const user = await api.get("https://api.example.com/users/1", UserSchema);
 
 Install only the packages you need — each one works standalone.
 
-## Why Zap Studio
+## Where to Go Next
 
-Most teams solve these problems by hand, per project — and the hard parts get skipped:
+<CardGroup>
 
-- **Fragile by default.** Hand-rolled retries and webhook checks quietly skip the parts that matter.
-- **Scattered, not audited.** Permission checks end up copy-pasted across the codebase instead of living in one place.
-- **Node-only, until it isn't.** Homegrown wrappers break the moment your code runs on an edge runtime or in the browser.
+<Card href="/composition" icon="blocks" title="Composition">
+  Stack several packages on one request: retries, caching, verified webhooks.
+</Card>
 
-## Every Package Follows the Same Rules
+<Card href="/installation" icon="download" title="Installation">
+  npm and JSR, peer dependencies, subpath imports.
+</Card>
 
-- **Type safety.** Types come from your schema via [Standard Schema](https://standardschema.dev), not hand-written annotations.
-- **Framework-agnostic.** Built on standard runtime APIs — `fetch`, `Request`/`Response`, `AbortSignal`.
-- **Composable.** Combine packages as needed — wrap a `fetch` call in a `retry` policy, validate a webhook with `validation`.
-- **Tree-shakeable.** Standalone functions, no shared state — unused exports drop out of your bundle.
+<Card href="/runtimes" icon="cpu" title="Runtimes">
+  Node, Bun, Deno, Workers and browser support, per package.
+</Card>
 
-## Compared to Effect
+<Card href="/principles" icon="compass" title="Principles">
+  The four rules every package follows — and where Zap Studio stops.
+</Card>
 
-If you know [Effect](https://effect.website): yes, there's overlap — typed errors, retries, schema validation. Effect is a full ecosystem built around its own runtime, and that investment pays off once you need that level of control.
+</CardGroup>
 
-Zap Studio stays in plain TypeScript — no new runtime, no new mental model, small packages you adopt one at a time. Reach for it when you don't need everything Effect brings.
-
-## Not For You If
-
-- You want one framework that owns your whole effect/error model — Effect is built for that.
-- You need every package to come from a single all-in-one SDK.
-- What you have today isn't costing you bugs.
+Or go deeper on what you just built: [`fetch` Getting Started](/fetch/getting-started) for error handling, POST/PUT/DELETE and configured clients, [`retry` Getting Started](/retry/getting-started) for jitter, cancellation and result objects instead of throws.

@@ -2,6 +2,7 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "retry",
+  icon: "refresh-cw",
   display: "page",
   pages: [
     "getting-started",

@@ -2,6 +2,7 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "permit",
+  icon: "lock",
   display: "page",
   pages: [
     "getting-started",

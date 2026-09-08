@@ -1,0 +1,59 @@
+---
+title: Principles
+description: The four rules every Zap Studio package follows, the problems they answer, and where Zap Studio stops.
+sidebar:
+  icon: compass
+  order: 3
+---
+
+Fourteen packages, one set of rules. This page says what those rules are, so you can predict how a package you have not read yet will behave.
+
+## The Problem
+
+Most teams solve these problems by hand, per project — and the hard parts get skipped:
+
+- **Fragile by default.** Hand-rolled retries and webhook checks quietly skip the parts that matter: jitter, cancellation, constant-time signature comparison.
+- **Scattered, not audited.** Permission checks end up copy-pasted across the codebase instead of living in one place you can read in one sitting.
+- **Node-only, until it isn't.** Homegrown wrappers break the moment your code runs on an edge runtime or in the browser.
+
+## What Every Package Guarantees
+
+- **Type safety.** Types come from your schema through [Standard Schema](https://standardschema.dev), not from hand-written annotations. No `as` casts to make a response fit.
+- **Framework-agnostic.** Built on standard runtime APIs — `fetch`, `Request`/`Response`, `AbortSignal`, `crypto.subtle`. No framework adapter, no plugin system, no global setup.
+- **Composable.** Each package does one thing and accepts the others as plain values: wrap a `fetch` call in a `retry` policy, validate a webhook payload with `validation`, pass a `logger` to any of them.
+- **Tree-shakeable.** Standalone functions with no shared state, one subpath per feature. What you do not import does not ship.
+
+## What That Rules Out
+
+These follow from the four rules above, and they are choices, not omissions:
+
+- **No runtime of its own.** No effect system, no scheduler, no dependency injection container. Functions in, values out.
+- **No hidden state.** Nothing registers a global, patches a prototype, or reads an implicit context. A cache, a policy or a router is a value you created and can throw away.
+- **No required logging or tracing.** Both are optional parameters. Pass nothing and there is no dependency and no cost.
+- **No CommonJS.** Standard ESM only, so the tree-shaking guarantee holds.
+
+## Compared to Effect
+
+If you know [Effect](https://effect.website): yes, there is overlap — typed errors, retries, schema validation. Effect is a full ecosystem built around its own runtime, and that investment pays off once you need that level of control.
+
+Zap Studio stays in plain TypeScript — no new runtime, no new mental model, small packages you adopt one at a time. Reach for it when you don't need everything Effect brings.
+
+## Not For You If
+
+- You want one framework that owns your whole effect/error model — Effect is built for that.
+- You need every package to come from a single all-in-one SDK.
+- What you have today isn't costing you bugs.
+
+## Next
+
+<CardGroup>
+
+<Card href="/composition" icon="blocks" title="Composition">
+  The composability rule, in working code.
+</Card>
+
+<Card href="/" icon="rocket" title="Getting Started">
+  Install one package and make a typed call.
+</Card>
+
+</CardGroup>
