@@ -2,6 +2,7 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "webhooks",
+  icon: "webhook",
   display: "page",
   pages: [
     "getting-started",

@@ -2,6 +2,7 @@ import { defineMeta } from "blume";
 
 export default defineMeta({
   title: "fetch",
+  icon: "arrow-left-right",
   display: "page",
   pages: [
     "getting-started",
