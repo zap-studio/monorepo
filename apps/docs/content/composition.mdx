@@ -1,0 +1,165 @@
+---
+title: Composition
+description: Working recipes that put several Zap Studio packages on one request — retries around a validated call, a cached read, a verified webhook behind a permission check.
+sidebar:
+  icon: blocks
+  order: 4
+---
+
+Each package works alone. They also stack, because none of them owns the call stack: a policy, a cache and a router are values you pass around. These are the combinations worth knowing.
+
+## Retry a Validated Call
+
+`fetch` validates the response, `retry` decides how often to try again. The retry policy wraps the call, so a schema failure and a network failure are both retried the same way.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+
+const policy = exponentialBackoff({
+  maxAttempts: 3,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const user = await runRetryPolicy(policy, () =>
+  api.get("https://api.example.com/users/1", UserSchema),
+);
+```
+
+Retrying everything is rarely what you want: a `400` will fail the same way three times. A [custom policy](/retry/custom-policies) decides per attempt — its `next` returns `shouldRetry: false` for an error that will not fix itself, so only transient failures cost you the extra attempts.
+
+## Cache What You Just Fetched
+
+`cache` sits in front of the call. The typed result goes in, so what comes back out of the cache is typed too.
+
+```ts
+import { createCache } from "@zap-studio/cache";
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string() });
+type User = z.infer<typeof UserSchema>;
+
+const users = createCache<string, User>(100, { ttl: 60_000 });
+
+const getUser = async (id: string): Promise<User> => {
+  const hit = users.get(id);
+  if (hit) {
+    return hit;
+  }
+
+  const user = await api.get(`https://api.example.com/users/${id}`, UserSchema);
+  users.set(id, user);
+  return user;
+};
+```
+
+TTL is lazy: an entry expires when it is next read, not on a timer, so this adds no background work.
+
+## Verify, Route, Then Authorize a Webhook
+
+`webhooks` verifies the signature and validates the payload before your handler runs. `permit` decides whether this caller may act on the resource. `logger` records both.
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { allow, createPolicy, when } from "@zap-studio/permit";
+import { createWebhookRouter } from "@zap-studio/webhooks";
+import { z } from "zod";
+
+const logger = new ConsoleLogger({ minLevel: "info" });
+
+const policy = createPolicy<{ tenantId: string }>({
+  resources: { invoice: z.object({ id: z.string(), tenantId: z.string() }) },
+  actions: { invoice: ["read", "settle"] },
+  rules: {
+    invoice: {
+      read: allow(),
+      settle: when((context, _action, invoice) => context.tenantId === invoice.tenantId),
+    },
+  },
+});
+
+const router = createWebhookRouter({ prefix: "/webhooks", logger });
+
+router.register("/invoices/paid", {
+  schema: z.object({ id: z.string(), tenantId: z.string() }),
+  handler: async ({ payload }) => {
+    const allowed = await policy.can({ tenantId: payload.tenantId }, "invoice:settle", payload);
+
+    if (!allowed) {
+      logger.warn("rejected invoice", { id: payload.id });
+      return Response.json({ error: "forbidden" }, { status: 403 });
+    }
+
+    return Response.json(`settled ${payload.id}`);
+  },
+});
+
+export default { fetch: (request: Request) => router.handle(request) };
+```
+
+Three checks run before your logic: the signature, the payload shape, then the permission. Each one fails on its own terms — `401`, `400`, `403` — instead of one handler guessing what went wrong.
+
+## Validate the Environment, Then Build the Client
+
+`env` fails at startup when a variable is missing, so the client below never has to handle an undefined base URL.
+
+```ts
+import { createEnvironment } from "@zap-studio/env";
+import { createFetch } from "@zap-studio/fetch";
+import { ConsoleLogger } from "@zap-studio/logger";
+import { z } from "zod";
+
+export const env = createEnvironment({
+  server: {
+    API_URL: z.string().url(),
+    API_TOKEN: z.string().min(1),
+  },
+  runtimeEnvStrict: {
+    API_URL: process.env.API_URL,
+    API_TOKEN: process.env.API_TOKEN,
+  },
+});
+
+export const { api } = createFetch({
+  baseURL: env.API_URL,
+  headers: { Authorization: `Bearer ${env.API_TOKEN}` },
+  logger: new ConsoleLogger({ minLevel: "debug" }),
+});
+```
+
+A missing `API_URL` now crashes the process on boot with the variable named, instead of sending a request to `undefined/users/1` in production.
+
+## One Logger for All of Them
+
+`fetch`, `permit`, `retry` and `webhooks` each accept an optional `logger?: Logger`. Pass the same instance to all four and one request produces one ordered story: the outgoing call, the retry, the permission decision, the response.
+
+```ts
+import { ConsoleLogger, jsonFormat } from "@zap-studio/logger";
+
+export const logger = new ConsoleLogger({ minLevel: "info", format: jsonFormat });
+```
+
+`Logger` is an interface, not a class you must use — any object with the six level methods works, so this can forward into the logging setup you already run. See [Observability](/logger/opentelemetry) for the tracing side.
+
+## Errors as Values
+
+Every recipe above throws on failure. If you would rather branch on a result, `monads` gives the same flows a `Result` shape, and `validation` gives one `ValidationError` shape whatever schema library produced the issue.
+
+## Next
+
+<CardGroup>
+
+<Card href="/principles" icon="compass" title="Principles">
+  Why the packages compose instead of integrating.
+</Card>
+
+<Card href="/runtimes" icon="cpu" title="Runtimes">
+  What each package needs from its runtime.
+</Card>
+
+</CardGroup>
