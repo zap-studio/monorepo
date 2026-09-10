@@ -21,6 +21,7 @@
     "@arethetypeswrong/core": "catalog:",
     "@opentelemetry/api": "catalog:",
     "@oxlint/plugins": "catalog:",
+    "@testing-library/react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@zap-studio/oxfmt": "workspace:*",

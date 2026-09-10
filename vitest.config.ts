@@ -7,12 +7,12 @@ const exclude = [...configDefaults.exclude, "**/dist/**", "**/package.json"];
 export default defineConfig({
   test: {
     coverage: {
-      exclude: [...exclude],
+      exclude,
       provider: "v8",
       reporter: ["lcov", "text"],
     },
     exclude,
-    globals: true,
+    globals: false,
     outputFile: isCI ? { junit: "./coverage/junit.xml" } : undefined,
     projects: [
       {
@@ -34,6 +34,7 @@ export default defineConfig({
           },
           include: ["packages/**/*.browser.test.ts"],
           name: { color: "cyan", label: "browser" },
+          setupFiles: ["./vitest.setup.browser.ts"],
         },
       },
     ],
