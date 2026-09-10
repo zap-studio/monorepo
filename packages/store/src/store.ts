@@ -14,7 +14,6 @@ import { ReactiveNode } from "./_reactive.ts";
 const serverStorage: StorageLike = {
   getItem: () => null,
   setItem: () => undefined,
-  removeItem: () => undefined,
 };
 
 const getStorage = (storage: StorageLike | undefined): StorageLike =>
@@ -98,14 +97,13 @@ export function createStore<S extends object, A extends Record<string, unknown>>
 ): Store<S, A> {
   const node = new ReactiveNode<S>(readPersisted(options, initialState));
   const persist = options?.persist;
-  const storage = persist === undefined ? undefined : getStorage(persist.storage);
 
   const set: SetState<S> = (updater) => {
     const prev = node.peek();
     const next = { ...prev, ...updater(prev) };
     node.set(next);
     if (persist !== undefined) {
-      storage?.setItem(persist.key, JSON.stringify(node.peek()));
+      getStorage(persist.storage).setItem(persist.key, JSON.stringify(node.peek()));
     }
   };
 

@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { StorageLike } from "./types.ts";
+
 import { createStore } from "./store.ts";
 
 describe("createStore get/getState", () => {
@@ -101,17 +103,14 @@ describe("createStore subscribe", () => {
   });
 });
 
+const PERSIST_KEY = "counter";
+const DEFAULT_STORAGE_KEY = "counter-default-storage";
+
 describe("createStore persist", () => {
-  const memoryStorage = (): Storage => {
+  const memoryStorage = (): StorageLike => {
     const data = new Map<string, string>();
     return {
-      clear: () => data.clear(),
       getItem: (key) => data.get(key) ?? null,
-      key: () => null,
-      length: 0,
-      removeItem: (key) => {
-        data.delete(key);
-      },
       setItem: (key, value) => {
         data.set(key, value);
       },
@@ -120,37 +119,37 @@ describe("createStore persist", () => {
 
   it("hydrates initial state from storage when a persisted value exists", () => {
     const storage = memoryStorage();
-    storage.setItem("counter", JSON.stringify({ count: 42 }));
+    storage.setItem(PERSIST_KEY, JSON.stringify({ count: 42 }));
 
-    const store = createStore({ count: 0 }, undefined, { persist: { key: "counter", storage } });
+    const store = createStore({ count: 0 }, undefined, { persist: { key: PERSIST_KEY, storage } });
 
     expect(store.getState()).toStrictEqual({ count: 42 });
   });
 
   it("uses localStorage when storage is omitted", () => {
-    localStorage.setItem("counter-default-storage", JSON.stringify({ count: 42 }));
+    localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify({ count: 42 }));
 
     const store = createStore({ count: 0 }, undefined, {
-      persist: { key: "counter-default-storage" },
+      persist: { key: DEFAULT_STORAGE_KEY },
     });
 
     expect(store.getState()).toStrictEqual({ count: 42 });
-    localStorage.removeItem("counter-default-storage");
+    localStorage.removeItem(DEFAULT_STORAGE_KEY);
   });
 
   it("falls back to initialState when storage has nothing for the key", () => {
     const storage = memoryStorage();
 
-    const store = createStore({ count: 0 }, undefined, { persist: { key: "counter", storage } });
+    const store = createStore({ count: 0 }, undefined, { persist: { key: PERSIST_KEY, storage } });
 
     expect(store.getState()).toStrictEqual({ count: 0 });
   });
 
   it("falls back to initialState when the persisted value is corrupt JSON", () => {
     const storage = memoryStorage();
-    storage.setItem("counter", "not json");
+    storage.setItem(PERSIST_KEY, "not json");
 
-    const store = createStore({ count: 0 }, undefined, { persist: { key: "counter", storage } });
+    const store = createStore({ count: 0 }, undefined, { persist: { key: PERSIST_KEY, storage } });
 
     expect(store.getState()).toStrictEqual({ count: 0 });
   });
@@ -160,12 +159,12 @@ describe("createStore persist", () => {
     const store = createStore(
       { count: 0 },
       (set) => ({ increment: () => set((s) => ({ count: s.count + 1 })) }),
-      { persist: { key: "counter", storage } },
+      { persist: { key: PERSIST_KEY, storage } },
     );
 
     store.get().increment();
 
-    expect(JSON.parse(storage.getItem("counter") ?? "null")).toStrictEqual({ count: 1 });
+    expect(JSON.parse(storage.getItem(PERSIST_KEY) ?? "null")).toStrictEqual({ count: 1 });
   });
 
   it("persists the latest state when a subscriber calls set again synchronously", () => {
@@ -173,7 +172,7 @@ describe("createStore persist", () => {
     const store = createStore(
       { count: 0 },
       (set) => ({ bump: () => set((s) => ({ count: s.count + 1 })) }),
-      { persist: { key: "counter", storage } },
+      { persist: { key: PERSIST_KEY, storage } },
     );
 
     // Re-entrant: this listener fires from inside the first bump()'s own set()
@@ -187,7 +186,7 @@ describe("createStore persist", () => {
     store.get().bump();
 
     expect(store.getState()).toStrictEqual({ count: 2 });
-    expect(JSON.parse(storage.getItem("counter") ?? "null")).toStrictEqual({ count: 2 });
+    expect(JSON.parse(storage.getItem(PERSIST_KEY) ?? "null")).toStrictEqual({ count: 2 });
   });
 });
 
