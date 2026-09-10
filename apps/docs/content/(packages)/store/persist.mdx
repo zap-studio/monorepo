@@ -15,15 +15,16 @@ const counter = createStore(
 );
 ```
 
+Without a custom `storage`, persist uses `localStorage` in the browser. On the server, reads return nothing and writes are dropped, so persisted stores are safe to create during SSR.
+
 ## The `storage` Contract
 
-`storage` only needs to satisfy `getItem`, `setItem`, and `removeItem` — the standard `Storage` shape — so `localStorage` and `sessionStorage` work with no adapter code:
+`storage` only needs `getItem` and `setItem`, so `localStorage` and `sessionStorage` work with no adapter code:
 
 ```ts
 interface StorageLike {
   getItem: (key: string) => string | null;
   setItem: (key: string, value: string) => void;
-  removeItem: (key: string) => void;
 }
 ```
 
@@ -36,9 +37,6 @@ const memoryStorage: StorageLike = (() => {
     getItem: (key) => data.get(key) ?? null,
     setItem: (key, value) => {
       data.set(key, value);
-    },
-    removeItem: (key) => {
-      data.delete(key);
     },
   };
 })();

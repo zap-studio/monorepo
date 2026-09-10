@@ -26,7 +26,7 @@ TanStack Store has the best reactive core of the three. It uses an auto-tracked 
 - **[`set` takes an updater only](/store/set)**: `set((prev) => partialOrFullState)`. The result is always shallow-merged. There is no `set({ ... })` shortcut, so there is no confusion between "merge" and "replace".
 - **[Auto-tracked derived values](/store/derive)**, via `derive(deps, fn)`. The value is cached. It only recomputes when something `fn` actually read last time has changed. `fn` can read from any store, even one not listed in `deps`, and it will still track correctly.
 - **Plain unsubscribe functions** — `subscribe(...)` returns `() => void`, not a `Subscription` object.
-- **[Simple built-in persist](/store/persist)** — pass `{ persist: { key, storage } }` to `createStore`. `storage` only needs `getItem`, `setItem`, and `removeItem`, so `localStorage` and `sessionStorage` work as-is.
+- **[Simple built-in persist](/store/persist)** — pass `{ persist: { key, storage } }` to `createStore`. `storage` only needs `getItem` and `setItem`, so `localStorage` and `sessionStorage` work as-is; persist is a no-op during SSR without a custom storage adapter.
 - **No required runtime dependencies.**
 - **Full TypeScript inference** for state, actions, and the values passed into `derive`. You do not need to write generic types by hand.
 

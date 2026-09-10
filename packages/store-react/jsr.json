@@ -8,7 +8,7 @@
     "./use-store": "./src/use-store.ts"
   },
   "imports": {
-    "@zap-studio/store": "jsr:@zap-studio/store@^1.0.0",
+    "@zap-studio/store": "jsr:@zap-studio/store@^1.0.1",
     "react": "npm:react@^19.2.8"
   },
   "publish": {

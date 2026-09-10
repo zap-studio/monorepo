@@ -97,7 +97,7 @@ const counter = createStore(
 ```
 
 - Browser persistence uses `localStorage` by default. On the server, persistence is a no-op, so stores are safe to create during SSR without a storage adapter.
-- Pass `storage` when you need a different backend, such as `sessionStorage` or a memory implementation. It only needs `getItem`, `setItem`, and `removeItem`.
+- Pass `storage` when you need a different backend, such as `sessionStorage` or a memory implementation. It only needs `getItem` and `setItem`.
 - There is no version or migration system. If the stored value is corrupt or does not match, it is ignored, and `initialState` is used instead.
 - Only plain state is saved. Actions (functions) are never saved.
 
