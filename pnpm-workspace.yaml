@@ -16,7 +16,7 @@ allowBuilds:
 catalog:
   "@arethetypeswrong/core": ^0.18.5
   "@e18e/eslint-plugin": ^0.8.0
-  "@oxlint/plugins": ^1.81.0
+  "@oxlint/plugins": ^1.82.0
   "@opentelemetry/api": ^1.9.1
   "@opentelemetry/context-async-hooks": ^2.11.0
   "@opentelemetry/core": ^2.11.0
@@ -28,7 +28,7 @@ catalog:
   "@tanstack/eslint-plugin-router": ^1.162.0
   "@testing-library/dom": ^10.4.1
   "@testing-library/react": ^16.3.3
-  "@types/node": ^26.4.1
+  "@types/node": ^26.5.0
   "@types/react": ^19.2.18
   "@types/react-dom": ^19.2.7
   "@vitest/browser-playwright": ^5.0.0
@@ -36,30 +36,32 @@ catalog:
   arktype: ^2.2.3
   blume: ^1.6.3
   eslint: ^10.10.0
-  eslint-plugin-cypress: ^7.0.1
+  eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
   eslint-plugin-playwright: ^2.11.0
   eslint-plugin-regexp: ^3.3.0
-  eslint-plugin-solid: ^0.17.0
+  eslint-plugin-solid: ^0.18.0
   eslint-plugin-sonarjs: ^4.2.0
   eslint-plugin-storybook: ^10.6.0
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
+  fallow: ^3.23.0
   lefthook: ^2.1.12
-  oxfmt: ^0.66.0
-  oxlint: ^1.81.0
+  oxfmt: ^0.67.0
+  oxlint: ^1.82.0
   oxlint-plugin-react-doctor: ^0.9.13
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.63.0
   publint: ^0.3.24
   react: ^19.2.8
   react-dom: ^19.2.8
+  react-doctor: ^0.9.13
   tsdown: ^0.23.0
   typescript: ^7.0.2
   valibot: ^1.4.2
   vite: ^8.2.2
   vitest: ^5.0.0
-  wrangler: ^4.129.0
+  wrangler: ^4.130.0
   zod: ^4.5.4
   unplugin-unused: ^0.6.0
