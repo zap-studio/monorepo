@@ -127,6 +127,17 @@ describe("createStore persist", () => {
     expect(store.getState()).toStrictEqual({ count: 42 });
   });
 
+  it("uses localStorage when storage is omitted", () => {
+    localStorage.setItem("counter-default-storage", JSON.stringify({ count: 42 }));
+
+    const store = createStore({ count: 0 }, undefined, {
+      persist: { key: "counter-default-storage" },
+    });
+
+    expect(store.getState()).toStrictEqual({ count: 42 });
+    localStorage.removeItem("counter-default-storage");
+  });
+
   it("falls back to initialState when storage has nothing for the key", () => {
     const storage = memoryStorage();
 

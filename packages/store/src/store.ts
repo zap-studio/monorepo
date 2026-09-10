@@ -7,8 +7,18 @@
  */
 
 import type { ActionsFactory, GetState, SetState, Store, StoreOptions } from "./types.ts";
+import type { StorageLike } from "./types.ts";
 
 import { ReactiveNode } from "./_reactive.ts";
+
+const serverStorage: StorageLike = {
+  getItem: () => null,
+  setItem: () => undefined,
+  removeItem: () => undefined,
+};
+
+const getStorage = (storage: StorageLike | undefined): StorageLike =>
+  storage ?? (typeof window === "undefined" ? serverStorage : window.localStorage);
 
 const readPersisted = <S>(options: StoreOptions | undefined, initialState: S): S => {
   const persist = options?.persist;
@@ -16,7 +26,7 @@ const readPersisted = <S>(options: StoreOptions | undefined, initialState: S): S
     return initialState;
   }
 
-  const raw = persist.storage.getItem(persist.key);
+  const raw = getStorage(persist.storage).getItem(persist.key);
   if (raw === null) {
     return initialState;
   }
@@ -33,7 +43,7 @@ const readPersisted = <S>(options: StoreOptions | undefined, initialState: S): S
  *
  * @param initialState - The store's initial state.
  * @param actionsFactory - Omitted for this overload.
- * @param options - `persist` to back the state with `localStorage`-shaped storage.
+ * @param options - `persist` to back the state with browser storage or a custom storage adapter.
  *
  * @example
  * ```ts
@@ -57,7 +67,7 @@ export function createStore<S extends object>(
  *
  * @param initialState - The store's initial state.
  * @param actionsFactory - Builds actions from `set`/`get`, bound once.
- * @param options - `persist` to back the state with `localStorage`-shaped storage.
+ * @param options - `persist` to back the state with browser storage or a custom storage adapter.
  *
  * @example
  * ```ts
@@ -88,12 +98,15 @@ export function createStore<S extends object, A extends Record<string, unknown>>
 ): Store<S, A> {
   const node = new ReactiveNode<S>(readPersisted(options, initialState));
   const persist = options?.persist;
+  const storage = persist === undefined ? undefined : getStorage(persist.storage);
 
   const set: SetState<S> = (updater) => {
     const prev = node.peek();
     const next = { ...prev, ...updater(prev) };
     node.set(next);
-    persist?.storage.setItem(persist.key, JSON.stringify(node.peek()));
+    if (persist !== undefined) {
+      storage?.setItem(persist.key, JSON.stringify(node.peek()));
+    }
   };
 
   const getState: GetState<S> = () => node.peek();

@@ -22,8 +22,8 @@ export interface StorageLike {
 export interface PersistOptions {
   /** Storage key the serialized state is read from and written to. */
   readonly key: string;
-  /** Anything satisfying `getItem`/`setItem`/`removeItem`, e.g. `localStorage`. */
-  readonly storage: StorageLike;
+  /** Optional custom storage; defaults to `localStorage` in browsers and a no-op on the server. */
+  readonly storage?: StorageLike;
 }
 
 /** Options accepted by `createStore`. */

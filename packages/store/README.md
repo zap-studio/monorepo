@@ -27,7 +27,7 @@ npm install @zap-studio/store
 - **`set` takes an updater only**: `set((prev) => partialOrFullState)`. The result is always shallow-merged. There is no `set({ ... })` shortcut, so there is no confusion between "merge" and "replace".
 - **Auto-tracked derived values**, via `derive(deps, fn)`. The value is cached. It only recomputes when something `fn` actually read last time has changed. `fn` can read from any store, even one not listed in `deps`, and it will still track correctly. `deps` only sets the order and the types of the arguments.
 - **Plain unsubscribe functions** — `subscribe(...)` returns `() => void`, not a `Subscription` object.
-- **Simple built-in persist** — pass `{ persist: { key, storage } }` to `createStore`. `storage` only needs `getItem`, `setItem`, and `removeItem`, so `localStorage` and `sessionStorage` work as-is.
+- **Simple built-in persist** — pass `{ persist: { key } }` to `createStore`; it uses `localStorage` in browsers and is a no-op on the server. Custom `storage` is supported when needed.
 - **No required runtime dependencies.**
 - **Full TypeScript inference** for state, actions, and the values passed into `derive`. You do not need to write generic types by hand.
 
@@ -92,11 +92,12 @@ Persist is simple, and built into `createStore` — it is not a separate package
 const counter = createStore(
   { count: 0 },
   (set) => ({ increment: () => set((s) => ({ count: s.count + 1 })) }),
-  { persist: { key: "counter", storage: localStorage } },
+  { persist: { key: "counter" } },
 );
 ```
 
-- `storage` only needs `getItem`, `setItem`, and `removeItem` — the standard `Storage` shape. So `localStorage` and `sessionStorage` work with no extra code.
+- Browser persistence uses `localStorage` by default. On the server, persistence is a no-op, so stores are safe to create during SSR without a storage adapter.
+- Pass `storage` when you need a different backend, such as `sessionStorage` or a memory implementation. It only needs `getItem`, `setItem`, and `removeItem`.
 - There is no version or migration system. If the stored value is corrupt or does not match, it is ignored, and `initialState` is used instead.
 - Only plain state is saved. Actions (functions) are never saved.
 
