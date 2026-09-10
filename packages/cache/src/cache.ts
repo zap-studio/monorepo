@@ -54,6 +54,20 @@ export const createCache = <K, V>(
     onEvict?.(key, entry.value);
   };
 
+  const liveEntry = (key: K): Entry<V> | undefined => {
+    const entry = store.get(key);
+    if (entry === undefined) {
+      return undefined;
+    }
+
+    if (isExpired(entry)) {
+      dropExpired(key, entry);
+      return undefined;
+    }
+
+    return entry;
+  };
+
   const liveSize = (): number => {
     let count = 0;
     for (const entry of store.values()) {
@@ -91,13 +105,8 @@ export const createCache = <K, V>(
     },
 
     get(key: K): V | undefined {
-      const entry = store.get(key);
+      const entry = liveEntry(key);
       if (entry === undefined) {
-        return undefined;
-      }
-
-      if (isExpired(entry)) {
-        dropExpired(key, entry);
         return undefined;
       }
 
@@ -106,17 +115,7 @@ export const createCache = <K, V>(
     },
 
     has(key: K): boolean {
-      const entry = store.get(key);
-      if (entry === undefined) {
-        return false;
-      }
-
-      if (isExpired(entry)) {
-        dropExpired(key, entry);
-        return false;
-      }
-
-      return true;
+      return liveEntry(key) !== undefined;
     },
 
     keys(): IterableIterator<K> {
@@ -130,17 +129,7 @@ export const createCache = <K, V>(
     },
 
     peek(key: K): V | undefined {
-      const entry = store.get(key);
-      if (entry === undefined) {
-        return undefined;
-      }
-
-      if (isExpired(entry)) {
-        dropExpired(key, entry);
-        return undefined;
-      }
-
-      return entry.value;
+      return liveEntry(key)?.value;
     },
 
     set(key: K, value: V, setOptions?: SetOptions): void {
