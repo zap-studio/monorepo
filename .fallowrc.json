@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "apps/docs/blume.config.ts",
+    "apps/docs/components.ts",
+    "doctor.config.ts",
+    "oxfmt.config.ts"
+  ],
+  "dynamicallyLoaded": ["apps/docs/slots/**"],
+  "duplicates": {
+    "ignore": ["packages/oxlint/src/anti-slop/**", "**/_otel.ts", "packages/monads/src/pipe.ts"]
+  },
+  "health": {
+    "ignore": ["packages/oxlint/src/anti-slop/**"]
+  },
+  "ignoreFindings": ["apps/docs/content/**", "packages/oxlint/src/anti-slop/**"],
+  "ignoreDependencies": [
+    "@e18e/eslint-plugin",
+    "@stylexjs/eslint-plugin",
+    "@tanstack/eslint-plugin-query",
+    "@tanstack/eslint-plugin-router",
+    "eslint-plugin-cypress",
+    "eslint-plugin-github",
+    "eslint-plugin-jest-dom",
+    "eslint-plugin-playwright",
+    "eslint-plugin-regexp",
+    "eslint-plugin-solid",
+    "eslint-plugin-sonarjs",
+    "eslint-plugin-storybook",
+    "eslint-plugin-tailwindcss",
+    "eslint-plugin-testing-library",
+    "oxlint-plugin-react-doctor",
+    "@arethetypeswrong/core",
+    "publint",
+    "unplugin-unused"
+  ]
+}
