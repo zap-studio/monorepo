@@ -1,7 +1,19 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  "entry": ["doctor.config.ts", "oxfmt.config.ts"],
-  "ignoreFindings": ["apps/docs/**"],
+  "entry": [
+    "apps/docs/blume.config.ts",
+    "apps/docs/components.ts",
+    "doctor.config.ts",
+    "oxfmt.config.ts"
+  ],
+  "dynamicallyLoaded": ["apps/docs/slots/**"],
+  "duplicates": {
+    "ignore": ["packages/oxlint/src/anti-slop/**", "**/_otel.ts", "packages/monads/src/pipe.ts"]
+  },
+  "health": {
+    "ignore": ["packages/oxlint/src/anti-slop/**"]
+  },
+  "ignoreFindings": ["apps/docs/content/**", "packages/oxlint/src/anti-slop/**"],
   "ignoreDependencies": [
     "@e18e/eslint-plugin",
     "@stylexjs/eslint-plugin",
