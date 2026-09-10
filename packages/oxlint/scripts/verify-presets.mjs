@@ -48,11 +48,11 @@ const compareFilePaths = (a, b) => {
 // barrel) and `./anti-slop` (a plugin, not an `OxlintConfig`) are excluded for the same
 // reason — neither is consumed via `oxlint -c`.
 const presetFiles = Object.entries(packageExports)
-  .filter(
-    ([specifier]) =>
-      specifier !== "." && specifier !== "./anti-slop" && specifier !== "./package.json",
+  .flatMap(([specifier, file]) =>
+    specifier === "." || specifier === "./anti-slop" || specifier === "./package.json"
+      ? []
+      : [file],
   )
-  .map(([, file]) => file)
   .sort(compareFilePaths);
 
 console.log(`Verifying ${presetFiles.length} presets against installed ${oxlintVersion}...\n`);
