@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": ["doctor.config.ts", "oxfmt.config.ts"],
+  "ignoreFindings": ["apps/docs/**"],
+  "ignoreDependencies": [
+    "@e18e/eslint-plugin",
+    "@stylexjs/eslint-plugin",
+    "@tanstack/eslint-plugin-query",
+    "@tanstack/eslint-plugin-router",
+    "eslint-plugin-cypress",
+    "eslint-plugin-github",
+    "eslint-plugin-jest-dom",
+    "eslint-plugin-playwright",
+    "eslint-plugin-regexp",
+    "eslint-plugin-solid",
+    "eslint-plugin-sonarjs",
+    "eslint-plugin-storybook",
+    "eslint-plugin-tailwindcss",
+    "eslint-plugin-testing-library",
+    "oxlint-plugin-react-doctor",
+    "@arethetypeswrong/core",
+    "publint",
+    "unplugin-unused"
+  ]
+}

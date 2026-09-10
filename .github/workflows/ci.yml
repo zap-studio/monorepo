@@ -10,6 +10,25 @@ permissions:
   contents: read
 
 jobs:
+  analysis:
+    name: Analysis
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      BASE_REF: ${{ github.base_ref }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+      - name: Fetch base branch
+        run: git fetch origin "$BASE_REF"
+      - name: Run fallow audit
+        run: pnpm exec fallow audit --base "origin/$BASE_REF"
+      - name: Run react-doctor
+        run: pnpm exec react-doctor . --scope changed --base "origin/$BASE_REF" --blocking error
+
   build-docs:
     name: Build Docs
     runs-on: ubuntu-latest
