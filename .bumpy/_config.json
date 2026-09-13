@@ -1,0 +1,24 @@
+{
+  "$schema": "../node_modules/@varlock/bumpy/config-schema.json",
+  "baseBranch": "main",
+  "access": "public",
+  "changelog": "github",
+  "updateInternalDependencies": "patch",
+  "dependencyBumpRules": {
+    "dependencies": {
+      "trigger": "patch",
+      "bumpAs": "patch"
+    },
+    "peerDependencies": {
+      "trigger": "minor",
+      "bumpAs": "patch"
+    },
+    "devDependencies": false,
+    "optionalDependencies": false
+  },
+  "publish": {
+    "packManager": "pnpm",
+    "publishManager": "npm",
+    "protocolResolution": "pack"
+  }
+}
