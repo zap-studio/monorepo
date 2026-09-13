@@ -53,7 +53,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@zap-studio/store": "workspace:*",
+    "@zap-studio/store": "workspace:^",
     "react": ">=18.0.0"
   },
   "engines": {

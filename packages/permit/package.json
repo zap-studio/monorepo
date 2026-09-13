@@ -62,7 +62,7 @@
   },
   "peerDependencies": {
     "@opentelemetry/api": "catalog:",
-    "@zap-studio/logger": "workspace:*"
+    "@zap-studio/logger": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@zap-studio/logger": {

@@ -55,7 +55,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@zap-studio/webmcp": "workspace:*",
+    "@zap-studio/webmcp": "workspace:^",
     "react": ">=18.0.0"
   },
   "engines": {
