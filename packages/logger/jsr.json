@@ -13,6 +13,7 @@
     "@opentelemetry/api": "npm:@opentelemetry/api@^1.9.0"
   },
   "publish": {
-    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"],
+    "exclude": ["**/*.test.ts"]
   }
 }

@@ -17,6 +17,7 @@
     "@zap-studio/logger": "jsr:@zap-studio/logger@^2.0.0"
   },
   "publish": {
-    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"],
+    "exclude": ["**/*.test.ts"]
   }
 }

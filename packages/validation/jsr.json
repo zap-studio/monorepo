@@ -11,6 +11,7 @@
     "@standard-schema/spec": "npm:@standard-schema/spec@^1.1.0"
   },
   "publish": {
-    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"],
+    "exclude": ["**/*.test.ts"]
   }
 }

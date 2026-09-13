@@ -143,6 +143,7 @@
     "react": "npm:react@^19.2.8"
   },
   "publish": {
-    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"]
+    "include": ["src", "package.json", "CHANGELOG.md", "LICENSE", "README.md"],
+    "exclude": ["**/*.test.ts"]
   }
 }
