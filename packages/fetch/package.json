@@ -49,15 +49,15 @@
     "prepublishOnly": "pnpm -C ../.. run build"
   },
   "dependencies": {
-    "@zap-studio/validation": "workspace:*"
+    "@zap-studio/validation": "workspace:^"
   },
   "devDependencies": {
     "@opentelemetry/api": "catalog:",
     "@opentelemetry/context-async-hooks": "catalog:",
     "@opentelemetry/core": "catalog:",
     "@opentelemetry/sdk-trace-base": "catalog:",
-    "@zap-studio/logger": "workspace:*",
-    "@zap-studio/typescript": "workspace:*",
+    "@zap-studio/logger": "workspace:^",
+    "@zap-studio/typescript": "workspace:^",
     "arktype": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
