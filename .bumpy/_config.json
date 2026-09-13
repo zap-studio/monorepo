@@ -19,6 +19,8 @@
   "publish": {
     "packManager": "pnpm",
     "publishManager": "npm",
-    "protocolResolution": "pack"
+    "protocolResolution": "pack",
+    "provenance": true,
+    "npmStaged": true
   }
 }
