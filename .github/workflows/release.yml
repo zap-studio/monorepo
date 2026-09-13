@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+      - name: Plan release
+        id: plan
+        run: pnpm exec bumpy ci plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  version-pr:
+    name: Version PR
+    needs: plan
+    if: needs.plan.outputs.mode == 'version-pr'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+      - name: Open version PR
+        run: pnpm exec bumpy ci release --expect-mode version-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUMPY_GH_TOKEN: ${{ secrets.BUMPY_GH_TOKEN }}
+
+  publish:
+    name: Publish
+    needs: plan
+    if: needs.plan.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    environment: publish
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+      - name: Use latest npm for OIDC publishing
+        run: npm install -g npm@latest
+      - name: Build packages
+        run: pnpm run build
+      - name: Publish
+        run: pnpm exec bumpy ci release --expect-mode publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUMPY_GH_TOKEN: ${{ secrets.BUMPY_GH_TOKEN }}

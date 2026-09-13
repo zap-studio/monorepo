@@ -29,6 +29,24 @@ jobs:
       - name: Run react-doctor
         run: pnpm exec react-doctor . --scope changed --base "origin/$BASE_REF" --blocking error
 
+  bumpy:
+    name: Bumpy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+      - name: Check pending releases
+        run: pnpm exec bumpy ci check
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   build-docs:
     name: Build Docs
     runs-on: ubuntu-latest
