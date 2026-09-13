@@ -51,8 +51,8 @@
     "@opentelemetry/context-async-hooks": "catalog:",
     "@opentelemetry/sdk-metrics": "catalog:",
     "@opentelemetry/sdk-trace-base": "catalog:",
-    "@zap-studio/logger": "workspace:*",
-    "@zap-studio/typescript": "workspace:*",
+    "@zap-studio/logger": "workspace:^",
+    "@zap-studio/typescript": "workspace:^",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

@@ -46,7 +46,7 @@
     "prepublishOnly": "pnpm -C ../.. run build"
   },
   "devDependencies": {
-    "@zap-studio/typescript": "workspace:*",
+    "@zap-studio/typescript": "workspace:^",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

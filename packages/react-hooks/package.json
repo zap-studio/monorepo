@@ -175,7 +175,7 @@
     "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@zap-studio/typescript": "workspace:*",
+    "@zap-studio/typescript": "workspace:^",
     "react": "catalog:",
     "react-dom": "catalog:",
     "tsdown": "catalog:",
