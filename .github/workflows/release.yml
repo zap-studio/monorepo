@@ -12,6 +12,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  LEFTHOOK: 0
+
 jobs:
   plan:
     name: Plan
