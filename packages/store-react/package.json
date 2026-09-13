@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/store-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "React bindings for @zap-studio/store: a useStore hook that subscribes to a createStore/derive instance.",
   "keywords": [
