@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.plan.outputs.mode }}
+      packages: ${{ steps.plan.outputs.packages }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -69,8 +70,18 @@ jobs:
         run: npm install -g npm@latest
       - name: Build packages
         run: pnpm run build
-      - name: Publish
+      - name: Publish to npm
         run: pnpm exec bumpy ci release --expect-mode publish
         env:
           GH_TOKEN: ${{ github.token }}
           BUMPY_GH_TOKEN: ${{ secrets.BUMPY_GH_TOKEN }}
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Publish to JSR
+        env:
+          RELEASED: ${{ needs.plan.outputs.packages }}
+        run: node .github/scripts/publish-jsr.mjs

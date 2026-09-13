@@ -1,7 +1,6 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/cache",
-  "version": "1.0.0",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",

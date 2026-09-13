@@ -1,7 +1,6 @@
 {
   "$schema": "https://jsr.io/schema/config-file.v1.json",
   "name": "@zap-studio/retry",
-  "version": "2.1.1",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
