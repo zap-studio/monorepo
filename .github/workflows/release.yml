@@ -84,4 +84,5 @@ jobs:
       - name: Publish to JSR
         env:
           RELEASED: ${{ needs.plan.outputs.packages }}
-        run: node .github/scripts/publish-jsr.mjs
+        run: |
+          DENO_BIN="$(command -v deno)" node .github/scripts/publish-jsr.mjs
