@@ -33,7 +33,7 @@ catalog:
   "@vitest/browser-playwright": ^5.0.0
   "@vitest/coverage-v8": ^5.0.0
   arktype: ^2.2.3
-  blume: ^1.6.4
+  blume: ^1.6.5
   eslint: ^10.10.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
@@ -49,12 +49,12 @@ catalog:
   lefthook: ^2.1.12
   oxfmt: ^0.67.0
   oxlint: ^1.82.0
-  oxlint-plugin-react-doctor: ^0.9.13
+  oxlint-plugin-react-doctor: ^0.9.14
   oxlint-tsgolint: ^7.0.2001
   playwright: ^1.63.0
   publint: ^0.3.24
   react: ^19.3.0
-  react-doctor: ^0.9.13
+  react-doctor: ^0.9.14
   react-dom: ^19.3.0
   tsdown: ^0.23.0
   typescript: ^7.0.2
@@ -62,4 +62,4 @@ catalog:
   valibot: ^1.5.0
   vitest: ^5.0.0
   wrangler: ^4.131.1
-  zod: ^4.6.2
+  zod: ^4.6.4
