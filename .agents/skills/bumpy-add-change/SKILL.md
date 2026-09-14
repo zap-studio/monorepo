@@ -1,7 +1,7 @@
 ---
-name: add-change
+name: bumpy-add-change
 description: Create a bumpy bump file describing which packages changed and how, for version bumping and changelog generation. Use when the user wants to record a change, add a bump file, or prepare packages for release.
-argument-hint: '[description of changes]'
+argument-hint: "[description of changes]"
 allowed-tools: Read Grep Glob Bash Edit Write
 ---
 
