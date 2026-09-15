@@ -74,18 +74,21 @@ const makeControlledOpenRequest = (options: {
     get onsuccess() {
       return onsuccess;
     },
+    // `openDatabase` assigns `onupgradeneeded` first, so by the time this setter
+    // runs both handlers are in place. Firing from here rather than at fixture
+    // creation keeps the fake independent of when the hook's effect runs.
     set onsuccess(fn: (() => void) | undefined) {
       onsuccess = fn;
+      queueMicrotask(() => {
+        onupgradeneeded?.();
+        onsuccess?.();
+      });
     },
     set onerror(_fn: unknown) {
       // never fires in this fake — open always "succeeds" here
     },
     result: fakeDb,
   };
-  queueMicrotask(() => {
-    onupgradeneeded?.();
-    onsuccess?.();
-  });
   return { createObjectStore, request: asTestDouble<IDBOpenDBRequest>(fake) };
 };
 
@@ -182,10 +185,13 @@ describe("useIndexedDB", () => {
   });
 
   it("ignores a resolved read if the component unmounted first", async () => {
+    // The read has to stay pending until after unmount: rendering flushes
+    // microtasks, so a self-firing request would settle before unmount.
+    let settleRead: (() => void) | undefined;
     const { request } = makeControlledOpenRequest({
       getRequest: () => {
         const fake: SuccessfulReadFixture = { result: 1 };
-        queueMicrotask(() => fake.onsuccess?.());
+        settleRead = () => fake.onsuccess?.();
         return asTestDouble<IDBRequest>(fake);
       },
       storeExists: true,
@@ -193,11 +199,12 @@ describe("useIndexedDB", () => {
     vi.spyOn(indexedDB, "open").mockReturnValue(request);
 
     const { result, unmount } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(settleRead).toBeDefined());
+
     await unmount();
 
     await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
+      settleRead?.();
       await Promise.resolve();
     });
 
@@ -206,18 +213,24 @@ describe("useIndexedDB", () => {
   });
 
   it("ignores a failed read if the component unmounted first", async () => {
+    let settleRead: (() => void) | undefined;
     const { request } = makeControlledOpenRequest({
-      getRequest: () => makeFailingRequest("read boom"),
+      getRequest: () => {
+        const fake: FailingRequestFixture = { error: "read boom" };
+        settleRead = () => fake.onerror?.();
+        return asTestDouble<IDBRequest>(fake);
+      },
       storeExists: true,
     });
     vi.spyOn(indexedDB, "open").mockReturnValue(request);
 
     const { result, unmount } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(settleRead).toBeDefined());
+
     await unmount();
 
     await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
+      settleRead?.();
       await Promise.resolve();
     });
 
@@ -237,7 +250,9 @@ describe("useIndexedDB", () => {
     expect(a.current.value).toBe("changed");
     expect(b.current.value).toBe("y");
   });
+});
 
+describe("useIndexedDB errors", () => {
   it('becomes "error" when opening the database fails', async () => {
     vi.spyOn(indexedDB, "open").mockImplementation(() =>
       asTestDouble<IDBOpenDBRequest>(makeFailingRequest("open boom")),

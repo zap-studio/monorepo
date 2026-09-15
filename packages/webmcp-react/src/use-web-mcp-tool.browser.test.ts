@@ -162,6 +162,42 @@ describe("useWebMCPTool (supported)", () => {
     expect(result.current.error?.message).toBe("boom");
   });
 
+  it("unregisters a tool whose registration resolves after unmount", async () => {
+    // Rendering flushes microtasks, so the registration has to stay pending
+    // until after unmount for the post-unmount cleanup path to run at all.
+    const context = createFakeModelContext();
+    let resolveRegisterTool: () => void = () => undefined;
+    let registered = false;
+    testDocument.modelContext = {
+      ...context,
+      registerTool: vi.fn<ModelContext["registerTool"]>(async (tool, options) => {
+        await new Promise<void>((resolve) => {
+          resolveRegisterTool = resolve;
+        });
+        await context.registerTool(tool, options);
+        registered = true;
+        return undefined;
+      }),
+    };
+
+    const { unmount } = await renderHook(() =>
+      useWebMCPTool({
+        name: "posts_archive",
+        description: "Archive a post by ID",
+        execute: async () => ({ archived: true }),
+      }),
+    );
+
+    await unmount();
+    resolveRegisterTool();
+
+    await vi.waitFor(() => {
+      expect(registered).toBe(true);
+    });
+
+    expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
+  });
+
   it("does not surface an error if the component unmounts before rejection resolves", async () => {
     // Rendering flushes microtasks, so the registration has to stay pending until
     // after unmount for this to exercise the unmount guard at all.
