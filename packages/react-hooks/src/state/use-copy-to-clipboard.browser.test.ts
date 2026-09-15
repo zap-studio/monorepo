@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useCopyToClipboard } from "./use-copy-to-clipboard.ts";
 
 const setClipboardSupport = (writeText: ((text: string) => Promise<void>) | undefined) => {
@@ -20,8 +20,8 @@ afterEach(() => {
 });
 
 describe("useCopyToClipboard", () => {
-  it("starts with copied: false", () => {
-    const { result } = renderHook(() => useCopyToClipboard());
+  it("starts with copied: false", async () => {
+    const { result } = await renderHook(() => useCopyToClipboard());
 
     expect(result.current.copied).toBe(false);
   });
@@ -29,7 +29,7 @@ describe("useCopyToClipboard", () => {
   it("copy() writes to the clipboard and becomes copied: true", async () => {
     const writeText = vi.fn<() => Promise<void>>(() => Promise.resolve());
     setClipboardSupport(writeText);
-    const { result } = renderHook(() => useCopyToClipboard());
+    const { result } = await renderHook(() => useCopyToClipboard());
 
     let succeeded = false;
     await act(async () => {
@@ -43,14 +43,14 @@ describe("useCopyToClipboard", () => {
 
   it("resets copied back to false after resetAfterMs", async () => {
     setClipboardSupport(() => Promise.resolve());
-    const { result } = renderHook(() => useCopyToClipboard(2000));
+    const { result } = await renderHook(() => useCopyToClipboard(2000));
 
     await act(async () => {
       await result.current.copy("hello");
     });
     expect(result.current.copied).toBe(true);
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(2000);
     });
 
@@ -59,7 +59,7 @@ describe("useCopyToClipboard", () => {
 
   it("becomes copied: false and sets an error when the write rejects", async () => {
     setClipboardSupport(() => Promise.reject(new Error("denied")));
-    const { result } = renderHook(() => useCopyToClipboard());
+    const { result } = await renderHook(() => useCopyToClipboard());
 
     let succeeded = true;
     await act(async () => {
@@ -73,7 +73,7 @@ describe("useCopyToClipboard", () => {
 
   it("wraps a non-Error rejection", async () => {
     setClipboardSupport(() => Promise.reject("denied"));
-    const { result } = renderHook(() => useCopyToClipboard());
+    const { result } = await renderHook(() => useCopyToClipboard());
 
     await act(async () => {
       await result.current.copy("hello");
@@ -84,7 +84,7 @@ describe("useCopyToClipboard", () => {
 
   it("becomes copied: false and sets an error when unsupported", async () => {
     setClipboardSupport(undefined);
-    const { result } = renderHook(() => useCopyToClipboard());
+    const { result } = await renderHook(() => useCopyToClipboard());
 
     let succeeded = true;
     await act(async () => {
@@ -98,13 +98,13 @@ describe("useCopyToClipboard", () => {
 
   it("clears the reset timer on unmount", async () => {
     setClipboardSupport(() => Promise.resolve());
-    const { result, unmount } = renderHook(() => useCopyToClipboard());
+    const { result, unmount } = await renderHook(() => useCopyToClipboard());
 
     await act(async () => {
       await result.current.copy("hello");
     });
 
-    unmount();
+    await unmount();
 
     expect(() => vi.advanceTimersByTime(2000)).not.toThrow();
   });

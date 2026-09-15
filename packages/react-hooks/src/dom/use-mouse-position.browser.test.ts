@@ -1,11 +1,11 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useMousePosition } from "./use-mouse-position.ts";
 
 describe("useMousePosition", () => {
-  it("starts at all-0", () => {
-    const { result } = renderHook(() => useMousePosition());
+  it("starts at all-0", async () => {
+    const { result } = await renderHook(() => useMousePosition());
 
     expect(result.current).toEqual({
       clientX: 0,
@@ -17,10 +17,10 @@ describe("useMousePosition", () => {
     });
   });
 
-  it("updates on mousemove", () => {
-    const { result } = renderHook(() => useMousePosition());
+  it("updates on mousemove", async () => {
+    const { result } = await renderHook(() => useMousePosition());
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(
         new MouseEvent("mousemove", { clientX: 10, clientY: 20, screenX: 100, screenY: 200 }),
       );
@@ -36,11 +36,11 @@ describe("useMousePosition", () => {
     });
   });
 
-  it("removes the listener on unmount", () => {
-    const { result, unmount } = renderHook(() => useMousePosition());
-    unmount();
+  it("removes the listener on unmount", async () => {
+    const { result, unmount } = await renderHook(() => useMousePosition());
+    await unmount();
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(new MouseEvent("mousemove", { clientX: 5 }));
     });
 

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useScreenCapture } from "./use-screen-capture.ts";
 
@@ -35,10 +35,10 @@ afterEach(() => {
 });
 
 describe("useScreenCapture", () => {
-  it('starts "idle" with no stream', () => {
+  it('starts "idle" with no stream', async () => {
     setGetDisplayMedia(() => Promise.resolve(makeStream().stream));
 
-    const { result } = renderHook(() => useScreenCapture());
+    const { result } = await renderHook(() => useScreenCapture());
 
     expect(result.current.status).toBe("idle");
     expect(result.current.stream).toBeUndefined();
@@ -49,7 +49,7 @@ describe("useScreenCapture", () => {
     const getDisplayMedia = vi.fn<() => Promise<MediaStream>>(() => Promise.resolve(stream));
     setGetDisplayMedia(getDisplayMedia);
 
-    const { result } = renderHook(() => useScreenCapture({ video: true }));
+    const { result } = await renderHook(() => useScreenCapture({ video: true }));
 
     await act(async () => {
       await result.current.start();
@@ -63,7 +63,7 @@ describe("useScreenCapture", () => {
   it('becomes "error" when getDisplayMedia() rejects', async () => {
     setGetDisplayMedia(() => Promise.reject(new Error("Permission denied")));
 
-    const { result } = renderHook(() => useScreenCapture());
+    const { result } = await renderHook(() => useScreenCapture());
 
     await act(async () => {
       await result.current.start();
@@ -76,7 +76,7 @@ describe("useScreenCapture", () => {
   it("wraps a non-Error rejection", async () => {
     setGetDisplayMedia(() => Promise.reject("denied"));
 
-    const { result } = renderHook(() => useScreenCapture());
+    const { result } = await renderHook(() => useScreenCapture());
 
     await act(async () => {
       await result.current.start();
@@ -88,7 +88,7 @@ describe("useScreenCapture", () => {
   it('becomes "error" when unsupported', async () => {
     setGetDisplayMedia(undefined);
 
-    const { result } = renderHook(() => useScreenCapture());
+    const { result } = await renderHook(() => useScreenCapture());
 
     await act(async () => {
       await result.current.start();
@@ -101,12 +101,12 @@ describe("useScreenCapture", () => {
     const { stop, stream } = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
-    const { result } = renderHook(() => useScreenCapture());
+    const { result } = await renderHook(() => useScreenCapture());
     await act(async () => {
       await result.current.start();
     });
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 
@@ -118,7 +118,7 @@ describe("useScreenCapture", () => {
     const { stream } = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
-    const { result } = renderHook(() => useScreenCapture());
+    const { result } = await renderHook(() => useScreenCapture());
     await act(async () => {
       await result.current.start();
     });
@@ -135,12 +135,12 @@ describe("useScreenCapture", () => {
     const { stop, stream } = makeStream();
     setGetDisplayMedia(() => Promise.resolve(stream));
 
-    const { result, unmount } = renderHook(() => useScreenCapture());
+    const { result, unmount } = await renderHook(() => useScreenCapture());
     await act(async () => {
       await result.current.start();
     });
 
-    unmount();
+    await unmount();
 
     expect(stop).toHaveBeenCalledTimes(1);
   });
@@ -155,12 +155,12 @@ describe("useScreenCapture", () => {
         }),
     );
 
-    const { result, unmount } = renderHook(() => useScreenCapture());
+    const { result, unmount } = await renderHook(() => useScreenCapture());
     const started = act(async () => {
       await result.current.start();
     });
 
-    unmount();
+    await unmount();
     resolveGetDisplayMedia(stream);
     await started;
 
@@ -169,11 +169,11 @@ describe("useScreenCapture", () => {
 });
 
 describe("useScreenCapture option stability", () => {
-  it("keeps start stable across renders with an inline options object", () => {
-    const { rerender, result } = renderHook(() => useScreenCapture({ video: true }));
+  it("keeps start stable across renders with an inline options object", async () => {
+    const { rerender, result } = await renderHook(() => useScreenCapture({ video: true }));
     const first = result.current.start;
 
-    rerender();
+    await rerender();
 
     expect(result.current.start).toBe(first);
   });

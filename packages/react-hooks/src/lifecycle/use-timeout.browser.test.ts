@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useTimeout } from "./use-timeout.ts";
 
 beforeEach(() => {
@@ -12,63 +12,63 @@ afterEach(() => {
 });
 
 describe("useTimeout", () => {
-  it("calls the callback after the delay elapses", () => {
+  it("calls the callback after the delay elapses", async () => {
     const callback = vi.fn<() => void>();
-    renderHook(() => useTimeout(callback, 1000));
+    await renderHook(() => useTimeout(callback, 1000));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(999);
     });
     expect(callback).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1);
     });
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it("does not schedule when delayMs is null", () => {
+  it("does not schedule when delayMs is null", async () => {
     const callback = vi.fn<() => void>();
-    renderHook(() => useTimeout(callback, null));
+    await renderHook(() => useTimeout(callback, null));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(10_000);
     });
 
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("clears the previous timer and reschedules when delayMs changes", () => {
+  it("clears the previous timer and reschedules when delayMs changes", async () => {
     const callback = vi.fn<() => void>();
-    const { rerender } = renderHook(({ delay }) => useTimeout(callback, delay), {
+    const { rerender } = await renderHook(({ delay }) => useTimeout(callback, delay), {
       initialProps: { delay: 1000 },
     });
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(500);
     });
-    rerender({ delay: 2000 });
-    act(() => {
+    await rerender({ delay: 2000 });
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 
     expect(callback).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it("always calls the latest callback without resetting the timer", () => {
+  it("always calls the latest callback without resetting the timer", async () => {
     const firstCallback = vi.fn<() => void>();
     const secondCallback = vi.fn<() => void>();
-    const { rerender } = renderHook(({ callback }) => useTimeout(callback, 1000), {
+    const { rerender } = await renderHook(({ callback }) => useTimeout(callback, 1000), {
       initialProps: { callback: firstCallback },
     });
 
-    rerender({ callback: secondCallback });
-    act(() => {
+    await rerender({ callback: secondCallback });
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 
@@ -76,12 +76,12 @@ describe("useTimeout", () => {
     expect(secondCallback).toHaveBeenCalledTimes(1);
   });
 
-  it("clears the timer on unmount", () => {
+  it("clears the timer on unmount", async () => {
     const callback = vi.fn<() => void>();
-    const { unmount } = renderHook(() => useTimeout(callback, 1000));
+    const { unmount } = await renderHook(() => useTimeout(callback, 1000));
 
-    unmount();
-    act(() => {
+    await unmount();
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useUserMedia } from "./use-user-media.ts";
 
@@ -32,10 +32,10 @@ afterEach(() => {
 });
 
 describe("useUserMedia", () => {
-  it('starts "idle" with no stream', () => {
+  it('starts "idle" with no stream', async () => {
     setGetUserMedia(() => Promise.resolve(makeStream().stream));
 
-    const { result } = renderHook(() => useUserMedia({ video: true }));
+    const { result } = await renderHook(() => useUserMedia({ video: true }));
 
     expect(result.current.status).toBe("idle");
     expect(result.current.stream).toBeUndefined();
@@ -46,7 +46,7 @@ describe("useUserMedia", () => {
     const getUserMedia = vi.fn<() => Promise<MediaStream>>(() => Promise.resolve(stream));
     setGetUserMedia(getUserMedia);
 
-    const { result } = renderHook(() => useUserMedia({ video: true }));
+    const { result } = await renderHook(() => useUserMedia({ video: true }));
 
     await act(async () => {
       await result.current.start();
@@ -60,7 +60,7 @@ describe("useUserMedia", () => {
   it('becomes "error" when getUserMedia() rejects', async () => {
     setGetUserMedia(() => Promise.reject(new Error("Permission denied")));
 
-    const { result } = renderHook(() => useUserMedia({ video: true }));
+    const { result } = await renderHook(() => useUserMedia({ video: true }));
 
     await act(async () => {
       await result.current.start();
@@ -73,7 +73,7 @@ describe("useUserMedia", () => {
   it("wraps a non-Error rejection", async () => {
     setGetUserMedia(() => Promise.reject("denied"));
 
-    const { result } = renderHook(() => useUserMedia({ video: true }));
+    const { result } = await renderHook(() => useUserMedia({ video: true }));
 
     await act(async () => {
       await result.current.start();
@@ -86,7 +86,7 @@ describe("useUserMedia", () => {
   it('becomes "error" when unsupported', async () => {
     setGetUserMedia(undefined);
 
-    const { result } = renderHook(() => useUserMedia({ video: true }));
+    const { result } = await renderHook(() => useUserMedia({ video: true }));
 
     await act(async () => {
       await result.current.start();
@@ -100,12 +100,12 @@ describe("useUserMedia", () => {
     const { stop, stream } = makeStream();
     setGetUserMedia(() => Promise.resolve(stream));
 
-    const { result } = renderHook(() => useUserMedia({ video: true }));
+    const { result } = await renderHook(() => useUserMedia({ video: true }));
     await act(async () => {
       await result.current.start();
     });
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 
@@ -118,12 +118,12 @@ describe("useUserMedia", () => {
     const { stop, stream } = makeStream();
     setGetUserMedia(() => Promise.resolve(stream));
 
-    const { result, unmount } = renderHook(() => useUserMedia({ video: true }));
+    const { result, unmount } = await renderHook(() => useUserMedia({ video: true }));
     await act(async () => {
       await result.current.start();
     });
 
-    unmount();
+    await unmount();
 
     expect(stop).toHaveBeenCalledTimes(1);
   });
@@ -138,12 +138,12 @@ describe("useUserMedia", () => {
         }),
     );
 
-    const { result, unmount } = renderHook(() => useUserMedia({ video: true }));
+    const { result, unmount } = await renderHook(() => useUserMedia({ video: true }));
     const started = act(async () => {
       await result.current.start();
     });
 
-    unmount();
+    await unmount();
     resolveGetUserMedia(stream);
     await started;
 
@@ -152,11 +152,11 @@ describe("useUserMedia", () => {
 });
 
 describe("useUserMedia constraint stability", () => {
-  it("keeps start stable across renders with an inline constraints object", () => {
-    const { rerender, result } = renderHook(() => useUserMedia({ audio: true, video: true }));
+  it("keeps start stable across renders with an inline constraints object", async () => {
+    const { rerender, result } = await renderHook(() => useUserMedia({ audio: true, video: true }));
     const first = result.current.start;
 
-    rerender();
+    await rerender();
 
     expect(result.current.start).toBe(first);
   });

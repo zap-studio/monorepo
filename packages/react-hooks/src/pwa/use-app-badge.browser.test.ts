@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useAppBadge } from "./use-app-badge.ts";
 
 const setBadgeSupport = (
@@ -23,21 +23,21 @@ afterEach(() => {
 });
 
 describe("useAppBadge", () => {
-  it("reports supported: true when the Badging API exists", () => {
+  it("reports supported: true when the Badging API exists", async () => {
     setBadgeSupport({
       clearAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
       setAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
     });
 
-    const { result } = renderHook(() => useAppBadge());
+    const { result } = await renderHook(() => useAppBadge());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("reports supported: false when the Badging API is unavailable", () => {
+  it("reports supported: false when the Badging API is unavailable", async () => {
     setBadgeSupport(undefined);
 
-    const { result } = renderHook(() => useAppBadge());
+    const { result } = await renderHook(() => useAppBadge());
 
     expect(result.current.supported).toBe(false);
   });
@@ -49,7 +49,7 @@ describe("useAppBadge", () => {
       setAppBadge,
     });
 
-    const { result } = renderHook(() => useAppBadge());
+    const { result } = await renderHook(() => useAppBadge());
 
     await act(async () => {
       await result.current.setBadge(3);
@@ -65,7 +65,7 @@ describe("useAppBadge", () => {
       setAppBadge,
     });
 
-    const { result } = renderHook(() => useAppBadge());
+    const { result } = await renderHook(() => useAppBadge());
 
     await act(async () => {
       await result.current.setBadge();
@@ -81,7 +81,7 @@ describe("useAppBadge", () => {
       setAppBadge: vi.fn<() => Promise<undefined>>(async () => undefined),
     });
 
-    const { result } = renderHook(() => useAppBadge());
+    const { result } = await renderHook(() => useAppBadge());
 
     await act(async () => {
       await result.current.clearBadge();
@@ -93,7 +93,7 @@ describe("useAppBadge", () => {
   it("no-ops setBadge()/clearBadge() when unsupported", async () => {
     setBadgeSupport(undefined);
 
-    const { result } = renderHook(() => useAppBadge());
+    const { result } = await renderHook(() => useAppBadge());
 
     await act(async () => {
       await result.current.setBadge(1);

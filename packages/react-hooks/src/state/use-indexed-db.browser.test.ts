@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useIndexedDB } from "./use-indexed-db.ts";
 
@@ -108,40 +108,40 @@ afterEach(async () => {
 });
 
 describe("useIndexedDB", () => {
-  it('starts "loading" with the initial value', () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
+  it('starts "loading" with the initial value', async () => {
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
 
     expect(result.current.status).toBe("loading");
     expect(result.current.value).toBe(0);
   });
 
   it('becomes "ready" with the initial value when nothing is stored', async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
 
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     expect(result.current.value).toBe(0);
   });
 
   it("setValue() writes through and is read back on the next mount", async () => {
-    const { result, unmount } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result, unmount } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     await act(async () => {
       await result.current.setValue(5);
     });
     expect(result.current.value).toBe(5);
 
-    unmount();
+    await unmount();
 
-    const { result: second } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(second.current.status).toBe("ready"));
+    const { result: second } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(second.current.status).toBe("ready"));
     expect(second.current.value).toBe(5);
   });
 
   it("setValue() accepts a functional updater based on the latest value", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     await act(async () => {
       await result.current.setValue((prev) => prev + 1);
@@ -154,8 +154,8 @@ describe("useIndexedDB", () => {
   });
 
   it("remove() clears the stored value and resets to the initial value", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     await act(async () => {
       await result.current.setValue(5);
@@ -171,7 +171,7 @@ describe("useIndexedDB", () => {
     const { createObjectStore, request } = makeControlledOpenRequest({ storeExists: true });
     vi.spyOn(indexedDB, "open").mockReturnValue(request);
 
-    renderHook(() => useIndexedDB("count", 0));
+    await renderHook(() => useIndexedDB("count", 0));
 
     await act(async () => {
       await Promise.resolve();
@@ -192,8 +192,8 @@ describe("useIndexedDB", () => {
     });
     vi.spyOn(indexedDB, "open").mockReturnValue(request);
 
-    const { result, unmount } = renderHook(() => useIndexedDB("count", 0));
-    unmount();
+    const { result, unmount } = await renderHook(() => useIndexedDB("count", 0));
+    await unmount();
 
     await act(async () => {
       await Promise.resolve();
@@ -212,8 +212,8 @@ describe("useIndexedDB", () => {
     });
     vi.spyOn(indexedDB, "open").mockReturnValue(request);
 
-    const { result, unmount } = renderHook(() => useIndexedDB("count", 0));
-    unmount();
+    const { result, unmount } = await renderHook(() => useIndexedDB("count", 0));
+    await unmount();
 
     await act(async () => {
       await Promise.resolve();
@@ -225,10 +225,10 @@ describe("useIndexedDB", () => {
   });
 
   it("keeps separate values per key", async () => {
-    const { result: a } = renderHook(() => useIndexedDB("a", "x"));
-    const { result: b } = renderHook(() => useIndexedDB("b", "y"));
-    await waitFor(() => expect(a.current.status).toBe("ready"));
-    await waitFor(() => expect(b.current.status).toBe("ready"));
+    const { result: a } = await renderHook(() => useIndexedDB("a", "x"));
+    const { result: b } = await renderHook(() => useIndexedDB("b", "y"));
+    await vi.waitFor(() => expect(a.current.status).toBe("ready"));
+    await vi.waitFor(() => expect(b.current.status).toBe("ready"));
 
     await act(async () => {
       await a.current.setValue("changed");
@@ -243,8 +243,8 @@ describe("useIndexedDB", () => {
       asTestDouble<IDBOpenDBRequest>(makeFailingRequest("open boom")),
     );
 
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("error"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("error"));
 
     expect(result.current.error?.message).toBe("open boom");
   });
@@ -254,8 +254,8 @@ describe("useIndexedDB", () => {
       makeFailingRequest("read boom"),
     );
 
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("error"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("error"));
 
     expect(result.current.error?.message).toBe("read boom");
   });
@@ -265,8 +265,8 @@ describe("useIndexedDB", () => {
       asTestDouble<IDBOpenDBRequest>(makeFailingRequest(undefined)),
     );
 
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("error"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("error"));
 
     expect(result.current.error?.message).toBe("The IndexedDB request failed.");
   });
@@ -276,15 +276,15 @@ describe("useIndexedDB", () => {
       makeFailingRequest(undefined),
     );
 
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("error"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("error"));
 
     expect(result.current.error?.message).toBe("The IndexedDB request failed.");
   });
 
   it("setValue() sets an error when the write transaction fails", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
       makeFailingTransaction("write boom"),
@@ -299,8 +299,8 @@ describe("useIndexedDB", () => {
   });
 
   it("setValue() passes through a real Error thrown by the transaction as-is", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
       makeFailingTransaction(new Error("write boom (real)")),
@@ -314,8 +314,8 @@ describe("useIndexedDB", () => {
   });
 
   it("remove() passes through a real Error thrown by the transaction as-is", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
       makeFailingTransaction(new Error("delete boom (real)")),
@@ -329,8 +329,8 @@ describe("useIndexedDB", () => {
   });
 
   it("remove() sets an error when the delete transaction fails", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
       makeFailingTransaction("delete boom"),
@@ -345,8 +345,8 @@ describe("useIndexedDB", () => {
   });
 
   it("falls back to a default message when the write transaction fails without an `error`", async () => {
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("ready"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("ready"));
 
     vi.spyOn(IDBDatabase.prototype, "transaction").mockImplementation(() =>
       makeFailingTransaction(undefined),
@@ -363,8 +363,8 @@ describe("useIndexedDB", () => {
     const original = window.indexedDB;
     Reflect.deleteProperty(window, "indexedDB");
 
-    const { result } = renderHook(() => useIndexedDB("count", 0));
-    await waitFor(() => expect(result.current.status).toBe("error"));
+    const { result } = await renderHook(() => useIndexedDB("count", 0));
+    await vi.waitFor(() => expect(result.current.status).toBe("error"));
 
     expect(result.current.error).toBeInstanceOf(Error);
 

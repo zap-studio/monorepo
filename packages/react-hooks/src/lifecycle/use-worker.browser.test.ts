@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWorker } from "./use-worker.ts";
 
@@ -36,7 +36,7 @@ describe("useWorker", () => {
     reset();
     vi.stubGlobal("Worker", undefined);
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
-    const { result } = renderHook(() => useWorker(createWorker));
+    const { result } = await renderHook(() => useWorker(createWorker));
 
     let error: Error | undefined;
     await act(async () => {
@@ -53,29 +53,31 @@ describe("useWorker", () => {
     expect(createWorker).not.toHaveBeenCalled();
   });
 
-  it("reports supported: true when Worker exists", () => {
+  it("reports supported: true when Worker exists", async () => {
     reset();
-    const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
+    const { result } = await renderHook(() =>
+      useWorker(() => asTestDouble<Worker>(new MockWorker())),
+    );
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("does not create the worker until the first run() call", () => {
+  it("does not create the worker until the first run() call", async () => {
     reset();
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
-    renderHook(() => useWorker(createWorker));
+    await renderHook(() => useWorker(createWorker));
 
     expect(createWorker).not.toHaveBeenCalled();
   });
 
   it("run() posts the message and resolves with the response", async () => {
     reset();
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useWorker<number, number>(() => asTestDouble<Worker>(new MockWorker())),
     );
 
     let responsePromise!: Promise<number>;
-    act(() => {
+    await act(() => {
       responsePromise = result.current.run(21);
     });
 
@@ -94,10 +96,10 @@ describe("useWorker", () => {
   it("reuses the same worker across multiple run() calls", async () => {
     reset();
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
-    const { result } = renderHook(() => useWorker<number, number>(createWorker));
+    const { result } = await renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
-    act(() => {
+    await act(() => {
       firstPromise = result.current.run(1);
     });
     await act(async () => {
@@ -106,7 +108,7 @@ describe("useWorker", () => {
     });
 
     let secondPromise!: Promise<number>;
-    act(() => {
+    await act(() => {
       secondPromise = result.current.run(3);
     });
     await act(async () => {
@@ -119,10 +121,12 @@ describe("useWorker", () => {
 
   it("run() rejects when the worker fires an error event", async () => {
     reset();
-    const { result } = renderHook(() => useWorker(() => asTestDouble<Worker>(new MockWorker())));
+    const { result } = await renderHook(() =>
+      useWorker(() => asTestDouble<Worker>(new MockWorker())),
+    );
 
     let runPromise!: Promise<unknown>;
-    act(() => {
+    await act(() => {
       runPromise = result.current.run("x");
     });
 
@@ -146,10 +150,10 @@ describe("useWorker", () => {
   it("terminate() terminates the worker so the next run() creates a new one", async () => {
     reset();
     const createWorker = vi.fn<() => Worker>(() => asTestDouble<Worker>(new MockWorker()));
-    const { result } = renderHook(() => useWorker<number, number>(createWorker));
+    const { result } = await renderHook(() => useWorker<number, number>(createWorker));
 
     let firstPromise!: Promise<number>;
-    act(() => {
+    await act(() => {
       firstPromise = result.current.run(1);
     });
     await act(async () => {
@@ -157,13 +161,13 @@ describe("useWorker", () => {
       await firstPromise;
     });
 
-    act(() => {
+    await act(() => {
       result.current.terminate();
     });
     expect(MockWorker.instances[0]?.terminated).toBe(true);
 
     let secondPromise!: Promise<number>;
-    act(() => {
+    await act(() => {
       secondPromise = result.current.run(2);
     });
     await act(async () => {
@@ -176,12 +180,12 @@ describe("useWorker", () => {
 
   it("terminates the worker on unmount", async () => {
     reset();
-    const { result, unmount } = renderHook(() =>
+    const { result, unmount } = await renderHook(() =>
       useWorker(() => asTestDouble<Worker>(new MockWorker())),
     );
 
     let runPromise!: Promise<unknown>;
-    act(() => {
+    await act(() => {
       runPromise = result.current.run("x");
     });
     await act(async () => {
@@ -189,7 +193,7 @@ describe("useWorker", () => {
       await runPromise;
     });
 
-    unmount();
+    await unmount();
 
     expect(MockWorker.instances[0]?.terminated).toBe(true);
   });

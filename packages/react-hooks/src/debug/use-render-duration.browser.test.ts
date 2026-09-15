@@ -1,20 +1,20 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useRenderDuration } from "./use-render-duration.ts";
 
 describe("useRenderDuration", () => {
-  it("starts with no samples", () => {
-    const { result } = renderHook(() => useRenderDuration());
+  it("starts with no samples", async () => {
+    const { result } = await renderHook(() => useRenderDuration());
 
     expect(result.current.samples).toEqual([]);
     expect(result.current.last).toBeNull();
   });
 
-  it("accumulates a sample on each onRender call", () => {
-    const { result } = renderHook(() => useRenderDuration());
+  it("accumulates a sample on each onRender call", async () => {
+    const { result } = await renderHook(() => useRenderDuration());
 
-    act(() => {
+    await act(() => {
       result.current.onRender("Sidebar", "mount", 5, 4, 100, 105);
     });
 
@@ -28,7 +28,7 @@ describe("useRenderDuration", () => {
       startTime: 100,
     });
 
-    act(() => {
+    await act(() => {
       result.current.onRender("Sidebar", "update", 2, 2, 200, 202);
     });
 
@@ -36,16 +36,16 @@ describe("useRenderDuration", () => {
     expect(result.current.last?.phase).toBe("update");
   });
 
-  it("caps samples at the given limit", () => {
-    const { result } = renderHook(() => useRenderDuration(2));
+  it("caps samples at the given limit", async () => {
+    const { result } = await renderHook(() => useRenderDuration(2));
 
-    act(() => {
+    await act(() => {
       result.current.onRender("A", "mount", 1, 1, 0, 1);
     });
-    act(() => {
+    await act(() => {
       result.current.onRender("A", "update", 2, 2, 1, 3);
     });
-    act(() => {
+    await act(() => {
       result.current.onRender("A", "update", 3, 3, 3, 6);
     });
 

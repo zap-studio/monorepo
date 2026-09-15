@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useInstallPrompt } from "./use-install-prompt.ts";
 
 type BeforeInstallPromptTestEvent = Event & {
@@ -19,15 +19,15 @@ const makeBeforeInstallPromptEvent = (
 };
 
 describe("useInstallPrompt", () => {
-  it("starts with canInstall: false, installed: false", () => {
-    const { result } = renderHook(() => useInstallPrompt());
+  it("starts with canInstall: false, installed: false", async () => {
+    const { result } = await renderHook(() => useInstallPrompt());
 
     expect(result.current.canInstall).toBe(false);
     expect(result.current.installed).toBe(false);
   });
 
   it("becomes canInstall: true and prevents the default prompt on beforeinstallprompt", async () => {
-    const { result } = renderHook(() => useInstallPrompt());
+    const { result } = await renderHook(() => useInstallPrompt());
     const event = makeBeforeInstallPromptEvent("accepted");
 
     await act(async () => {
@@ -39,7 +39,7 @@ describe("useInstallPrompt", () => {
   });
 
   it("promptInstall() calls prompt(), resolves the outcome, and resets canInstall", async () => {
-    const { result } = renderHook(() => useInstallPrompt());
+    const { result } = await renderHook(() => useInstallPrompt());
     const event = makeBeforeInstallPromptEvent("accepted");
 
     await act(async () => {
@@ -57,7 +57,7 @@ describe("useInstallPrompt", () => {
   });
 
   it('promptInstall() returns "unavailable" when no prompt is deferred', async () => {
-    const { result } = renderHook(() => useInstallPrompt());
+    const { result } = await renderHook(() => useInstallPrompt());
 
     let outcome: string = "";
     await act(async () => {
@@ -68,7 +68,7 @@ describe("useInstallPrompt", () => {
   });
 
   it("becomes installed: true on appinstalled, clearing canInstall", async () => {
-    const { result } = renderHook(() => useInstallPrompt());
+    const { result } = await renderHook(() => useInstallPrompt());
     const event = makeBeforeInstallPromptEvent("accepted");
 
     await act(async () => {
@@ -85,8 +85,8 @@ describe("useInstallPrompt", () => {
   });
 
   it("removes listeners on unmount", async () => {
-    const { result, unmount } = renderHook(() => useInstallPrompt());
-    unmount();
+    const { result, unmount } = await renderHook(() => useInstallPrompt());
+    await unmount();
 
     await act(async () => {
       window.dispatchEvent(makeBeforeInstallPromptEvent("accepted"));

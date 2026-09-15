@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePointerLock } from "./use-pointer-lock.ts";
 
@@ -28,19 +28,19 @@ afterEach(() => {
 });
 
 describe("usePointerLock", () => {
-  it("reports supported: true when the Pointer Lock API exists", () => {
+  it("reports supported: true when the Pointer Lock API exists", async () => {
     setPointerLockSupport(true);
 
-    const { result } = renderHook(() => usePointerLock());
+    const { result } = await renderHook(() => usePointerLock());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.locked).toBe(false);
   });
 
-  it("reports supported: false when the Pointer Lock API is unavailable", () => {
+  it("reports supported: false when the Pointer Lock API is unavailable", async () => {
     setPointerLockSupport(false);
 
-    const { result } = renderHook(() => usePointerLock());
+    const { result } = await renderHook(() => usePointerLock());
 
     expect(result.current.supported).toBe(false);
   });
@@ -50,7 +50,7 @@ describe("usePointerLock", () => {
     const requestPointerLock = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = asTestDouble<HTMLDivElement>({ requestPointerLock });
 
-    const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
+    const { result } = await renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -63,7 +63,7 @@ describe("usePointerLock", () => {
   it("does not request a lock when no element is attached to the ref", async () => {
     setPointerLockSupport(true);
 
-    const { result } = renderHook(() => usePointerLock());
+    const { result } = await renderHook(() => usePointerLock());
 
     await act(async () => {
       await result.current.request();
@@ -78,7 +78,7 @@ describe("usePointerLock", () => {
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });
 
-    const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
+    const { result } = await renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -98,7 +98,7 @@ describe("usePointerLock", () => {
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });
 
-    const { result } = renderHook(() => usePointerLock<HTMLDivElement>());
+    const { result } = await renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -115,12 +115,12 @@ describe("usePointerLock", () => {
     expect(result.current.locked).toBe(false);
   });
 
-  it("calls document.exitPointerLock() on exit()", () => {
+  it("calls document.exitPointerLock() on exit()", async () => {
     const exitPointerLock = setPointerLockSupport(true);
 
-    const { result } = renderHook(() => usePointerLock());
+    const { result } = await renderHook(() => usePointerLock());
 
-    act(() => {
+    await act(() => {
       result.current.exit();
     });
 
@@ -130,7 +130,7 @@ describe("usePointerLock", () => {
   it("no-ops request()/exit() when unsupported", async () => {
     setPointerLockSupport(false);
 
-    const { result } = renderHook(() => usePointerLock());
+    const { result } = await renderHook(() => usePointerLock());
 
     await act(async () => {
       await result.current.request();
@@ -146,9 +146,9 @@ describe("usePointerLock", () => {
       requestPointerLock: vi.fn<() => Promise<void>>(),
     });
 
-    const { result, unmount } = renderHook(() => usePointerLock<HTMLDivElement>());
+    const { result, unmount } = await renderHook(() => usePointerLock<HTMLDivElement>());
     result.current.ref.current = element;
-    unmount();
+    await unmount();
 
     await act(async () => {
       setPointerLockElement(element);
@@ -160,13 +160,13 @@ describe("usePointerLock", () => {
 });
 
 describe("usePointerLock with an unattached ref", () => {
-  it("stays false when another element releases the pointer lock", () => {
+  it("stays false when another element releases the pointer lock", async () => {
     setPointerLockSupport(true);
     setPointerLockElement(null);
 
-    const { result } = renderHook(() => usePointerLock());
+    const { result } = await renderHook(() => usePointerLock());
 
-    act(() => {
+    await act(() => {
       document.dispatchEvent(new Event("pointerlockchange"));
     });
 

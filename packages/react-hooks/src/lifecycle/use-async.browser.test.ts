@@ -1,11 +1,13 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useAsync } from "./use-async.ts";
 
 describe("useAsync", () => {
-  it("starts loading: true with no data/error", () => {
-    const { result } = renderHook(() => useAsync(() => Promise.resolve(1)));
+  it("starts loading: true with no data/error", async () => {
+    // The promise must stay pending: rendering flushes microtasks, so an
+    // already-resolved promise would settle before the assertion runs.
+    const { result } = await renderHook(() => useAsync(() => new Promise<number>(() => undefined)));
 
     expect(result.current.loading).toBe(true);
     expect(result.current.data).toBeUndefined();
@@ -13,27 +15,27 @@ describe("useAsync", () => {
   });
 
   it("resolves data and sets loading: false", async () => {
-    const { result } = renderHook(() => useAsync(() => Promise.resolve(42)));
+    const { result } = await renderHook(() => useAsync(() => Promise.resolve(42)));
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await vi.waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.data).toBe(42);
     expect(result.current.error).toBeUndefined();
   });
 
   it("sets error and loading: false when the promise rejects", async () => {
-    const { result } = renderHook(() => useAsync(() => Promise.reject(new Error("boom"))));
+    const { result } = await renderHook(() => useAsync(() => Promise.reject(new Error("boom"))));
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await vi.waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.error?.message).toBe("boom");
     expect(result.current.data).toBeUndefined();
   });
 
   it("wraps a non-Error rejection", async () => {
-    const { result } = renderHook(() => useAsync(() => Promise.reject("boom")));
+    const { result } = await renderHook(() => useAsync(() => Promise.reject("boom")));
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await vi.waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.error?.message).toBe("boom");
   });
@@ -42,15 +44,15 @@ describe("useAsync", () => {
     const asyncFn = vi.fn<(value: number) => Promise<number>>((value: number) =>
       Promise.resolve(value * 2),
     );
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ value }) => useAsync(() => asyncFn(value), [value]),
       { initialProps: { value: 1 } },
     );
 
-    await waitFor(() => expect(result.current.data).toBe(2));
+    await vi.waitFor(() => expect(result.current.data).toBe(2));
 
-    rerender({ value: 5 });
-    await waitFor(() => expect(result.current.data).toBe(10));
+    await rerender({ value: 5 });
+    await vi.waitFor(() => expect(result.current.data).toBe(10));
 
     expect(asyncFn).toHaveBeenCalledTimes(2);
   });
@@ -65,14 +67,14 @@ describe("useAsync", () => {
       }
       return Promise.resolve(value);
     });
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ value }) => useAsync(() => asyncFn(value), [value]),
       { initialProps: { value: 1 } },
     );
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    await vi.waitFor(() => expect(result.current.loading).toBe(false));
 
-    rerender({ value: 2 });
+    await rerender({ value: 2 });
     expect(result.current.loading).toBe(true);
 
     await act(async () => {
@@ -88,13 +90,13 @@ describe("useAsync", () => {
     const first = new Promise<string>((resolve) => {
       resolveFirst = resolve;
     });
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ value }) => useAsync(() => (value === 1 ? first : Promise.resolve("second")), [value]),
       { initialProps: { value: 1 } },
     );
 
-    rerender({ value: 2 });
-    await waitFor(() => expect(result.current.data).toBe("second"));
+    await rerender({ value: 2 });
+    await vi.waitFor(() => expect(result.current.data).toBe("second"));
 
     await act(async () => {
       resolveFirst("first");
@@ -109,9 +111,9 @@ describe("useAsync", () => {
     const pending = new Promise<number>((res) => {
       resolve = res;
     });
-    const { result, unmount } = renderHook(() => useAsync(() => pending));
+    const { result, unmount } = await renderHook(() => useAsync(() => pending));
 
-    unmount();
+    await unmount();
 
     await act(async () => {
       resolve(1);
@@ -126,9 +128,9 @@ describe("useAsync", () => {
     const pending = new Promise<number>((_res, rej) => {
       reject = rej;
     });
-    const { result, unmount } = renderHook(() => useAsync(() => pending));
+    const { result, unmount } = await renderHook(() => useAsync(() => pending));
 
-    unmount();
+    await unmount();
 
     await act(async () => {
       reject(new Error("boom"));

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useWindowSize } from "./use-window-size.ts";
 
 const setWindowSize = (width: number, height: number) => {
@@ -9,17 +9,17 @@ const setWindowSize = (width: number, height: number) => {
 };
 
 describe("useWindowSize", () => {
-  it("reports the current window size", () => {
+  it("reports the current window size", async () => {
     setWindowSize(1024, 768);
 
-    const { result } = renderHook(() => useWindowSize());
+    const { result } = await renderHook(() => useWindowSize());
 
     expect(result.current).toEqual({ height: 768, width: 1024 });
   });
 
   it("updates when the window is resized", async () => {
     setWindowSize(1024, 768);
-    const { result } = renderHook(() => useWindowSize());
+    const { result } = await renderHook(() => useWindowSize());
     expect(result.current).toEqual({ height: 768, width: 1024 });
 
     await act(async () => {

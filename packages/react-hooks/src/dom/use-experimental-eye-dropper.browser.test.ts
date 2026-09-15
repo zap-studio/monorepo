@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useExperimentalEyeDropper } from "./use-experimental-eye-dropper.ts";
 
 const abortError = (): Error => {
@@ -14,15 +14,15 @@ afterEach(() => {
 });
 
 describe("useExperimentalEyeDropper", () => {
-  it("reports supported: false when the EyeDropper API is unavailable", () => {
+  it("reports supported: false when the EyeDropper API is unavailable", async () => {
     vi.stubGlobal("EyeDropper", undefined);
 
-    const { result } = renderHook(() => useExperimentalEyeDropper());
+    const { result } = await renderHook(() => useExperimentalEyeDropper());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when window.EyeDropper exists", () => {
+  it("reports supported: true when window.EyeDropper exists", async () => {
     vi.stubGlobal(
       "EyeDropper",
       class {
@@ -32,7 +32,7 @@ describe("useExperimentalEyeDropper", () => {
       },
     );
 
-    const { result } = renderHook(() => useExperimentalEyeDropper());
+    const { result } = await renderHook(() => useExperimentalEyeDropper());
 
     expect(result.current.supported).toBe(true);
   });
@@ -47,7 +47,7 @@ describe("useExperimentalEyeDropper", () => {
       },
     );
 
-    const { result } = renderHook(() => useExperimentalEyeDropper());
+    const { result } = await renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).resolves.toBe("#ff0000");
   });
 
@@ -61,7 +61,7 @@ describe("useExperimentalEyeDropper", () => {
       },
     );
 
-    const { result } = renderHook(() => useExperimentalEyeDropper());
+    const { result } = await renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).resolves.toBeUndefined();
   });
 
@@ -75,14 +75,14 @@ describe("useExperimentalEyeDropper", () => {
       },
     );
 
-    const { result } = renderHook(() => useExperimentalEyeDropper());
+    const { result } = await renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).rejects.toThrow("permission error");
   });
 
   it("open() resolves undefined when unsupported", async () => {
     vi.stubGlobal("EyeDropper", undefined);
 
-    const { result } = renderHook(() => useExperimentalEyeDropper());
+    const { result } = await renderHook(() => useExperimentalEyeDropper());
     await expect(result.current.open()).resolves.toBeUndefined();
   });
 });

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useOrientation } from "./use-orientation.ts";
 
@@ -32,11 +32,11 @@ const setScreenOrientation = (info: ScreenOrientation | undefined) => {
 };
 
 describe("useOrientation", () => {
-  it("reports the current orientation from screen.orientation", () => {
+  it("reports the current orientation from screen.orientation", async () => {
     const { info } = createOrientationMock({ angle: 90, type: LANDSCAPE_PRIMARY });
     setScreenOrientation(info);
 
-    const { result } = renderHook(() => useOrientation());
+    const { result } = await renderHook(() => useOrientation());
 
     expect(result.current).toEqual({ angle: 90, type: LANDSCAPE_PRIMARY });
   });
@@ -45,7 +45,7 @@ describe("useOrientation", () => {
     const { info, setState } = createOrientationMock({ angle: 0, type: "portrait-primary" });
     setScreenOrientation(info);
 
-    const { result } = renderHook(() => useOrientation());
+    const { result } = await renderHook(() => useOrientation());
     expect(result.current.angle).toBe(0);
 
     await act(async () => {
@@ -59,7 +59,7 @@ describe("useOrientation", () => {
     const { info, setState } = createOrientationMock({ angle: 0, type: "portrait-primary" });
     setScreenOrientation(info);
 
-    const { result } = renderHook(() => useOrientation());
+    const { result } = await renderHook(() => useOrientation());
 
     await act(async () => {
       setState({ angle: 90, type: LANDSCAPE_PRIMARY });
@@ -69,10 +69,10 @@ describe("useOrientation", () => {
     expect(result.current).toEqual({ angle: 90, type: LANDSCAPE_PRIMARY });
   });
 
-  it("falls back to angle 0 when screen.orientation is unsupported", () => {
+  it("falls back to angle 0 when screen.orientation is unsupported", async () => {
     setScreenOrientation(undefined);
 
-    const { result } = renderHook(() => useOrientation());
+    const { result } = await renderHook(() => useOrientation());
 
     expect(result.current).toEqual({ angle: 0 });
   });

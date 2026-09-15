@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useExperimentalContactPicker } from "./use-experimental-contact-picker.ts";
 
 const abortError = (): Error => {
@@ -21,21 +21,21 @@ const setNavigatorContacts = (
 };
 
 describe("useExperimentalContactPicker", () => {
-  it("reports supported: false when navigator.contacts is unavailable", () => {
+  it("reports supported: false when navigator.contacts is unavailable", async () => {
     setNavigatorContacts(undefined);
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when navigator.contacts exists", () => {
+  it("reports supported: true when navigator.contacts exists", async () => {
     setNavigatorContacts({
       getProperties: () => Promise.resolve([]),
       select: () => Promise.resolve([]),
     });
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     expect(result.current.supported).toBe(true);
   });
@@ -46,7 +46,7 @@ describe("useExperimentalContactPicker", () => {
       .mockResolvedValue([{ name: ["Ada Lovelace"] }]);
     setNavigatorContacts({ getProperties: () => Promise.resolve([]), select });
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     await expect(result.current.select(["name", "email"], { multiple: true })).resolves.toEqual([
       { name: ["Ada Lovelace"] },
@@ -60,7 +60,7 @@ describe("useExperimentalContactPicker", () => {
       select: () => Promise.reject(abortError()),
     });
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     await expect(result.current.select(["name"])).resolves.toBeUndefined();
   });
@@ -71,7 +71,7 @@ describe("useExperimentalContactPicker", () => {
       select: () => Promise.reject(new Error("permission error")),
     });
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     await expect(result.current.select(["name"])).rejects.toThrow("permission error");
   });
@@ -79,7 +79,7 @@ describe("useExperimentalContactPicker", () => {
   it("select() resolves undefined when unsupported", async () => {
     setNavigatorContacts(undefined);
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     await expect(result.current.select(["name"])).resolves.toBeUndefined();
   });
@@ -90,7 +90,7 @@ describe("useExperimentalContactPicker", () => {
       select: () => Promise.resolve([]),
     });
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     await expect(result.current.getProperties()).resolves.toEqual(["name", "email"]);
   });
@@ -98,7 +98,7 @@ describe("useExperimentalContactPicker", () => {
   it("getProperties() resolves undefined when unsupported", async () => {
     setNavigatorContacts(undefined);
 
-    const { result } = renderHook(() => useExperimentalContactPicker());
+    const { result } = await renderHook(() => useExperimentalContactPicker());
 
     await expect(result.current.getProperties()).resolves.toBeUndefined();
   });

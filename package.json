@@ -22,7 +22,6 @@
     "@arethetypeswrong/core": "catalog:",
     "@opentelemetry/api": "catalog:",
     "@oxlint/plugins": "catalog:",
-    "@testing-library/react": "catalog:",
     "@varlock/bumpy": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
@@ -40,7 +39,8 @@
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "unplugin-unused": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "vitest-browser-react": "catalog:"
   },
   "engines": {
     "pnpm": ">=11.0.0"

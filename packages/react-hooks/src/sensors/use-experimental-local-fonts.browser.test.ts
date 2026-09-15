@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useExperimentalLocalFonts } from "./use-experimental-local-fonts.ts";
 
 const notAllowedError = (): Error => {
@@ -14,18 +14,18 @@ afterEach(() => {
 });
 
 describe("useExperimentalLocalFonts", () => {
-  it("reports supported: false when queryLocalFonts is unavailable", () => {
+  it("reports supported: false when queryLocalFonts is unavailable", async () => {
     vi.stubGlobal("queryLocalFonts", undefined);
 
-    const { result } = renderHook(() => useExperimentalLocalFonts());
+    const { result } = await renderHook(() => useExperimentalLocalFonts());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when window.queryLocalFonts exists", () => {
+  it("reports supported: true when window.queryLocalFonts exists", async () => {
     vi.stubGlobal("queryLocalFonts", vi.fn());
 
-    const { result } = renderHook(() => useExperimentalLocalFonts());
+    const { result } = await renderHook(() => useExperimentalLocalFonts());
 
     expect(result.current.supported).toBe(true);
   });
@@ -46,7 +46,7 @@ describe("useExperimentalLocalFonts", () => {
       .mockResolvedValue(fonts);
     vi.stubGlobal("queryLocalFonts", queryLocalFonts);
 
-    const { result } = renderHook(() => useExperimentalLocalFonts());
+    const { result } = await renderHook(() => useExperimentalLocalFonts());
 
     await expect(result.current.query({ postscriptNames: ["ComicSansMS"] })).resolves.toEqual(
       fonts,
@@ -57,7 +57,7 @@ describe("useExperimentalLocalFonts", () => {
   it("query() resolves undefined when the user denies the permission prompt", async () => {
     vi.stubGlobal("queryLocalFonts", () => Promise.reject(notAllowedError()));
 
-    const { result } = renderHook(() => useExperimentalLocalFonts());
+    const { result } = await renderHook(() => useExperimentalLocalFonts());
 
     await expect(result.current.query()).resolves.toBeUndefined();
   });
@@ -65,7 +65,7 @@ describe("useExperimentalLocalFonts", () => {
   it("query() rethrows other errors", async () => {
     vi.stubGlobal("queryLocalFonts", () => Promise.reject(new Error("boom")));
 
-    const { result } = renderHook(() => useExperimentalLocalFonts());
+    const { result } = await renderHook(() => useExperimentalLocalFonts());
 
     await expect(result.current.query()).rejects.toThrow("boom");
   });
@@ -73,7 +73,7 @@ describe("useExperimentalLocalFonts", () => {
   it("query() resolves undefined when unsupported", async () => {
     vi.stubGlobal("queryLocalFonts", undefined);
 
-    const { result } = renderHook(() => useExperimentalLocalFonts());
+    const { result } = await renderHook(() => useExperimentalLocalFonts());
 
     await expect(result.current.query()).resolves.toBeUndefined();
   });

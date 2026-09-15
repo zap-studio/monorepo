@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useBroadcastChannel } from "./use-broadcast-channel.ts";
 
 const TEST_CHANNEL_NAME = "test-channel";
@@ -12,10 +12,10 @@ afterEach(() => {
 });
 
 describe("useBroadcastChannel", () => {
-  it("reports supported: false and postMessage() no-ops when BroadcastChannel is unsupported", () => {
+  it("reports supported: false and postMessage() no-ops when BroadcastChannel is unsupported", async () => {
     Reflect.deleteProperty(globalThis, "BroadcastChannel");
 
-    const { result } = renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
+    const { result } = await renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
 
     expect(result.current.supported).toBe(false);
     expect(() => {
@@ -24,8 +24,8 @@ describe("useBroadcastChannel", () => {
     expect(result.current.lastMessage).toBeUndefined();
   });
 
-  it("reports supported: true and starts with no lastMessage", () => {
-    const { result } = renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
+  it("reports supported: true and starts with no lastMessage", async () => {
+    const { result } = await renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
 
     expect(result.current.supported).toBe(true);
     expect(result.current.lastMessage).toBeUndefined();
@@ -33,19 +33,19 @@ describe("useBroadcastChannel", () => {
 
   it("receives a message posted from another channel instance with the same name", async () => {
     const sender = new BroadcastChannel(TEST_CHANNEL_NAME);
-    const { result } = renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
+    const { result } = await renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
 
-    act(() => {
+    await act(() => {
       sender.postMessage("hello");
     });
 
-    await waitFor(() => expect(result.current.lastMessage).toBe("hello"));
+    await vi.waitFor(() => expect(result.current.lastMessage).toBe("hello"));
     sender.close();
   });
 
   it("does not receive messages posted to a differently-named channel", async () => {
     const sender = new BroadcastChannel("other-channel");
-    const { result } = renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
+    const { result } = await renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
 
     await act(async () => {
       sender.postMessage("hello");
@@ -63,9 +63,9 @@ describe("useBroadcastChannel", () => {
         once: true,
       });
     });
-    const { result } = renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
+    const { result } = await renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
 
-    act(() => {
+    await act(() => {
       result.current.postMessage("from-hook");
     });
 
@@ -74,19 +74,19 @@ describe("useBroadcastChannel", () => {
   });
 
   it("re-opens the channel when name changes", async () => {
-    const { rerender, result } = renderHook(
+    const { rerender, result } = await renderHook(
       ({ name }: { name: string }) => useBroadcastChannel<string>(name),
       { initialProps: { name: "channel-a" } },
     );
 
     const senderA = new BroadcastChannel("channel-a");
-    act(() => {
+    await act(() => {
       senderA.postMessage("a");
     });
-    await waitFor(() => expect(result.current.lastMessage).toBe("a"));
+    await vi.waitFor(() => expect(result.current.lastMessage).toBe("a"));
     senderA.close();
 
-    rerender({ name: "channel-b" });
+    await rerender({ name: "channel-b" });
 
     const senderA2 = new BroadcastChannel("channel-a");
     await act(async () => {
@@ -97,16 +97,18 @@ describe("useBroadcastChannel", () => {
     senderA2.close();
 
     const senderB = new BroadcastChannel("channel-b");
-    act(() => {
+    await act(() => {
       senderB.postMessage("b");
     });
-    await waitFor(() => expect(result.current.lastMessage).toBe("b"));
+    await vi.waitFor(() => expect(result.current.lastMessage).toBe("b"));
     senderB.close();
   });
 
   it("closes the channel on unmount", async () => {
-    const { result, unmount } = renderHook(() => useBroadcastChannel<string>(TEST_CHANNEL_NAME));
-    unmount();
+    const { result, unmount } = await renderHook(() =>
+      useBroadcastChannel<string>(TEST_CHANNEL_NAME),
+    );
+    await unmount();
 
     const sender = new BroadcastChannel(TEST_CHANNEL_NAME);
     await act(async () => {

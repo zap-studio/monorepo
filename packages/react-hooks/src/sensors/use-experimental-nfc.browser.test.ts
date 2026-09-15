@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalNfc } from "./use-experimental-nfc.ts";
 
@@ -59,10 +59,10 @@ afterEach(() => {
 });
 
 describe("useExperimentalNfc", () => {
-  it("reports supported: false when the Web NFC API is unavailable", () => {
+  it("reports supported: false when the Web NFC API is unavailable", async () => {
     vi.stubGlobal("NDEFReader", undefined);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.reading).toBeUndefined();
@@ -73,7 +73,7 @@ describe("useExperimentalNfc", () => {
   it("resolves false from scan/write/makeReadOnly when unsupported", async () => {
     vi.stubGlobal("NDEFReader", undefined);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await expect(result.current.scan()).resolves.toBe(false);
     await expect(result.current.write("hello")).resolves.toBe(false);
@@ -81,10 +81,10 @@ describe("useExperimentalNfc", () => {
     expect(result.current.scanning).toBe(false);
   });
 
-  it("reports supported: true when window.NDEFReader exists", () => {
+  it("reports supported: true when window.NDEFReader exists", async () => {
     stubNdefReader(createReaderMock());
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     expect(result.current.supported).toBe(true);
   });
@@ -93,7 +93,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock();
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await expect(result.current.scan()).resolves.toBe(true);
@@ -102,11 +102,11 @@ describe("useExperimentalNfc", () => {
     expect(result.current.scanning).toBe(true);
     expect(reader.scan).toHaveBeenCalledTimes(1);
 
-    act(() => {
+    await act(() => {
       fireReading(reader, "04:1a:2b", [{ recordType: "text" }]);
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.reading).toEqual({
         records: [{ recordType: "text" }],
         serialNumber: "04:1a:2b",
@@ -119,16 +119,16 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock();
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await result.current.scan();
     });
-    act(() => {
+    await act(() => {
       reader.dispatchEvent(new Event("readingerror"));
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.error?.message).toBe("The NFC tag in range could not be read.");
     });
   });
@@ -137,7 +137,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock({ scan: () => Promise.reject(new Error("denied")) });
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await expect(result.current.scan()).resolves.toBe(false);
@@ -151,7 +151,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock({ scan: () => Promise.reject("nope") });
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await result.current.scan();
@@ -164,18 +164,18 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock();
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await result.current.scan();
     });
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 
     expect(result.current.scanning).toBe(false);
 
-    act(() => {
+    await act(() => {
       fireReading(reader, "ignored", [{ recordType: "text" }]);
     });
 
@@ -186,7 +186,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock();
     const NDEFReaderCtor = stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await result.current.scan();
@@ -197,11 +197,11 @@ describe("useExperimentalNfc", () => {
 
     expect(NDEFReaderCtor).toHaveBeenCalledTimes(2);
 
-    act(() => {
+    await act(() => {
       fireReading(reader, "04:ff", [{ recordType: "url" }]);
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.reading?.serialNumber).toBe("04:ff");
     });
   });
@@ -211,12 +211,12 @@ describe("useExperimentalNfc", () => {
     stubNdefReader(reader);
     const removeEventListener = vi.spyOn(reader, "removeEventListener");
 
-    const { result, unmount } = renderHook(() => useExperimentalNfc());
+    const { result, unmount } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await result.current.scan();
     });
-    unmount();
+    await unmount();
 
     expect(removeEventListener).toHaveBeenCalledWith("reading", expect.any(Function));
     expect(removeEventListener).toHaveBeenCalledWith("readingerror", expect.any(Function));
@@ -226,7 +226,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock();
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await expect(result.current.write("hello", { overwrite: true })).resolves.toBe(true);
@@ -240,7 +240,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock({ write: () => Promise.reject(new Error("read-only tag")) });
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await expect(result.current.write("hello")).resolves.toBe(false);
@@ -253,7 +253,7 @@ describe("useExperimentalNfc", () => {
     const reader = createReaderMock();
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await expect(result.current.makeReadOnly()).resolves.toBe(true);
@@ -269,7 +269,7 @@ describe("useExperimentalNfc", () => {
     });
     stubNdefReader(reader);
 
-    const { result } = renderHook(() => useExperimentalNfc());
+    const { result } = await renderHook(() => useExperimentalNfc());
 
     await act(async () => {
       await expect(result.current.makeReadOnly()).resolves.toBe(false);

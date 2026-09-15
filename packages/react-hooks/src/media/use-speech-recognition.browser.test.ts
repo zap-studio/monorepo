@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useSpeechRecognition } from "./use-speech-recognition.ts";
 
 interface MockRecognitionResult {
@@ -66,40 +66,40 @@ afterEach(() => {
 });
 
 describe("useSpeechRecognition", () => {
-  it("reports supported: true when SpeechRecognition exists", () => {
+  it("reports supported: true when SpeechRecognition exists", async () => {
     installMockSpeechRecognition();
 
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.listening).toBe(false);
     expect(result.current.transcript).toBe("");
   });
 
-  it("falls back to webkitSpeechRecognition", () => {
+  it("falls back to webkitSpeechRecognition", async () => {
     Object.defineProperty(window, "webkitSpeechRecognition", {
       configurable: true,
       value: MockRecognition,
     });
 
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("reports supported: false when neither constructor exists", () => {
-    const { result } = renderHook(() => useSpeechRecognition());
+  it("reports supported: false when neither constructor exists", async () => {
+    const { result } = await renderHook(() => useSpeechRecognition());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("start() creates a recognizer configured from options and begins listening", () => {
+  it("start() creates a recognizer configured from options and begins listening", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useSpeechRecognition({ continuous: true, interimResults: true, lang: "fr-FR" }),
     );
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
@@ -111,95 +111,95 @@ describe("useSpeechRecognition", () => {
     expect(recognizer?.lang).toBe("fr-FR");
   });
 
-  it("does not set lang when none is given", () => {
+  it("does not set lang when none is given", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     expect(MockRecognition.instances[0]?.lang).toBe("");
   });
 
-  it("accumulates transcript text from result events", () => {
+  it("accumulates transcript text from result events", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
-    act(() => {
+    await act(() => {
       MockRecognition.instances[0]?.onresult?.(makeResultEvent(["hello", " world"]));
     });
 
     expect(result.current.transcript).toBe("hello world");
   });
 
-  it("tolerates a result entry with no alternatives", () => {
+  it("tolerates a result entry with no alternatives", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     const results = { 0: { length: 0 }, length: 1 };
-    act(() => {
+    await act(() => {
       MockRecognition.instances[0]?.onresult?.({ results });
     });
 
     expect(result.current.transcript).toBe("");
   });
 
-  it("becomes listening: false when recognition ends", () => {
+  it("becomes listening: false when recognition ends", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       MockRecognition.instances[0]?.onend?.();
     });
 
     expect(result.current.listening).toBe(false);
   });
 
-  it("becomes listening: false when recognition errors", () => {
+  it("becomes listening: false when recognition errors", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       MockRecognition.instances[0]?.onerror?.(new Event("error"));
     });
 
     expect(result.current.listening).toBe(false);
   });
 
-  it("start() no-ops when unsupported", () => {
-    const { result } = renderHook(() => useSpeechRecognition());
+  it("start() no-ops when unsupported", async () => {
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    expect(() => {
-      act(() => {
+    expect(async () => {
+      await act(() => {
         result.current.start();
       });
     }).not.toThrow();
     expect(result.current.listening).toBe(false);
   });
 
-  it("stop() stops the underlying recognizer", () => {
+  it("stop() stops the underlying recognizer", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 
@@ -207,26 +207,26 @@ describe("useSpeechRecognition", () => {
     expect(result.current.listening).toBe(false);
   });
 
-  it("stop() no-ops when nothing is listening", () => {
+  it("stop() no-ops when nothing is listening", async () => {
     installMockSpeechRecognition();
-    const { result } = renderHook(() => useSpeechRecognition());
+    const { result } = await renderHook(() => useSpeechRecognition());
 
-    expect(() => {
-      act(() => {
+    expect(async () => {
+      await act(() => {
         result.current.stop();
       });
     }).not.toThrow();
   });
 
-  it("aborts an active recognizer on unmount", () => {
+  it("aborts an active recognizer on unmount", async () => {
     installMockSpeechRecognition();
-    const { result, unmount } = renderHook(() => useSpeechRecognition());
+    const { result, unmount } = await renderHook(() => useSpeechRecognition());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
-    unmount();
+    await unmount();
 
     expect(MockRecognition.instances[0]?.aborted).toBe(true);
   });

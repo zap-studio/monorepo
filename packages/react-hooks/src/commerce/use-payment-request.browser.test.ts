@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { usePaymentRequest } from "./use-payment-request.ts";
 
 class MockPaymentResponse {
@@ -50,24 +50,24 @@ afterEach(() => {
 });
 
 describe("usePaymentRequest", () => {
-  it('starts "idle" and reports supported: true when PaymentRequest exists', () => {
+  it('starts "idle" and reports supported: true when PaymentRequest exists', async () => {
     installMockPaymentRequest();
 
-    const { result } = renderHook(() => usePaymentRequest());
+    const { result } = await renderHook(() => usePaymentRequest());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.status).toBe("idle");
   });
 
-  it("reports supported: false when PaymentRequest is unavailable", () => {
-    const { result } = renderHook(() => usePaymentRequest());
+  it("reports supported: false when PaymentRequest is unavailable", async () => {
+    const { result } = await renderHook(() => usePaymentRequest());
 
     expect(result.current.supported).toBe(false);
   });
 
   it('pay() constructs a request, shows it, and becomes "complete"', async () => {
     installMockPaymentRequest();
-    const { result } = renderHook(() => usePaymentRequest());
+    const { result } = await renderHook(() => usePaymentRequest());
 
     let response: PaymentResponse | undefined;
     await act(async () => {
@@ -81,7 +81,7 @@ describe("usePaymentRequest", () => {
   });
 
   it("clears a previous error when starting a new payment", async () => {
-    const { result } = renderHook(() => usePaymentRequest());
+    const { result } = await renderHook(() => usePaymentRequest());
 
     await act(async () => {
       await result.current.pay(methodData, details);
@@ -100,7 +100,7 @@ describe("usePaymentRequest", () => {
     installMockPaymentRequest();
     MockPaymentRequest.state.nextShow = () =>
       Promise.reject(new DOMException("cancelled", "AbortError"));
-    const { result } = renderHook(() => usePaymentRequest());
+    const { result } = await renderHook(() => usePaymentRequest());
 
     let response: PaymentResponse | undefined;
     await act(async () => {
@@ -115,7 +115,7 @@ describe("usePaymentRequest", () => {
   it("wraps a non-Error rejection", async () => {
     installMockPaymentRequest();
     MockPaymentRequest.state.nextShow = () => Promise.reject("cancelled");
-    const { result } = renderHook(() => usePaymentRequest());
+    const { result } = await renderHook(() => usePaymentRequest());
 
     await act(async () => {
       await result.current.pay(methodData, details);
@@ -125,7 +125,7 @@ describe("usePaymentRequest", () => {
   });
 
   it('pay() resolves undefined and becomes "error" when unsupported', async () => {
-    const { result } = renderHook(() => usePaymentRequest());
+    const { result } = await renderHook(() => usePaymentRequest());
 
     let response: PaymentResponse | undefined;
     await act(async () => {

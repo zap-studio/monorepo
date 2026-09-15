@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalRelativeOrientationSensor } from "./use-experimental-relative-orientation-sensor.ts";
 
@@ -65,66 +65,66 @@ afterEach(() => {
 });
 
 describe("useExperimentalRelativeOrientationSensor", () => {
-  it("reports supported: false when the Generic Sensor API is unavailable", () => {
+  it("reports supported: false when the Generic Sensor API is unavailable", async () => {
     vi.stubGlobal("RelativeOrientationSensor", undefined);
 
-    const { result } = renderHook(() => useExperimentalRelativeOrientationSensor());
+    const { result } = await renderHook(() => useExperimentalRelativeOrientationSensor());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.reading).toBeUndefined();
   });
 
-  it("reports supported: true when window.RelativeOrientationSensor exists", () => {
+  it("reports supported: true when window.RelativeOrientationSensor exists", async () => {
     stubRelativeOrientationSensor();
 
-    const { result } = renderHook(() => useExperimentalRelativeOrientationSensor());
+    const { result } = await renderHook(() => useExperimentalRelativeOrientationSensor());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("start() returns false without constructing a sensor when unsupported", () => {
+  it("start() returns false without constructing a sensor when unsupported", async () => {
     vi.stubGlobal("RelativeOrientationSensor", undefined);
 
-    const { result } = renderHook(() => useExperimentalRelativeOrientationSensor());
+    const { result } = await renderHook(() => useExperimentalRelativeOrientationSensor());
     let started = false;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
     expect(started).toBe(false);
   });
 
-  it("start() reports the reading and updates on subsequent readings", () => {
+  it("start() reports the reading and updates on subsequent readings", async () => {
     const { sensor, fireReading } = createSensorMock([0, 0, 0, 1]);
     stubRelativeOrientationSensor(sensor);
 
-    const { result } = renderHook(() => useExperimentalRelativeOrientationSensor());
+    const { result } = await renderHook(() => useExperimentalRelativeOrientationSensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     expect(result.current.reading).toEqual({ quaternion: [0, 0, 0, 1] });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       fireReading([0.1, 0.2, 0.3, 0.9]);
     });
 
     expect(result.current.reading).toEqual({ quaternion: [0.1, 0.2, 0.3, 0.9] });
   });
 
-  it("reports a permission/policy failure through error", () => {
+  it("reports a permission/policy failure through error", async () => {
     const { sensor, fireError } = createSensorMock([0, 0, 0, 1]);
     stubRelativeOrientationSensor(sensor);
     const domException = new DOMException("Permission denied", "NotAllowedError");
 
-    const { result } = renderHook(() => useExperimentalRelativeOrientationSensor());
+    const { result } = await renderHook(() => useExperimentalRelativeOrientationSensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       fireError(domException);
     });
 
@@ -132,18 +132,18 @@ describe("useExperimentalRelativeOrientationSensor", () => {
     expect(result.current.activated).toBe(false);
   });
 
-  it("stop() stops the sensor and resets activated", () => {
+  it("stop() stops the sensor and resets activated", async () => {
     const { sensor } = createSensorMock([0, 0, 0, 1]);
     stubRelativeOrientationSensor(sensor);
 
-    const { result } = renderHook(() => useExperimentalRelativeOrientationSensor());
+    const { result } = await renderHook(() => useExperimentalRelativeOrientationSensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 

@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useLockBodyScroll } from "./use-lock-body-scroll.ts";
 
 afterEach(() => {
@@ -8,22 +8,22 @@ afterEach(() => {
 });
 
 describe("useLockBodyScroll", () => {
-  it("sets body overflow to hidden by default", () => {
-    renderHook(() => useLockBodyScroll());
+  it("sets body overflow to hidden by default", async () => {
+    await renderHook(() => useLockBodyScroll());
 
     expect(document.body.style.overflow).toBe("hidden");
   });
 
-  it("does nothing when locked is false", () => {
-    renderHook(() => useLockBodyScroll(false));
+  it("does nothing when locked is false", async () => {
+    await renderHook(() => useLockBodyScroll(false));
 
     expect(document.body.style.overflow).toBe("");
   });
 
-  it("restores the previous overflow value on unlock", () => {
+  it("restores the previous overflow value on unlock", async () => {
     document.body.style.overflow = "scroll";
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ locked }: { locked: boolean }) => useLockBodyScroll(locked),
       {
         initialProps: { locked: true },
@@ -31,18 +31,18 @@ describe("useLockBodyScroll", () => {
     );
     expect(document.body.style.overflow).toBe("hidden");
 
-    rerender({ locked: false });
+    await rerender({ locked: false });
 
     expect(document.body.style.overflow).toBe("scroll");
   });
 
-  it("restores the previous overflow value on unmount", () => {
+  it("restores the previous overflow value on unmount", async () => {
     document.body.style.overflow = "auto";
 
-    const { unmount } = renderHook(() => useLockBodyScroll());
+    const { unmount } = await renderHook(() => useLockBodyScroll());
     expect(document.body.style.overflow).toBe("hidden");
 
-    unmount();
+    await unmount();
 
     expect(document.body.style.overflow).toBe("auto");
   });

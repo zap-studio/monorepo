@@ -42,8 +42,6 @@
     "prepublishOnly": "pnpm -C ../.. run build"
   },
   "devDependencies": {
-    "@testing-library/dom": "catalog:",
-    "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@zap-studio/typescript": "workspace:^",
@@ -52,7 +50,8 @@
     "react-dom": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "vitest-browser-react": "catalog:"
   },
   "peerDependencies": {
     "@zap-studio/webmcp": "workspace:^",

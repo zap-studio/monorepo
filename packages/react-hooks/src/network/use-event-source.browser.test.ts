@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useEventSource } from "./use-event-source.ts";
 
 const STREAM_URL = "https://example.com/stream";
@@ -31,10 +31,10 @@ afterEach(() => {
 });
 
 describe("useEventSource", () => {
-  it('starts as "connecting" and opens a source for the given url', () => {
+  it('starts as "connecting" and opens a source for the given url', async () => {
     installMockEventSource();
 
-    const { result } = renderHook(() => useEventSource(STREAM_URL));
+    const { result } = await renderHook(() => useEventSource(STREAM_URL));
 
     expect(result.current.status).toBe("connecting");
     expect(MockEventSource.instances).toHaveLength(1);
@@ -43,7 +43,7 @@ describe("useEventSource", () => {
 
   it('becomes "open" when the source opens', async () => {
     installMockEventSource();
-    const { result } = renderHook(() => useEventSource(STREAM_URL));
+    const { result } = await renderHook(() => useEventSource(STREAM_URL));
 
     await act(async () => {
       MockEventSource.instances[0]?.dispatchEvent(new Event("open"));
@@ -54,7 +54,7 @@ describe("useEventSource", () => {
 
   it("captures each message's data", async () => {
     installMockEventSource();
-    const { result } = renderHook(() => useEventSource(STREAM_URL));
+    const { result } = await renderHook(() => useEventSource(STREAM_URL));
 
     await act(async () => {
       MockEventSource.instances[0]?.dispatchEvent(new MessageEvent("message", { data: "hello" }));
@@ -65,7 +65,7 @@ describe("useEventSource", () => {
 
   it('becomes "closed" on a source error', async () => {
     installMockEventSource();
-    const { result } = renderHook(() => useEventSource(STREAM_URL));
+    const { result } = await renderHook(() => useEventSource(STREAM_URL));
 
     await act(async () => {
       MockEventSource.instances[0]?.dispatchEvent(new Event("error"));
@@ -76,7 +76,7 @@ describe("useEventSource", () => {
 
   it("close() closes the underlying source", async () => {
     installMockEventSource();
-    const { result } = renderHook(() => useEventSource(STREAM_URL));
+    const { result } = await renderHook(() => useEventSource(STREAM_URL));
 
     await act(async () => {
       result.current.close();
@@ -86,32 +86,32 @@ describe("useEventSource", () => {
     expect(result.current.status).toBe("closed");
   });
 
-  it('stays "closed" and opens no source when url is undefined', () => {
+  it('stays "closed" and opens no source when url is undefined', async () => {
     installMockEventSource();
 
-    const { result } = renderHook(() => useEventSource(undefined));
+    const { result } = await renderHook(() => useEventSource(undefined));
 
     expect(result.current.status).toBe("closed");
     expect(MockEventSource.instances).toHaveLength(0);
   });
 
-  it("opens a new source when the url changes", () => {
+  it("opens a new source when the url changes", async () => {
     installMockEventSource();
-    const { rerender } = renderHook(({ url }) => useEventSource(url), {
+    const { rerender } = await renderHook(({ url }) => useEventSource(url), {
       initialProps: { url: "https://a.example.com/stream" },
     });
 
-    rerender({ url: "https://b.example.com/stream" });
+    await rerender({ url: "https://b.example.com/stream" });
 
     expect(MockEventSource.instances).toHaveLength(2);
     expect(MockEventSource.instances[1]?.url).toBe("https://b.example.com/stream");
   });
 
-  it("closes the source and removes listeners on unmount", () => {
+  it("closes the source and removes listeners on unmount", async () => {
     installMockEventSource();
-    const { unmount } = renderHook(() => useEventSource(STREAM_URL));
+    const { unmount } = await renderHook(() => useEventSource(STREAM_URL));
 
-    unmount();
+    await unmount();
 
     expect(MockEventSource.instances[0]?.closed).toBe(true);
   });

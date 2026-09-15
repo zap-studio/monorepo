@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useInterval } from "./use-interval.ts";
 
 beforeEach(() => {
@@ -12,59 +12,59 @@ afterEach(() => {
 });
 
 describe("useInterval", () => {
-  it("calls the callback every delay", () => {
+  it("calls the callback every delay", async () => {
     const callback = vi.fn<() => void>();
-    renderHook(() => useInterval(callback, 1000));
+    await renderHook(() => useInterval(callback, 1000));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(3000);
     });
 
     expect(callback).toHaveBeenCalledTimes(3);
   });
 
-  it("does not schedule when delayMs is null", () => {
+  it("does not schedule when delayMs is null", async () => {
     const callback = vi.fn<() => void>();
-    renderHook(() => useInterval(callback, null));
+    await renderHook(() => useInterval(callback, null));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(10_000);
     });
 
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("restarts the interval when delayMs changes", () => {
+  it("restarts the interval when delayMs changes", async () => {
     const callback = vi.fn<() => void>();
-    const { rerender } = renderHook(({ delay }) => useInterval(callback, delay), {
+    const { rerender } = await renderHook(({ delay }) => useInterval(callback, delay), {
       initialProps: { delay: 1000 },
     });
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(500);
     });
-    rerender({ delay: 2000 });
-    act(() => {
+    await rerender({ delay: 2000 });
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 
     expect(callback).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it("always calls the latest callback without resetting the interval", () => {
+  it("always calls the latest callback without resetting the interval", async () => {
     const firstCallback = vi.fn<() => void>();
     const secondCallback = vi.fn<() => void>();
-    const { rerender } = renderHook(({ callback }) => useInterval(callback, 1000), {
+    const { rerender } = await renderHook(({ callback }) => useInterval(callback, 1000), {
       initialProps: { callback: firstCallback },
     });
 
-    rerender({ callback: secondCallback });
-    act(() => {
+    await rerender({ callback: secondCallback });
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 
@@ -72,12 +72,12 @@ describe("useInterval", () => {
     expect(secondCallback).toHaveBeenCalledTimes(1);
   });
 
-  it("clears the interval on unmount", () => {
+  it("clears the interval on unmount", async () => {
     const callback = vi.fn<() => void>();
-    const { unmount } = renderHook(() => useInterval(callback, 1000));
+    const { unmount } = await renderHook(() => useInterval(callback, 1000));
 
-    unmount();
-    act(() => {
+    await unmount();
+    await act(() => {
       vi.advanceTimersByTime(3000);
     });
 

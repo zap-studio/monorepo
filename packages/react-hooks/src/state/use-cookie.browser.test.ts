@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useCookie } from "./use-cookie.ts";
 
@@ -57,10 +57,10 @@ const setCookieStore = (store: CookieStore | undefined) => {
 };
 
 describe("useCookie", () => {
-  it("reports supported: false when the Cookie Store API is unsupported", () => {
+  it("reports supported: false when the Cookie Store API is unsupported", async () => {
     setCookieStore(undefined);
 
-    const { result } = renderHook(() => useCookie("theme"));
+    const { result } = await renderHook(() => useCookie("theme"));
 
     expect(result.current.supported).toBe(false);
     expect(result.current.value).toBeUndefined();
@@ -69,18 +69,18 @@ describe("useCookie", () => {
   it("reads the initial cookie value", async () => {
     setCookieStore(createCookieStoreMock({ theme: "dark" }).store);
 
-    const { result } = renderHook(() => useCookie("theme"));
+    const { result } = await renderHook(() => useCookie("theme"));
 
-    await waitFor(() => expect(result.current.value).toBe("dark"));
+    await vi.waitFor(() => expect(result.current.value).toBe("dark"));
     expect(result.current.supported).toBe(true);
   });
 
   it("reports undefined when the cookie doesn't exist", async () => {
     setCookieStore(createCookieStoreMock().store);
 
-    const { result } = renderHook(() => useCookie("missing"));
+    const { result } = await renderHook(() => useCookie("missing"));
 
-    await waitFor(() => expect(result.current.supported).toBe(true));
+    await vi.waitFor(() => expect(result.current.supported).toBe(true));
     expect(result.current.value).toBeUndefined();
   });
 
@@ -88,8 +88,8 @@ describe("useCookie", () => {
     const { setCookie, store } = createCookieStoreMock();
     setCookieStore(store);
 
-    const { result } = renderHook(() => useCookie("theme"));
-    await waitFor(() => expect(result.current.supported).toBe(true));
+    const { result } = await renderHook(() => useCookie("theme"));
+    await vi.waitFor(() => expect(result.current.supported).toBe(true));
 
     await act(async () => {
       await result.current.set("dark", { path: "/" });
@@ -103,8 +103,8 @@ describe("useCookie", () => {
     const { deleteCookie, store } = createCookieStoreMock({ theme: "dark" });
     setCookieStore(store);
 
-    const { result } = renderHook(() => useCookie("theme"));
-    await waitFor(() => expect(result.current.value).toBe("dark"));
+    const { result } = await renderHook(() => useCookie("theme"));
+    await vi.waitFor(() => expect(result.current.value).toBe("dark"));
 
     await act(async () => {
       await result.current.remove();
@@ -118,8 +118,8 @@ describe("useCookie", () => {
     const { dispatchChange, store } = createCookieStoreMock({ theme: "dark" });
     setCookieStore(store);
 
-    const { result } = renderHook(() => useCookie("theme"));
-    await waitFor(() => expect(result.current.value).toBe("dark"));
+    const { result } = await renderHook(() => useCookie("theme"));
+    await vi.waitFor(() => expect(result.current.value).toBe("dark"));
 
     await act(async () => {
       dispatchChange([cookieItem("other", "x")], []);
@@ -131,7 +131,7 @@ describe("useCookie", () => {
   it("set()/remove() no-op when unsupported", async () => {
     setCookieStore(undefined);
 
-    const { result } = renderHook(() => useCookie("theme"));
+    const { result } = await renderHook(() => useCookie("theme"));
 
     await act(async () => {
       await result.current.set("dark");
@@ -157,8 +157,8 @@ describe("useCookie", () => {
     );
     setCookieStore(store);
 
-    const { result, unmount } = renderHook(() => useCookie("theme"));
-    unmount();
+    const { result, unmount } = await renderHook(() => useCookie("theme"));
+    await unmount();
     resolveGet(cookieItem("theme", "dark"));
 
     await act(async () => {
@@ -172,9 +172,9 @@ describe("useCookie", () => {
     const { dispatchChange, store } = createCookieStoreMock({ theme: "dark" });
     setCookieStore(store);
 
-    const { result, unmount } = renderHook(() => useCookie("theme"));
-    await waitFor(() => expect(result.current.value).toBe("dark"));
-    unmount();
+    const { result, unmount } = await renderHook(() => useCookie("theme"));
+    await vi.waitFor(() => expect(result.current.value).toBe("dark"));
+    await unmount();
 
     await act(async () => {
       dispatchChange([], [cookieItem("theme", "dark")]);

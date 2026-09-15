@@ -1,8 +1,8 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { BatteryManager } from "./use-battery.ts";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useBattery } from "./use-battery.ts";
 
@@ -36,10 +36,10 @@ const setNavigatorGetBattery = (getBattery: (() => Promise<BatteryManager>) | un
 };
 
 describe("useBattery", () => {
-  it("reports unsupported when the Battery Status API is unavailable", () => {
+  it("reports unsupported when the Battery Status API is unavailable", async () => {
     setNavigatorGetBattery(undefined);
 
-    const { result } = renderHook(() => useBattery());
+    const { result } = await renderHook(() => useBattery());
 
     expect(result.current).toEqual({ supported: false });
   });
@@ -53,9 +53,9 @@ describe("useBattery", () => {
     });
     setNavigatorGetBattery(() => Promise.resolve(battery));
 
-    const { result } = renderHook(() => useBattery());
+    const { result } = await renderHook(() => useBattery());
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current).toEqual({
         charging: true,
         chargingTime: 0,
@@ -75,8 +75,8 @@ describe("useBattery", () => {
     });
     setNavigatorGetBattery(() => Promise.resolve(battery));
 
-    const { result } = renderHook(() => useBattery());
-    await waitFor(() => expect(result.current.supported).toBe(true));
+    const { result } = await renderHook(() => useBattery());
+    await vi.waitFor(() => expect(result.current.supported).toBe(true));
 
     await act(async () => {
       setState({ level: 0.5 });
@@ -92,8 +92,8 @@ describe("useBattery", () => {
     });
     setNavigatorGetBattery(() => batteryPromise);
 
-    const { unmount } = renderHook(() => useBattery());
-    unmount();
+    const { unmount } = await renderHook(() => useBattery());
+    await unmount();
 
     const { battery } = createBatteryMock({
       charging: false,

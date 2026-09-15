@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalMagnetometer } from "./use-experimental-magnetometer.ts";
 
@@ -73,66 +73,66 @@ afterEach(() => {
 });
 
 describe("useExperimentalMagnetometer", () => {
-  it("reports supported: false when the Generic Sensor API is unavailable", () => {
+  it("reports supported: false when the Generic Sensor API is unavailable", async () => {
     vi.stubGlobal("Magnetometer", undefined);
 
-    const { result } = renderHook(() => useExperimentalMagnetometer());
+    const { result } = await renderHook(() => useExperimentalMagnetometer());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.reading).toBeUndefined();
   });
 
-  it("reports supported: true when window.Magnetometer exists", () => {
+  it("reports supported: true when window.Magnetometer exists", async () => {
     stubMagnetometer();
 
-    const { result } = renderHook(() => useExperimentalMagnetometer());
+    const { result } = await renderHook(() => useExperimentalMagnetometer());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("start() returns false without constructing a sensor when unsupported", () => {
+  it("start() returns false without constructing a sensor when unsupported", async () => {
     vi.stubGlobal("Magnetometer", undefined);
 
-    const { result } = renderHook(() => useExperimentalMagnetometer());
+    const { result } = await renderHook(() => useExperimentalMagnetometer());
     let started = false;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
     expect(started).toBe(false);
   });
 
-  it("start() reports the reading and updates on subsequent readings", () => {
+  it("start() reports the reading and updates on subsequent readings", async () => {
     const { sensor, fireReading } = createSensorMock({ x: 1, y: 2, z: 3 });
     stubMagnetometer(sensor);
 
-    const { result } = renderHook(() => useExperimentalMagnetometer());
+    const { result } = await renderHook(() => useExperimentalMagnetometer());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     expect(result.current.reading).toEqual({ x: 1, y: 2, z: 3 });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       fireReading({ x: 4, y: 5, z: 6 });
     });
 
     expect(result.current.reading).toEqual({ x: 4, y: 5, z: 6 });
   });
 
-  it("reports a permission/policy failure through error", () => {
+  it("reports a permission/policy failure through error", async () => {
     const { sensor, fireError } = createSensorMock({ x: 0, y: 0, z: 0 });
     stubMagnetometer(sensor);
     const domException = new DOMException("Permission denied", "NotAllowedError");
 
-    const { result } = renderHook(() => useExperimentalMagnetometer());
+    const { result } = await renderHook(() => useExperimentalMagnetometer());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       fireError(domException);
     });
 
@@ -140,18 +140,18 @@ describe("useExperimentalMagnetometer", () => {
     expect(result.current.activated).toBe(false);
   });
 
-  it("stop() stops the sensor and resets activated", () => {
+  it("stop() stops the sensor and resets activated", async () => {
     const { sensor } = createSensorMock({ x: 1, y: 2, z: 3 });
     stubMagnetometer(sensor);
 
-    const { result } = renderHook(() => useExperimentalMagnetometer());
+    const { result } = await renderHook(() => useExperimentalMagnetometer());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 

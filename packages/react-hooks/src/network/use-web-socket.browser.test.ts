@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useWebSocket } from "./use-web-socket.ts";
 
 const SOCKET_URL = "wss://example.com";
@@ -37,10 +37,10 @@ afterEach(() => {
 });
 
 describe("useWebSocket", () => {
-  it('starts as "connecting" and opens a socket for the given url', () => {
+  it('starts as "connecting" and opens a socket for the given url', async () => {
     installMockWebSocket();
 
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
+    const { result } = await renderHook(() => useWebSocket(SOCKET_URL));
 
     expect(result.current.status).toBe("connecting");
     expect(MockWebSocket.instances).toHaveLength(1);
@@ -55,7 +55,7 @@ describe("useWebSocket", () => {
     'becomes "$expectedStatus" when the socket receives a(n) $event event',
     async ({ event, expectedStatus }) => {
       installMockWebSocket();
-      const { result } = renderHook(() => useWebSocket(SOCKET_URL));
+      const { result } = await renderHook(() => useWebSocket(SOCKET_URL));
 
       await act(async () => {
         MockWebSocket.instances[0]?.dispatchEvent(new Event(event));
@@ -67,7 +67,7 @@ describe("useWebSocket", () => {
 
   it("captures the last message received", async () => {
     installMockWebSocket();
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
+    const { result } = await renderHook(() => useWebSocket(SOCKET_URL));
 
     await act(async () => {
       MockWebSocket.instances[0]?.dispatchEvent(new MessageEvent("message", { data: "hello" }));
@@ -78,7 +78,7 @@ describe("useWebSocket", () => {
 
   it("send() forwards to the underlying socket", async () => {
     installMockWebSocket();
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
+    const { result } = await renderHook(() => useWebSocket(SOCKET_URL));
 
     await act(async () => {
       result.current.send("ping");
@@ -89,7 +89,7 @@ describe("useWebSocket", () => {
 
   it("close() closes the underlying socket", async () => {
     installMockWebSocket();
-    const { result } = renderHook(() => useWebSocket(SOCKET_URL));
+    const { result } = await renderHook(() => useWebSocket(SOCKET_URL));
 
     await act(async () => {
       result.current.close();
@@ -98,32 +98,32 @@ describe("useWebSocket", () => {
     expect(MockWebSocket.instances[0]?.closed).toBe(true);
   });
 
-  it('stays "closed" and opens no socket when url is undefined', () => {
+  it('stays "closed" and opens no socket when url is undefined', async () => {
     installMockWebSocket();
 
-    const { result } = renderHook(() => useWebSocket(undefined));
+    const { result } = await renderHook(() => useWebSocket(undefined));
 
     expect(result.current.status).toBe("closed");
     expect(MockWebSocket.instances).toHaveLength(0);
   });
 
-  it("opens a new socket when the url changes", () => {
+  it("opens a new socket when the url changes", async () => {
     installMockWebSocket();
-    const { rerender } = renderHook(({ url }) => useWebSocket(url), {
+    const { rerender } = await renderHook(({ url }) => useWebSocket(url), {
       initialProps: { url: "wss://a.example.com" },
     });
 
-    rerender({ url: "wss://b.example.com" });
+    await rerender({ url: "wss://b.example.com" });
 
     expect(MockWebSocket.instances).toHaveLength(2);
     expect(MockWebSocket.instances[1]?.url).toBe("wss://b.example.com");
   });
 
-  it("closes the socket and removes listeners on unmount", () => {
+  it("closes the socket and removes listeners on unmount", async () => {
     installMockWebSocket();
-    const { unmount } = renderHook(() => useWebSocket(SOCKET_URL));
+    const { unmount } = await renderHook(() => useWebSocket(SOCKET_URL));
 
-    unmount();
+    await unmount();
 
     expect(MockWebSocket.instances[0]?.closed).toBe(true);
   });

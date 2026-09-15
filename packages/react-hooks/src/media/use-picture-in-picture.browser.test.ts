@@ -1,7 +1,8 @@
-import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePictureInPicture, type UsePictureInPictureResult } from "./use-picture-in-picture.ts";
 
@@ -19,13 +20,13 @@ const setPictureInPictureElement = (element: Element | null) => {
   });
 };
 
-const renderPipVideo = () => {
+const renderPipVideo = async () => {
   let latest!: UsePictureInPictureResult<HTMLVideoElement>;
   const TestComponent = () => {
     latest = usePictureInPicture<HTMLVideoElement>();
     return createElement("video", { ref: latest.ref });
   };
-  const { unmount } = render(createElement(TestComponent));
+  const { unmount } = await render(createElement(TestComponent));
   return {
     get current() {
       return latest;
@@ -40,19 +41,19 @@ afterEach(() => {
 });
 
 describe("usePictureInPicture", () => {
-  it("reports supported: true when document.pictureInPictureEnabled is true", () => {
+  it("reports supported: true when document.pictureInPictureEnabled is true", async () => {
     setPictureInPictureSupport(true);
 
-    const { result } = renderHook(() => usePictureInPicture());
+    const { result } = await renderHook(() => usePictureInPicture());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.active).toBe(false);
   });
 
-  it("reports supported: false when document.pictureInPictureEnabled is false", () => {
+  it("reports supported: false when document.pictureInPictureEnabled is false", async () => {
     setPictureInPictureSupport(false);
 
-    const { result } = renderHook(() => usePictureInPicture());
+    const { result } = await renderHook(() => usePictureInPicture());
 
     expect(result.current.supported).toBe(false);
   });
@@ -62,7 +63,7 @@ describe("usePictureInPicture", () => {
     const requestPictureInPicture = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = asTestDouble<HTMLVideoElement>({ requestPictureInPicture });
 
-    const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());
+    const { result } = await renderHook(() => usePictureInPicture<HTMLVideoElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -75,14 +76,14 @@ describe("usePictureInPicture", () => {
   it("enter() no-ops when no element is attached to the ref", async () => {
     setPictureInPictureSupport(true);
 
-    const { result } = renderHook(() => usePictureInPicture());
+    const { result } = await renderHook(() => usePictureInPicture());
 
     await expect(result.current.enter()).resolves.toBeUndefined();
   });
 
   it("becomes active when the video element fires enterpictureinpicture", async () => {
     setPictureInPictureSupport(true);
-    const video = renderPipVideo();
+    const video = await renderPipVideo();
 
     await act(async () => {
       video.current.ref.current?.dispatchEvent(new Event("enterpictureinpicture"));
@@ -93,7 +94,7 @@ describe("usePictureInPicture", () => {
 
   it("becomes inactive when the video element fires leavepictureinpicture", async () => {
     setPictureInPictureSupport(true);
-    const video = renderPipVideo();
+    const video = await renderPipVideo();
 
     await act(async () => {
       video.current.ref.current?.dispatchEvent(new Event("enterpictureinpicture"));
@@ -116,7 +117,7 @@ describe("usePictureInPicture", () => {
       value: exitPictureInPicture,
     });
 
-    const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());
+    const { result } = await renderHook(() => usePictureInPicture<HTMLVideoElement>());
     result.current.ref.current = element;
     setPictureInPictureElement(element);
 
@@ -137,7 +138,7 @@ describe("usePictureInPicture", () => {
       value: exitPictureInPicture,
     });
 
-    const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());
+    const { result } = await renderHook(() => usePictureInPicture<HTMLVideoElement>());
     result.current.ref.current = element;
     setPictureInPictureElement(other);
 
@@ -152,7 +153,7 @@ describe("usePictureInPicture", () => {
     setPictureInPictureSupport(false);
     const element = document.createElement("video");
 
-    const { result } = renderHook(() => usePictureInPicture<HTMLVideoElement>());
+    const { result } = await renderHook(() => usePictureInPicture<HTMLVideoElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -166,17 +167,17 @@ describe("usePictureInPicture", () => {
   it("does not attach event listeners when no element is attached to the ref", () => {
     setPictureInPictureSupport(true);
 
-    expect(() => {
-      renderHook(() => usePictureInPicture());
+    expect(async () => {
+      await renderHook(() => usePictureInPicture());
     }).not.toThrow();
   });
 
   it("removes listeners on unmount", async () => {
     setPictureInPictureSupport(true);
-    const video = renderPipVideo();
+    const video = await renderPipVideo();
     const element = video.current.ref.current;
 
-    video.unmount();
+    await video.unmount();
 
     await act(async () => {
       element?.dispatchEvent(new Event("enterpictureinpicture"));

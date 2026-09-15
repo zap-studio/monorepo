@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useExperimentalWindowManagement } from "./use-experimental-window-management.ts";
 
 const BUILT_IN_DISPLAY_LABEL = "Built-in Display";
@@ -36,10 +36,10 @@ afterEach(() => {
 });
 
 describe("useExperimentalWindowManagement", () => {
-  it("reports supported: false when getScreenDetails is unavailable", () => {
+  it("reports supported: false when getScreenDetails is unavailable", async () => {
     vi.stubGlobal("getScreenDetails", undefined);
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.screens).toEqual([]);
@@ -49,15 +49,15 @@ describe("useExperimentalWindowManagement", () => {
   it("resolves false from requestPermission when unsupported", async () => {
     vi.stubGlobal("getScreenDetails", undefined);
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
 
     await expect(result.current.requestPermission()).resolves.toBe(false);
   });
 
-  it("reports supported: true when window.getScreenDetails exists", () => {
+  it("reports supported: true when window.getScreenDetails exists", async () => {
     stubGetScreenDetails(new MockScreenDetails([], {}));
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
 
     expect(result.current.supported).toBe(true);
   });
@@ -67,7 +67,7 @@ describe("useExperimentalWindowManagement", () => {
     const secondary = { isPrimary: false, label: EXTERNAL_DISPLAY_LABEL };
     stubGetScreenDetails(new MockScreenDetails([primary, secondary], primary));
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
 
     await act(async () => {
       await expect(result.current.requestPermission()).resolves.toBe(true);
@@ -82,7 +82,7 @@ describe("useExperimentalWindowManagement", () => {
     const details = new MockScreenDetails([primary], primary);
     stubGetScreenDetails(details);
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
     await act(async () => {
       await result.current.requestPermission();
     });
@@ -93,7 +93,7 @@ describe("useExperimentalWindowManagement", () => {
       details.dispatchEvent(new Event("screenschange"));
     });
 
-    await waitFor(() => expect(result.current.screens).toEqual([primary, secondary]));
+    await vi.waitFor(() => expect(result.current.screens).toEqual([primary, secondary]));
   });
 
   it("updates currentScreen on a currentscreenchange event", async () => {
@@ -102,7 +102,7 @@ describe("useExperimentalWindowManagement", () => {
     const details = new MockScreenDetails([primary, secondary], primary);
     stubGetScreenDetails(details);
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
     await act(async () => {
       await result.current.requestPermission();
     });
@@ -112,13 +112,13 @@ describe("useExperimentalWindowManagement", () => {
       details.dispatchEvent(new Event("currentscreenchange"));
     });
 
-    await waitFor(() => expect(result.current.currentScreen).toEqual(secondary));
+    await vi.waitFor(() => expect(result.current.currentScreen).toEqual(secondary));
   });
 
   it("resolves false from requestPermission when the user denies the prompt", async () => {
     stubGetScreenDetails(() => Promise.reject(new Error("Permission denied")));
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
 
     await expect(result.current.requestPermission()).resolves.toBe(false);
   });
@@ -128,21 +128,21 @@ describe("useExperimentalWindowManagement", () => {
     stubGetScreenDetails(details);
     const removeSpy = vi.spyOn(details, "removeEventListener");
 
-    const { result, unmount } = renderHook(() => useExperimentalWindowManagement());
+    const { result, unmount } = await renderHook(() => useExperimentalWindowManagement());
     await act(async () => {
       await result.current.requestPermission();
     });
 
-    unmount();
+    await unmount();
 
     expect(removeSpy).toHaveBeenCalledWith("screenschange", expect.any(Function));
     expect(removeSpy).toHaveBeenCalledWith("currentscreenchange", expect.any(Function));
   });
 
-  it("reflects window.screen.isExtended without requiring permission", () => {
+  it("reflects window.screen.isExtended without requiring permission", async () => {
     stubIsExtended(true);
 
-    const { result } = renderHook(() => useExperimentalWindowManagement());
+    const { result } = await renderHook(() => useExperimentalWindowManagement());
 
     expect(result.current.isExtended).toBe(true);
   });

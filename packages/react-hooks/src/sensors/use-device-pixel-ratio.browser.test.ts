@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useDevicePixelRatio } from "./use-device-pixel-ratio.ts";
 
@@ -35,15 +35,15 @@ const createMatchMediaMock = () => {
 };
 
 describe("useDevicePixelRatio", () => {
-  it("reports the current window.devicePixelRatio", () => {
+  it("reports the current window.devicePixelRatio", async () => {
     setDevicePixelRatio(2);
     const { matchMedia } = createMatchMediaMock();
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);
 
-    const { result, unmount } = renderHook(() => useDevicePixelRatio());
+    const { result, unmount } = await renderHook(() => useDevicePixelRatio());
 
     expect(result.current).toBe(2);
-    unmount();
+    await unmount();
   });
 
   it("updates when the resolution media query fires a change", async () => {
@@ -51,7 +51,7 @@ describe("useDevicePixelRatio", () => {
     const { fireLatestChange, matchMedia } = createMatchMediaMock();
     vi.spyOn(window, "matchMedia").mockImplementation(matchMedia);
 
-    const { result } = renderHook(() => useDevicePixelRatio());
+    const { result } = await renderHook(() => useDevicePixelRatio());
     expect(result.current).toBe(1);
 
     await act(async () => {

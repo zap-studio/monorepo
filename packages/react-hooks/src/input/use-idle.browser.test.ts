@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useIdle } from "./use-idle.ts";
 
 beforeEach(() => {
@@ -12,26 +12,26 @@ afterEach(() => {
 });
 
 describe("useIdle", () => {
-  it("starts as false", () => {
-    const { result } = renderHook(() => useIdle(1000));
+  it("starts as false", async () => {
+    const { result } = await renderHook(() => useIdle(1000));
 
     expect(result.current).toBe(false);
   });
 
-  it("becomes true after the timeout elapses with no activity", () => {
-    const { result } = renderHook(() => useIdle(1000));
+  it("becomes true after the timeout elapses with no activity", async () => {
+    const { result } = await renderHook(() => useIdle(1000));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 
     expect(result.current).toBe(true);
   });
 
-  it("stays false if activity happens before the timeout", () => {
-    const { result } = renderHook(() => useIdle(1000));
+  it("stays false if activity happens before the timeout", async () => {
+    const { result } = await renderHook(() => useIdle(1000));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(500);
       window.dispatchEvent(new Event("mousemove"));
       vi.advanceTimersByTime(500);
@@ -40,40 +40,40 @@ describe("useIdle", () => {
     expect(result.current).toBe(false);
   });
 
-  it("becomes false again after activity following an idle period", () => {
-    const { result } = renderHook(() => useIdle(1000));
+  it("becomes false again after activity following an idle period", async () => {
+    const { result } = await renderHook(() => useIdle(1000));
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
     expect(result.current).toBe(true);
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(new Event("keydown"));
     });
 
     expect(result.current).toBe(false);
   });
 
-  it("uses a default timeout when none is provided", () => {
-    const { result } = renderHook(() => useIdle());
+  it("uses a default timeout when none is provided", async () => {
+    const { result } = await renderHook(() => useIdle());
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(59_999);
     });
     expect(result.current).toBe(false);
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1);
     });
     expect(result.current).toBe(true);
   });
 
-  it("stops listening and clears its timer on unmount", () => {
-    const { result, unmount } = renderHook(() => useIdle(1000));
-    unmount();
+  it("stops listening and clears its timer on unmount", async () => {
+    const { result, unmount } = await renderHook(() => useIdle(1000));
+    await unmount();
 
-    act(() => {
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 

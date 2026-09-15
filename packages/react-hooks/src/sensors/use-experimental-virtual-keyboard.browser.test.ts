@@ -1,8 +1,8 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import type { VirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalVirtualKeyboard } from "./use-experimental-virtual-keyboard.ts";
 
@@ -34,11 +34,11 @@ const setNavigatorVirtualKeyboard = (keyboard: VirtualKeyboard | undefined) => {
 };
 
 describe("useExperimentalVirtualKeyboard", () => {
-  it("reports the current on-screen keyboard bounding rect", () => {
+  it("reports the current on-screen keyboard bounding rect", async () => {
     const { keyboard } = createVirtualKeyboardMock({ height: 300, width: 400, x: 0, y: 500 });
     setNavigatorVirtualKeyboard(keyboard);
 
-    const { result } = renderHook(() => useExperimentalVirtualKeyboard());
+    const { result } = await renderHook(() => useExperimentalVirtualKeyboard());
 
     expect(result.current).toEqual({ height: 300, width: 400, x: 0, y: 500 });
   });
@@ -47,7 +47,7 @@ describe("useExperimentalVirtualKeyboard", () => {
     const { keyboard, setRect } = createVirtualKeyboardMock({ height: 0, width: 0, x: 0, y: 0 });
     setNavigatorVirtualKeyboard(keyboard);
 
-    const { result } = renderHook(() => useExperimentalVirtualKeyboard());
+    const { result } = await renderHook(() => useExperimentalVirtualKeyboard());
     expect(result.current.height).toBe(0);
 
     await act(async () => {
@@ -57,10 +57,10 @@ describe("useExperimentalVirtualKeyboard", () => {
     expect(result.current.height).toBe(280);
   });
 
-  it("falls back to zeroed rect when the VirtualKeyboard API is unsupported", () => {
+  it("falls back to zeroed rect when the VirtualKeyboard API is unsupported", async () => {
     setNavigatorVirtualKeyboard(undefined);
 
-    const { result } = renderHook(() => useExperimentalVirtualKeyboard());
+    const { result } = await renderHook(() => useExperimentalVirtualKeyboard());
 
     expect(result.current).toEqual({ height: 0, width: 0, x: 0, y: 0 });
   });

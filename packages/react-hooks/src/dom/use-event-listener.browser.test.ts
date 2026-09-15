@@ -1,24 +1,24 @@
-import { renderHook } from "@testing-library/react";
 import { type RefObject, useRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useEventListener } from "./use-event-listener.ts";
 
 describe("useEventListener", () => {
-  it("attaches to window by default target and calls the handler", () => {
+  it("attaches to window by default target and calls the handler", async () => {
     const handler = vi.fn<(event: Event) => void>();
-    renderHook(() => useEventListener(window, "click", handler));
+    await renderHook(() => useEventListener(window, "click", handler));
 
     window.dispatchEvent(new Event("click"));
 
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it("attaches to a ref'd element", () => {
+  it("attaches to a ref'd element", async () => {
     const handler = vi.fn<(event: Event) => void>();
     const element = document.createElement("div");
 
-    renderHook(() => {
+    await renderHook(() => {
       const ref = useRef<HTMLDivElement>(element);
       useEventListener(ref, "click", handler);
     });
@@ -29,84 +29,84 @@ describe("useEventListener", () => {
   });
 
   it("does nothing when target is null/undefined", () => {
-    expect(() => {
-      renderHook(() => useEventListener(undefined, "click", () => {}));
+    expect(async () => {
+      await renderHook(() => useEventListener(undefined, "click", () => {}));
     }).not.toThrow();
   });
 
-  it("calls the latest handler without re-subscribing", () => {
+  it("calls the latest handler without re-subscribing", async () => {
     const first = vi.fn<() => void>();
     const second = vi.fn<() => void>();
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ handler }: { handler: () => void }) => useEventListener(window, "click", handler),
       { initialProps: { handler: first } },
     );
 
-    rerender({ handler: second });
+    await rerender({ handler: second });
     window.dispatchEvent(new Event("click"));
 
     expect(first).not.toHaveBeenCalled();
     expect(second).toHaveBeenCalledTimes(1);
   });
 
-  it("removes the listener on unmount", () => {
+  it("removes the listener on unmount", async () => {
     const handler = vi.fn<(event: Event) => void>();
-    const { unmount } = renderHook(() => useEventListener(window, "click", handler));
+    const { unmount } = await renderHook(() => useEventListener(window, "click", handler));
 
-    unmount();
+    await unmount();
     window.dispatchEvent(new Event("click"));
 
     expect(handler).not.toHaveBeenCalled();
   });
 
-  it("unmounts cleanly when nothing was ever attached", () => {
-    const { unmount } = renderHook(() => useEventListener(undefined, "click", () => {}));
+  it("unmounts cleanly when nothing was ever attached", async () => {
+    const { unmount } = await renderHook(() => useEventListener(undefined, "click", () => {}));
 
-    expect(() => unmount()).not.toThrow();
+    expect(async () => await unmount()).not.toThrow();
   });
 
-  it("re-subscribes when type changes", () => {
+  it("re-subscribes when type changes", async () => {
     const handler = vi.fn<(event: Event) => void>();
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ type }: { type: string }) => useEventListener(window, type, handler),
       { initialProps: { type: "click" } },
     );
 
-    rerender({ type: "keydown" });
+    await rerender({ type: "keydown" });
     window.dispatchEvent(new Event("click"));
     window.dispatchEvent(new Event("keydown"));
 
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it("attaches to an element the ref only points at after the first render", () => {
+  it("attaches to an element the ref only points at after the first render", async () => {
     const handler = vi.fn<(event: Event) => void>();
     const element = document.createElement("div");
     const ref: RefObject<HTMLDivElement | null> = { current: null };
 
-    const { rerender } = renderHook(() => useEventListener(ref, "click", handler));
+    const { rerender } = await renderHook(() => useEventListener(ref, "click", handler));
 
     element.dispatchEvent(new Event("click"));
     expect(handler).not.toHaveBeenCalled();
 
     ref.current = element;
-    rerender();
+    await rerender();
     element.dispatchEvent(new Event("click"));
 
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it("moves the listener when the ref points at a different element", () => {
+  it("moves the listener when the ref points at a different element", async () => {
     const handler = vi.fn<(event: Event) => void>();
     const first = document.createElement("div");
     const second = document.createElement("div");
     const ref: RefObject<HTMLDivElement | null> = { current: first };
 
-    const { rerender } = renderHook(() => useEventListener(ref, "click", handler));
+    const { rerender } = await renderHook(() => useEventListener(ref, "click", handler));
 
     ref.current = second;
-    rerender();
+    await rerender();
 
     first.dispatchEvent(new Event("click"));
     expect(handler).not.toHaveBeenCalled();
@@ -115,44 +115,44 @@ describe("useEventListener", () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it("detaches when the ref's element goes away", () => {
+  it("detaches when the ref's element goes away", async () => {
     const handler = vi.fn<(event: Event) => void>();
     const element = document.createElement("div");
     const ref: RefObject<HTMLDivElement | null> = { current: element };
 
-    const { rerender } = renderHook(() => useEventListener(ref, "click", handler));
+    const { rerender } = await renderHook(() => useEventListener(ref, "click", handler));
 
     ref.current = null;
-    rerender();
+    await rerender();
     element.dispatchEvent(new Event("click"));
 
     expect(handler).not.toHaveBeenCalled();
   });
 
-  it("does not re-subscribe for an options object re-created on every render", () => {
+  it("does not re-subscribe for an options object re-created on every render", async () => {
     const addEventListener = vi.spyOn(window, "addEventListener");
-    const { rerender } = renderHook(() =>
+    const { rerender } = await renderHook(() =>
       useEventListener(window, "click", () => {}, { capture: true, passive: true }),
     );
 
     const initialCalls = addEventListener.mock.calls.length;
-    rerender();
-    rerender();
+    await rerender();
+    await rerender();
 
     expect(addEventListener.mock.calls).toHaveLength(initialCalls);
   });
 
-  it("re-subscribes when a boolean capture option flips", () => {
+  it("re-subscribes when a boolean capture option flips", async () => {
     const handler = vi.fn<(event: Event) => void>();
     const addEventListener = vi.spyOn(window, "addEventListener");
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ capture }: { capture: boolean }) => useEventListener(window, "click", handler, capture),
       { initialProps: { capture: false } },
     );
 
     const initialCalls = addEventListener.mock.calls.length;
-    rerender({ capture: true });
+    await rerender({ capture: true });
 
     expect(addEventListener.mock.calls).toHaveLength(initialCalls + 1);
 
@@ -160,23 +160,23 @@ describe("useEventListener", () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it("re-subscribes when the once option changes", () => {
+  it("re-subscribes when the once option changes", async () => {
     const addEventListener = vi.spyOn(window, "addEventListener");
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ once }: { once: boolean }) => useEventListener(window, "click", () => {}, { once }),
       { initialProps: { once: false } },
     );
 
     const initialCalls = addEventListener.mock.calls.length;
-    rerender({ once: true });
+    await rerender({ once: true });
 
     expect(addEventListener.mock.calls).toHaveLength(initialCalls + 1);
   });
 
-  it("only calls the handler once with the once option", () => {
+  it("only calls the handler once with the once option", async () => {
     const handler = vi.fn<(event: Event) => void>();
-    renderHook(() => useEventListener(window, "click", handler, { once: true }));
+    await renderHook(() => useEventListener(window, "click", handler, { once: true }));
 
     window.dispatchEvent(new Event("click"));
     window.dispatchEvent(new Event("click"));
@@ -184,33 +184,33 @@ describe("useEventListener", () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it("re-subscribes when the passive option changes", () => {
+  it("re-subscribes when the passive option changes", async () => {
     const addEventListener = vi.spyOn(window, "addEventListener");
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ passive }: { passive: boolean }) =>
         useEventListener(window, "click", () => {}, { passive }),
       { initialProps: { passive: true } },
     );
 
     const initialCalls = addEventListener.mock.calls.length;
-    rerender({ passive: false });
+    await rerender({ passive: false });
 
     expect(addEventListener.mock.calls).toHaveLength(initialCalls + 1);
   });
 
-  it("forwards an abort signal and re-subscribes when it changes", () => {
+  it("forwards an abort signal and re-subscribes when it changes", async () => {
     const handler = vi.fn<(event: Event) => void>();
     const first = new AbortController();
     const second = new AbortController();
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ signal }: { signal: AbortSignal }) =>
         useEventListener(window, "click", handler, { signal }),
       { initialProps: { signal: first.signal } },
     );
 
-    rerender({ signal: second.signal });
+    await rerender({ signal: second.signal });
     first.abort();
     window.dispatchEvent(new Event("click"));
 

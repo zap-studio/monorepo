@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useFavicon } from "./use-favicon.ts";
 
 const FAVICON_SELECTOR = "link[rel~='icon']";
@@ -15,47 +15,47 @@ afterEach(() => {
 });
 
 describe("useFavicon", () => {
-  it('creates a <link rel="icon"> when none exists', () => {
-    renderHook(() => useFavicon("/favicon.svg"));
+  it('creates a <link rel="icon"> when none exists', async () => {
+    await renderHook(() => useFavicon("/favicon.svg"));
 
     // oxlint-disable-next-line testing-library/no-node-access -- same reason as the afterEach above: a <link rel="icon"> has no ARIA role.
     const link = document.querySelector<HTMLLinkElement>(FAVICON_SELECTOR);
     expect(link?.href).toContain("/favicon.svg");
   });
 
-  it('reuses an existing <link rel="icon">', () => {
+  it('reuses an existing <link rel="icon">', async () => {
     const existing = document.createElement("link");
     existing.rel = "icon";
     existing.href = ORIGINAL_FAVICON;
     document.head.append(existing);
 
-    renderHook(() => useFavicon(UPDATED_FAVICON));
+    await renderHook(() => useFavicon(UPDATED_FAVICON));
 
     // oxlint-disable-next-line testing-library/no-node-access -- same reason as the afterEach above: a <link rel="icon"> has no ARIA role.
     expect(document.querySelectorAll(FAVICON_SELECTOR)).toHaveLength(1);
     expect(existing.href).toContain(UPDATED_FAVICON);
   });
 
-  it("updates the href when it changes", () => {
-    const { rerender } = renderHook(({ href }: { href: string }) => useFavicon(href), {
+  it("updates the href when it changes", async () => {
+    const { rerender } = await renderHook(({ href }: { href: string }) => useFavicon(href), {
       initialProps: { href: "/a.svg" },
     });
 
-    rerender({ href: "/b.svg" });
+    await rerender({ href: "/b.svg" });
 
     // oxlint-disable-next-line testing-library/no-node-access -- same reason as the afterEach above: a <link rel="icon"> has no ARIA role.
     const link = document.querySelector<HTMLLinkElement>(FAVICON_SELECTOR);
     expect(link?.href).toContain("/b.svg");
   });
 
-  it("restores the previous href on unmount", () => {
+  it("restores the previous href on unmount", async () => {
     const existing = document.createElement("link");
     existing.rel = "icon";
     existing.href = ORIGINAL_FAVICON;
     document.head.append(existing);
 
-    const { unmount } = renderHook(() => useFavicon(UPDATED_FAVICON));
-    unmount();
+    const { unmount } = await renderHook(() => useFavicon(UPDATED_FAVICON));
+    await unmount();
 
     expect(existing.href).toContain(ORIGINAL_FAVICON);
   });

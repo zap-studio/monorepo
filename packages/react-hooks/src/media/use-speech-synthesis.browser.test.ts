@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useSpeechSynthesis } from "./use-speech-synthesis.ts";
 
@@ -39,24 +39,24 @@ afterEach(() => {
 });
 
 describe("useSpeechSynthesis", () => {
-  it("reports supported: true when window.speechSynthesis exists", () => {
+  it("reports supported: true when window.speechSynthesis exists", async () => {
     installMockSpeechSynthesis();
 
-    const { result } = renderHook(() => useSpeechSynthesis());
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.speaking).toBe(false);
   });
 
-  it("reports supported: false when window.speechSynthesis is unavailable", () => {
-    const { result } = renderHook(() => useSpeechSynthesis());
+  it("reports supported: false when window.speechSynthesis is unavailable", async () => {
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
     expect(result.current.supported).toBe(false);
   });
 
   it("speak() calls speechSynthesis.speak() and becomes speaking: true on start", async () => {
     const { speak } = installMockSpeechSynthesis();
-    const { result } = renderHook(() => useSpeechSynthesis());
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
     await act(async () => {
       result.current.speak("hello");
@@ -68,7 +68,7 @@ describe("useSpeechSynthesis", () => {
 
   it("applies rate/pitch/lang/voice options to the utterance", async () => {
     const { speak } = installMockSpeechSynthesis();
-    const { result } = renderHook(() => useSpeechSynthesis());
+    const { result } = await renderHook(() => useSpeechSynthesis());
     const voice = asTestDouble<SpeechSynthesisVoice>({});
 
     await act(async () => {
@@ -84,7 +84,7 @@ describe("useSpeechSynthesis", () => {
 
   it("becomes speaking: false when the utterance ends", async () => {
     const { speak } = installMockSpeechSynthesis();
-    const { result } = renderHook(() => useSpeechSynthesis());
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
     let utterance: SpeechSynthesisUtterance | undefined;
     await act(async () => {
@@ -101,7 +101,7 @@ describe("useSpeechSynthesis", () => {
 
   it("becomes speaking: false when the utterance errors", async () => {
     const { speak } = installMockSpeechSynthesis();
-    const { result } = renderHook(() => useSpeechSynthesis());
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
     await act(async () => {
       result.current.speak("hello");
@@ -115,11 +115,11 @@ describe("useSpeechSynthesis", () => {
     expect(result.current.speaking).toBe(false);
   });
 
-  it("speak() no-ops when unsupported", () => {
-    const { result } = renderHook(() => useSpeechSynthesis());
+  it("speak() no-ops when unsupported", async () => {
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
-    expect(() => {
-      act(() => {
+    expect(async () => {
+      await act(() => {
         result.current.speak("hello");
       });
     }).not.toThrow();
@@ -128,14 +128,14 @@ describe("useSpeechSynthesis", () => {
 
   it("cancel() calls speechSynthesis.cancel() and resets speaking", async () => {
     const { cancel } = installMockSpeechSynthesis();
-    const { result } = renderHook(() => useSpeechSynthesis());
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
     await act(async () => {
       result.current.speak("hello");
     });
     expect(result.current.speaking).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.cancel();
     });
 
@@ -143,11 +143,11 @@ describe("useSpeechSynthesis", () => {
     expect(result.current.speaking).toBe(false);
   });
 
-  it("cancel() no-ops when unsupported", () => {
-    const { result } = renderHook(() => useSpeechSynthesis());
+  it("cancel() no-ops when unsupported", async () => {
+    const { result } = await renderHook(() => useSpeechSynthesis());
 
-    expect(() => {
-      act(() => {
+    expect(async () => {
+      await act(() => {
         result.current.cancel();
       });
     }).not.toThrow();
@@ -155,13 +155,13 @@ describe("useSpeechSynthesis", () => {
 
   it("cancels any in-progress speech on unmount", async () => {
     const { cancel } = installMockSpeechSynthesis();
-    const { result, unmount } = renderHook(() => useSpeechSynthesis());
+    const { result, unmount } = await renderHook(() => useSpeechSynthesis());
 
     await act(async () => {
       result.current.speak("hello");
     });
 
-    unmount();
+    await unmount();
 
     expect(cancel).toHaveBeenCalledTimes(1);
   });

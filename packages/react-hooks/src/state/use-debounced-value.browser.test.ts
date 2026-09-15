@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useDebouncedValue } from "./use-debounced-value.ts";
 
 beforeEach(() => {
@@ -12,59 +12,59 @@ afterEach(() => {
 });
 
 describe("useDebouncedValue", () => {
-  it("starts equal to the initial value", () => {
-    const { result } = renderHook(() => useDebouncedValue("a", 500));
+  it("starts equal to the initial value", async () => {
+    const { result } = await renderHook(() => useDebouncedValue("a", 500));
 
     expect(result.current).toBe("a");
   });
 
-  it("does not update immediately when the value changes", () => {
-    const { result, rerender } = renderHook(({ value }) => useDebouncedValue(value, 500), {
+  it("does not update immediately when the value changes", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useDebouncedValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
+    await rerender({ value: "b" });
 
     expect(result.current).toBe("a");
   });
 
-  it("updates once the delay elapses", () => {
-    const { result, rerender } = renderHook(({ value }) => useDebouncedValue(value, 500), {
+  it("updates once the delay elapses", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useDebouncedValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    act(() => {
+    await rerender({ value: "b" });
+    await act(() => {
       vi.advanceTimersByTime(500);
     });
 
     expect(result.current).toBe("b");
   });
 
-  it("only reflects the last value when it changes rapidly", () => {
-    const { result, rerender } = renderHook(({ value }) => useDebouncedValue(value, 500), {
+  it("only reflects the last value when it changes rapidly", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useDebouncedValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    act(() => {
+    await rerender({ value: "b" });
+    await act(() => {
       vi.advanceTimersByTime(200);
     });
-    rerender({ value: "c" });
-    act(() => {
+    await rerender({ value: "c" });
+    await act(() => {
       vi.advanceTimersByTime(500);
     });
 
     expect(result.current).toBe("c");
   });
 
-  it("clears the pending timer on unmount", () => {
-    const { rerender, unmount } = renderHook(({ value }) => useDebouncedValue(value, 500), {
+  it("clears the pending timer on unmount", async () => {
+    const { rerender, unmount } = await renderHook(({ value }) => useDebouncedValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    unmount();
+    await rerender({ value: "b" });
+    await unmount();
 
     expect(() => vi.advanceTimersByTime(500)).not.toThrow();
   });

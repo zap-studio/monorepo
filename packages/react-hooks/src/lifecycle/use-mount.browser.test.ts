@@ -1,22 +1,22 @@
-import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useMount } from "./use-mount.ts";
 
 describe("useMount", () => {
-  it("calls the effect once on mount", () => {
+  it("calls the effect once on mount", async () => {
     const effect = vi.fn<() => void>();
-    renderHook(() => useMount(effect));
+    await renderHook(() => useMount(effect));
 
     expect(effect).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call the effect again on re-render", () => {
+  it("does not call the effect again on re-render", async () => {
     const effect = vi.fn<() => void>();
-    const { rerender } = renderHook(() => useMount(effect));
+    const { rerender } = await renderHook(() => useMount(effect));
 
-    rerender();
-    rerender();
+    await rerender();
+    await rerender();
 
     expect(effect).toHaveBeenCalledTimes(1);
   });

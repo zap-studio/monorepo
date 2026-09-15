@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useDeviceCapabilities } from "./use-device-capabilities.ts";
 
 const setHardwareConcurrency = (value: number) => {
@@ -12,21 +12,21 @@ const setDeviceMemory = (value: number | undefined) => {
 };
 
 describe("useDeviceCapabilities", () => {
-  it("reports hardwareConcurrency and deviceMemory when both are available", () => {
+  it("reports hardwareConcurrency and deviceMemory when both are available", async () => {
     setHardwareConcurrency(8);
     setDeviceMemory(4);
 
-    const { result, unmount } = renderHook(() => useDeviceCapabilities());
+    const { result, unmount } = await renderHook(() => useDeviceCapabilities());
 
     expect(result.current).toEqual({ deviceMemory: 4, hardwareConcurrency: 8 });
-    unmount();
+    await unmount();
   });
 
-  it("leaves deviceMemory undefined where the Chromium-only API is unsupported", () => {
+  it("leaves deviceMemory undefined where the Chromium-only API is unsupported", async () => {
     setHardwareConcurrency(4);
     setDeviceMemory(undefined);
 
-    const { result } = renderHook(() => useDeviceCapabilities());
+    const { result } = await renderHook(() => useDeviceCapabilities());
 
     expect(result.current).toEqual({ hardwareConcurrency: 4 });
   });
