@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useKeyPress } from "./use-key-press.ts";
 
 const dispatchKey = (type: "keydown" | "keyup", key: string) => {
@@ -8,14 +8,14 @@ const dispatchKey = (type: "keydown" | "keyup", key: string) => {
 };
 
 describe("useKeyPress", () => {
-  it("starts as false before any key is pressed", () => {
-    const { result } = renderHook(() => useKeyPress("Shift"));
+  it("starts as false before any key is pressed", async () => {
+    const { result } = await renderHook(() => useKeyPress("Shift"));
 
     expect(result.current).toBe(false);
   });
 
   it("becomes true when the target key is pressed down", async () => {
-    const { result } = renderHook(() => useKeyPress("Shift"));
+    const { result } = await renderHook(() => useKeyPress("Shift"));
 
     await act(async () => {
       dispatchKey("keydown", "Shift");
@@ -25,7 +25,7 @@ describe("useKeyPress", () => {
   });
 
   it("becomes false again when the target key is released", async () => {
-    const { result } = renderHook(() => useKeyPress("Shift"));
+    const { result } = await renderHook(() => useKeyPress("Shift"));
 
     await act(async () => {
       dispatchKey("keydown", "Shift");
@@ -38,7 +38,7 @@ describe("useKeyPress", () => {
   });
 
   it("matches case-insensitively", async () => {
-    const { result } = renderHook(() => useKeyPress("shift"));
+    const { result } = await renderHook(() => useKeyPress("shift"));
 
     await act(async () => {
       dispatchKey("keydown", "Shift");
@@ -48,7 +48,7 @@ describe("useKeyPress", () => {
   });
 
   it("ignores keys not in the target list", async () => {
-    const { result } = renderHook(() => useKeyPress("Shift"));
+    const { result } = await renderHook(() => useKeyPress("Shift"));
 
     await act(async () => {
       dispatchKey("keydown", "Control");
@@ -58,7 +58,7 @@ describe("useKeyPress", () => {
   });
 
   it("accepts an array of target keys, matching any of them", async () => {
-    const { result } = renderHook(() => useKeyPress(["ArrowLeft", "ArrowRight"]));
+    const { result } = await renderHook(() => useKeyPress(["ArrowLeft", "ArrowRight"]));
 
     await act(async () => {
       dispatchKey("keydown", "ArrowRight");
@@ -74,7 +74,7 @@ describe("useKeyPress", () => {
   });
 
   it("ignores keyup for keys not in the target list", async () => {
-    const { result } = renderHook(() => useKeyPress("Shift"));
+    const { result } = await renderHook(() => useKeyPress("Shift"));
 
     await act(async () => {
       dispatchKey("keydown", "Shift");
@@ -87,8 +87,8 @@ describe("useKeyPress", () => {
   });
 
   it("unsubscribes on unmount", async () => {
-    const { result, unmount } = renderHook(() => useKeyPress("Shift"));
-    unmount();
+    const { result, unmount } = await renderHook(() => useKeyPress("Shift"));
+    await unmount();
 
     await act(async () => {
       dispatchKey("keydown", "Shift");
@@ -101,11 +101,11 @@ describe("useKeyPress", () => {
 describe("useKeyPress target stability", () => {
   it("does not resubscribe for an array literal re-created every render", async () => {
     const addEventListener = vi.spyOn(window, "addEventListener");
-    const { rerender, result } = renderHook(() => useKeyPress(["ArrowLeft", "ArrowRight"]));
+    const { rerender, result } = await renderHook(() => useKeyPress(["ArrowLeft", "ArrowRight"]));
 
     const initialCalls = addEventListener.mock.calls.length;
-    rerender();
-    rerender();
+    await rerender();
+    await rerender();
 
     expect(addEventListener.mock.calls).toHaveLength(initialCalls);
 
@@ -117,11 +117,14 @@ describe("useKeyPress target stability", () => {
   });
 
   it("resubscribes when the key list actually changes", async () => {
-    const { rerender, result } = renderHook(({ keys }: { keys: string[] }) => useKeyPress(keys), {
-      initialProps: { keys: ["a"] },
-    });
+    const { rerender, result } = await renderHook(
+      ({ keys }: { keys: string[] }) => useKeyPress(keys),
+      {
+        initialProps: { keys: ["a"] },
+      },
+    );
 
-    rerender({ keys: ["b"] });
+    await rerender({ keys: ["b"] });
     await act(async () => {
       dispatchKey("keydown", "a");
     });

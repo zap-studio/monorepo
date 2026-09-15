@@ -24,8 +24,6 @@ catalog:
   "@stylexjs/eslint-plugin": ^0.19.0
   "@tanstack/eslint-plugin-query": ^5.102.8
   "@tanstack/eslint-plugin-router": ^1.162.0
-  "@testing-library/dom": ^10.4.2
-  "@testing-library/react": ^16.3.3
   "@types/node": ^26.5.1
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
@@ -61,5 +59,6 @@ catalog:
   unplugin-unused: ^0.6.0
   valibot: ^1.5.0
   vitest: ^5.0.0
+  vitest-browser-react: ^2.3.0
   wrangler: ^4.131.2
   zod: ^4.6.5

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useVisualViewport } from "./use-visual-viewport.ts";
 
@@ -40,7 +40,7 @@ const setWindowVisualViewport = (viewport: VisualViewport | null) => {
 };
 
 describe("useVisualViewport", () => {
-  it("reports the current window.visualViewport", () => {
+  it("reports the current window.visualViewport", async () => {
     const { viewport } = createVisualViewportMock({
       height: 500,
       offsetLeft: 0,
@@ -52,7 +52,7 @@ describe("useVisualViewport", () => {
     });
     setWindowVisualViewport(viewport);
 
-    const { result } = renderHook(() => useVisualViewport());
+    const { result } = await renderHook(() => useVisualViewport());
 
     expect(result.current).toEqual({
       height: 500,
@@ -77,7 +77,7 @@ describe("useVisualViewport", () => {
     });
     setWindowVisualViewport(viewport);
 
-    const { result } = renderHook(() => useVisualViewport());
+    const { result } = await renderHook(() => useVisualViewport());
     expect(result.current.height).toBe(500);
 
     await act(async () => {
@@ -87,10 +87,10 @@ describe("useVisualViewport", () => {
     expect(result.current.height).toBe(300);
   });
 
-  it("falls back to defaults when visualViewport is unsupported", () => {
+  it("falls back to defaults when visualViewport is unsupported", async () => {
     setWindowVisualViewport(null);
 
-    const { result } = renderHook(() => useVisualViewport());
+    const { result } = await renderHook(() => useVisualViewport());
 
     expect(result.current).toEqual({
       height: 0,

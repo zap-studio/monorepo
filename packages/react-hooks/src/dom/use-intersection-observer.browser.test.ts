@@ -1,7 +1,8 @@
-import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import {
   useIntersectionObserver,
@@ -31,13 +32,13 @@ class FakeIntersectionObserver implements IntersectionObserver {
   }
 }
 
-const renderObservedDiv = () => {
+const renderObservedDiv = async () => {
   let latest!: UseIntersectionObserverResult<HTMLDivElement>;
   const TestComponent = () => {
     latest = useIntersectionObserver<HTMLDivElement>();
     return createElement("div", { ref: latest.ref });
   };
-  const { unmount } = render(createElement(TestComponent));
+  const { unmount } = await render(createElement(TestComponent));
   return {
     get current() {
       return latest;
@@ -51,23 +52,23 @@ afterEach(() => {
 });
 
 describe("useIntersectionObserver", () => {
-  it("starts with inView: false and no entry", () => {
+  it("starts with inView: false and no entry", async () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
 
     expect(div.current.inView).toBe(false);
     expect(div.current.entry).toBeUndefined();
     vi.unstubAllGlobals();
   });
 
-  it("observes the ref'd element and updates on intersection", () => {
+  it("observes the ref'd element and updates on intersection", async () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
     const [observer] = FakeIntersectionObserver.instances;
 
     expect(observer?.observe).toHaveBeenCalledWith(div.current.ref.current);
 
-    act(() => {
+    await act(() => {
       observer?.trigger(true);
     });
 
@@ -79,8 +80,8 @@ describe("useIntersectionObserver", () => {
   it("does not observe when no element is attached to the ref", () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
-    expect(() => {
-      renderHook(() => useIntersectionObserver());
+    expect(async () => {
+      await renderHook(() => useIntersectionObserver());
     }).not.toThrow();
     expect(FakeIntersectionObserver.instances).toHaveLength(0);
     vi.unstubAllGlobals();
@@ -89,18 +90,18 @@ describe("useIntersectionObserver", () => {
   it("does not observe when IntersectionObserver is unsupported", () => {
     vi.stubGlobal("IntersectionObserver", undefined);
 
-    expect(() => {
-      renderObservedDiv();
+    expect(async () => {
+      await renderObservedDiv();
     }).not.toThrow();
     vi.unstubAllGlobals();
   });
 
-  it("disconnects the observer on unmount", () => {
+  it("disconnects the observer on unmount", async () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
     const [observer] = FakeIntersectionObserver.instances;
 
-    div.unmount();
+    await div.unmount();
 
     expect(observer?.disconnect).toHaveBeenCalledTimes(1);
     vi.unstubAllGlobals();
@@ -112,7 +113,7 @@ describe("useIntersectionObserver", () => {
 });
 
 describe("useIntersectionObserver ref and option tracking", () => {
-  it("observes an element that only attaches after the first render", () => {
+  it("observes an element that only attaches after the first render", async () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
     let latest!: UseIntersectionObserverResult<HTMLDivElement>;
@@ -120,15 +121,15 @@ describe("useIntersectionObserver ref and option tracking", () => {
       latest = useIntersectionObserver<HTMLDivElement>();
       return show ? createElement("div", { ref: latest.ref }) : null;
     };
-    const { rerender } = render(createElement(TestComponent, { show: false }));
+    const { rerender } = await render(createElement(TestComponent, { show: false }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(0);
 
-    rerender(createElement(TestComponent, { show: true }));
+    await rerender(createElement(TestComponent, { show: true }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);
 
-    act(() => {
+    await act(() => {
       FakeIntersectionObserver.instances[0]?.trigger(true);
     });
 
@@ -136,7 +137,7 @@ describe("useIntersectionObserver ref and option tracking", () => {
     vi.unstubAllGlobals();
   });
 
-  it("does not rebuild the observer for an options object re-created every render", () => {
+  it("does not rebuild the observer for an options object re-created every render", async () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
     const TestComponent = () => {
@@ -146,33 +147,33 @@ describe("useIntersectionObserver ref and option tracking", () => {
       });
       return createElement("div", { ref });
     };
-    const { rerender } = render(createElement(TestComponent));
+    const { rerender } = await render(createElement(TestComponent));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);
 
-    rerender(createElement(TestComponent));
-    rerender(createElement(TestComponent));
+    await rerender(createElement(TestComponent));
+    await rerender(createElement(TestComponent));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);
     vi.unstubAllGlobals();
   });
 
-  it("rebuilds the observer when an option changes, including a threshold array", () => {
+  it("rebuilds the observer when an option changes, including a threshold array", async () => {
     vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
 
     const TestComponent = ({ threshold }: { threshold: number[] }) => {
       const { ref } = useIntersectionObserver<HTMLDivElement>({ threshold });
       return createElement("div", { ref });
     };
-    const { rerender } = render(createElement(TestComponent, { threshold: [0, 1] }));
+    const { rerender } = await render(createElement(TestComponent, { threshold: [0, 1] }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);
 
-    rerender(createElement(TestComponent, { threshold: [0, 1] }));
+    await rerender(createElement(TestComponent, { threshold: [0, 1] }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(1);
 
-    rerender(createElement(TestComponent, { threshold: [0, 0.5, 1] }));
+    await rerender(createElement(TestComponent, { threshold: [0, 0.5, 1] }));
 
     expect(FakeIntersectionObserver.instances).toHaveLength(2);
     vi.unstubAllGlobals();

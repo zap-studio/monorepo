@@ -1,8 +1,8 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import type { NetworkInformation } from "./_network.ts";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useNetworkState } from "./use-network-state.ts";
 
 const setNavigatorOnLine = (value: boolean) => {
@@ -42,7 +42,7 @@ const setNavigatorConnection = (connection: NetworkInformation | undefined) => {
 };
 
 describe("useNetworkState", () => {
-  it("reports online status and connection info", () => {
+  it("reports online status and connection info", async () => {
     setNavigatorOnLine(true);
     const { connection } = createConnectionMock({
       downlink: 10,
@@ -52,7 +52,7 @@ describe("useNetworkState", () => {
     });
     setNavigatorConnection(connection);
 
-    const { result } = renderHook(() => useNetworkState());
+    const { result } = await renderHook(() => useNetworkState());
 
     expect(result.current).toEqual({
       downlink: 10,
@@ -73,7 +73,7 @@ describe("useNetworkState", () => {
     });
     setNavigatorConnection(connection);
 
-    const { result } = renderHook(() => useNetworkState());
+    const { result } = await renderHook(() => useNetworkState());
     expect(result.current.effectiveType).toBe("4g");
 
     await act(async () => {
@@ -83,11 +83,11 @@ describe("useNetworkState", () => {
     expect(result.current.effectiveType).toBe("2g");
   });
 
-  it("leaves connection fields undefined when NetworkInformation is unsupported", () => {
+  it("leaves connection fields undefined when NetworkInformation is unsupported", async () => {
     setNavigatorOnLine(true);
     setNavigatorConnection(undefined);
 
-    const { result } = renderHook(() => useNetworkState());
+    const { result } = await renderHook(() => useNetworkState());
 
     expect(result.current).toEqual({
       online: true,

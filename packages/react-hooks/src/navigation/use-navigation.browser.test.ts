@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useNavigation } from "./use-navigation.ts";
 
@@ -44,7 +44,7 @@ const fakeEntry = (url: string): NavigationHistoryEntry => {
 };
 
 describe("useNavigation", () => {
-  it("reports the current navigation state", () => {
+  it("reports the current navigation state", async () => {
     const entryA = fakeEntry("/a");
     const { nav } = createNavigationMock({
       canGoBack: false,
@@ -54,7 +54,7 @@ describe("useNavigation", () => {
     });
     setWindowNavigation(nav);
 
-    const { result } = renderHook(() => useNavigation());
+    const { result } = await renderHook(() => useNavigation());
 
     expect(result.current.canGoBack).toBe(false);
     expect(result.current.canGoForward).toBe(true);
@@ -62,7 +62,7 @@ describe("useNavigation", () => {
     expect(result.current.entries).toEqual([entryA]);
   });
 
-  it("reports currentEntry as null when the Navigation API reports null", () => {
+  it("reports currentEntry as null when the Navigation API reports null", async () => {
     const { nav } = createNavigationMock({
       canGoBack: false,
       canGoForward: false,
@@ -71,7 +71,7 @@ describe("useNavigation", () => {
     });
     setWindowNavigation(nav);
 
-    const { result } = renderHook(() => useNavigation());
+    const { result } = await renderHook(() => useNavigation());
 
     expect(result.current.currentEntry).toBeNull();
   });
@@ -87,7 +87,7 @@ describe("useNavigation", () => {
     });
     setWindowNavigation(nav);
 
-    const { result } = renderHook(() => useNavigation());
+    const { result } = await renderHook(() => useNavigation());
 
     await act(async () => {
       setState({ canGoBack: true, currentEntry: entryB, entries: [entryA, entryB] });
@@ -110,7 +110,7 @@ describe("useNavigation", () => {
     });
     setWindowNavigation(nav);
 
-    const { result } = renderHook(() => useNavigation());
+    const { result } = await renderHook(() => useNavigation());
 
     await act(async () => {
       setState({ entries: [entryA, entryC] });
@@ -130,7 +130,7 @@ describe("useNavigation", () => {
     });
     setWindowNavigation(nav);
 
-    const { result } = renderHook(() => useNavigation());
+    const { result } = await renderHook(() => useNavigation());
     const first = result.current;
 
     await act(async () => {
@@ -140,10 +140,10 @@ describe("useNavigation", () => {
     expect(result.current).toBe(first);
   });
 
-  it("falls back to the empty snapshot when the Navigation API is unsupported", () => {
+  it("falls back to the empty snapshot when the Navigation API is unsupported", async () => {
     setWindowNavigation(undefined);
 
-    const { result, unmount } = renderHook(() => useNavigation());
+    const { result, unmount } = await renderHook(() => useNavigation());
 
     expect(result.current).toEqual({
       canGoBack: false,
@@ -151,7 +151,7 @@ describe("useNavigation", () => {
       currentEntry: null,
       entries: [],
     });
-    unmount();
+    await unmount();
   });
 
   it("removes the currententrychange listener on unmount", async () => {
@@ -164,9 +164,9 @@ describe("useNavigation", () => {
     });
     setWindowNavigation(nav);
 
-    const { result, unmount } = renderHook(() => useNavigation());
+    const { result, unmount } = await renderHook(() => useNavigation());
     const before = result.current;
-    unmount();
+    await unmount();
 
     await act(async () => {
       setState({ canGoBack: true });

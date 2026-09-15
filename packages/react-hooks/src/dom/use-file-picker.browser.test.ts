@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useFilePicker } from "./use-file-picker.ts";
 
@@ -23,18 +23,18 @@ afterEach(() => {
 });
 
 describe("useFilePicker", () => {
-  it("reports supported: false when the File System Access API is unavailable", () => {
+  it("reports supported: false when the File System Access API is unavailable", async () => {
     stubUnsupported();
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when showOpenFilePicker exists", () => {
+  it("reports supported: true when showOpenFilePicker exists", async () => {
     vi.stubGlobal("showOpenFilePicker", vi.fn());
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
 
     expect(result.current.supported).toBe(true);
   });
@@ -46,7 +46,7 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.resolve(handles)),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showOpenFilePicker()).resolves.toBe(handles);
   });
 
@@ -56,7 +56,7 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.reject(abortError())),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showOpenFilePicker()).resolves.toBeUndefined();
   });
 
@@ -66,14 +66,14 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showOpenFilePicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showOpenFilePicker() resolves undefined when unsupported", async () => {
     stubUnsupported();
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showOpenFilePicker()).resolves.toBeUndefined();
   });
 
@@ -84,7 +84,7 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.resolve(handle)),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showSaveFilePicker()).resolves.toBe(handle);
   });
 
@@ -94,7 +94,7 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.reject(abortError())),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showSaveFilePicker()).resolves.toBeUndefined();
   });
 
@@ -104,14 +104,14 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showSaveFilePicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showSaveFilePicker() resolves undefined when unsupported", async () => {
     stubUnsupported();
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showSaveFilePicker()).resolves.toBeUndefined();
   });
 
@@ -122,7 +122,7 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.resolve(handle)),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showDirectoryPicker()).resolves.toBe(handle);
   });
 
@@ -132,7 +132,7 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.reject(abortError())),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showDirectoryPicker()).resolves.toBeUndefined();
   });
 
@@ -142,14 +142,14 @@ describe("useFilePicker", () => {
       vi.fn(() => Promise.reject(new Error(DISK_ERROR_MESSAGE))),
     );
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showDirectoryPicker()).rejects.toThrow(DISK_ERROR_MESSAGE);
   });
 
   it("showDirectoryPicker() resolves undefined when unsupported", async () => {
     stubUnsupported();
 
-    const { result } = renderHook(() => useFilePicker());
+    const { result } = await renderHook(() => useFilePicker());
     await expect(result.current.showDirectoryPicker()).resolves.toBeUndefined();
   });
 });

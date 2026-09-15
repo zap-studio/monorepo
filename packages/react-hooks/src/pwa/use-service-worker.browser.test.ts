@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useServiceWorker } from "./use-service-worker.ts";
 
@@ -36,10 +36,10 @@ afterEach(() => {
 });
 
 describe("useServiceWorker", () => {
-  it("reports supported: false when navigator.serviceWorker is unavailable", () => {
+  it("reports supported: false when navigator.serviceWorker is unavailable", async () => {
     setServiceWorkerContainer(undefined);
 
-    const { result } = renderHook(() => useServiceWorker());
+    const { result } = await renderHook(() => useServiceWorker());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.registration).toBeUndefined();
@@ -52,7 +52,7 @@ describe("useServiceWorker", () => {
       getRegistration: () => Promise.resolve(registration),
     });
 
-    const { result } = renderHook(() => useServiceWorker());
+    const { result } = await renderHook(() => useServiceWorker());
 
     await act(async () => {
       await Promise.resolve();
@@ -69,7 +69,7 @@ describe("useServiceWorker", () => {
       getRegistration: () => Promise.resolve(undefined),
     });
 
-    const { result } = renderHook(() => useServiceWorker());
+    const { result } = await renderHook(() => useServiceWorker());
 
     await act(async () => {
       await Promise.resolve();
@@ -86,7 +86,7 @@ describe("useServiceWorker", () => {
       getRegistration: () => Promise.resolve(registration),
     });
 
-    const { result } = renderHook(() => useServiceWorker());
+    const { result } = await renderHook(() => useServiceWorker());
 
     await act(async () => {
       await Promise.resolve();
@@ -109,7 +109,7 @@ describe("useServiceWorker", () => {
       getRegistration: () => Promise.resolve(registration),
     });
 
-    const { result } = renderHook(() => useServiceWorker());
+    const { result } = await renderHook(() => useServiceWorker());
 
     await act(async () => {
       await Promise.resolve();
@@ -131,7 +131,7 @@ describe("useServiceWorker", () => {
       getRegistration: () => Promise.resolve(registration),
     });
 
-    const { result } = renderHook(() => useServiceWorker());
+    const { result } = await renderHook(() => useServiceWorker());
 
     await act(async () => {
       await Promise.resolve();
@@ -149,8 +149,8 @@ describe("useServiceWorker", () => {
     });
     setServiceWorkerContainer({ controller: null, getRegistration: () => pending });
 
-    const { result, unmount } = renderHook(() => useServiceWorker());
-    unmount();
+    const { result, unmount } = await renderHook(() => useServiceWorker());
+    await unmount();
 
     await act(async () => {
       resolveRegistration(createRegistration(null));

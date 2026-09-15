@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalAmbientLightSensor } from "./use-experimental-ambient-light-sensor.ts";
 
@@ -65,66 +65,66 @@ afterEach(() => {
 });
 
 describe("useExperimentalAmbientLightSensor", () => {
-  it("reports supported: false when the Generic Sensor API is unavailable", () => {
+  it("reports supported: false when the Generic Sensor API is unavailable", async () => {
     vi.stubGlobal("AmbientLightSensor", undefined);
 
-    const { result } = renderHook(() => useExperimentalAmbientLightSensor());
+    const { result } = await renderHook(() => useExperimentalAmbientLightSensor());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.reading).toBeUndefined();
   });
 
-  it("reports supported: true when window.AmbientLightSensor exists", () => {
+  it("reports supported: true when window.AmbientLightSensor exists", async () => {
     stubAmbientLightSensor();
 
-    const { result } = renderHook(() => useExperimentalAmbientLightSensor());
+    const { result } = await renderHook(() => useExperimentalAmbientLightSensor());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("start() returns false without constructing a sensor when unsupported", () => {
+  it("start() returns false without constructing a sensor when unsupported", async () => {
     vi.stubGlobal("AmbientLightSensor", undefined);
 
-    const { result } = renderHook(() => useExperimentalAmbientLightSensor());
+    const { result } = await renderHook(() => useExperimentalAmbientLightSensor());
     let started = false;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
     expect(started).toBe(false);
   });
 
-  it("start() reports the reading and updates on subsequent readings", () => {
+  it("start() reports the reading and updates on subsequent readings", async () => {
     const { sensor, fireReading } = createSensorMock({ illuminance: 300 });
     stubAmbientLightSensor(sensor);
 
-    const { result } = renderHook(() => useExperimentalAmbientLightSensor());
+    const { result } = await renderHook(() => useExperimentalAmbientLightSensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     expect(result.current.reading).toEqual({ illuminance: 300 });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       fireReading({ illuminance: 450 });
     });
 
     expect(result.current.reading).toEqual({ illuminance: 450 });
   });
 
-  it("reports a permission/policy failure through error", () => {
+  it("reports a permission/policy failure through error", async () => {
     const { sensor, fireError } = createSensorMock({ illuminance: 0 });
     stubAmbientLightSensor(sensor);
     const domException = new DOMException("Permission denied", "NotAllowedError");
 
-    const { result } = renderHook(() => useExperimentalAmbientLightSensor());
+    const { result } = await renderHook(() => useExperimentalAmbientLightSensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       fireError(domException);
     });
 
@@ -132,18 +132,18 @@ describe("useExperimentalAmbientLightSensor", () => {
     expect(result.current.activated).toBe(false);
   });
 
-  it("stop() stops the sensor and resets activated", () => {
+  it("stop() stops the sensor and resets activated", async () => {
     const { sensor } = createSensorMock({ illuminance: 300 });
     stubAmbientLightSensor(sensor);
 
-    const { result } = renderHook(() => useExperimentalAmbientLightSensor());
+    const { result } = await renderHook(() => useExperimentalAmbientLightSensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 

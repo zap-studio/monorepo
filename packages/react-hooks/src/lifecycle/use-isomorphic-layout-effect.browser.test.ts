@@ -1,7 +1,7 @@
-import { renderHook } from "@testing-library/react";
 import { useLayoutEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect.ts";
 
 describe("useIsomorphicLayoutEffect", () => {
@@ -9,36 +9,36 @@ describe("useIsomorphicLayoutEffect", () => {
     expect(useIsomorphicLayoutEffect).toBe(useLayoutEffect);
   });
 
-  it("runs the effect on mount and its cleanup on unmount", () => {
+  it("runs the effect on mount and its cleanup on unmount", async () => {
     const cleanup = vi.fn<() => void>();
     const effect = vi.fn<() => () => void>(() => cleanup);
 
-    const { unmount } = renderHook(() => {
+    const { unmount } = await renderHook(() => {
       useIsomorphicLayoutEffect(effect, []);
     });
 
     expect(effect).toHaveBeenCalledTimes(1);
     expect(cleanup).not.toHaveBeenCalled();
 
-    unmount();
+    await unmount();
 
     expect(cleanup).toHaveBeenCalledTimes(1);
   });
 
-  it("re-runs when its dependencies change", () => {
+  it("re-runs when its dependencies change", async () => {
     const effect = vi.fn<() => void>();
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       ({ value }: { value: number }) => {
         useIsomorphicLayoutEffect(effect, [value]);
       },
       { initialProps: { value: 1 } },
     );
 
-    rerender({ value: 1 });
+    await rerender({ value: 1 });
     expect(effect).toHaveBeenCalledTimes(1);
 
-    rerender({ value: 2 });
+    await rerender({ value: 2 });
     expect(effect).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useGeolocation } from "./use-geolocation.ts";
 
 const createGeolocationMock = () => {
@@ -53,11 +53,11 @@ const fakePosition = {
 const fakeError = { code: 1, message: "User denied Geolocation" };
 
 describe("useGeolocation", () => {
-  it("starts in a loading state", () => {
+  it("starts in a loading state", async () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);
 
-    const { result } = renderHook(() => useGeolocation());
+    const { result } = await renderHook(() => useGeolocation());
 
     expect(result.current).toEqual({ loading: true });
   });
@@ -66,7 +66,7 @@ describe("useGeolocation", () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);
 
-    const { result } = renderHook(() => useGeolocation());
+    const { result } = await renderHook(() => useGeolocation());
     const onSuccess = geolocation.getCurrentPosition.mock.calls[0]?.[0];
 
     await act(async () => {
@@ -91,7 +91,7 @@ describe("useGeolocation", () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);
 
-    const { result } = renderHook(() => useGeolocation());
+    const { result } = await renderHook(() => useGeolocation());
     const onError = geolocation.getCurrentPosition.mock.calls[0]?.[1];
 
     await act(async () => {
@@ -101,35 +101,37 @@ describe("useGeolocation", () => {
     expect(result.current).toEqual({ error: fakeError, loading: false });
   });
 
-  it("uses watchPosition and clears the watch on unmount when watch: true", () => {
+  it("uses watchPosition and clears the watch on unmount when watch: true", async () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);
 
-    const { unmount } = renderHook(() => useGeolocation({ watch: true }));
+    const { unmount } = await renderHook(() => useGeolocation({ watch: true }));
 
     expect(geolocation.watchPosition).toHaveBeenCalledTimes(1);
     expect(geolocation.getCurrentPosition).not.toHaveBeenCalled();
 
-    unmount();
+    await unmount();
 
     expect(geolocation.clearWatch).toHaveBeenCalledWith(1);
   });
 
-  it("reports an error when geolocation is unsupported", () => {
+  it("reports an error when geolocation is unsupported", async () => {
     setNavigatorGeolocation(undefined);
 
-    const { result } = renderHook(() => useGeolocation());
+    const { result } = await renderHook(() => useGeolocation());
 
     expect(result.current.loading).toBe(false);
     expect(result.current.coords).toBeUndefined();
     expect(result.current.error?.message).toBe("Geolocation is not supported by this browser.");
   });
 
-  it("forwards enableHighAccuracy/maximumAge/timeout to getCurrentPosition", () => {
+  it("forwards enableHighAccuracy/maximumAge/timeout to getCurrentPosition", async () => {
     const geolocation = createGeolocationMock();
     setNavigatorGeolocation(geolocation);
 
-    renderHook(() => useGeolocation({ enableHighAccuracy: true, maximumAge: 5000, timeout: 3000 }));
+    await renderHook(() =>
+      useGeolocation({ enableHighAccuracy: true, maximumAge: 5000, timeout: 3000 }),
+    );
 
     expect(geolocation.getCurrentPosition.mock.calls[0]?.[2]).toEqual({
       enableHighAccuracy: true,

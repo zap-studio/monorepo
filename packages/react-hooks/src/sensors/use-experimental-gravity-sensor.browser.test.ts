@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalGravitySensor } from "./use-experimental-gravity-sensor.ts";
 
@@ -73,66 +73,66 @@ afterEach(() => {
 });
 
 describe("useExperimentalGravitySensor", () => {
-  it("reports supported: false when the Generic Sensor API is unavailable", () => {
+  it("reports supported: false when the Generic Sensor API is unavailable", async () => {
     vi.stubGlobal("GravitySensor", undefined);
 
-    const { result } = renderHook(() => useExperimentalGravitySensor());
+    const { result } = await renderHook(() => useExperimentalGravitySensor());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.reading).toBeUndefined();
   });
 
-  it("reports supported: true when window.GravitySensor exists", () => {
+  it("reports supported: true when window.GravitySensor exists", async () => {
     stubGravitySensor();
 
-    const { result } = renderHook(() => useExperimentalGravitySensor());
+    const { result } = await renderHook(() => useExperimentalGravitySensor());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("start() returns false without constructing a sensor when unsupported", () => {
+  it("start() returns false without constructing a sensor when unsupported", async () => {
     vi.stubGlobal("GravitySensor", undefined);
 
-    const { result } = renderHook(() => useExperimentalGravitySensor());
+    const { result } = await renderHook(() => useExperimentalGravitySensor());
     let started = false;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
     expect(started).toBe(false);
   });
 
-  it("start() reports the reading and updates on subsequent readings", () => {
+  it("start() reports the reading and updates on subsequent readings", async () => {
     const { sensor, fireReading } = createSensorMock({ x: 0, y: 9.8, z: 0 });
     stubGravitySensor(sensor);
 
-    const { result } = renderHook(() => useExperimentalGravitySensor());
+    const { result } = await renderHook(() => useExperimentalGravitySensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     expect(result.current.reading).toEqual({ x: 0, y: 9.8, z: 0 });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       fireReading({ x: 1, y: 9.7, z: 0.2 });
     });
 
     expect(result.current.reading).toEqual({ x: 1, y: 9.7, z: 0.2 });
   });
 
-  it("reports a permission/policy failure through error", () => {
+  it("reports a permission/policy failure through error", async () => {
     const { sensor, fireError } = createSensorMock({ x: 0, y: 0, z: 0 });
     stubGravitySensor(sensor);
     const domException = new DOMException("Permission denied", "NotAllowedError");
 
-    const { result } = renderHook(() => useExperimentalGravitySensor());
+    const { result } = await renderHook(() => useExperimentalGravitySensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       fireError(domException);
     });
 
@@ -140,18 +140,18 @@ describe("useExperimentalGravitySensor", () => {
     expect(result.current.activated).toBe(false);
   });
 
-  it("stop() stops the sensor and resets activated", () => {
+  it("stop() stops the sensor and resets activated", async () => {
     const { sensor } = createSensorMock({ x: 0, y: 9.8, z: 0 });
     stubGravitySensor(sensor);
 
-    const { result } = renderHook(() => useExperimentalGravitySensor());
+    const { result } = await renderHook(() => useExperimentalGravitySensor());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 

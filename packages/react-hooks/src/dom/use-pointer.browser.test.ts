@@ -1,11 +1,11 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { usePointer } from "./use-pointer.ts";
 
 describe("usePointer", () => {
-  it("starts with the all-empty/false initial state", () => {
-    const { result } = renderHook(() => usePointer());
+  it("starts with the all-empty/false initial state", async () => {
+    const { result } = await renderHook(() => usePointer());
 
     expect(result.current).toEqual({
       clientX: 0,
@@ -16,10 +16,10 @@ describe("usePointer", () => {
     });
   });
 
-  it("updates and sets isDown: true on pointerdown", () => {
-    const { result } = renderHook(() => usePointer());
+  it("updates and sets isDown: true on pointerdown", async () => {
+    const { result } = await renderHook(() => usePointer());
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(
         new PointerEvent("pointerdown", { clientX: 5, clientY: 6, pointerType: "touch" }),
       );
@@ -30,15 +30,15 @@ describe("usePointer", () => {
     expect(result.current.pointerType).toBe("touch");
   });
 
-  it("updates position on pointermove without changing isDown", () => {
-    const { result } = renderHook(() => usePointer());
+  it("updates position on pointermove without changing isDown", async () => {
+    const { result } = await renderHook(() => usePointer());
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(new PointerEvent("pointerdown", { pointerType: "mouse" }));
     });
     expect(result.current.isDown).toBe(true);
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(
         new PointerEvent("pointermove", { clientX: 10, clientY: 20, pointerType: "mouse" }),
       );
@@ -48,24 +48,24 @@ describe("usePointer", () => {
     expect(result.current.clientX).toBe(10);
   });
 
-  it("sets isDown: false on pointerup", () => {
-    const { result } = renderHook(() => usePointer());
+  it("sets isDown: false on pointerup", async () => {
+    const { result } = await renderHook(() => usePointer());
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(new PointerEvent("pointerdown", { pointerType: "mouse" }));
     });
-    act(() => {
+    await act(() => {
       window.dispatchEvent(new PointerEvent("pointerup", { pointerType: "mouse" }));
     });
 
     expect(result.current.isDown).toBe(false);
   });
 
-  it("removes listeners on unmount", () => {
-    const { result, unmount } = renderHook(() => usePointer());
-    unmount();
+  it("removes listeners on unmount", async () => {
+    const { result, unmount } = await renderHook(() => usePointer());
+    await unmount();
 
-    act(() => {
+    await act(() => {
       window.dispatchEvent(new PointerEvent("pointerdown", { pointerType: "mouse" }));
     });
 

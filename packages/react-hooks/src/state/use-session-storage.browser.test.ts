@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useSessionStorage } from "./use-session-storage.ts";
 
 afterEach(() => {
@@ -8,24 +8,24 @@ afterEach(() => {
 });
 
 describe("useSessionStorage", () => {
-  it("returns the initial value when nothing is stored", () => {
-    const { result } = renderHook(() => useSessionStorage("draft", ""));
+  it("returns the initial value when nothing is stored", async () => {
+    const { result } = await renderHook(() => useSessionStorage("draft", ""));
 
     expect(result.current[0]).toBe("");
   });
 
-  it("reads an existing value from sessionStorage on mount", () => {
+  it("reads an existing value from sessionStorage on mount", async () => {
     window.sessionStorage.setItem("draft", JSON.stringify("hello"));
 
-    const { result } = renderHook(() => useSessionStorage("draft", ""));
+    const { result } = await renderHook(() => useSessionStorage("draft", ""));
 
     expect(result.current[0]).toBe("hello");
   });
 
-  it("writes through to sessionStorage and updates state", () => {
-    const { result } = renderHook(() => useSessionStorage("draft", ""));
+  it("writes through to sessionStorage and updates state", async () => {
+    const { result } = await renderHook(() => useSessionStorage("draft", ""));
 
-    act(() => {
+    await act(() => {
       result.current[1]("hello");
     });
 
@@ -33,13 +33,13 @@ describe("useSessionStorage", () => {
     expect(window.sessionStorage.getItem("draft")).toBe('"hello"');
   });
 
-  it("removes the key and resets to the initial value", () => {
-    const { result } = renderHook(() => useSessionStorage("draft", ""));
+  it("removes the key and resets to the initial value", async () => {
+    const { result } = await renderHook(() => useSessionStorage("draft", ""));
 
-    act(() => {
+    await act(() => {
       result.current[1]("hello");
     });
-    act(() => {
+    await act(() => {
       result.current[2]();
     });
 
@@ -47,13 +47,13 @@ describe("useSessionStorage", () => {
     expect(window.sessionStorage.getItem("draft")).toBeNull();
   });
 
-  it("sets an error when writing to sessionStorage throws", () => {
+  it("sets an error when writing to sessionStorage throws", async () => {
     vi.spyOn(window.sessionStorage, "setItem").mockImplementation(() => {
       throw new DOMException("quota exceeded");
     });
-    const { result } = renderHook(() => useSessionStorage("draft", ""));
+    const { result } = await renderHook(() => useSessionStorage("draft", ""));
 
-    act(() => {
+    await act(() => {
       result.current[1]("hello");
     });
 

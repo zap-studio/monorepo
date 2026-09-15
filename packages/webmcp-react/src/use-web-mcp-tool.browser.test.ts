@@ -1,7 +1,7 @@
 import type { ModelContext, RegisteredTool, WebMCPDocument } from "@zap-studio/webmcp";
 
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderHook } from "vitest-browser-react";
 
 import { useWebMCPTool } from "./use-web-mcp-tool.ts";
 
@@ -47,7 +47,7 @@ describe("useWebMCPTool (supported)", () => {
   });
 
   it("registers the tool on mount", async () => {
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useWebMCPTool({
         name: LIKE_TOOL_NAME,
         description: LIKE_TOOL_DESCRIPTION,
@@ -55,14 +55,14 @@ describe("useWebMCPTool (supported)", () => {
       }),
     );
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(testDocument.modelContext?.registerTool).toHaveBeenCalledOnce();
     });
     expect(result.current.error).toBeNull();
   });
 
   it("unregisters the tool on unmount", async () => {
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useWebMCPTool({
         name: "posts_share",
         description: "Share a post by ID",
@@ -70,21 +70,19 @@ describe("useWebMCPTool (supported)", () => {
       }),
     );
 
-    await waitFor(async () => {
+    await vi.waitFor(async () => {
       expect(await testDocument.modelContext?.getTools()).toHaveLength(1);
     });
 
-    act(() => {
-      unmount();
-    });
+    await unmount();
 
-    await waitFor(async () => {
+    await vi.waitFor(async () => {
       expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
     });
   });
 
   it("unregisters immediately if the component unmounts before registration resolves", async () => {
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useWebMCPTool({
         name: "posts_delete",
         description: "Delete a post by ID",
@@ -92,36 +90,39 @@ describe("useWebMCPTool (supported)", () => {
       }),
     );
 
-    unmount();
+    await unmount();
 
-    await waitFor(async () => {
+    await vi.waitFor(async () => {
       expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
     });
   });
 
   it("re-registers when deps change", async () => {
-    const { rerender } = renderHook(
-      ({ id }: { id: string }) =>
+    // `renderHook` types the callback's props as optional so that a no-argument
+    // `rerender()` type-checks, hence the default.
+    const initialProps = { id: "a" };
+    const { rerender } = await renderHook(
+      ({ id }: { id: string } = initialProps) =>
         useWebMCPTool(
           { name: "posts_pin", description: "Pin a post by ID", execute: async () => ({ id }) },
           [id],
         ),
-      { initialProps: { id: "a" } },
+      { initialProps },
     );
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(1);
     });
 
-    rerender({ id: "b" });
+    await rerender({ id: "b" });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(2);
     });
   });
 
   it("does not re-register when deps stay the same across renders", async () => {
-    const { rerender } = renderHook(() =>
+    const { rerender } = await renderHook(() =>
       useWebMCPTool(
         {
           name: "posts_flag",
@@ -132,11 +133,11 @@ describe("useWebMCPTool (supported)", () => {
       ),
     );
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(1);
     });
 
-    rerender();
+    await rerender();
 
     expect(testDocument.modelContext?.registerTool).toHaveBeenCalledTimes(1);
   });
@@ -147,7 +148,7 @@ describe("useWebMCPTool (supported)", () => {
       registerTool: vi.fn<ModelContext["registerTool"]>(() => Promise.reject("boom")),
     };
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useWebMCPTool({
         name: LIKE_TOOL_NAME,
         description: LIKE_TOOL_DESCRIPTION,
@@ -155,10 +156,76 @@ describe("useWebMCPTool (supported)", () => {
       }),
     );
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.error).not.toBeNull();
     });
     expect(result.current.error?.message).toBe("boom");
+  });
+
+  it("unregisters a tool whose registration resolves after unmount", async () => {
+    // Rendering flushes microtasks, so the registration has to stay pending
+    // until after unmount for the post-unmount cleanup path to run at all.
+    const context = createFakeModelContext();
+    let resolveRegisterTool: () => void = () => undefined;
+    let registered = false;
+    testDocument.modelContext = {
+      ...context,
+      registerTool: vi.fn<ModelContext["registerTool"]>(async (tool, options) => {
+        await new Promise<void>((resolve) => {
+          resolveRegisterTool = resolve;
+        });
+        await context.registerTool(tool, options);
+        registered = true;
+        return undefined;
+      }),
+    };
+
+    const { unmount } = await renderHook(() =>
+      useWebMCPTool({
+        name: "posts_archive",
+        description: "Archive a post by ID",
+        execute: async () => ({ archived: true }),
+      }),
+    );
+
+    await unmount();
+    resolveRegisterTool();
+
+    await vi.waitFor(() => {
+      expect(registered).toBe(true);
+    });
+
+    expect(await testDocument.modelContext?.getTools()).toHaveLength(0);
+  });
+
+  it("does not surface an error if the component unmounts before rejection resolves", async () => {
+    // Rendering flushes microtasks, so the registration has to stay pending until
+    // after unmount for this to exercise the unmount guard at all.
+    let rejectRegisterTool: (reason: Error) => void = (_reason: Error) => undefined;
+    testDocument.modelContext = {
+      ...createFakeModelContext(),
+      registerTool: vi.fn<ModelContext["registerTool"]>(
+        async () =>
+          new Promise<undefined>((_resolve, reject) => {
+            rejectRegisterTool = reject;
+          }),
+      ),
+    };
+
+    const { result, unmount } = await renderHook(() =>
+      useWebMCPTool({
+        name: LIKE_TOOL_NAME,
+        description: LIKE_TOOL_DESCRIPTION,
+        execute: async () => ({ liked: true }),
+      }),
+    );
+
+    await unmount();
+    rejectRegisterTool(new Error("boom"));
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(result.current.error).toBeNull();
   });
 });
 
@@ -168,7 +235,7 @@ describe("useWebMCPTool (unsupported)", () => {
   });
 
   it("surfaces an error instead of throwing when WebMCP is unsupported", async () => {
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useWebMCPTool({
         name: LIKE_TOOL_NAME,
         description: LIKE_TOOL_DESCRIPTION,
@@ -176,24 +243,8 @@ describe("useWebMCPTool (unsupported)", () => {
       }),
     );
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.error).not.toBeNull();
     });
-  });
-
-  it("does not surface an error if the component unmounts before rejection resolves", async () => {
-    const { result, unmount } = renderHook(() =>
-      useWebMCPTool({
-        name: LIKE_TOOL_NAME,
-        description: LIKE_TOOL_DESCRIPTION,
-        execute: async () => ({ liked: true }),
-      }),
-    );
-
-    unmount();
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(result.current.error).toBeNull();
   });
 });

@@ -1,11 +1,11 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useDeviceOrientation } from "./use-device-orientation.ts";
 
 describe("useDeviceOrientation", () => {
-  it("starts with all-null orientation and supported reflecting DeviceOrientationEvent", () => {
-    const { result } = renderHook(() => useDeviceOrientation());
+  it("starts with all-null orientation and supported reflecting DeviceOrientationEvent", async () => {
+    const { result } = await renderHook(() => useDeviceOrientation());
 
     expect(result.current.alpha).toBeNull();
     expect(result.current.beta).toBeNull();
@@ -15,7 +15,7 @@ describe("useDeviceOrientation", () => {
   });
 
   it("updates when a deviceorientation event fires", async () => {
-    const { result } = renderHook(() => useDeviceOrientation());
+    const { result } = await renderHook(() => useDeviceOrientation());
 
     await act(async () => {
       window.dispatchEvent(
@@ -39,7 +39,7 @@ describe("useDeviceOrientation", () => {
   });
 
   it("updates on a deviceorientationabsolute event too", async () => {
-    const { result } = renderHook(() => useDeviceOrientation());
+    const { result } = await renderHook(() => useDeviceOrientation());
 
     await act(async () => {
       window.dispatchEvent(
@@ -59,7 +59,7 @@ describe("useDeviceOrientation", () => {
     const gate = Reflect.getOwnPropertyDescriptor(DeviceOrientationEvent, "requestPermission");
     Reflect.deleteProperty(DeviceOrientationEvent, "requestPermission");
 
-    const { result } = renderHook(() => useDeviceOrientation());
+    const { result } = await renderHook(() => useDeviceOrientation());
 
     await expect(result.current.requestPermission()).resolves.toBe(true);
 
@@ -75,7 +75,7 @@ describe("useDeviceOrientation", () => {
       value: requestPermission,
     });
 
-    const { result } = renderHook(() => useDeviceOrientation());
+    const { result } = await renderHook(() => useDeviceOrientation());
 
     await expect(result.current.requestPermission()).resolves.toBe(false);
     expect(requestPermission).toHaveBeenCalledTimes(1);
@@ -83,11 +83,11 @@ describe("useDeviceOrientation", () => {
     Reflect.deleteProperty(DeviceOrientationEvent, "requestPermission");
   });
 
-  it("reports supported: false when DeviceOrientationEvent is unavailable", () => {
+  it("reports supported: false when DeviceOrientationEvent is unavailable", async () => {
     const original = window.DeviceOrientationEvent;
     Reflect.deleteProperty(window, "DeviceOrientationEvent");
 
-    const { result } = renderHook(() => useDeviceOrientation());
+    const { result } = await renderHook(() => useDeviceOrientation());
 
     expect(result.current.supported).toBe(false);
 

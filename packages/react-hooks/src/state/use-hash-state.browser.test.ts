@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useHashState } from "./use-hash-state.ts";
 
 const NEW_HASH = "#from-setter";
@@ -10,16 +10,16 @@ afterEach(() => {
 });
 
 describe("useHashState", () => {
-  it("reads the current location.hash", () => {
+  it("reads the current location.hash", async () => {
     location.hash = "#initial";
 
-    const { result } = renderHook(() => useHashState());
+    const { result } = await renderHook(() => useHashState());
 
     expect(result.current[0]).toBe("#initial");
   });
 
   it("updates on hashchange", async () => {
-    const { result } = renderHook(() => useHashState());
+    const { result } = await renderHook(() => useHashState());
 
     await act(async () => {
       location.hash = "#next";
@@ -29,7 +29,7 @@ describe("useHashState", () => {
   });
 
   it("setHash() writes location.hash, which flows back through hashchange", async () => {
-    const { result } = renderHook(() => useHashState());
+    const { result } = await renderHook(() => useHashState());
 
     await act(async () => {
       result.current[1](NEW_HASH);
@@ -41,7 +41,7 @@ describe("useHashState", () => {
 
   it("setHash() accepts an updater function reading the latest hash", async () => {
     location.hash = "#a";
-    const { result } = renderHook(() => useHashState());
+    const { result } = await renderHook(() => useHashState());
 
     await act(async () => {
       result.current[1]((prev) => `${prev}-b`);
@@ -51,9 +51,9 @@ describe("useHashState", () => {
   });
 
   it("removes the hashchange listener on unmount", async () => {
-    const { result, unmount } = renderHook(() => useHashState());
+    const { result, unmount } = await renderHook(() => useHashState());
     const before = result.current[0];
-    unmount();
+    await unmount();
 
     await act(async () => {
       location.hash = "#after-unmount";

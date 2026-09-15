@@ -1,16 +1,16 @@
-import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useClickOutside } from "./use-click-outside.ts";
 
 describe("useClickOutside", () => {
-  it("calls onOutside when a mousedown lands outside the ref'd element", () => {
+  it("calls onOutside when a mousedown lands outside the ref'd element", async () => {
     const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     const outside = document.createElement("span");
     document.body.append(inside, outside);
 
-    const { result } = renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
+    const { result } = await renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
     result.current.current = inside;
 
     outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
@@ -20,14 +20,14 @@ describe("useClickOutside", () => {
     outside.remove();
   });
 
-  it("does not call onOutside when the mousedown lands inside the ref'd element", () => {
+  it("does not call onOutside when the mousedown lands inside the ref'd element", async () => {
     const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     const child = document.createElement("span");
     inside.append(child);
     document.body.append(inside);
 
-    const { result } = renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
+    const { result } = await renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
     result.current.current = inside;
 
     child.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
@@ -36,13 +36,13 @@ describe("useClickOutside", () => {
     inside.remove();
   });
 
-  it("reacts to touchstart the same way", () => {
+  it("reacts to touchstart the same way", async () => {
     const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     const outside = document.createElement("span");
     document.body.append(inside, outside);
 
-    const { result } = renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
+    const { result } = await renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
     result.current.current = inside;
 
     outside.dispatchEvent(new TouchEvent("touchstart", { bubbles: true }));
@@ -52,21 +52,21 @@ describe("useClickOutside", () => {
     outside.remove();
   });
 
-  it("ignores events when the ref is not attached to any element", () => {
+  it("ignores events when the ref is not attached to any element", async () => {
     const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
-    renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
+    await renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
 
     document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
 
     expect(onOutside).not.toHaveBeenCalled();
   });
 
-  it("ignores events whose target is not a Node", () => {
+  it("ignores events whose target is not a Node", async () => {
     const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const inside = document.createElement("div");
     document.body.append(inside);
 
-    const { result } = renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
+    const { result } = await renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
     result.current.current = inside;
 
     const event = new MouseEvent("mousedown", { bubbles: true });
@@ -77,20 +77,20 @@ describe("useClickOutside", () => {
     inside.remove();
   });
 
-  it("calls the latest onOutside without re-subscribing", () => {
+  it("calls the latest onOutside without re-subscribing", async () => {
     const first = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const second = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const outside = document.createElement("span");
     document.body.append(outside);
 
-    const { rerender, result } = renderHook(
+    const { rerender, result } = await renderHook(
       ({ onOutside }: { onOutside: (event: MouseEvent | TouchEvent) => void }) =>
         useClickOutside<HTMLDivElement>(onOutside),
       { initialProps: { onOutside: first } },
     );
     result.current.current = document.createElement("div");
 
-    rerender({ onOutside: second });
+    await rerender({ onOutside: second });
     outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
 
     expect(first).not.toHaveBeenCalled();
@@ -98,14 +98,14 @@ describe("useClickOutside", () => {
     outside.remove();
   });
 
-  it("removes the listeners on unmount", () => {
+  it("removes the listeners on unmount", async () => {
     const onOutside = vi.fn<(event: MouseEvent | TouchEvent) => void>();
     const outside = document.createElement("span");
     document.body.append(outside);
 
-    const { result, unmount } = renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
+    const { result, unmount } = await renderHook(() => useClickOutside<HTMLDivElement>(onOutside));
     result.current.current = document.createElement("div");
-    unmount();
+    await unmount();
 
     outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
 

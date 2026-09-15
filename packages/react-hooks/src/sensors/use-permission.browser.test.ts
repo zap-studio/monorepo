@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { usePermission } from "./use-permission.ts";
 
@@ -34,10 +34,10 @@ const setNavigatorPermissions = (
 };
 
 describe("usePermission", () => {
-  it("starts undefined before the query resolves", () => {
+  it("starts undefined before the query resolves", async () => {
     setNavigatorPermissions(() => new Promise(() => {}));
 
-    const { result } = renderHook(() => usePermission("geolocation"));
+    const { result } = await renderHook(() => usePermission("geolocation"));
 
     expect(result.current).toBeUndefined();
   });
@@ -46,17 +46,17 @@ describe("usePermission", () => {
     const { status } = createPermissionStatusMock("prompt");
     setNavigatorPermissions(() => Promise.resolve(status));
 
-    const { result } = renderHook(() => usePermission("geolocation"));
+    const { result } = await renderHook(() => usePermission("geolocation"));
 
-    await waitFor(() => expect(result.current).toBe("prompt"));
+    await vi.waitFor(() => expect(result.current).toBe("prompt"));
   });
 
   it("updates when the permission state changes", async () => {
     const { setState, status } = createPermissionStatusMock("prompt");
     setNavigatorPermissions(() => Promise.resolve(status));
 
-    const { result } = renderHook(() => usePermission("geolocation"));
-    await waitFor(() => expect(result.current).toBe("prompt"));
+    const { result } = await renderHook(() => usePermission("geolocation"));
+    await vi.waitFor(() => expect(result.current).toBe("prompt"));
 
     await act(async () => {
       setState("granted");
@@ -73,20 +73,20 @@ describe("usePermission", () => {
     setNavigatorPermissions(query);
 
     const initialProps: PermissionNameProps = { name: "geolocation" };
-    const { rerender } = renderHook(({ name }) => usePermission(name), { initialProps });
+    const { rerender } = await renderHook(({ name }) => usePermission(name), { initialProps });
 
-    await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(query).toHaveBeenCalledTimes(1));
 
-    rerender({ name: "camera" });
+    await rerender({ name: "camera" });
 
-    await waitFor(() => expect(query).toHaveBeenCalledTimes(2));
+    await vi.waitFor(() => expect(query).toHaveBeenCalledTimes(2));
     expect(query.mock.calls[1]?.[0]).toEqual({ name: "camera" });
   });
 
-  it("stays undefined when the Permissions API is unsupported", () => {
+  it("stays undefined when the Permissions API is unsupported", async () => {
     setNavigatorPermissions(undefined);
 
-    const { result } = renderHook(() => usePermission("geolocation"));
+    const { result } = await renderHook(() => usePermission("geolocation"));
 
     expect(result.current).toBeUndefined();
   });
@@ -98,8 +98,8 @@ describe("usePermission", () => {
     });
     setNavigatorPermissions(() => queryPromise);
 
-    const { unmount } = renderHook(() => usePermission("geolocation"));
-    unmount();
+    const { unmount } = await renderHook(() => usePermission("geolocation"));
+    await unmount();
 
     const { status } = createPermissionStatusMock("granted");
     const addEventListener = vi.spyOn(status, "addEventListener");

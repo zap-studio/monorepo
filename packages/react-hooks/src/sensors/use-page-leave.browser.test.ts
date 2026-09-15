@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { usePageLeave } from "./use-page-leave.ts";
 
 const dispatchMouseOut = (relatedTarget: EventTarget | null) => {
@@ -11,7 +11,7 @@ const dispatchMouseOut = (relatedTarget: EventTarget | null) => {
 describe("usePageLeave", () => {
   it("calls the handler when the pointer leaves the viewport", async () => {
     const onPageLeave = vi.fn<() => void>();
-    renderHook(() => usePageLeave(onPageLeave));
+    await renderHook(() => usePageLeave(onPageLeave));
 
     await act(async () => {
       dispatchMouseOut(null);
@@ -22,7 +22,7 @@ describe("usePageLeave", () => {
 
   it("does not call the handler when moving between elements inside the page", async () => {
     const onPageLeave = vi.fn<() => void>();
-    renderHook(() => usePageLeave(onPageLeave));
+    await renderHook(() => usePageLeave(onPageLeave));
 
     await act(async () => {
       dispatchMouseOut(document.body);
@@ -34,11 +34,11 @@ describe("usePageLeave", () => {
   it("always calls the latest handler without re-subscribing", async () => {
     const firstHandler = vi.fn<() => void>();
     const secondHandler = vi.fn<() => void>();
-    const { rerender } = renderHook(({ handler }) => usePageLeave(handler), {
+    const { rerender } = await renderHook(({ handler }) => usePageLeave(handler), {
       initialProps: { handler: firstHandler },
     });
 
-    rerender({ handler: secondHandler });
+    await rerender({ handler: secondHandler });
 
     await act(async () => {
       dispatchMouseOut(null);

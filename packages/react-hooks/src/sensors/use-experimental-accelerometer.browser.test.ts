@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalAccelerometer } from "./use-experimental-accelerometer.ts";
 
@@ -73,36 +73,36 @@ afterEach(() => {
 });
 
 describe("useExperimentalAccelerometer", () => {
-  it("reports supported: false when the Generic Sensor API is unavailable", () => {
+  it("reports supported: false when the Generic Sensor API is unavailable", async () => {
     vi.stubGlobal("Accelerometer", undefined);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.reading).toBeUndefined();
   });
 
-  it("reports supported: true when window.Accelerometer exists", () => {
+  it("reports supported: true when window.Accelerometer exists", async () => {
     stubAccelerometer();
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("start() returns false without constructing a sensor when unsupported", () => {
+  it("start() returns false without constructing a sensor when unsupported", async () => {
     vi.stubGlobal("Accelerometer", undefined);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
     let started = false;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
     expect(started).toBe(false);
   });
 
-  it("start() catches a construction failure and reports it through error", () => {
+  it("start() catches a construction failure and reports it through error", async () => {
     const domException = new DOMException(
       "Permissions Policy blocks Accelerometer",
       "SecurityError",
@@ -112,9 +112,9 @@ describe("useExperimentalAccelerometer", () => {
     });
     vi.stubGlobal("Accelerometer", AccelerometerCtor);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
     let started = true;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
@@ -122,15 +122,15 @@ describe("useExperimentalAccelerometer", () => {
     expect(result.current.error).toBe(domException);
   });
 
-  it("start() catches a non-DOMException construction failure without reporting error", () => {
+  it("start() catches a non-DOMException construction failure without reporting error", async () => {
     const AccelerometerCtor = vi.fn<() => never>().mockImplementation(function Accelerometer() {
       throw new TypeError("boom");
     });
     vi.stubGlobal("Accelerometer", AccelerometerCtor);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
     let started = true;
-    act(() => {
+    await act(() => {
       started = result.current.start();
     });
 
@@ -138,49 +138,49 @@ describe("useExperimentalAccelerometer", () => {
     expect(result.current.error).toBeUndefined();
   });
 
-  it("start() constructs the sensor with the given frequency", () => {
+  it("start() constructs the sensor with the given frequency", async () => {
     const { sensor } = createSensorMock({ x: 1, y: 2, z: 3 });
     const AccelerometerCtor = stubAccelerometer(sensor);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer({ frequency: 60 }));
-    act(() => {
+    const { result } = await renderHook(() => useExperimentalAccelerometer({ frequency: 60 }));
+    await act(() => {
       result.current.start();
     });
 
     expect(AccelerometerCtor).toHaveBeenCalledWith({ frequency: 60 });
   });
 
-  it("start() reports the reading and updates on subsequent readings", () => {
+  it("start() reports the reading and updates on subsequent readings", async () => {
     const { sensor, fireReading } = createSensorMock({ x: 1, y: 2, z: 3 });
     stubAccelerometer(sensor);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
 
     expect(result.current.reading).toEqual({ x: 1, y: 2, z: 3 });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       fireReading({ x: 4, y: 5, z: 6 });
     });
 
     expect(result.current.reading).toEqual({ x: 4, y: 5, z: 6 });
   });
 
-  it("reports a permission/policy failure through error", () => {
+  it("reports a permission/policy failure through error", async () => {
     const { sensor, fireError } = createSensorMock({ x: 0, y: 0, z: 0 });
     stubAccelerometer(sensor);
     const domException = new DOMException("Permission denied", "NotAllowedError");
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
-    act(() => {
+    await act(() => {
       fireError(domException);
     });
 
@@ -188,18 +188,18 @@ describe("useExperimentalAccelerometer", () => {
     expect(result.current.activated).toBe(false);
   });
 
-  it("stop() stops the sensor and resets activated", () => {
+  it("stop() stops the sensor and resets activated", async () => {
     const { sensor } = createSensorMock({ x: 1, y: 2, z: 3 });
     stubAccelerometer(sensor);
 
-    const { result } = renderHook(() => useExperimentalAccelerometer());
+    const { result } = await renderHook(() => useExperimentalAccelerometer());
 
-    act(() => {
+    await act(() => {
       result.current.start();
     });
     expect(result.current.activated).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 

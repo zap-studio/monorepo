@@ -1,7 +1,8 @@
-import { render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it } from "vitest";
+import { render } from "vitest-browser-react";
 
+import { renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useUnstableFiber, type UseUnstableFiberResult } from "./use-unstable-fiber.ts";
 
@@ -12,58 +13,59 @@ import { useUnstableFiber, type UseUnstableFiberResult } from "./use-unstable-fi
  * only attaches during that render's own commit. Renders once, then
  * "settles" with a same-props re-render so the ref has a commit to read.
  */
-const renderFiberDiv = (props: { label: string }) => {
+const renderFiberDiv = async (props: { label: string }) => {
   let latest!: UseUnstableFiberResult<HTMLDivElement>;
   const TestComponent = ({ label }: { label: string }) => {
     latest = useUnstableFiber<HTMLDivElement>();
     return createElement("div", { ref: latest.ref }, label);
   };
-  const { rerender, unmount } = render(createElement(TestComponent, props));
-  rerender(createElement(TestComponent, props));
+  const { rerender, unmount } = await render(createElement(TestComponent, props));
+  await rerender(createElement(TestComponent, props));
   return {
     get current() {
       return latest;
     },
-    rerender: (nextProps: { label: string }) => rerender(createElement(TestComponent, nextProps)),
+    rerender: async (nextProps: { label: string }) =>
+      await rerender(createElement(TestComponent, nextProps)),
     unmount,
   };
 };
 
 describe("useUnstableFiber", () => {
-  it("starts with fiber: null before mount", () => {
-    const { result } = renderHook(() => useUnstableFiber());
+  it("starts with fiber: null before mount", async () => {
+    const { result } = await renderHook(() => useUnstableFiber());
 
     expect(result.current.fiber).toBeNull();
   });
 
-  it("finds the owning function-component fiber for a ref'd DOM element", () => {
-    const view = renderFiberDiv({ label: "hello" });
+  it("finds the owning function-component fiber for a ref'd DOM element", async () => {
+    const view = await renderFiberDiv({ label: "hello" });
 
     expect(view.current.fiber).not.toBeNull();
     expect(typeof view.current.fiber?.type).toBe("function");
     expect(view.current.fiber?.memoizedProps).toEqual({ label: "hello" });
   });
 
-  it("reflects updated memoizedProps after a re-render", () => {
-    const view = renderFiberDiv({ label: "a" });
+  it("reflects updated memoizedProps after a re-render", async () => {
+    const view = await renderFiberDiv({ label: "a" });
     expect(view.current.fiber?.memoizedProps).toEqual({ label: "a" });
 
-    view.rerender({ label: "b" });
-    view.rerender({ label: "b" });
+    await view.rerender({ label: "b" });
+    await view.rerender({ label: "b" });
 
     expect(view.current.fiber?.memoizedProps).toEqual({ label: "b" });
   });
 
-  it("returns null for a DOM node react-dom never mounted", () => {
-    const { rerender, result } = renderHook(() => useUnstableFiber<HTMLDivElement>());
+  it("returns null for a DOM node react-dom never mounted", async () => {
+    const { rerender, result } = await renderHook(() => useUnstableFiber<HTMLDivElement>());
     result.current.ref.current = document.createElement("div");
 
-    rerender();
+    await rerender();
 
     expect(result.current.fiber).toBeNull();
   });
 
-  it("fails closed to null when reading the internal shape throws", () => {
+  it("fails closed to null when reading the internal shape throws", async () => {
     const throwing = asTestDouble<HTMLDivElement>(
       new Proxy(
         {},
@@ -75,14 +77,14 @@ describe("useUnstableFiber", () => {
       ),
     );
 
-    const { rerender, result } = renderHook(() => useUnstableFiber<HTMLDivElement>());
+    const { rerender, result } = await renderHook(() => useUnstableFiber<HTMLDivElement>());
     result.current.ref.current = throwing;
 
-    expect(() => rerender()).not.toThrow();
+    expect(async () => await rerender()).not.toThrow();
     expect(result.current.fiber).toBeNull();
   });
 
-  it("returns the host fiber itself when no function-component ancestor exists", () => {
+  it("returns the host fiber itself when no function-component ancestor exists", async () => {
     const fakeFiber = {
       alternate: null,
       dependencies: null,
@@ -94,22 +96,22 @@ describe("useUnstableFiber", () => {
     const element = asTestDouble<Record<string, unknown>>(document.createElement("div"));
     element["__reactFiber$fake"] = fakeFiber;
 
-    const { rerender, result } = renderHook(() => useUnstableFiber<HTMLDivElement>());
+    const { rerender, result } = await renderHook(() => useUnstableFiber<HTMLDivElement>());
     result.current.ref.current = asTestDouble<HTMLDivElement>(element);
-    rerender();
+    await rerender();
 
     expect(result.current.fiber).toBe(fakeFiber);
   });
 });
 
 describe("useUnstableFiber ref tracking", () => {
-  it("resolves the fiber without an extra manual re-render", () => {
+  it("resolves the fiber without an extra manual re-render", async () => {
     let latest!: UseUnstableFiberResult<HTMLDivElement>;
     const TestComponent = () => {
       latest = useUnstableFiber<HTMLDivElement>();
       return createElement("div", { ref: latest.ref });
     };
-    render(createElement(TestComponent));
+    await render(createElement(TestComponent));
 
     expect(latest.fiber).not.toBeNull();
   });

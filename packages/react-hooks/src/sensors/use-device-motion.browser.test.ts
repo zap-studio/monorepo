@@ -1,11 +1,11 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useDeviceMotion } from "./use-device-motion.ts";
 
 describe("useDeviceMotion", () => {
-  it("starts with all-null motion and supported reflecting DeviceMotionEvent", () => {
-    const { result } = renderHook(() => useDeviceMotion());
+  it("starts with all-null motion and supported reflecting DeviceMotionEvent", async () => {
+    const { result } = await renderHook(() => useDeviceMotion());
 
     expect(result.current.acceleration).toBeNull();
     expect(result.current.accelerationIncludingGravity).toBeNull();
@@ -15,7 +15,7 @@ describe("useDeviceMotion", () => {
   });
 
   it("updates when a devicemotion event fires", async () => {
-    const { result } = renderHook(() => useDeviceMotion());
+    const { result } = await renderHook(() => useDeviceMotion());
 
     await act(async () => {
       window.dispatchEvent(
@@ -36,7 +36,7 @@ describe("useDeviceMotion", () => {
     const gate = Reflect.getOwnPropertyDescriptor(DeviceMotionEvent, "requestPermission");
     Reflect.deleteProperty(DeviceMotionEvent, "requestPermission");
 
-    const { result } = renderHook(() => useDeviceMotion());
+    const { result } = await renderHook(() => useDeviceMotion());
 
     await expect(result.current.requestPermission()).resolves.toBe(true);
 
@@ -52,7 +52,7 @@ describe("useDeviceMotion", () => {
       value: requestPermission,
     });
 
-    const { result } = renderHook(() => useDeviceMotion());
+    const { result } = await renderHook(() => useDeviceMotion());
 
     await expect(result.current.requestPermission()).resolves.toBe(true);
     expect(requestPermission).toHaveBeenCalledTimes(1);
@@ -60,11 +60,11 @@ describe("useDeviceMotion", () => {
     Reflect.deleteProperty(DeviceMotionEvent, "requestPermission");
   });
 
-  it("reports supported: false when DeviceMotionEvent is unavailable", () => {
+  it("reports supported: false when DeviceMotionEvent is unavailable", async () => {
     const original = window.DeviceMotionEvent;
     Reflect.deleteProperty(window, "DeviceMotionEvent");
 
-    const { result } = renderHook(() => useDeviceMotion());
+    const { result } = await renderHook(() => useDeviceMotion());
 
     expect(result.current.supported).toBe(false);
 

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWakeLock } from "./use-wake-lock.ts";
 
@@ -39,20 +39,20 @@ const setDocumentHidden = (hidden: boolean) => {
 };
 
 describe("useWakeLock", () => {
-  it("reports supported: true when navigator.wakeLock exists", () => {
+  it("reports supported: true when navigator.wakeLock exists", async () => {
     const { sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.active).toBe(false);
   });
 
-  it("reports supported: false when navigator.wakeLock is unavailable", () => {
+  it("reports supported: false when navigator.wakeLock is unavailable", async () => {
     setNavigatorWakeLock(undefined);
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
 
     expect(result.current.supported).toBe(false);
   });
@@ -61,7 +61,7 @@ describe("useWakeLock", () => {
     const { sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
 
     await act(async () => {
       await result.current.request();
@@ -74,7 +74,7 @@ describe("useWakeLock", () => {
     const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
     await act(async () => {
       await result.current.request();
     });
@@ -91,7 +91,7 @@ describe("useWakeLock", () => {
     const { sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
     await act(async () => {
       await result.current.request();
     });
@@ -108,7 +108,7 @@ describe("useWakeLock", () => {
     const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
     await act(async () => {
       await result.current.request();
     });
@@ -127,7 +127,7 @@ describe("useWakeLock", () => {
     const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
     await act(async () => {
       await result.current.request();
     });
@@ -144,12 +144,12 @@ describe("useWakeLock", () => {
     const { release, sentinel } = createSentinelMock();
     setNavigatorWakeLock(() => Promise.resolve(sentinel));
 
-    const { result, unmount } = renderHook(() => useWakeLock());
+    const { result, unmount } = await renderHook(() => useWakeLock());
     await act(async () => {
       await result.current.request();
     });
 
-    unmount();
+    await unmount();
 
     expect(release).toHaveBeenCalledTimes(1);
   });
@@ -157,7 +157,7 @@ describe("useWakeLock", () => {
   it("no-ops request()/release() when unsupported", async () => {
     setNavigatorWakeLock(undefined);
 
-    const { result } = renderHook(() => useWakeLock());
+    const { result } = await renderHook(() => useWakeLock());
 
     await act(async () => {
       await result.current.request();

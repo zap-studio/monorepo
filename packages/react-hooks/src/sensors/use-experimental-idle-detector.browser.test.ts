@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalIdleDetector } from "./use-experimental-idle-detector.ts";
 
@@ -45,20 +45,20 @@ afterEach(() => {
 });
 
 describe("useExperimentalIdleDetector", () => {
-  it("reports supported: false when the Idle Detection API is unavailable", () => {
+  it("reports supported: false when the Idle Detection API is unavailable", async () => {
     vi.stubGlobal("IdleDetector", undefined);
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     expect(result.current.supported).toBe(false);
     expect(result.current.userState).toBeUndefined();
     expect(result.current.screenState).toBeUndefined();
   });
 
-  it("reports supported: true when window.IdleDetector exists", () => {
+  it("reports supported: true when window.IdleDetector exists", async () => {
     stubIdleDetector({ requestPermission: () => Promise.resolve("granted") });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     expect(result.current.supported).toBe(true);
   });
@@ -66,7 +66,7 @@ describe("useExperimentalIdleDetector", () => {
   it("requestPermission() resolves false without asking when unsupported", async () => {
     vi.stubGlobal("IdleDetector", undefined);
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     await expect(result.current.requestPermission()).resolves.toBe(false);
   });
@@ -74,7 +74,7 @@ describe("useExperimentalIdleDetector", () => {
   it("start() resolves false without constructing a detector when unsupported", async () => {
     vi.stubGlobal("IdleDetector", undefined);
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
     const started = await result.current.start();
 
     expect(started).toBe(false);
@@ -87,7 +87,7 @@ describe("useExperimentalIdleDetector", () => {
       .mockRejectedValue(new Error("permission denied"));
     stubIdleDetector({ detector, requestPermission: () => Promise.resolve("granted") });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
     const started = await result.current.start();
 
     expect(started).toBe(false);
@@ -98,7 +98,7 @@ describe("useExperimentalIdleDetector", () => {
   it("requestPermission() resolves true only when permission is granted", async () => {
     stubIdleDetector({ requestPermission: () => Promise.resolve("granted") });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     await expect(result.current.requestPermission()).resolves.toBe(true);
   });
@@ -106,7 +106,7 @@ describe("useExperimentalIdleDetector", () => {
   it("requestPermission() resolves false when permission is denied", async () => {
     stubIdleDetector({ requestPermission: () => Promise.resolve("denied") });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     await expect(result.current.requestPermission()).resolves.toBe(false);
   });
@@ -116,7 +116,7 @@ describe("useExperimentalIdleDetector", () => {
       requestPermission: () => Promise.resolve("denied"),
     });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
     const started = await result.current.start();
 
     expect(started).toBe(false);
@@ -130,13 +130,13 @@ describe("useExperimentalIdleDetector", () => {
     });
     stubIdleDetector({ detector, requestPermission: () => Promise.resolve("granted") });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     await act(async () => {
       await result.current.start({ threshold: 60_000 });
     });
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.userState).toBe("active");
       expect(result.current.screenState).toBe("unlocked");
     });
@@ -153,14 +153,14 @@ describe("useExperimentalIdleDetector", () => {
     const { detector } = createIdleDetectorMock({ screenState: "unlocked", userState: "active" });
     stubIdleDetector({ detector, requestPermission: () => Promise.resolve("granted") });
 
-    const { result } = renderHook(() => useExperimentalIdleDetector());
+    const { result } = await renderHook(() => useExperimentalIdleDetector());
 
     await act(async () => {
       await result.current.start();
     });
-    await waitFor(() => expect(result.current.userState).toBe("active"));
+    await vi.waitFor(() => expect(result.current.userState).toBe("active"));
 
-    act(() => {
+    await act(() => {
       result.current.stop();
     });
 

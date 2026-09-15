@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useFullscreen } from "./use-fullscreen.ts";
 
@@ -24,19 +24,19 @@ afterEach(() => {
 });
 
 describe("useFullscreen", () => {
-  it("reports supported: true when the Fullscreen API exists", () => {
+  it("reports supported: true when the Fullscreen API exists", async () => {
     setFullscreenSupport(true);
 
-    const { result } = renderHook(() => useFullscreen());
+    const { result } = await renderHook(() => useFullscreen());
 
     expect(result.current.supported).toBe(true);
     expect(result.current.isFullscreen).toBe(false);
   });
 
-  it("reports supported: false when the Fullscreen API is unavailable", () => {
+  it("reports supported: false when the Fullscreen API is unavailable", async () => {
     setFullscreenSupport(false);
 
-    const { result } = renderHook(() => useFullscreen());
+    const { result } = await renderHook(() => useFullscreen());
 
     expect(result.current.supported).toBe(false);
   });
@@ -46,7 +46,7 @@ describe("useFullscreen", () => {
     const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = asTestDouble<HTMLDivElement>({ requestFullscreen });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -59,7 +59,7 @@ describe("useFullscreen", () => {
   it("enter() no-ops when no element is attached to the ref", async () => {
     setFullscreenSupport(true);
 
-    const { result } = renderHook(() => useFullscreen());
+    const { result } = await renderHook(() => useFullscreen());
 
     await expect(result.current.enter()).resolves.toBeUndefined();
   });
@@ -70,7 +70,7 @@ describe("useFullscreen", () => {
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -90,7 +90,7 @@ describe("useFullscreen", () => {
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -116,7 +116,7 @@ describe("useFullscreen", () => {
       value: exitFullscreen,
     });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
     setFullscreenElement(element);
 
@@ -137,7 +137,7 @@ describe("useFullscreen", () => {
       value: exitFullscreen,
     });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
     setFullscreenElement(other);
 
@@ -152,7 +152,7 @@ describe("useFullscreen", () => {
     setFullscreenSupport(false);
     const element = document.createElement("div");
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -168,7 +168,7 @@ describe("useFullscreen", () => {
     const requestFullscreen = vi.fn<() => Promise<void>>(() => Promise.resolve());
     const element = asTestDouble<HTMLDivElement>({ requestFullscreen });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
 
     await act(async () => {
@@ -187,7 +187,7 @@ describe("useFullscreen", () => {
       value: exitFullscreen,
     });
 
-    const { result } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
     setFullscreenElement(element);
 
@@ -204,9 +204,9 @@ describe("useFullscreen", () => {
       requestFullscreen: vi.fn<() => Promise<void>>(),
     });
 
-    const { result, unmount } = renderHook(() => useFullscreen<HTMLDivElement>());
+    const { result, unmount } = await renderHook(() => useFullscreen<HTMLDivElement>());
     result.current.ref.current = element;
-    unmount();
+    await unmount();
 
     await act(async () => {
       setFullscreenElement(element);

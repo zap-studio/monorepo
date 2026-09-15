@@ -1,7 +1,8 @@
-import { render, renderHook, waitFor } from "@testing-library/react";
 import { createElement } from "react";
 import { describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useMutationObserver } from "./use-mutation-observer.ts";
 
 /** Holds the ref'd element so reading it later is not narrowed away by control-flow analysis. */
@@ -13,7 +14,7 @@ interface MutableBox {
   current: HTMLDivElement | null;
 }
 
-const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
+const renderObservedDiv = async (callback: (mutations: MutationRecord[]) => void) => {
   let element: HTMLDivElement | null = null;
   const TestComponent = () => {
     const ref = useMutationObserver<HTMLDivElement>(callback);
@@ -24,7 +25,7 @@ const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
       },
     });
   };
-  const { unmount } = render(createElement(TestComponent));
+  const { unmount } = await render(createElement(TestComponent));
   return {
     get element() {
       return element;
@@ -36,11 +37,11 @@ const renderObservedDiv = (callback: (mutations: MutationRecord[]) => void) => {
 describe("useMutationObserver", () => {
   it("calls the callback when an attribute changes on the ref'd element", async () => {
     const callback = vi.fn<(mutations: MutationRecord[]) => void>();
-    const div = renderObservedDiv(callback);
+    const div = await renderObservedDiv(callback);
 
     div.element?.setAttribute("data-test", "1");
 
-    await waitFor(() => expect(callback).toHaveBeenCalled());
+    await vi.waitFor(() => expect(callback).toHaveBeenCalled());
     const [mutations] = callback.mock.calls[0] ?? [];
     expect(mutations?.[0]?.attributeName).toBe("data-test");
   });
@@ -58,26 +59,26 @@ describe("useMutationObserver", () => {
         },
       });
     };
-    const { rerender } = render(createElement(TestComponent, { callback: first }));
+    const { rerender } = await render(createElement(TestComponent, { callback: first }));
 
-    rerender(createElement(TestComponent, { callback: second }));
+    await rerender(createElement(TestComponent, { callback: second }));
     box.current?.setAttribute("data-test", "1");
 
-    await waitFor(() => expect(second).toHaveBeenCalled());
+    await vi.waitFor(() => expect(second).toHaveBeenCalled());
     expect(first).not.toHaveBeenCalled();
   });
 
   it("does not observe when no element is attached to the ref", () => {
-    expect(() => {
-      renderHook(() => useMutationObserver(() => {}));
+    expect(async () => {
+      await renderHook(() => useMutationObserver(() => {}));
     }).not.toThrow();
   });
 
   it("does not observe when MutationObserver is unsupported", () => {
     vi.stubGlobal("MutationObserver", undefined);
 
-    expect(() => {
-      renderObservedDiv(() => {});
+    expect(async () => {
+      await renderObservedDiv(() => {});
     }).not.toThrow();
 
     vi.unstubAllGlobals();
@@ -85,10 +86,10 @@ describe("useMutationObserver", () => {
 
   it("disconnects the observer on unmount", async () => {
     const callback = vi.fn<(mutations: MutationRecord[]) => void>();
-    const div = renderObservedDiv(callback);
+    const div = await renderObservedDiv(callback);
     const element = div.element;
 
-    div.unmount();
+    await div.unmount();
     element?.setAttribute("data-test", "1");
 
     await new Promise((resolve) => setTimeout(resolve, 50));
@@ -111,15 +112,15 @@ describe("useMutationObserver ref and option tracking", () => {
           })
         : null;
     };
-    const { rerender } = render(createElement(TestComponent, { show: false }));
+    const { rerender } = await render(createElement(TestComponent, { show: false }));
 
-    rerender(createElement(TestComponent, { show: true }));
+    await rerender(createElement(TestComponent, { show: true }));
     captured.element?.setAttribute("data-late", "1");
 
-    await waitFor(() => expect(callback).toHaveBeenCalled());
+    await vi.waitFor(() => expect(callback).toHaveBeenCalled());
   });
 
-  it("does not re-observe for an options object re-created every render", () => {
+  it("does not re-observe for an options object re-created every render", async () => {
     const observe = vi.fn<(target: Node, options?: MutationObserverInit) => void>();
     const disconnect = vi.fn<() => void>();
     vi.stubGlobal(
@@ -135,19 +136,19 @@ describe("useMutationObserver ref and option tracking", () => {
       const ref = useMutationObserver<HTMLDivElement>(() => {}, { attributes: true });
       return createElement("div", { ref });
     };
-    const { rerender } = render(createElement(TestComponent));
+    const { rerender } = await render(createElement(TestComponent));
 
     expect(observe).toHaveBeenCalledTimes(1);
 
-    rerender(createElement(TestComponent));
-    rerender(createElement(TestComponent));
+    await rerender(createElement(TestComponent));
+    await rerender(createElement(TestComponent));
 
     expect(observe).toHaveBeenCalledTimes(1);
 
     vi.unstubAllGlobals();
   });
 
-  it("re-observes when an option changes", () => {
+  it("re-observes when an option changes", async () => {
     const observe = vi.fn<(target: Node, options?: MutationObserverInit) => void>();
     vi.stubGlobal(
       "MutationObserver",
@@ -162,11 +163,11 @@ describe("useMutationObserver ref and option tracking", () => {
       const ref = useMutationObserver<HTMLDivElement>(() => {}, { attributes: true, subtree });
       return createElement("div", { ref });
     };
-    const { rerender } = render(createElement(TestComponent, { subtree: false }));
+    const { rerender } = await render(createElement(TestComponent, { subtree: false }));
 
     expect(observe).toHaveBeenCalledTimes(1);
 
-    rerender(createElement(TestComponent, { subtree: true }));
+    await rerender(createElement(TestComponent, { subtree: true }));
 
     expect(observe).toHaveBeenCalledTimes(2);
 

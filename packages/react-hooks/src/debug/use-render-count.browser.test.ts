@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useRenderCount } from "./use-render-count.ts";
 
 afterEach(() => {
@@ -8,22 +8,22 @@ afterEach(() => {
 });
 
 describe("useRenderCount", () => {
-  it("starts at 1 and increments on each render", () => {
-    const { rerender, result } = renderHook(() => useRenderCount());
+  it("starts at 1 and increments on each render", async () => {
+    const { rerender, result } = await renderHook(() => useRenderCount());
 
     expect(result.current).toBe(1);
 
-    rerender();
+    await rerender();
     expect(result.current).toBe(2);
 
-    rerender();
+    await rerender();
     expect(result.current).toBe(3);
   });
 
-  it("still counts normally when process is entirely undefined", () => {
+  it("still counts normally when process is entirely undefined", async () => {
     vi.stubGlobal("process", undefined);
 
-    const { result } = renderHook(() => useRenderCount());
+    const { result } = await renderHook(() => useRenderCount());
 
     expect(result.current).toBe(1);
   });

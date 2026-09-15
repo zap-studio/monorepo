@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useWebLock } from "./use-web-lock.ts";
 
@@ -24,19 +24,19 @@ afterEach(() => {
 });
 
 describe("useWebLock", () => {
-  it("reports supported: true when navigator.locks exists", () => {
+  it("reports supported: true when navigator.locks exists", async () => {
     setLocksSupport(() => Promise.resolve(undefined));
 
-    const { result } = renderHook(() => useWebLock("my-lock"));
+    const { result } = await renderHook(() => useWebLock("my-lock"));
 
     expect(result.current.supported).toBe(true);
     expect(result.current.status).toBe("idle");
   });
 
-  it("reports supported: false when navigator.locks is unavailable", () => {
+  it("reports supported: false when navigator.locks is unavailable", async () => {
     setLocksSupport(undefined);
 
-    const { result } = renderHook(() => useWebLock("my-lock"));
+    const { result } = await renderHook(() => useWebLock("my-lock"));
 
     expect(result.current.supported).toBe(false);
   });
@@ -52,7 +52,7 @@ describe("useWebLock", () => {
       callback(asTestDouble<Lock>({ mode: options.mode ?? "exclusive", name })),
     );
     setLocksSupport(request);
-    const { result } = renderHook(() => useWebLock("my-lock"));
+    const { result } = await renderHook(() => useWebLock("my-lock"));
 
     let value = 0;
     await act(async () => {
@@ -66,7 +66,7 @@ describe("useWebLock", () => {
 
   it('becomes "error" and resolves undefined when the callback throws', async () => {
     setLocksSupport(async (_name, _options, callback) => callback(null));
-    const { result } = renderHook(() => useWebLock("my-lock"));
+    const { result } = await renderHook(() => useWebLock("my-lock"));
 
     let value: number | undefined = 1;
     await act(async () => {
@@ -82,7 +82,7 @@ describe("useWebLock", () => {
 
   it("wraps a non-Error rejection", async () => {
     setLocksSupport(() => Promise.reject("boom"));
-    const { result } = renderHook(() => useWebLock("my-lock"));
+    const { result } = await renderHook(() => useWebLock("my-lock"));
 
     await act(async () => {
       await result.current.runExclusive(() => 1);
@@ -93,7 +93,7 @@ describe("useWebLock", () => {
 
   it('runExclusive() resolves undefined and becomes "error" when unsupported', async () => {
     setLocksSupport(undefined);
-    const { result } = renderHook(() => useWebLock("my-lock"));
+    const { result } = await renderHook(() => useWebLock("my-lock"));
 
     let value: number | undefined = 1;
     await act(async () => {
@@ -106,11 +106,11 @@ describe("useWebLock", () => {
 });
 
 describe("useWebLock option stability", () => {
-  it("keeps runExclusive stable across renders with an inline options object", () => {
-    const { rerender, result } = renderHook(() => useWebLock("cart", { mode: "shared" }));
+  it("keeps runExclusive stable across renders with an inline options object", async () => {
+    const { rerender, result } = await renderHook(() => useWebLock("cart", { mode: "shared" }));
     const first = result.current.runExclusive;
 
-    rerender();
+    await rerender();
 
     expect(result.current.runExclusive).toBe(first);
   });

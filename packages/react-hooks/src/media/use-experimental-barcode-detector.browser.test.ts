@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useExperimentalBarcodeDetector } from "./use-experimental-barcode-detector.ts";
 
@@ -9,15 +9,15 @@ afterEach(() => {
 });
 
 describe("useExperimentalBarcodeDetector", () => {
-  it("reports supported: false when the Barcode Detection API is unavailable", () => {
+  it("reports supported: false when the Barcode Detection API is unavailable", async () => {
     vi.stubGlobal("BarcodeDetector", undefined);
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when window.BarcodeDetector exists", () => {
+  it("reports supported: true when window.BarcodeDetector exists", async () => {
     vi.stubGlobal(
       "BarcodeDetector",
       class {
@@ -30,7 +30,7 @@ describe("useExperimentalBarcodeDetector", () => {
       },
     );
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector());
 
     expect(result.current.supported).toBe(true);
   });
@@ -46,7 +46,7 @@ describe("useExperimentalBarcodeDetector", () => {
       });
     vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector(["qr_code"]));
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector(["qr_code"]));
     const image = asTestDouble<HTMLImageElement>({});
 
     await expect(result.current.detect(image)).resolves.toEqual([
@@ -65,7 +65,7 @@ describe("useExperimentalBarcodeDetector", () => {
       });
     vi.stubGlobal("BarcodeDetector", BarcodeDetectorCtor);
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector());
     const image = asTestDouble<HTMLImageElement>({});
 
     await result.current.detect(image);
@@ -76,7 +76,7 @@ describe("useExperimentalBarcodeDetector", () => {
   it("detect() resolves undefined when unsupported", async () => {
     vi.stubGlobal("BarcodeDetector", undefined);
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector());
 
     await expect(
       result.current.detect(asTestDouble<HTMLImageElement>({})),
@@ -89,7 +89,7 @@ describe("useExperimentalBarcodeDetector", () => {
       .mockResolvedValue(["qr_code", "ean_13"]);
     vi.stubGlobal("BarcodeDetector", { getSupportedFormats });
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector());
 
     await expect(result.current.getSupportedFormats()).resolves.toEqual(["qr_code", "ean_13"]);
   });
@@ -97,18 +97,20 @@ describe("useExperimentalBarcodeDetector", () => {
   it("getSupportedFormats() resolves undefined when unsupported", async () => {
     vi.stubGlobal("BarcodeDetector", undefined);
 
-    const { result } = renderHook(() => useExperimentalBarcodeDetector());
+    const { result } = await renderHook(() => useExperimentalBarcodeDetector());
 
     await expect(result.current.getSupportedFormats()).resolves.toBeUndefined();
   });
 });
 
 describe("useExperimentalBarcodeDetector format stability", () => {
-  it("keeps detect stable across renders with an inline formats array", () => {
-    const { rerender, result } = renderHook(() => useExperimentalBarcodeDetector(["qr_code"]));
+  it("keeps detect stable across renders with an inline formats array", async () => {
+    const { rerender, result } = await renderHook(() =>
+      useExperimentalBarcodeDetector(["qr_code"]),
+    );
     const first = result.current.detect;
 
-    rerender();
+    await rerender();
 
     expect(result.current.detect).toBe(first);
   });

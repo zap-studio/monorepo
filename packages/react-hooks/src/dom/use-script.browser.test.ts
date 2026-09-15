@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useScript } from "./use-script.ts";
 
 let counter = 0;
@@ -15,92 +15,92 @@ const scriptFor = (src: string): HTMLScriptElement | null => {
 };
 
 describe("useScript", () => {
-  it("starts with status: loading and appends a <script> tag", () => {
+  it("starts with status: loading and appends a <script> tag", async () => {
     const src = uniqueSrc();
-    const { result } = renderHook(() => useScript(src));
+    const { result } = await renderHook(() => useScript(src));
 
     expect(result.current.status).toBe("loading");
     expect(scriptFor(src)).not.toBeNull();
   });
 
-  it("becomes ready when the script fires load", () => {
+  it("becomes ready when the script fires load", async () => {
     const src = uniqueSrc();
-    const { result } = renderHook(() => useScript(src));
+    const { result } = await renderHook(() => useScript(src));
 
-    act(() => {
+    await act(() => {
       scriptFor(src)?.dispatchEvent(new Event("load"));
     });
 
     expect(result.current.status).toBe("ready");
   });
 
-  it("becomes error when the script fires error", () => {
+  it("becomes error when the script fires error", async () => {
     const src = uniqueSrc();
-    const { result } = renderHook(() => useScript(src));
+    const { result } = await renderHook(() => useScript(src));
 
-    act(() => {
+    await act(() => {
       scriptFor(src)?.dispatchEvent(new Event("error"));
     });
 
     expect(result.current.status).toBe("error");
   });
 
-  it("dedupes concurrent requests for the same src into a single tag", () => {
+  it("dedupes concurrent requests for the same src into a single tag", async () => {
     const src = uniqueSrc();
-    renderHook(() => useScript(src));
-    renderHook(() => useScript(src));
+    await renderHook(() => useScript(src));
+    await renderHook(() => useScript(src));
 
     // oxlint-disable-next-line testing-library/no-node-access -- same reason as scriptFor above: a <script> tag has no ARIA role, so there is no query for it.
     expect(document.querySelectorAll(`script[src="${src}"]`)).toHaveLength(1);
   });
 
-  it("a later consumer immediately reflects an already-settled script", () => {
+  it("a later consumer immediately reflects an already-settled script", async () => {
     const src = uniqueSrc();
-    const first = renderHook(() => useScript(src));
-    act(() => {
+    const first = await renderHook(() => useScript(src));
+    await act(() => {
       scriptFor(src)?.dispatchEvent(new Event("load"));
     });
     expect(first.result.current.status).toBe("ready");
 
-    const second = renderHook(() => useScript(src));
+    const second = await renderHook(() => useScript(src));
 
     expect(second.result.current.status).toBe("ready");
   });
 
-  it("keeps the tag when one of several consumers unmounts", () => {
+  it("keeps the tag when one of several consumers unmounts", async () => {
     const src = uniqueSrc();
-    const first = renderHook(() => useScript(src, { removeOnUnmount: true }));
-    renderHook(() => useScript(src, { removeOnUnmount: true }));
+    const first = await renderHook(() => useScript(src, { removeOnUnmount: true }));
+    await renderHook(() => useScript(src, { removeOnUnmount: true }));
 
-    first.unmount();
+    await first.unmount();
 
     expect(scriptFor(src)).not.toBeNull();
   });
 
-  it("removes the tag when the last consumer unmounts with removeOnUnmount: true", () => {
+  it("removes the tag when the last consumer unmounts with removeOnUnmount: true", async () => {
     const src = uniqueSrc();
-    const { unmount } = renderHook(() => useScript(src, { removeOnUnmount: true }));
+    const { unmount } = await renderHook(() => useScript(src, { removeOnUnmount: true }));
 
-    unmount();
+    await unmount();
 
     expect(scriptFor(src)).toBeNull();
   });
 
-  it("leaves the tag in place on unmount by default", () => {
+  it("leaves the tag in place on unmount by default", async () => {
     const src = uniqueSrc();
-    const { unmount } = renderHook(() => useScript(src));
+    const { unmount } = await renderHook(() => useScript(src));
 
-    unmount();
+    await unmount();
 
     expect(scriptFor(src)).not.toBeNull();
   });
 
-  it("stops updating status after unmount", () => {
+  it("stops updating status after unmount", async () => {
     const src = uniqueSrc();
-    const { result, unmount } = renderHook(() => useScript(src));
-    unmount();
+    const { result, unmount } = await renderHook(() => useScript(src));
+    await unmount();
 
-    act(() => {
+    await act(() => {
       scriptFor(src)?.dispatchEvent(new Event("load"));
     });
 

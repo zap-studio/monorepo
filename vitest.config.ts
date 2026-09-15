@@ -34,7 +34,6 @@ export default defineConfig({
           },
           include: ["packages/**/*.browser.test.ts"],
           name: { color: "cyan", label: "browser" },
-          setupFiles: ["./vitest.setup.browser.ts"],
         },
       },
     ],

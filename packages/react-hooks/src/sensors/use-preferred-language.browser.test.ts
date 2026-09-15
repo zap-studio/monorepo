@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { usePreferredLanguage } from "./use-preferred-language.ts";
 
 const setNavigatorLanguage = (language: string, languages: readonly string[]) => {
@@ -15,17 +15,17 @@ const setNavigatorLanguage = (language: string, languages: readonly string[]) =>
 };
 
 describe("usePreferredLanguage", () => {
-  it("reports navigator.language and navigator.languages", () => {
+  it("reports navigator.language and navigator.languages", async () => {
     setNavigatorLanguage("fr-FR", ["fr-FR", "en-US"]);
 
-    const { result } = renderHook(() => usePreferredLanguage());
+    const { result } = await renderHook(() => usePreferredLanguage());
 
     expect(result.current).toEqual({ language: "fr-FR", languages: ["fr-FR", "en-US"] });
   });
 
   it("updates when the languagechange event fires", async () => {
     setNavigatorLanguage("en-US", ["en-US"]);
-    const { result } = renderHook(() => usePreferredLanguage());
+    const { result } = await renderHook(() => usePreferredLanguage());
     expect(result.current.language).toBe("en-US");
 
     await act(async () => {

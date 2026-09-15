@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useThrottledValue } from "./use-throttled-value.ts";
 
 beforeEach(() => {
@@ -12,69 +12,69 @@ afterEach(() => {
 });
 
 describe("useThrottledValue", () => {
-  it("starts equal to the initial value", () => {
-    const { result } = renderHook(() => useThrottledValue("a", 500));
+  it("starts equal to the initial value", async () => {
+    const { result } = await renderHook(() => useThrottledValue("a", 500));
 
     expect(result.current).toBe("a");
   });
 
-  it("updates immediately on the first change (leading edge)", () => {
-    const { result, rerender } = renderHook(({ value }) => useThrottledValue(value, 500), {
+  it("updates immediately on the first change (leading edge)", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useThrottledValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
+    await rerender({ value: "b" });
 
     expect(result.current).toBe("b");
   });
 
-  it("does not update again within the cooldown window", () => {
-    const { result, rerender } = renderHook(({ value }) => useThrottledValue(value, 500), {
+  it("does not update again within the cooldown window", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useThrottledValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    rerender({ value: "c" });
+    await rerender({ value: "b" });
+    await rerender({ value: "c" });
 
     expect(result.current).toBe("b");
   });
 
-  it("applies the latest value once the cooldown elapses", () => {
-    const { result, rerender } = renderHook(({ value }) => useThrottledValue(value, 500), {
+  it("applies the latest value once the cooldown elapses", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useThrottledValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    rerender({ value: "c" });
-    act(() => {
+    await rerender({ value: "b" });
+    await rerender({ value: "c" });
+    await act(() => {
       vi.advanceTimersByTime(500);
     });
 
     expect(result.current).toBe("c");
   });
 
-  it("updates immediately again once a fresh cooldown window starts", () => {
-    const { result, rerender } = renderHook(({ value }) => useThrottledValue(value, 500), {
+  it("updates immediately again once a fresh cooldown window starts", async () => {
+    const { result, rerender } = await renderHook(({ value }) => useThrottledValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    act(() => {
+    await rerender({ value: "b" });
+    await act(() => {
       vi.advanceTimersByTime(500);
     });
-    rerender({ value: "c" });
+    await rerender({ value: "c" });
 
     expect(result.current).toBe("c");
   });
 
-  it("clears the pending timer on unmount", () => {
-    const { rerender, unmount } = renderHook(({ value }) => useThrottledValue(value, 500), {
+  it("clears the pending timer on unmount", async () => {
+    const { rerender, unmount } = await renderHook(({ value }) => useThrottledValue(value, 500), {
       initialProps: { value: "a" },
     });
 
-    rerender({ value: "b" });
-    rerender({ value: "c" });
-    unmount();
+    await rerender({ value: "b" });
+    await rerender({ value: "c" });
+    await unmount();
 
     expect(() => vi.advanceTimersByTime(500)).not.toThrow();
   });

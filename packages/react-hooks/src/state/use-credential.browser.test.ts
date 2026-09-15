@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useCredential } from "./use-credential.ts";
 
 const CREDENTIAL_ID = "user@example.com";
@@ -20,15 +20,15 @@ const setNavigatorCredentials = (
 };
 
 describe("useCredential", () => {
-  it("reports supported: false when navigator.credentials is unavailable", () => {
+  it("reports supported: false when navigator.credentials is unavailable", async () => {
     setNavigatorCredentials(undefined);
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when navigator.credentials exists", () => {
+  it("reports supported: true when navigator.credentials exists", async () => {
     setNavigatorCredentials({
       create: () => Promise.resolve(null),
       get: () => Promise.resolve(null),
@@ -36,7 +36,7 @@ describe("useCredential", () => {
       store: () => Promise.resolve(undefined),
     });
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     expect(result.current.supported).toBe(true);
   });
@@ -51,7 +51,7 @@ describe("useCredential", () => {
       store: () => Promise.resolve(undefined),
     });
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(result.current.get({ mediation: "silent" })).resolves.toEqual(credential);
     expect(get).toHaveBeenCalledWith({ mediation: "silent" });
@@ -60,7 +60,7 @@ describe("useCredential", () => {
   it("get() resolves undefined when unsupported", async () => {
     setNavigatorCredentials(undefined);
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(result.current.get()).resolves.toBeUndefined();
   });
@@ -75,7 +75,7 @@ describe("useCredential", () => {
       store,
     });
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(result.current.store(credential)).resolves.toBeUndefined();
     expect(store).toHaveBeenCalledWith(credential);
@@ -84,7 +84,7 @@ describe("useCredential", () => {
   it("store() no-ops when unsupported", async () => {
     setNavigatorCredentials(undefined);
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(
       result.current.store({ id: CREDENTIAL_ID, type: CREDENTIAL_TYPE }),
@@ -103,7 +103,7 @@ describe("useCredential", () => {
       store: () => Promise.resolve(undefined),
     });
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(result.current.create({})).resolves.toEqual(credential);
     expect(create).toHaveBeenCalledWith({});
@@ -112,7 +112,7 @@ describe("useCredential", () => {
   it("create() resolves undefined when unsupported", async () => {
     setNavigatorCredentials(undefined);
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(result.current.create({})).resolves.toBeUndefined();
   });
@@ -126,7 +126,7 @@ describe("useCredential", () => {
       store: () => Promise.resolve(undefined),
     });
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
     await result.current.preventSilentAccess();
 
     expect(preventSilentAccess).toHaveBeenCalled();
@@ -135,7 +135,7 @@ describe("useCredential", () => {
   it("preventSilentAccess() no-ops when unsupported", async () => {
     setNavigatorCredentials(undefined);
 
-    const { result } = renderHook(() => useCredential());
+    const { result } = await renderHook(() => useCredential());
 
     await expect(result.current.preventSilentAccess()).resolves.toBeUndefined();
   });

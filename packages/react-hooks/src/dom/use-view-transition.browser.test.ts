@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useViewTransition } from "./use-view-transition.ts";
 
 afterEach(() => {
@@ -12,24 +12,24 @@ afterEach(() => {
 });
 
 describe("useViewTransition", () => {
-  it("reports supported: true when startViewTransition exists", () => {
+  it("reports supported: true when startViewTransition exists", async () => {
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
       value: vi.fn<(update: () => Promise<void> | void) => { finished: Promise<void> }>(),
     });
 
-    const { result } = renderHook(() => useViewTransition());
+    const { result } = await renderHook(() => useViewTransition());
 
     expect(result.current.supported).toBe(true);
   });
 
-  it("reports supported: false when startViewTransition is unavailable", () => {
+  it("reports supported: false when startViewTransition is unavailable", async () => {
     Object.defineProperty(document, "startViewTransition", {
       configurable: true,
       value: null,
     });
 
-    const { result } = renderHook(() => useViewTransition());
+    const { result } = await renderHook(() => useViewTransition());
 
     expect(result.current.supported).toBe(false);
   });
@@ -50,7 +50,7 @@ describe("useViewTransition", () => {
       value: startViewTransition,
     });
 
-    const { result } = renderHook(() => useViewTransition());
+    const { result } = await renderHook(() => useViewTransition());
     await result.current.startTransition(callback);
 
     expect(startViewTransition).toHaveBeenCalledTimes(1);
@@ -64,7 +64,7 @@ describe("useViewTransition", () => {
     });
     const callback = vi.fn<() => Promise<void> | void>();
 
-    const { result } = renderHook(() => useViewTransition());
+    const { result } = await renderHook(() => useViewTransition());
     await result.current.startTransition(callback);
 
     expect(callback).toHaveBeenCalledTimes(1);

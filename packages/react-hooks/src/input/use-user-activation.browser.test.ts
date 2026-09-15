@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useUserActivation } from "./use-user-activation.ts";
 
 const setUserActivation = (
@@ -17,10 +17,10 @@ afterEach(() => {
 });
 
 describe("useUserActivation", () => {
-  it("reflects the initial navigator.userActivation state", () => {
+  it("reflects the initial navigator.userActivation state", async () => {
     setUserActivation({ hasBeenActive: false, isActive: false });
 
-    const { result } = renderHook(() => useUserActivation());
+    const { result } = await renderHook(() => useUserActivation());
 
     expect(result.current).toEqual({ hasBeenActive: false, isActive: false });
   });
@@ -29,7 +29,7 @@ describe("useUserActivation", () => {
     const activation = { hasBeenActive: false, isActive: false };
     setUserActivation(activation);
 
-    const { result } = renderHook(() => useUserActivation());
+    const { result } = await renderHook(() => useUserActivation());
 
     await act(async () => {
       activation.hasBeenActive = true;
@@ -44,7 +44,7 @@ describe("useUserActivation", () => {
     const activation = { hasBeenActive: false, isActive: false };
     setUserActivation(activation);
 
-    const { result } = renderHook(() => useUserActivation());
+    const { result } = await renderHook(() => useUserActivation());
 
     await act(async () => {
       activation.hasBeenActive = true;
@@ -55,10 +55,10 @@ describe("useUserActivation", () => {
     expect(result.current).toEqual({ hasBeenActive: true, isActive: true });
   });
 
-  it("falls back to hasBeenActive: false, isActive: false when unsupported", () => {
+  it("falls back to hasBeenActive: false, isActive: false when unsupported", async () => {
     setUserActivation(undefined);
 
-    const { result } = renderHook(() => useUserActivation());
+    const { result } = await renderHook(() => useUserActivation());
 
     expect(result.current).toEqual({ hasBeenActive: false, isActive: false });
   });
@@ -67,8 +67,8 @@ describe("useUserActivation", () => {
     const activation = { hasBeenActive: false, isActive: false };
     setUserActivation(activation);
 
-    const { result, unmount } = renderHook(() => useUserActivation());
-    unmount();
+    const { result, unmount } = await renderHook(() => useUserActivation());
+    await unmount();
 
     await act(async () => {
       activation.hasBeenActive = true;

@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useAnimationFrame } from "./use-animation-frame.ts";
 
 let rafCallbacks = new Map<number, FrameRequestCallback>();
@@ -36,55 +36,55 @@ afterEach(() => {
 });
 
 describe("useAnimationFrame", () => {
-  it("schedules a frame on mount", () => {
-    renderHook(() => useAnimationFrame(vi.fn()));
+  it("schedules a frame on mount", async () => {
+    await renderHook(() => useAnimationFrame(vi.fn()));
 
     expect(rafCallbacks.size).toBe(1);
   });
 
-  it("does not call the callback on the very first frame (no delta yet)", () => {
+  it("does not call the callback on the very first frame (no delta yet)", async () => {
     const callback = vi.fn<(deltaMs: number) => void>();
-    renderHook(() => useAnimationFrame(callback));
+    await renderHook(() => useAnimationFrame(callback));
 
-    act(() => {
+    await act(() => {
       flushFrame(16);
     });
 
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("calls the callback with the delta time on subsequent frames", () => {
+  it("calls the callback with the delta time on subsequent frames", async () => {
     const callback = vi.fn<(deltaMs: number) => void>();
-    renderHook(() => useAnimationFrame(callback));
+    await renderHook(() => useAnimationFrame(callback));
 
-    act(() => {
+    await act(() => {
       flushFrame(16);
     });
-    act(() => {
+    await act(() => {
       flushFrame(32);
     });
 
     expect(callback).toHaveBeenCalledWith(16);
   });
 
-  it("does not schedule when enabled: false", () => {
-    renderHook(() => useAnimationFrame(vi.fn(), false));
+  it("does not schedule when enabled: false", async () => {
+    await renderHook(() => useAnimationFrame(vi.fn(), false));
 
     expect(rafCallbacks.size).toBe(0);
   });
 
-  it("always calls the latest callback", () => {
+  it("always calls the latest callback", async () => {
     const firstCallback = vi.fn<(deltaMs: number) => void>();
     const secondCallback = vi.fn<(deltaMs: number) => void>();
-    const { rerender } = renderHook(({ callback }) => useAnimationFrame(callback), {
+    const { rerender } = await renderHook(({ callback }) => useAnimationFrame(callback), {
       initialProps: { callback: firstCallback },
     });
 
-    act(() => {
+    await act(() => {
       flushFrame(16);
     });
-    rerender({ callback: secondCallback });
-    act(() => {
+    await rerender({ callback: secondCallback });
+    await act(() => {
       flushFrame(32);
     });
 
@@ -92,10 +92,10 @@ describe("useAnimationFrame", () => {
     expect(secondCallback).toHaveBeenCalledTimes(1);
   });
 
-  it("cancels the pending frame on unmount", () => {
-    const { unmount } = renderHook(() => useAnimationFrame(vi.fn()));
+  it("cancels the pending frame on unmount", async () => {
+    const { unmount } = await renderHook(() => useAnimationFrame(vi.fn()));
 
-    unmount();
+    await unmount();
 
     expect(rafCallbacks.size).toBe(0);
   });

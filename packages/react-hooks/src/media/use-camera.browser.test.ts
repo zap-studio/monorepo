@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useCamera } from "./use-camera.ts";
 
@@ -32,7 +32,7 @@ describe("useCamera", () => {
     );
     setGetUserMedia(getUserMedia);
 
-    const { result } = renderHook(() => useCamera());
+    const { result } = await renderHook(() => useCamera());
 
     await act(async () => {
       await result.current.start();
@@ -47,7 +47,7 @@ describe("useCamera", () => {
     );
     setGetUserMedia(getUserMedia);
 
-    const { result } = renderHook(() => useCamera({ audio: true }));
+    const { result } = await renderHook(() => useCamera({ audio: true }));
 
     await act(async () => {
       await result.current.start();
@@ -63,7 +63,7 @@ describe("useCamera", () => {
     setGetUserMedia(getUserMedia);
     const videoConstraints = { facingMode: "user" };
 
-    const { result } = renderHook(() => useCamera({ video: videoConstraints }));
+    const { result } = await renderHook(() => useCamera({ video: videoConstraints }));
 
     await act(async () => {
       await result.current.start();

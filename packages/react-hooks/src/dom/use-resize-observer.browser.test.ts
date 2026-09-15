@@ -1,7 +1,8 @@
-import { act, render, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useResizeObserver, type UseResizeObserverResult } from "./use-resize-observer.ts";
 
@@ -28,13 +29,13 @@ class FakeResizeObserver implements ResizeObserver {
   }
 }
 
-const renderObservedDiv = () => {
+const renderObservedDiv = async () => {
   let latest!: UseResizeObserverResult<HTMLDivElement>;
   const TestComponent = () => {
     latest = useResizeObserver<HTMLDivElement>();
     return createElement("div", { ref: latest.ref });
   };
-  const { unmount } = render(createElement(TestComponent));
+  const { unmount } = await render(createElement(TestComponent));
   return {
     get current() {
       return latest;
@@ -49,33 +50,33 @@ afterEach(() => {
 });
 
 describe("useResizeObserver", () => {
-  it("starts with size: undefined", () => {
+  it("starts with size: undefined", async () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
 
     expect(div.current.size).toBeUndefined();
   });
 
-  it("observes the ref'd element and updates on resize", () => {
+  it("observes the ref'd element and updates on resize", async () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
     const [observer] = FakeResizeObserver.instances;
 
     expect(observer?.observe).toHaveBeenCalledWith(div.current.ref.current);
 
-    act(() => {
+    await act(() => {
       observer?.trigger(200, 100);
     });
 
     expect(div.current.size).toEqual({ height: 100, width: 200 });
   });
 
-  it("ignores an entry for a different target", () => {
+  it("ignores an entry for a different target", async () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
     const [observer] = FakeResizeObserver.instances;
 
-    act(() => {
+    await act(() => {
       observer?.callback(
         asTestDouble<ResizeObserverEntry[]>([
           { contentRect: { height: 999, width: 999 }, target: document.createElement("span") },
@@ -90,8 +91,8 @@ describe("useResizeObserver", () => {
   it("does not observe when no element is attached to the ref", () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
 
-    expect(() => {
-      renderHook(() => useResizeObserver());
+    expect(async () => {
+      await renderHook(() => useResizeObserver());
     }).not.toThrow();
     expect(FakeResizeObserver.instances).toHaveLength(0);
   });
@@ -99,24 +100,24 @@ describe("useResizeObserver", () => {
   it("does not observe when ResizeObserver is unsupported", () => {
     vi.stubGlobal("ResizeObserver", undefined);
 
-    expect(() => {
-      renderObservedDiv();
+    expect(async () => {
+      await renderObservedDiv();
     }).not.toThrow();
   });
 
-  it("disconnects the observer on unmount", () => {
+  it("disconnects the observer on unmount", async () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
-    const div = renderObservedDiv();
+    const div = await renderObservedDiv();
     const [observer] = FakeResizeObserver.instances;
 
-    div.unmount();
+    await div.unmount();
 
     expect(observer?.disconnect).toHaveBeenCalledTimes(1);
   });
 });
 
 describe("useResizeObserver ref tracking", () => {
-  it("observes an element that only attaches after the first render", () => {
+  it("observes an element that only attaches after the first render", async () => {
     vi.stubGlobal("ResizeObserver", FakeResizeObserver);
     FakeResizeObserver.instances.length = 0;
 
@@ -125,15 +126,15 @@ describe("useResizeObserver ref tracking", () => {
       latest = useResizeObserver<HTMLDivElement>();
       return show ? createElement("div", { ref: latest.ref }) : null;
     };
-    const { rerender } = render(createElement(TestComponent, { show: false }));
+    const { rerender } = await render(createElement(TestComponent, { show: false }));
 
     expect(FakeResizeObserver.instances).toHaveLength(0);
 
-    rerender(createElement(TestComponent, { show: true }));
+    await rerender(createElement(TestComponent, { show: true }));
 
     expect(FakeResizeObserver.instances).toHaveLength(1);
 
-    act(() => {
+    await act(() => {
       FakeResizeObserver.instances[0]?.trigger(120, 40);
     });
 

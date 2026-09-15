@@ -1,6 +1,6 @@
-import { renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { renderHook } from "../../tests/_react.ts";
 import { useExperimentalSelectAudioOutput } from "./use-experimental-select-audio-output.ts";
 
 const notAllowedError = (): Error => {
@@ -23,18 +23,18 @@ afterEach(() => {
 });
 
 describe("useExperimentalSelectAudioOutput", () => {
-  it("reports supported: false when selectAudioOutput is unavailable", () => {
+  it("reports supported: false when selectAudioOutput is unavailable", async () => {
     setSelectAudioOutput(undefined);
 
-    const { result } = renderHook(() => useExperimentalSelectAudioOutput());
+    const { result } = await renderHook(() => useExperimentalSelectAudioOutput());
 
     expect(result.current.supported).toBe(false);
   });
 
-  it("reports supported: true when MediaDevices.selectAudioOutput exists", () => {
+  it("reports supported: true when MediaDevices.selectAudioOutput exists", async () => {
     setSelectAudioOutput(vi.fn());
 
-    const { result } = renderHook(() => useExperimentalSelectAudioOutput());
+    const { result } = await renderHook(() => useExperimentalSelectAudioOutput());
 
     expect(result.current.supported).toBe(true);
   });
@@ -45,7 +45,7 @@ describe("useExperimentalSelectAudioOutput", () => {
       .mockResolvedValue({ deviceId: "abc", kind: "audiooutput", label: "Speakers" });
     setSelectAudioOutput(selectAudioOutput);
 
-    const { result } = renderHook(() => useExperimentalSelectAudioOutput());
+    const { result } = await renderHook(() => useExperimentalSelectAudioOutput());
 
     await expect(result.current.selectAudioOutput({ deviceId: "abc" })).resolves.toEqual({
       deviceId: "abc",
@@ -58,7 +58,7 @@ describe("useExperimentalSelectAudioOutput", () => {
   it("selectAudioOutput() resolves undefined when the user cancels or is blocked", async () => {
     setSelectAudioOutput(() => Promise.reject(notAllowedError()));
 
-    const { result } = renderHook(() => useExperimentalSelectAudioOutput());
+    const { result } = await renderHook(() => useExperimentalSelectAudioOutput());
 
     await expect(result.current.selectAudioOutput()).resolves.toBeUndefined();
   });
@@ -66,7 +66,7 @@ describe("useExperimentalSelectAudioOutput", () => {
   it("selectAudioOutput() rethrows other errors", async () => {
     setSelectAudioOutput(() => Promise.reject(new Error("no devices")));
 
-    const { result } = renderHook(() => useExperimentalSelectAudioOutput());
+    const { result } = await renderHook(() => useExperimentalSelectAudioOutput());
 
     await expect(result.current.selectAudioOutput()).rejects.toThrow("no devices");
   });
@@ -74,7 +74,7 @@ describe("useExperimentalSelectAudioOutput", () => {
   it("selectAudioOutput() resolves undefined when unsupported", async () => {
     setSelectAudioOutput(undefined);
 
-    const { result } = renderHook(() => useExperimentalSelectAudioOutput());
+    const { result } = await renderHook(() => useExperimentalSelectAudioOutput());
 
     await expect(result.current.selectAudioOutput()).resolves.toBeUndefined();
   });

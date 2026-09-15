@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
 import { useNavigationBlocker } from "./use-navigation-blocker.ts";
 
@@ -52,14 +52,14 @@ const setWindowNavigation = (nav: Navigation | undefined) => {
 };
 
 describe("useNavigationBlocker", () => {
-  it("blocks and intercepts when shouldBlock returns true", () => {
+  it("blocks and intercepts when shouldBlock returns true", async () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent();
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -67,14 +67,14 @@ describe("useNavigationBlocker", () => {
     expect(result.current.blocked).toBe(true);
   });
 
-  it("does not block when shouldBlock returns false", () => {
+  it("does not block when shouldBlock returns false", async () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent();
 
-    const { result } = renderHook(() => useNavigationBlocker(() => false));
+    const { result } = await renderHook(() => useNavigationBlocker(() => false));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -82,14 +82,14 @@ describe("useNavigationBlocker", () => {
     expect(result.current.blocked).toBe(false);
   });
 
-  it("ignores events that cannot be intercepted", () => {
+  it("ignores events that cannot be intercepted", async () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent({ canIntercept: false });
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -97,14 +97,14 @@ describe("useNavigationBlocker", () => {
     expect(result.current.blocked).toBe(false);
   });
 
-  it("ignores hash-only changes", () => {
+  it("ignores hash-only changes", async () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent({ hashChange: true });
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -112,14 +112,14 @@ describe("useNavigationBlocker", () => {
     expect(result.current.blocked).toBe(false);
   });
 
-  it("ignores download requests", () => {
+  it("ignores download requests", async () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent({ downloadRequest: "file.zip" });
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -127,7 +127,7 @@ describe("useNavigationBlocker", () => {
     expect(result.current.blocked).toBe(false);
   });
 
-  it("passes the destination URL to shouldBlock", () => {
+  it("passes the destination URL to shouldBlock", async () => {
     const { nav, fireNavigate } = createNavigationMock();
     setWindowNavigation(nav);
     const shouldBlock = vi.fn<() => boolean>(() => false);
@@ -136,9 +136,9 @@ describe("useNavigationBlocker", () => {
     // NavigateDestination shape.
     const { event } = fakeNavigateEvent({ destination: { url: "/somewhere" } as never });
 
-    renderHook(() => useNavigationBlocker(shouldBlock));
+    await renderHook(() => useNavigationBlocker(shouldBlock));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -150,9 +150,9 @@ describe("useNavigationBlocker", () => {
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent();
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -165,7 +165,7 @@ describe("useNavigationBlocker", () => {
 
     expect(settled).toBe(false);
 
-    act(() => {
+    await act(() => {
       result.current.proceed();
     });
     await pending;
@@ -179,9 +179,9 @@ describe("useNavigationBlocker", () => {
     setWindowNavigation(nav);
     const { event, intercept } = fakeNavigateEvent();
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 
@@ -192,7 +192,7 @@ describe("useNavigationBlocker", () => {
       settled = true;
     })();
 
-    act(() => {
+    await act(() => {
       result.current.reset();
     });
     await Promise.resolve();
@@ -201,57 +201,57 @@ describe("useNavigationBlocker", () => {
     expect(result.current.blocked).toBe(false);
   });
 
-  it("proceed() is a no-op when nothing is blocked", () => {
+  it("proceed() is a no-op when nothing is blocked", async () => {
     const { nav } = createNavigationMock();
     setWindowNavigation(nav);
 
-    const { result } = renderHook(() => useNavigationBlocker(() => true));
+    const { result } = await renderHook(() => useNavigationBlocker(() => true));
 
-    act(() => {
+    await act(() => {
       result.current.proceed();
     });
 
     expect(result.current.blocked).toBe(false);
   });
 
-  it("does nothing when the Navigation API is unsupported", () => {
+  it("does nothing when the Navigation API is unsupported", async () => {
     setWindowNavigation(undefined);
 
-    const { result, unmount } = renderHook(() => useNavigationBlocker(() => true));
+    const { result, unmount } = await renderHook(() => useNavigationBlocker(() => true));
 
     expect(result.current.blocked).toBe(false);
-    act(() => {
+    await act(() => {
       result.current.proceed();
       result.current.reset();
     });
     expect(result.current.blocked).toBe(false);
-    unmount();
+    await unmount();
   });
 
-  it("removes the navigate listener on unmount", () => {
+  it("removes the navigate listener on unmount", async () => {
     const { nav, removeEventListener } = createNavigationMock();
     setWindowNavigation(nav);
 
-    const { unmount } = renderHook(() => useNavigationBlocker(() => true));
-    unmount();
+    const { unmount } = await renderHook(() => useNavigationBlocker(() => true));
+    await unmount();
 
     expect(removeEventListener).toHaveBeenCalledWith("navigate", expect.any(Function));
   });
 
-  it("uses the latest shouldBlock without re-subscribing", () => {
+  it("uses the latest shouldBlock without re-subscribing", async () => {
     const { addEventListener, fireNavigate, nav } = createNavigationMock();
     setWindowNavigation(nav);
     const { event } = fakeNavigateEvent();
 
-    const { rerender, result } = renderHook(
+    const { rerender, result } = await renderHook(
       ({ shouldBlock }: { shouldBlock: (url: string) => boolean }) =>
         useNavigationBlocker(shouldBlock),
       { initialProps: { shouldBlock: (): boolean => false } },
     );
 
-    rerender({ shouldBlock: () => true });
+    await rerender({ shouldBlock: () => true });
 
-    act(() => {
+    await act(() => {
       fireNavigate(event);
     });
 

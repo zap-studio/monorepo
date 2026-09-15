@@ -1,6 +1,6 @@
-import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { act, renderHook } from "../../tests/_react.ts";
 import { useNotificationPermission } from "./use-notification-permission.ts";
 
 interface MockNotificationState {
@@ -32,10 +32,10 @@ const setMockNotification = (permission: NotificationPermission) => {
 };
 
 describe("useNotificationPermission", () => {
-  it("reports the current Notification.permission", () => {
+  it("reports the current Notification.permission", async () => {
     setMockNotification("default");
 
-    const { result } = renderHook(() => useNotificationPermission());
+    const { result } = await renderHook(() => useNotificationPermission());
 
     expect(result.current.permission).toBe("default");
   });
@@ -44,7 +44,7 @@ describe("useNotificationPermission", () => {
     setMockNotification("default");
     MockNotification.requestPermission.mockResolvedValue("granted");
 
-    const { result } = renderHook(() => useNotificationPermission());
+    const { result } = await renderHook(() => useNotificationPermission());
 
     await act(async () => {
       await result.current.requestPermission();
@@ -53,18 +53,18 @@ describe("useNotificationPermission", () => {
     expect(result.current.permission).toBe("granted");
   });
 
-  it("notify no-ops and returns undefined when permission is not granted", () => {
+  it("notify no-ops and returns undefined when permission is not granted", async () => {
     setMockNotification("denied");
 
-    const { result } = renderHook(() => useNotificationPermission());
+    const { result } = await renderHook(() => useNotificationPermission());
 
     expect(result.current.notify("Hi")).toBeUndefined();
   });
 
-  it("notify creates a Notification when permission is granted", () => {
+  it("notify creates a Notification when permission is granted", async () => {
     setMockNotification("granted");
 
-    const { result } = renderHook(() => useNotificationPermission());
+    const { result } = await renderHook(() => useNotificationPermission());
     const notification = result.current.notify("Hi", { body: "there" });
 
     expect(notification).toBeInstanceOf(MockNotification);
@@ -75,7 +75,7 @@ describe("useNotificationPermission", () => {
   it('requestPermission resolves "denied" without calling the API when unsupported', async () => {
     Reflect.deleteProperty(window, "Notification");
 
-    const { result } = renderHook(() => useNotificationPermission());
+    const { result } = await renderHook(() => useNotificationPermission());
     expect(result.current.permission).toBe("unsupported");
 
     await act(async () => {
