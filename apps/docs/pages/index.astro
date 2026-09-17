@@ -1,0 +1,241 @@
+---
+import data from "blume:data";
+import Icon from "blume/components/Icon.astro";
+import CodeBlock from "blume/components/content/CodeBlock.astro";
+import PageLayout from "blume/components/layout/PageLayout.astro";
+
+import { brandIcons } from "../lib/brand-icons.ts";
+import { packages } from "../lib/packages.ts";
+
+const { config } = data;
+
+const repoUrl = "https://github.com/zap-studio/monorepo";
+
+const example = `import { api } from "@zap-studio/fetch";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), name: z.string(), email: z.email() });
+
+const policy = exponentialBackoff({ maxAttempts: 3, baseDelayMs: 100 });
+
+// \`user\` is typed from UserSchema — no manual annotations, no \`as\` casts
+const user = await runRetryPolicy(policy, () =>
+  api.get("https://api.example.com/users/1", UserSchema),
+);`;
+
+const guarantees = [
+  {
+    icon: "shield-check",
+    text: "Types come from your schema through Standard Schema, not from hand-written annotations.",
+    title: "Type-safe",
+  },
+  {
+    icon: "globe",
+    text: "Built on fetch, Request/Response, AbortSignal and crypto.subtle. No adapter, no plugin system, no global setup.",
+    title: "Framework-agnostic",
+  },
+  {
+    icon: "blocks",
+    text: "Each package does one thing and accepts the others as plain values. Functions in, values out.",
+    title: "Composable",
+  },
+  {
+    icon: "leaf",
+    text: "Standalone functions, no shared state, one subpath per feature. What you do not import does not ship.",
+    title: "Tree-shakeable",
+  },
+];
+
+const runtimes = [
+  { label: "Node.js 18+", marks: [brandIcons.node] },
+  { label: "Bun 1.0+", marks: [brandIcons.bun] },
+  { label: "Deno 1.42+", marks: [brandIcons.deno] },
+  { label: "Cloudflare Workers", marks: [brandIcons.workers] },
+  { label: "Evergreen browsers", marks: [brandIcons.chrome, brandIcons.firefox, brandIcons.safari] },
+];
+
+const question = (name: string, text: string) => ({
+  "@type": "Question",
+  acceptedAnswer: { "@type": "Answer", text },
+  name,
+});
+
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    question(
+      "What is Zap Studio?",
+      "Zap Studio is a collection of type-safe, framework-agnostic, composable, and tree-shakeable TypeScript libraries for the web, covering fetch, logging, retries, validation, webhooks, authorization, monads, React hooks, and lint/format presets.",
+    ),
+    question(
+      "Is Zap Studio free and open source?",
+      "Yes. Every package is MIT-licensed and published on GitHub, npm and JSR at no cost.",
+    ),
+    question(
+      "What packages does Zap Studio provide?",
+      packages.map((entry) => `${entry.name} (${entry.description})`).join(", "),
+    ),
+    question(
+      "Which runtimes does Zap Studio support?",
+      "All runtime packages ship standard ESM and target Node.js 18+, Bun 1.0+, Deno 1.42+, Cloudflare Workers, and the latest evergreen browsers.",
+    ),
+    question(
+      "How do I install a Zap Studio package?",
+      "Install the package you need from npm, e.g. `npm install @zap-studio/fetch`, or from JSR with `deno add jsr:@zap-studio/fetch`, then follow the getting-started guide for that package on zapstudio.dev.",
+    ),
+  ],
+};
+
+/** Footer links that leave the site — each one gets the outbound arrow. */
+const externalLinks = [
+  { href: repoUrl, label: "GitHub" },
+  { href: "https://www.npmjs.com/org/zap-studio", label: "npm" },
+];
+
+const buttonClass =
+  "inline-flex items-center gap-2 rounded-blume px-4 py-2 font-medium text-sm transition-colors";
+
+/** One rhythm for the three reading sections: air above the heading, less below. */
+const sectionClass = "mx-auto max-w-5xl px-6 pt-24 pb-4";
+
+/** A 24×24 brand mark sized down to sit on a text baseline. */
+const markClass = "[&>svg]:size-[1.125rem] shrink-0";
+---
+
+<PageLayout
+  analytics={config.analytics}
+  appleIcon={config.appleIcon}
+  banner={config.banner}
+  favicon={config.favicon}
+  fontCssVars={data.fontCssVars}
+  logo={config.logo}
+  navigation={data.navigation}
+  ogEnabled={config.og.enabled}
+  page={{ description: config.description, route: "/", title: `${config.title} — ${config.description}` }}
+  searchEnabled={config.search.enabled}
+  site={{ description: config.description, title: config.title }}
+  siteUrl={config.site}
+  structuredDataEnabled={config.structuredData}
+  themeMode={config.theme.mode}
+>
+  <section
+    class="mx-auto flex min-h-[calc(100svh-4rem)] max-w-5xl flex-col items-center justify-center px-6 py-8 text-center sm:py-12"
+  >
+    <h1 class="text-balance font-display font-semibold text-3xl tracking-tight sm:text-5xl">
+      TypeScript libraries for the code every app needs
+    </h1>
+    <p class="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+      HTTP calls, retries, permission checks, validation, logs, webhooks. Type-safe,
+      framework-agnostic and composable. No new runtime, no framework.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a class={`${buttonClass} bg-action text-action-foreground hover:opacity-90`} href="/docs">
+        Read the documentation
+        <Icon name="arrow-right" size={16} />
+      </a>
+      <a
+        class={`${buttonClass} border border-border hover:bg-muted`}
+        href={repoUrl}
+        rel="noreferrer"
+        target="_blank"
+      >
+        <Icon name="github" size={16} />
+        GitHub
+      </a>
+    </div>
+    <div class="mt-8 w-full max-w-3xl text-left sm:mt-12">
+      <CodeBlock code={example} lang="ts" title="A typed call that retries" />
+    </div>
+  </section>
+
+  <section class={sectionClass}>
+    <h2 class="font-display font-semibold text-2xl tracking-tight">One set of rules</h2>
+    <div class="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          guarantees.map((item) => (
+          <div>
+            <Icon name={item.icon} size={20} />
+            <h3 class="mt-3 font-medium">{item.title}</h3>
+            <p class="mt-1.5 text-muted-foreground text-sm">{item.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class={sectionClass}>
+    <h2 class="font-display font-semibold text-2xl tracking-tight">
+      {packages.length} packages
+    </h2>
+    <p class="mt-2 text-muted-foreground">
+      Each one works standalone. Install only what you need.
+    </p>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          packages.map((entry) => (
+            <a
+              class="rounded-blume border border-border p-5 transition-colors hover:bg-muted"
+              href={`/docs/${entry.slug}`}
+            >
+              <div class="flex items-baseline justify-between gap-3">
+                <span class="font-medium font-mono text-sm">{entry.name}</span>
+                <span class="text-muted-foreground text-xs">v{entry.version}</span>
+              </div>
+            <p class="mt-2 text-muted-foreground text-sm">{entry.description}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class={`${sectionClass} pb-24`}>
+    <h2 class="font-display font-semibold text-2xl tracking-tight">Runs everywhere</h2>
+    <p class="mt-2 max-w-2xl text-muted-foreground">
+      Standard ESM, web APIs only. The same code on a server, an edge runtime and in the
+      browser.
+    </p>
+    <ul class="mt-8 flex flex-wrap gap-x-8 gap-y-4">
+      {
+        runtimes.map((runtime) => (
+          <li class="flex items-center gap-2.5 text-sm">
+            <span class={`flex items-center gap-1.5 text-foreground ${markClass}`}>
+              {runtime.marks.map((mark) => (
+                <Fragment set:html={mark} />
+              ))}
+            </span>
+            {runtime.label}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <script is:inline set:html={JSON.stringify(faqLd)} type="application/ld+json" />
+
+  <footer
+    class="mx-auto flex max-w-5xl flex-col-reverse gap-8 px-6 py-12 text-muted-foreground text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+    slot="footer"
+  >
+    <span>MIT licensed — © {new Date().getFullYear()} Zap Studio</span>
+    <nav class="grid grid-cols-2 gap-x-6 gap-y-1 sm:flex sm:items-center sm:gap-6">
+      <a class="py-1.5 hover:text-foreground sm:py-0" href="/docs">Documentation</a>
+      <a class="py-1.5 hover:text-foreground sm:py-0" href="/docs/installation">Installation</a>
+      <a class="py-1.5 hover:text-foreground sm:py-0" href="/docs/principles">Principles</a>
+      {
+        externalLinks.map((link) => (
+          <a
+            class="inline-flex items-center gap-1 py-1.5 hover:text-foreground sm:py-0"
+            href={link.href}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {link.label}
+            <Icon name="arrow-up-right" size={12} />
+          </a>
+        ))
+      }
+    </nav>
+  </footer>
+</PageLayout>

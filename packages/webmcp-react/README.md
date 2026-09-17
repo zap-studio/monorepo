@@ -2,7 +2,7 @@
 
 React bindings for [`@zap-studio/webmcp`](https://www.npmjs.com/package/@zap-studio/webmcp): a `useWebMCPTool` hook that registers a tool with the native WebMCP API for the lifetime of a component.
 
-Full documentation: [zapstudio.dev/webmcp/react](https://www.zapstudio.dev/webmcp/react)
+Full documentation: [zapstudio.dev/docs/webmcp/react](https://www.zapstudio.dev/docs/webmcp/react)
 
 ## Installation
 

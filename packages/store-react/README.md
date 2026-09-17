@@ -2,7 +2,7 @@
 
 React bindings for [`@zap-studio/store`](https://www.npmjs.com/package/@zap-studio/store): a single `useStore` hook that subscribes a component to a `createStore`/`derive` instance.
 
-Full documentation: [zapstudio.dev/store/react](https://www.zapstudio.dev/store/react)
+Full documentation: [zapstudio.dev/docs/store/react](https://www.zapstudio.dev/docs/store/react)
 
 ## Motivation
 

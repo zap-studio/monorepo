@@ -27,6 +27,7 @@ export default defineConfig({
       ].join("\n"),
     },
   },
+  basePath: "/docs",
   content: {
     root: "content",
     types: {
@@ -46,6 +47,7 @@ export default defineConfig({
     text: "",
   },
   navigation: {
+    cta: { href: "/", label: "Documentation" },
     selectors: [
       {
         items: packages.map((entry) => ({
