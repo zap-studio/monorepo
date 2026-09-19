@@ -47,7 +47,7 @@ export default defineConfig({
     text: "",
   },
   navigation: {
-    cta: { href: "/", label: "Documentation" },
+    cta: { href: "/", label: "Docs" },
     selectors: [
       {
         items: packages.map((entry) => ({
@@ -80,6 +80,7 @@ export default defineConfig({
   },
   theme: {
     accent: { dark: "hsl(43, 96%, 56%)", light: "hsl(38, 92%, 40%)" },
+    fonts: { display: "space-grotesk", mono: "ibm-plex-mono" },
     radius: "none",
     mode: "system",
   },
