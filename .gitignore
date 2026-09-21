@@ -73,3 +73,4 @@ docs/superpowers/
 
 # Claude Code local config and skills
 .claude/
+.size.json
