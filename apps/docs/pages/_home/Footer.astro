@@ -1,0 +1,42 @@
+---
+import Icon from "blume/components/Icon.astro";
+
+const docLinks = [
+    { href: "/docs", label: "Documentation" },
+    { href: "/docs/installation", label: "Installation" },
+    { href: "/docs/principles", label: "Principles" },
+];
+
+const externalLinks = [
+    { href: "https://github.com/zap-studio/monorepo", label: "GitHub" },
+    { href: "https://www.npmjs.com/org/zap-studio", label: "npm" },
+];
+---
+
+<footer class="border-[var(--rule-strong)] border-t">
+    <div class="mx-auto w-full max-w-[76rem] border-[var(--rule)] border-x bg-background">
+        <div class="mx-auto flex max-w-5xl flex-col-reverse gap-8 px-6 py-12 text-muted-foreground text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <span class="readout text-xs">
+                MIT licensed · © {new Date().getFullYear()} Zap Studio
+            </span>
+            <nav class="grid grid-cols-2 gap-x-6 gap-y-1 sm:flex sm:items-center sm:gap-6">
+                {docLinks.map((link) => (
+                    <a class="py-1.5 hover:text-foreground sm:py-0" href={link.href}>
+                        {link.label}
+                    </a>
+                ))}
+                {externalLinks.map((link) => (
+                    <a
+                        class="inline-flex items-center gap-1 py-1.5 hover:text-foreground sm:py-0"
+                        href={link.href}
+                        rel="noreferrer"
+                        target="_blank"
+                    >
+                        {link.label}
+                        <Icon name="arrow-up-right" size={12} />
+                    </a>
+                ))}
+            </nav>
+        </div>
+    </div>
+</footer>
