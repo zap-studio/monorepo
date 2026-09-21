@@ -10,19 +10,28 @@ import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
 import { z } from "zod";
 
 const UserSchema = z.object({ id: z.number(), email: z.email() });
+type User = z.infer<typeof UserSchema>;
 
 const logger = new ConsoleLogger({ minLevel: "info" });
-const users = createCache<string, z.infer<typeof UserSchema>>(100, { ttl: 60_000 });
-const policy = exponentialBackoff({ maxAttempts: 3, baseDelayMs: 100, maxDelayMs: 2_000 });
+const users = createCache<string, User>(100, { ttl: 60_000 });
 const { api } = createFetch({ baseURL: "https://api.example.com", logger });
 
-export const getUser = async (id: string) => {
+const policy = exponentialBackoff({
+  maxAttempts: 3,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+export const getUser = async (id: string): Promise<User> => {
   const cached = users.get(id);
   if (cached) {
     return cached;
   }
 
-  const user = await runRetryPolicy(policy, () => api.get(\`/users/\${id}\`, UserSchema)); // [!code highlight]
+  const user = await runRetryPolicy(policy, () =>
+    api.get(\`/users/\${id}\`, UserSchema), // [!code highlight]
+  );
+
   users.set(id, user);
   return user;
 };`;
