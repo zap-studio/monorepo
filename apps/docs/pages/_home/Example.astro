@@ -1,0 +1,36 @@
+---
+import CodeBlock from "blume/components/content/CodeBlock.astro";
+
+import Section from "./Section.astro";
+
+const example = `import { createCache } from "@zap-studio/cache";
+import { createFetch } from "@zap-studio/fetch";
+import { ConsoleLogger } from "@zap-studio/logger";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+import { z } from "zod";
+
+const UserSchema = z.object({ id: z.number(), email: z.email() });
+
+const logger = new ConsoleLogger({ minLevel: "info" });
+const users = createCache<string, z.infer<typeof UserSchema>>(100, { ttl: 60_000 });
+const policy = exponentialBackoff({ maxAttempts: 3, baseDelayMs: 100, maxDelayMs: 2_000 });
+const { api } = createFetch({ baseURL: "https://api.example.com", logger });
+
+export const getUser = async (id: string) => {
+  const cached = users.get(id);
+  if (cached) {
+    return cached;
+  }
+
+  const user = await runRetryPolicy(policy, () => api.get(\`/users/\${id}\`, UserSchema)); // [!code highlight]
+  users.set(id, user);
+  return user;
+};`;
+---
+
+<Section
+  lead="Four packages in one request. It reads the cache first, checks the data, tries again when the call fails, and logs every step."
+  title="Example"
+>
+  <CodeBlock code={example} lang="ts" title="example.ts" />
+</Section>
