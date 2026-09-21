@@ -1,0 +1,50 @@
+---
+import Icon from "blume/components/Icon.astro";
+
+import { catalog } from "../../lib/catalog.ts";
+import Section from "./Section.astro";
+
+const rules = [
+    {
+        body: "Your schema decides the types. Wrong data fails at the call, with a clear error.",
+        icon: "shield-check",
+        title: "Type-safe",
+    },
+    {
+        body: "Web APIs first: fetch, Request, AbortSignal, crypto. Same code everywhere.",
+        icon: "globe",
+        title: "Framework-agnostic",
+    },
+    {
+        body: "Small pieces that fit together. A retry policy is an argument. So is a logger, so is a schema.",
+        icon: "blocks",
+        title: "Composable",
+    },
+    {
+        body: "One import path per feature. Import one, ship one.",
+        icon: "scissors",
+        title: "Tree-shakeable",
+    },
+];
+---
+
+<Section
+    lead={`Every package is built to the same four constraints.`}
+    title="Philosophy"
+>
+    <dl class="grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+        {rules.map((rule) => (
+            <div>
+                <dt class="flex items-center gap-2.5 font-medium">
+                    <span class="tech-icon text-muted-foreground">
+                        <Icon name={rule.icon} size={17} />
+                    </span>
+                    {rule.title}
+                </dt>
+                <dd class="mt-3 max-w-[46ch] text-muted-foreground text-sm leading-relaxed">
+                    {rule.body}
+                </dd>
+            </div>
+        ))}
+    </dl>
+</Section>
