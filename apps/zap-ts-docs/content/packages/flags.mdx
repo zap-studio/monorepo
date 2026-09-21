@@ -1,0 +1,135 @@
+---
+title: Flags
+description: Feature flags in the browser and on the server, decided by PostHog through the Flags SDK.
+---
+
+`@zap-ts/flags` gives the app feature flags. A feature flag is a switch. You
+turn a feature on for some people, and off for the rest, without shipping new
+code.
+
+The package has two export paths. `@zap-ts/flags/client` gives you four React
+hooks, to read a flag inside a component. `@zap-ts/flags/server` gives you an
+Effect service, to read a flag during a request.
+
+PostHog decides the answer in both cases. The package talks to it through
+`@flags-sdk/posthog`, the PostHog adapter of the Flags SDK.
+
+## How it relates to the analytics package
+
+Flags and analytics are two packages on one PostHog project. They share
+`POSTHOG_KEY` and `POSTHOG_HOST`. They share nothing else. Neither one depends
+on the other.
+
+But they do meet in the browser. The four hooks come straight from
+`@posthog/react`. They read PostHog from React context. So
+`AnalyticsProvider` from [`@zap-ts/analytics/client`](/packages/analytics) must
+sit above them in the React tree. The same provider that names the user for
+events also lets PostHog decide a flag for that user. Remove the provider, and
+the hooks have nobody to ask.
+
+On the server there is no such link. `@zap-ts/flags/server` builds its own
+PostHog adapter from the same two variables. It does not need
+`ServerAnalyticsLive`.
+
+One simple way to remember the difference: analytics sends facts out, and flags
+read decisions in.
+
+## In a component
+
+```tsx
+import { useFeatureFlagEnabled } from "@zap-ts/flags/client";
+
+const Dashboard = () => {
+  const isNew = useFeatureFlagEnabled("new-dashboard");
+
+  return isNew ? <NewDashboard /> : <OldDashboard />;
+};
+```
+
+There are four hooks:
+
+1. `useFeatureFlagEnabled` gives you `true` or `false`.
+2. `useFeatureFlagVariantKey` gives you the name of the variant. A flag can
+   have more than two answers, and each one is a variant.
+3. `useFeatureFlagPayload` gives you the extra data attached to the flag.
+4. `useFeatureFlagResult` gives you the whole result.
+
+The package re-exports these hooks without changing them. So they work exactly
+as PostHog describes them. That includes one point to watch: a hook returns
+`undefined` while the flags are still loading. Treat that as "not on yet". Do
+not treat it as a real answer.
+
+## On the server
+
+`Flags` is a tag. A tag is a name that stands for a service you provide later.
+This one holds the PostHog adapter. `FlagsLive` is the layer that builds it,
+with `createPostHogAdapter`. A layer is the recipe that makes a service real.
+
+```ts
+import { evaluateFlag, FlagsLive } from "@zap-ts/flags/server";
+import { Effect } from "effect";
+
+const program = evaluateFlag({
+  key: "new-dashboard",
+  defaultValue: false,
+  entities: { distinctId: user.id },
+  request,
+});
+
+const enabled = await Effect.runPromise(program.pipe(Effect.provide(FlagsLive)));
+```
+
+`evaluateFlag` takes four things:
+
+1. `key` is the name of the flag in PostHog.
+2. `defaultValue` is the answer to use when PostHog gives none back. It also
+   sets the type of the result.
+3. `entities` says who the flag is for. Put the user id in its `distinctId`
+   field. PostHog cannot decide a flag until it knows who is asking.
+4. `request` is the request of the current server function. The package reads
+   its cookies and headers, and passes them to the adapter.
+
+The Flags SDK has a `flag()` helper, but only for Next.js and SvelteKit. This
+app uses neither. So the package calls the adapter itself, and reads the
+cookies and headers from the request. That is why you pass the request in.
+
+Does the call to PostHog fail? Then you get a `FlagsError`. It carries the
+original error in its `cause` field. So an outage is a value your code can
+handle, not a crash. Note the difference: an empty answer falls back to
+`defaultValue`, but a failed call does not.
+
+## Every flag is decided by PostHog
+
+The adapter asks PostHog every time. One decision is one call over the network.
+
+That choice is on purpose, and `packages/flags/src/server.ts` says why. PostHog
+can also copy the flag rules into memory and decide there. But that copy needs
+a job that keeps asking PostHog for changes. That is a good trade on a server
+that runs for days. It is a bad one on compute that starts and stops per
+request, such as Cloudflare Workers. There, each new instance would start its
+own job instead of sharing one.
+
+Do you move the app to a long-running server, and do you read flags very often?
+Then this is the choice to look at again.
+
+## Environment
+
+```bash
+POSTHOG_KEY=
+POSTHOG_HOST=https://eu.i.posthog.com
+```
+
+These are the same two variables the analytics package uses. The root
+`.env.schema` file declares them once.
+
+`POSTHOG_KEY` must start with `phc_`. The server layer reads it with
+`requireEnv`. So if PostHog is not set up, the error comes when you read a
+flag. `POSTHOG_HOST` is required, and points at the EU cloud by default.
+
+See [Environment](/guides/environment) to learn how varlock turns those
+declarations into the typed `ENV` that the code imports.
+
+## Related
+
+- [Analytics](/packages/analytics) — the provider the client hooks need
+- [Environment](/packages/environment) — `env` and `requireEnv`

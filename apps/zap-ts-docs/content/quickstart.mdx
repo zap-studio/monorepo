@@ -1,0 +1,108 @@
+---
+title: Quickstart
+description: Get zap.ts running on your computer in five commands. You do not need any paid account to start.
+---
+
+This page takes you from a fresh copy of zap.ts to a running app.
+
+You do not need a Stripe account, an Amazon account or an email provider. You
+do not need to create a settings file. Everything you need runs on your own
+computer.
+
+## Before you start
+
+You need two programs installed:
+
+- **Node.js**, version 22.12 or newer. It runs JavaScript on your computer.
+- **Docker**, with Docker Compose. It runs the database and two other services
+  for you, so you do not have to install them one by one.
+
+zap.ts uses **pnpm** to install code libraries. If you do not have it, run:
+
+```bash
+npm install -g pnpm
+```
+
+## The five commands
+
+Run these in order, from the zap.ts folder.
+
+```bash
+pnpm install
+docker compose up -d
+pnpm run db:migrate
+pnpm run db:seed
+pnpm run dev:web
+```
+
+Here is what each one does.
+
+1. `pnpm install` downloads every library the project needs.
+2. `docker compose up -d` starts three services in the background: the
+   database, an email inbox and a file store.
+3. `pnpm run db:migrate` creates the tables inside the database.
+4. `pnpm run db:seed` fills those tables with example data, so the app is not
+   empty when you open it.
+5. `pnpm run dev:web` starts the app.
+
+Open [localhost:3000](http://localhost:3000). The app is running.
+
+:::note
+`docker compose up -d` only needs to run once. The services keep running in
+the background, even after you close the app.
+:::
+
+## What Docker started for you
+
+| Service | What it is | Where to look |
+| --- | --- | --- |
+| Postgres | The database. It stores your data. | Port 5432 |
+| Mailpit | A fake email inbox. Emails your app sends land here instead of a real address. | [localhost:8025](http://localhost:8025) |
+| MinIO | A file store. Uploads go here instead of a paid cloud service. | [localhost:9001](http://localhost:9001) |
+
+Sign up inside the app, then open Mailpit. Your welcome email is waiting there.
+
+Payments run in test mode. The billing page says so on screen. No real card
+can be charged.
+
+## Starting the other apps
+
+zap.ts holds six apps. Each one starts with its own command.
+
+```bash
+pnpm run dev:marketing   # your public website, port 3001
+pnpm run dev:docs        # your product docs, port 3002
+pnpm run dev:admin       # your back office, port 3003
+pnpm run dev:emails      # preview your emails, port 3004
+pnpm run dev:api         # the API server, port 8787
+```
+
+You can run several at the same time, each in its own terminal window.
+
+:::note
+The back office keeps its own separate sign-in. Being signed in to the web app
+does not sign you in to the admin app. You sign in again there.
+:::
+
+## Adding your own accounts later
+
+Nothing needs a real account until you want one.
+
+When you are ready to connect a real service, put your keys in a file named
+`.env.local`. Place it next to the `.env.schema` file that lists those keys.
+`.env.local` files are never saved to git, so your keys stay private.
+
+See [Environment](/guides/environment) for how this works.
+
+## If something does not work
+
+The most common problem is that Docker is not running. Check that first.
+
+See [Troubleshooting](/troubleshooting) for the other common problems.
+
+## Related
+
+- [Local development](/guides/local-development) — working day to day
+- [Project structure](/project-structure) — what each folder holds
+- [Environment](/guides/environment) — how settings and keys work
+- [Add a feature](/recipes/add-a-feature) — build your first feature

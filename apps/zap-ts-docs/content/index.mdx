@@ -1,10 +1,76 @@
 ---
 title: Introduction
-description: Welcome to your new Blume docs.
+description: zap.ts is a paid starter kit for building a SaaS product in TypeScript. Sign-in, payments, database, email and file uploads are already built.
 ---
 
-# Introduction
+zap.ts is a starter kit. A starter kit is a working codebase you copy and
+build your own product on top of.
 
-Welcome to **Blume** — markdown-first docs powered by Astro and Vite.
+It saves you the first two months. Sign-in, teams, payments, email, file
+uploads, background jobs and error reports are already built and already
+connected to each other.
 
-Edit `docs/index.mdx` to get started, then run `blume dev`.
+zap.ts is not a framework. Nothing is hidden. Every file is yours to read,
+change or delete.
+
+## What is inside
+
+zap.ts holds six apps:
+
+| App | Address | What it does |
+| --- | --- | --- |
+| `web` | `app.<domain>` | Your product. Users sign in here. |
+| `marketing` | `<domain>` | Your public website: home page, blog, legal pages. |
+| `admin` | `admin.<domain>` | Your back office. See users, ban them, sign in as them. |
+| `api` | — | Your own public API, for customers to build on. |
+| `docs` | — | A docs site for your own product. |
+| `emails` | — | A tool to preview your emails while you design them. |
+
+Shared code lives in `packages/`. Every app imports it. Nothing is copied
+twice.
+
+## What is already decided
+
+These are the choices that take a week to get right on your own:
+
+- **Postgres and Drizzle** store your data.
+- **Better Auth** handles sign-in, teams, two-factor codes and passkeys.
+- **Seven payment companies** are supported. Stripe is set up by default.
+- **varlock** checks your settings. If a key is missing, the build stops and
+  tells you which one.
+- **Sentry** reports errors. **PostHog** shows you how people use the app.
+
+See [Tech stack](/tech-stack) for the full list and the reason behind each
+choice.
+
+## What is not decided
+
+Your product. Your database tables, your pages, your prices, your design.
+
+The example data and the example plan IDs are there to be replaced.
+
+## It runs on your computer with nothing to sign up for
+
+You do not need a Stripe account, an Amazon account or an email provider to
+start.
+
+Docker sets up a database, an email inbox and a file store on your own
+computer. zap.ts already points at them. Payments start in test mode, so no
+real card is ever charged.
+
+Five commands and the app is running. See [Quickstart](/quickstart).
+
+## Licence
+
+zap.ts is paid software. One licence covers one developer or one team. You can
+build as many products as you like with it. You cannot resell or give away the
+zap.ts code itself.
+
+The full terms are in the `LICENSE.md` file in the repository.
+
+## Where to go next
+
+- [Quickstart](/quickstart) — get it running in five commands
+- [Tech stack](/tech-stack) — what it is built with, and why
+- [Project structure](/project-structure) — what each folder holds
+- [Add a feature](/recipes/add-a-feature) — build your first feature, step by step

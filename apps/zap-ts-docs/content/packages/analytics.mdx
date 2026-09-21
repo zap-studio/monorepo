@@ -1,0 +1,119 @@
+---
+title: Analytics
+description: Events from the browser and from the server, sent to PostHog and tied to the signed-in user.
+---
+
+`@zap-ts/analytics` lets the app record what people do. It sends these events
+to PostHog. PostHog is a product analytics service.
+
+The package has two export paths. `@zap-ts/analytics/client` is for the
+browser. It gives you one React component to wrap your app in.
+`@zap-ts/analytics/server` is for events the server sends itself. Both talk to
+the same PostHog project, and both read the same two variables.
+
+## The browser side
+
+`AnalyticsProvider` wraps the app. Both `apps/web` and `apps/marketing` use it
+in their root route.
+
+```tsx
+import { AnalyticsProvider } from "@zap-ts/analytics/client";
+
+const App = () => (
+  <AnalyticsProvider>
+    <Routes />
+  </AnalyticsProvider>
+);
+```
+
+Inside, it is the `PostHogProvider` of `@posthog/react`. The package sets
+`person_profiles: "identified_only"`. So PostHog keeps a profile for people you
+name, and not for every visitor who passes by.
+
+Is `POSTHOG_KEY` missing? Then the provider just returns its children, and
+sends nothing. A fresh copy of the project still runs, and no component has to
+check whether analytics is set up.
+
+## Why it needs the authentication package
+
+The provider does one more thing. It keeps the PostHog identity equal to the
+signed-in user. That is the only reason `@zap-ts/analytics` depends on
+`@zap-ts/authentication`.
+
+A small component inside the provider, `IdentifyUser`, reads the session. It
+uses `authClient.useSession()` from `@zap-ts/authentication/client`. A session
+is the record that says who is signed in right now. Then it does one of two
+things:
+
+1. Someone is signed in. It calls `posthog.identify(userId)`. Now events belong
+   to that person.
+2. Nobody is signed in. It calls `posthog.reset()`. So the next person on that
+   browser does not get the events of the last one.
+
+So your sign-in and sign-out code needs no analytics call. The session changes,
+and the identity follows by itself.
+
+After the provider is in place, components send events with `usePostHog` from
+`@posthog/react`. The package does not wrap that hook.
+
+## The server side
+
+The server side is an Effect service. `ServerAnalytics` is a tag. A tag is a
+name that stands for a service you provide later. This one holds a
+`posthog-node` client. `ServerAnalyticsLive` is the layer that builds it. A
+layer is the recipe that makes a service real.
+
+```ts
+import { capture, ServerAnalyticsLive } from "@zap-ts/analytics/server";
+import { Effect } from "effect";
+
+const program = capture({
+  distinctId: "user_1",
+  event: "subscription_started",
+  properties: { plan: "team" },
+});
+
+await Effect.runPromise(program.pipe(Effect.provide(ServerAnalyticsLive)));
+```
+
+`capture` takes an `EventMessage` from `posthog-node`. It needs at least two
+fields: `distinctId`, which says who did the thing, and `event`, which says
+what they did. You can add `properties` for anything else you want to keep.
+
+Use the same user id on the server and in the browser. PostHog joins the two
+sets of events by that id.
+
+The layer is scoped. That means it cleans up after itself. It builds the client
+at the start, and it waits for `client.shutdown()` at the end. That call sends
+anything still waiting in the queue. This matters when the process stops soon
+after the request, because a later background send would never happen.
+
+The layer also sets `flushAt: 1` and `flushInterval: 0`. So each event leaves
+right away. It does not wait for a group of events.
+
+The server reads its key with `requireEnv`, and the browser does not. So a
+missing key is quiet in the browser and an error on the server. A server event
+is usually one you really meant to send.
+
+## Environment
+
+```bash
+POSTHOG_KEY=
+POSTHOG_HOST=https://eu.i.posthog.com
+```
+
+The root `.env.schema` file declares both. Both are marked as not sensitive,
+because the browser gets the key anyway.
+
+`POSTHOG_KEY` must start with `phc_`, and it is optional. `POSTHOG_HOST` is
+required. It points at the EU cloud by default. Is your project in the US? Then
+use `https://us.i.posthog.com`. You can also point it at your own proxy.
+
+See [Environment](/guides/environment) to learn how varlock turns those
+declarations into the typed `ENV` that the code imports.
+
+## Related
+
+- [Authentication](/packages/authentication) — the session the provider reads
+- [Flags](/packages/flags) — feature flags on the same PostHog project
+- [Environment](/packages/environment) — `env` and `requireEnv`

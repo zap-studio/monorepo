@@ -1,0 +1,185 @@
+---
+title: AI
+description: One way to call a model, for text, objects, embeddings, images, video, speech and transcription.
+---
+
+`@zap-ts/ai` gives the app one way to call an AI model. It covers text,
+structured output, summaries, embeddings, images, video, speech and
+transcription. Each one is a function. Each function retries itself when the
+model provider fails. The app imports `@zap-ts/ai`, and nothing else. There is
+only one export path.
+
+The package is built on `@tanstack/ai`. The model provider is OpenAI, through
+`@tanstack/ai-openai`.
+
+Every function returns an Effect. An Effect is a description of work. It does
+not run until you run it.
+
+## The AI service
+
+The package does not hold a client of its own. Instead it has two pieces:
+
+1. `AI` is a tag. A tag is a name that stands for a service you will provide
+   later. This tag holds one adapter per capability. An adapter is the small
+   piece of code that talks to OpenAI.
+2. `AILive` is the layer that builds those adapters. A layer is the recipe that
+   makes a service real.
+
+`AILive` reads `OPENAI_API_KEY` with `requireEnv`. So a missing key fails at
+once, when you build the layer. It does not fail later, in the middle of a
+request.
+
+```ts
+import { AILive, generateText } from "@zap-ts/ai";
+import { Effect } from "effect";
+
+const answer = await Effect.runPromise(
+  generateText({ messages: [{ role: "user", content: "Hi!" }] }).pipe(
+    Effect.provide(AILive),
+  ),
+);
+```
+
+In `apps/web` the layer is built once, in `src/lib/ai.ts`. Every call shares
+it. Your code calls `runAI` and never names the layer:
+
+```ts
+import { generateText } from "@zap-ts/ai";
+
+import { runAI } from "../lib/ai";
+
+const answer = await runAI(
+  generateText({ messages: [{ role: "user", content: "Hi!" }] }),
+);
+```
+
+## Wait, or stream
+
+Each capability comes in two shapes.
+
+The first shape waits. It gives you the answer when the model has finished:
+`generateText`, `generateObject`, `summarizeText`, `generateEmbeddings`,
+`createImage`, `createVideo`, `createSpeech` and `transcribe`. A video can take
+a long time, so `getVideoStatus` reads the state of a video job that still
+runs.
+
+The second shape streams. It gives you the answer in small pieces, as the model
+writes it: `streamText`, `streamObject`, `streamSummarizeText`, `streamImage`,
+`streamVideo`, `streamSpeech` and `streamTranscription`.
+
+```ts
+import { AILive, streamText } from "@zap-ts/ai";
+import { Effect, Stream } from "effect";
+
+const program = streamText({
+  messages: [{ role: "user", content: "Write a poem." }],
+}).pipe(Stream.runForEach((chunk) => Effect.log(chunk)));
+
+await Effect.runPromise(program.pipe(Effect.provide(AILive)));
+```
+
+Do you want to send the pieces straight to a browser? Then use
+`streamTextResponse`. It gives you an HTTP response instead of a stream.
+
+## Structured output
+
+Sometimes you do not want free text. You want an object with fields you can
+trust. Give `generateObject` an `outputSchema`. A schema says which fields the
+object has, and what type each field is. You get back the parsed object, and
+TypeScript knows its shape:
+
+```ts
+const user = await runAI(
+  generateObject({
+    messages: [{ role: "user", content: "Give me a fake user." }],
+    outputSchema: z.object({ name: z.string(), age: z.number() }),
+  }),
+);
+```
+
+`streamObject` is the same call. It builds the object piece by piece.
+
+## Tools
+
+A tool is a function you let the model call. You declare one with
+`toolDefinition`, which the package re-exports from `@tanstack/ai`.
+
+Is the work of your tool written with Effect? Then use `effectTool`. You write
+the body as an Effect, and the package runs it for you:
+
+```ts
+const getTime = effectTool(
+  {
+    name: "getTime",
+    description: "Gives the current time.",
+    inputSchema: z.object({}),
+    outputSchema: z.object({ now: z.string() }),
+  },
+  () => Effect.succeed({ now: new Date().toISOString() }),
+);
+```
+
+## Retries and errors
+
+Every call retries in the same way. It waits 200ms, then doubles the wait each
+time, and it tries three times in total. The wait also gets a small random
+change, so many calls do not all retry at the same moment.
+
+A retry writes a debug log. Three failed tries write a warning log.
+
+Then you get an `AIError`. It carries the original error in its `cause` field.
+So your code handles one error type, whatever the provider did.
+
+## Models
+
+The model names live in one place, `packages/ai/src/index.ts`:
+
+```ts
+export const DEFAULT_MODELS = {
+  embedding: "text-embedding-3-large",
+  image: "gpt-image-2",
+  speech: "tts-1-hd",
+  text: "gpt-5.2",
+  transcription: "gpt-4o-transcribe",
+  video: "sora-2",
+} as const;
+```
+
+The `text` model is used for chat and for summaries. Change a value here, and
+every call that uses that capability changes too.
+
+## Changing the provider
+
+Only OpenAI is set up. `AILive` builds its seven adapters with the
+`createOpenai*` functions of `@tanstack/ai-openai`.
+
+To use another provider:
+
+1. In `packages/ai/src/index.ts`, replace those `createOpenai*` calls inside
+   `AILive` with the adapters of another `@tanstack/ai` adapter package.
+2. In the same file, change the model names in `DEFAULT_MODELS` to the names
+   that provider uses.
+
+Nothing else changes. `generateText` and the other functions only ever see an
+adapter. They never see the provider behind it.
+
+## Environment
+
+```bash
+OPENAI_API_KEY=
+```
+
+The root `.env.schema` file declares this variable. It must be a string that
+starts with `sk-`, and the file links to the OpenAI page where you get one.
+
+The variable is optional there, but `AILive` needs it. That is why the layer
+reads it with `requireEnv`. So the app starts without an OpenAI key, and only
+an AI call complains.
+
+See [Environment](/guides/environment) to learn how varlock turns those
+declarations into the typed `ENV` that the code imports.
+
+## Related
+
+- [Environment](/packages/environment) — `env` and `requireEnv`
+- [Web](/apps/web) — where the shared AI runtime lives

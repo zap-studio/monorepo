@@ -1,0 +1,133 @@
+---
+title: Observability
+description: Sentry set up for every part of the app - the browser, the TanStack Start server, and the Hono API.
+---
+
+`@zap-ts/observability` tells you when the app breaks. It sends errors to
+Sentry. Sentry is a service that collects errors and shows them to you.
+
+The package also sends traces. A trace is a record of how long one request
+took, step by step.
+
+Each part of the app runs in a different place. The browser is one place. The
+server is another. So the package has one entry point for each place:
+
+- `./client` for the browser
+- `./server` for the TanStack Start server
+- `./react` for the router
+- `./hono/cloudflare` and `./hono/vercel` for the API
+
+Nothing is sent until you set `SENTRY_DSN`. A DSN is the address of your
+Sentry project. Without it, every entry point starts with `enabled: false`.
+So local runs and tests send nothing.
+
+## Two entry points that run on import
+
+`./client` and `./server` are not functions you call. You only import them.
+The import itself starts Sentry for that place. This is why the
+`package.json` lists both files under `sideEffects`.
+
+```ts
+import "@zap-ts/observability/client";
+```
+
+```ts
+import "@zap-ts/observability/server";
+```
+
+You do not need to write these two lines yourself.
+`@zap-ts/tanstack-start` already writes them, in `lib/hydrate` and in
+`lib/server-entry`.
+
+In the browser, `./client` also turns on two Sentry features. Session replay
+records what the user did before the error. The feedback widget lets the user
+write you a message. Replay records 10% of normal sessions, and 100% of the
+sessions that hit an error.
+
+## The router and the server
+
+`./react` is the part your own code uses. It gives you `captureException`,
+which sends one error to Sentry:
+
+```ts
+import { captureException } from "@zap-ts/observability/react";
+
+try {
+  await risky();
+} catch (error) {
+  captureException(error);
+}
+```
+
+It also gives you `instrumentRouter`. It tells Sentry to time each page the
+router loads. It does nothing on the server:
+
+```ts
+import { instrumentRouter } from "@zap-ts/observability/react";
+
+const router = createRouter();
+instrumentRouter(router);
+```
+
+`./server` gives you two middlewares. A middleware is code that runs around
+every request. They are called `sentryGlobalRequestMiddleware` and
+`sentryGlobalFunctionMiddleware`. Together they trace every request and every
+server function.
+
+`./server` also gives you `ServerObservabilityLive`. It is an Effect layer
+that hands you the Sentry client itself, under the tag
+`ServerObservability`. It closes the client when the work ends. Use it only if
+the middlewares are not enough.
+
+## The API
+
+The API uses Hono, not TanStack Start. Sentry starts in a different way on
+Cloudflare and on Vercel. So there is one file for each host. Both export a
+function with the same name, `sentryMiddleware`. It takes the app and a DSN.
+The DSN may be `null`:
+
+```ts
+import { sentryMiddleware } from "@zap-ts/observability/hono/cloudflare";
+
+const app = new Hono();
+app.use("*", sentryMiddleware(app, ENV.SENTRY_DSN ?? null));
+```
+
+Add it before every other middleware. Then it wraps the whole request. It
+reports the errors that reach `app.onError`. It does not report the 3xx and
+4xx ones, because those are normal answers, not bugs.
+
+:::note
+On Vercel, Sentry asks you to start it with the `--import` flag, before the
+app loads. This package starts it later, when the middleware is built. You
+lose the traces of the code that loaded first. Move the call to `--import` if
+you need those traces.
+:::
+
+## Environment
+
+```bash
+SENTRY_DSN=
+SENTRY_ORG=
+SENTRY_PROJECT=
+SENTRY_AUTH_TOKEN=
+```
+
+Only `SENTRY_DSN` is read while the app runs.
+
+The other three are read when you build the app. The Sentry plugin in
+`tooling/vite/src/config.ts` uses them to upload source maps. A source map
+turns the built code in a stack trace back into your own code. Each value is
+passed only if you set it. A build without them still works. You just get
+stack traces that are harder to read.
+
+All four are declared in the root `.env.schema`. See
+[Environment](/guides/environment) to learn how varlock turns them into the
+typed `ENV` that the code imports.
+
+## Related
+
+- [TanStack Start](/packages/tanstack-start) - it already imports the client and server entry points
+- [Environment](/packages/environment) - where `SENTRY_DSN` comes from
+- [Analytics](/packages/analytics) - what users do, instead of what breaks
+- [Going to production](/guides/going-to-production) - setting a real DSN

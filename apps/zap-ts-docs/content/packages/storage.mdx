@@ -1,0 +1,144 @@
+---
+title: Storage
+description: Upload, download, delete and link files in a bucket, with six small calls and a local bucket that runs on your machine.
+---
+
+`@zap-ts/storage` lets the app keep files somewhere other than the database.
+Think of avatars, invoices or videos. The files live in a bucket. A bucket is
+a folder in the cloud, and each file in it has a key. A key is the path of the
+file, like `avatars/user_1.png`.
+
+The package uses `files-sdk` and talks to Cloudflare R2. On your own machine it
+talks to MinIO instead, which already runs with `docker compose up`. Your code
+does not change between the two.
+
+## What you get
+
+Everything comes from one import path, `@zap-ts/storage`. There are six calls.
+
+- `uploadFile(key, body, options?)` writes a file. If a file with that key
+  already exists, it is replaced.
+- `downloadFile(key, options?)` reads a whole file.
+- `streamFile(key, options?)` reads a file bit by bit, for big files.
+- `deleteFile(key)` removes a file.
+- `fileExists(key)` tells you if a file is there.
+- `fileUrl(key, options?)` builds a link to a file.
+
+Each call needs the `FileStorageLive` layer. The layer builds the client from
+your settings.
+
+```ts
+import { FileStorageLive, uploadFile } from "@zap-ts/storage";
+import { Effect } from "effect";
+
+await Effect.runPromise(
+  uploadFile("avatars/user_1.png", bytes, { contentType: "image/png" }).pipe(
+    Effect.provide(FileStorageLive),
+  ),
+);
+```
+
+## Reading a file
+
+`downloadFile` gives you the whole file at once. That is fine for a small
+file.
+
+```ts
+import { downloadFile, FileStorageLive } from "@zap-ts/storage";
+import { Effect } from "effect";
+
+const file = await Effect.runPromise(
+  downloadFile("notes/hello.txt").pipe(Effect.provide(FileStorageLive)),
+);
+```
+
+For a big file, use `streamFile`. It reads the file in pieces, so your app
+never holds all of it in memory. `streamFile` opens a reader, and the reader
+must be closed. Effect closes it for you, but only inside `Effect.scoped`. So
+always wrap the call.
+
+```ts
+import { FileStorageLive, streamFile } from "@zap-ts/storage";
+import { Effect } from "effect";
+
+const program = Effect.scoped(
+  Effect.flatMap(streamFile("videos/clip.mp4"), (reader) =>
+    Effect.promise(() => reader.read()),
+  ),
+);
+
+await Effect.runPromise(program.pipe(Effect.provide(FileStorageLive)));
+```
+
+## Links that expire
+
+`fileUrl` builds a link to a file. Pass `expiresIn` to set how many seconds
+the link stays valid. After that, the link stops working. This is how you show
+a private file to one user without making the bucket public.
+
+```ts
+import { fileUrl, FileStorageLive } from "@zap-ts/storage";
+import { Effect } from "effect";
+
+const url = await Effect.runPromise(
+  fileUrl("notes/hello.txt", { expiresIn: 3600 }).pipe(
+    Effect.provide(FileStorageLive),
+  ),
+);
+```
+
+## When something goes wrong
+
+Every call can fail with a `FileStorageError`. The error carries two things:
+the `key` you asked for, and the `cause`, which is the original error. So you
+always know which file failed.
+
+Storage errors are not hidden. Unlike an email, a file that does not save is a
+real problem for the user. You have to handle the error yourself.
+
+## The bucket on your machine
+
+`docker compose up` starts MinIO. MinIO is a bucket that runs on your own
+computer. It speaks the same language as Cloudflare R2, so the same code
+works.
+
+1. Run `docker compose up`.
+2. MinIO answers requests on port 9000.
+3. Open `http://localhost:9001` to see the files in a browser.
+4. Sign in with `minioadmin` as the user and `minioadmin` as the password.
+
+A bucket named `zap` is created for you when the services start. You do not
+have to create it.
+
+## Environment
+
+These values ship in `.env.schema`:
+
+```bash
+R2_ACCOUNT_ID=zap_dev_r2_account
+R2_ACCESS_KEY_ID=minioadmin
+R2_SECRET_ACCESS_KEY=minioadmin
+R2_BUCKET=zap
+R2_ENDPOINT=http://127.0.0.1:9000
+```
+
+`R2_ENDPOINT` is the address the bucket answers on. It points at MinIO on your
+machine. On Cloudflare, leave it empty. R2 then builds its own address from
+your account id.
+
+To go live, do this:
+
+1. Create a bucket in Cloudflare R2.
+2. Create an access key there.
+3. Put the account id, the key, the secret and the bucket name in your
+   settings.
+4. Leave `R2_ENDPOINT` empty.
+
+See [Environment](/guides/environment) to learn how varlock turns these lines
+into the typed `ENV` that the code reads.
+
+## Related
+
+- [Environment](/guides/environment) — the settings the package reads
+- [Local development](/guides/local-development) — what `docker compose up` starts
+- [Going to production](/guides/going-to-production) — moving from MinIO to R2

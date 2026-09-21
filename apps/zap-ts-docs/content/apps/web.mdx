@@ -1,0 +1,183 @@
+---
+title: Web
+description: The app your users sign in to, with the dashboard, the account, the organization and billing.
+---
+
+`apps/web` is the app your users sign in to. It holds the sign-up and sign-in
+screens. It also holds the dashboard, and under it the account, the
+organization and billing. You run it on `app.<domain>`.
+
+This is the only app in the project that carries a user session. A session is
+the proof that a user has signed in.
+
+The app is built with TanStack Start and runs on Cloudflare Workers. A Worker
+is a small server that Cloudflare runs close to your users. The pages live in
+`src/routes`. The name of a file there decides its URL.
+
+## Running it
+
+```bash
+pnpm run dev:web
+```
+
+This starts the app on port 3000. Open `http://localhost:3000`.
+
+```bash
+pnpm run env:web
+```
+
+This prints the environment the app loads. An environment variable is a value
+you set outside the code, like a password or a URL. Run this command first when
+the app stops and says a variable is missing.
+
+The app needs a Postgres database running. Postgres is the database that stores
+your users. Every protected page reads the session from it. See
+[Local development](/guides/local-development) for the `docker compose up` that
+starts Postgres and the rest.
+
+## The pages
+
+Every page under `_protected` needs a session. The file
+`src/routes/_protected.tsx` reads the session on the server. If there is none,
+it sends the visitor to `/sign-in`.
+
+```tsx
+export const Route = createFileRoute("/_protected")({
+  beforeLoad: async () => {
+    const session = await getSession();
+
+    if (!session) {
+      throw redirect({ to: "/sign-in" });
+    }
+
+    return { user: session.user, organizationId: session.session.activeOrganizationId ?? null };
+  },
+  component: ProtectedLayout,
+});
+```
+
+What it returns is passed down to the pages inside. So a page can read the user
+without asking the server again.
+
+These are the protected pages:
+
+- `/onboarding` — the name of the user, and the name of their first organization.
+- `/dashboard` — the first page after sign-in.
+- `/dashboard/billing` — the plan, the checkout and the customer portal.
+- `/dashboard/organization` — members, invitations and organization settings.
+- `/dashboard/account` — profile, email, password, passkeys, two-factor, sessions and API keys.
+- `/dashboard/settings` — theme and reduced motion.
+
+These pages are open to everyone: `/sign-in`, `/sign-up`, `/forgot-password`,
+`/reset-password`, `/two-factor` and `/accept-invitation/$invitationId`. The
+page at `/` sends you straight to `/dashboard`.
+
+The file `src/routes/api.auth.$.ts` handles sign-in and sign-up requests. The
+browser calls `/api/auth/*` on the same address as the app.
+
+Search engines are told to stay away. The app serves a `robots.txt` with
+`Disallow: /`. Its pages also carry `noindex, nofollow`. Nothing here is meant
+for a search engine.
+
+## What it uses from the project
+
+The `package.json` of the app lists these. Each one has its own page:
+
+- [`@zap-ts/authentication`](/packages/authentication) — sign-in, sign-up and sessions
+- [`@zap-ts/authorization`](/packages/authorization) — who may do what
+- [`@zap-ts/billing`](/packages/billing) — plans and subscriptions
+- [`@zap-ts/database`](/packages/database) — the tables behind all of it
+- [`@zap-ts/ui`](/packages/ui) — the buttons, tables and colors on the page
+- [`@zap-ts/tanstack-start`](/packages/tanstack-start) — shared page and form pieces
+- [`@zap-ts/ai`](/packages/ai), [`@zap-ts/mail`](/packages/mail), [`@zap-ts/analytics`](/packages/analytics), [`@zap-ts/observability`](/packages/observability), [`@zap-ts/queues-cloudflare`](/packages/queues)
+
+The app also depends on `api`, but only for its types. The file
+`src/lib/api.ts` builds a typed client from `AppType`. If you change a route in
+`apps/api`, the build here fails. That is on purpose. It tells you early.
+
+## Where the database address comes from
+
+One file decides: `src/lib/database-url.ts`. On Cloudflare it reads the
+Hyperdrive binding. Hyperdrive is a Cloudflare service that sits in front of
+Postgres and makes queries faster.
+
+```ts
+export const databaseUrl = (): string => cloudflareEnv.HYPERDRIVE.connectionString;
+```
+
+The binding is set in `wrangler.jsonc`. The `id` that ships is a demo one.
+Replace it with the `id` of your own database before you deploy.
+
+## Languages
+
+The app speaks English and French. It uses Paraglide, a tool that turns text
+files into typed functions.
+
+The file `project.inlang/settings.json` lists the languages. English is the
+base. The text lives in `messages/en.json` and `messages/fr.json`.
+
+Run `pnpm run i18n:compile` to build the translations. The `build` and
+`typecheck` scripts already run it first. So a missing translation stops the
+build instead of showing an empty label.
+
+To add a language, do two things:
+
+1. Add it to `locales` in `project.inlang/settings.json`.
+2. Create `messages/<locale>.json` with the same keys.
+
+## The worker file
+
+`src/server.ts` exports two things.
+
+The first answers web requests. It wraps the app so each request arrives with
+the right language.
+
+The second handles jobs from a queue. A queue holds work that runs later, after
+the user already got their answer. The queue is set up in `wrangler.jsonc`. The
+job handler that ships only writes a log line. Replace `runJob` with your own
+work.
+
+There is also `src/sw.ts`, a service worker. A service worker is a script the
+browser keeps running in the background. This one saves pages, so the app still
+opens when the network fails.
+
+## The end-to-end test
+
+```bash
+pnpm run test:e2e
+```
+
+The file `e2e/happy-path.spec.ts` runs one full path. It signs up, names an
+organization, subscribes, and lands on the dashboard. It runs in Chromium,
+Firefox and WebKit.
+
+The test drives a real dev server. So it needs a Postgres address in
+`TEST_DATABASE_URL`. The test never pays a real provider. It answers the
+checkout call itself, with the same redirect the provider would send back.
+
+## What to change first
+
+1. `SITE_NAME` in `src/lib/site.ts`.
+2. `public/manifest.webmanifest` — the name, the description, the colors and the icons.
+3. The Hyperdrive `id` in `wrangler.jsonc`.
+4. The plan ids, which live in [`@zap-ts/billing`](/packages/billing), not here.
+
+## Deploying
+
+```bash
+pnpm run deploy:web
+```
+
+This runs `varlock-wrangler deploy`. It sends your environment variables up with
+the app. You do not set them by hand in the Cloudflare dashboard.
+
+The app declares no variables of its own. Its `.env.schema` takes the whole
+root `.env.schema`, and adds `API_URL` from `apps/api`.
+
+## Related
+
+- [Marketing](/apps/marketing) — the public site that links here
+- [Admin](/apps/admin) — the back office, with its own sign-in
+- [Authentication](/packages/authentication) — the session this app reads
+- [Environment](/guides/environment) — how varlock loads `.env.schema`
+- [Going to production](/guides/going-to-production)
