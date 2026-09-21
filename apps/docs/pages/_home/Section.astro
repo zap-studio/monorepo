@@ -1,0 +1,26 @@
+---
+interface Props {
+  lead?: string;
+
+  measure?: string;
+  title: string;
+}
+
+const { lead, measure, title } = Astro.props;
+---
+
+<section class="border-[var(--rule-strong)] border-t">
+  <div class="mx-auto max-w-5xl px-6 py-16 sm:py-20">
+    <div class="grid gap-x-10 gap-y-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-baseline">
+      <div>
+        <h2 class="display text-[clamp(1.5rem,2.6vw,2.1rem)]">{title}</h2>
+        {lead && <p class="mt-4 max-w-[54ch] text-muted-foreground text-pretty">{lead}</p>}
+      </div>
+      {measure && <p class="label readout md:text-right">{measure}</p>}
+    </div>
+
+    <div class="mt-10 md:mt-14">
+      <slot />
+    </div>
+  </div>
+</section>
