@@ -1,6 +1,5 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { gzipSync } from "node:zlib";
 
 import { type PackageInfo, packages } from "./packages.ts";
 
@@ -81,23 +80,21 @@ const facts = {
 
 const measure = (slug: string): number | null => {
   try {
-    const distDirectory = `${packagesDirectory}/${slug}/dist`;
-    const sources: Buffer[] = [];
-    for (const file of readdirSync(distDirectory)) {
-      if (file.endsWith(".js")) {
-        sources.push(readFileSync(`${distDirectory}/${file}`));
-      }
-    }
-    if (sources.length === 0) {
+    const report: unknown = JSON.parse(
+      readFileSync(`${packagesDirectory}/${slug}/.size.json`, "utf8"),
+    );
+    // SAFETY: every value read off the parsed report is checked below.
+    const sizes = Object.values(report as Record<string, unknown>).filter(
+      (size) => typeof size === "number",
+    );
+    if (sizes.length === 0) {
       return null;
     }
-    return gzipSync(Buffer.concat(sources), { level: 9 }).byteLength;
+    return sizes.reduce((total, size) => total + size, 0);
   } catch {
     return null;
   }
 };
-
-const RELATIVE_PREFIX = /^\.\//u;
 
 interface Manifest {
   dependencies?: Record<string, string>;
@@ -129,26 +126,6 @@ export const catalog: CatalogEntry[] = packages.map((entry) => {
       : { support: everywhere }),
   };
 });
-
-export const measureExport = (slug: string, subpath: string): number | null => {
-  const target = readManifest(slug).exports?.[subpath];
-
-  // SAFETY: an exports entry is either the file path itself or a conditions
-  // object; anything else falls through the `typeof` check below.
-  const file =
-    typeof target === "string" ? target : (target as { import?: string } | undefined)?.import;
-  if (typeof file !== "string") {
-    return null;
-  }
-  try {
-    const source = readFileSync(
-      `${packagesDirectory}/${slug}/${file.replace(RELATIVE_PREFIX, "")}`,
-    );
-    return gzipSync(source, { level: 9 }).byteLength;
-  } catch {
-    return null;
-  }
-};
 
 export const sizesAvailable = catalog.every((entry) => entry.gzipBytes !== null);
 
