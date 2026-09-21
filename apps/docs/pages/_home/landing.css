@@ -37,8 +37,19 @@ body:has([data-landing]) > header {
 .label[aria-selected="true"],
 .label[aria-selected="true"]:hover {
   background: var(--blume-foreground);
-  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
   color: var(--blume-background);
+}
+
+[data-copied] {
+  color: var(--blume-accent);
+}
+
+[data-copied] .copy-idle {
+  display: none;
+}
+
+[data-copied] .copy-done {
+  display: flex;
 }
 
 .readout {

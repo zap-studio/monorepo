@@ -49,12 +49,17 @@ const commands = [
         ))}
         <button
             aria-label="Copy the install command"
-            class="press flex w-12 shrink-0 items-center justify-center border-[var(--rule)] border-l text-muted-foreground hover:bg-foreground hover:text-background"
+            class="flex w-12 shrink-0 items-center justify-center border-[var(--rule)] border-l text-muted-foreground transition-colors hover:bg-foreground hover:text-background"
             data-copy
             type="button"
         >
             <span class="sr-only" data-status aria-live="polite"></span>
-            <Icon class="pointer-events-none" name="copy" size={15} />
+            <span class="copy-idle pointer-events-none flex">
+                <Icon name="copy" size={15} />
+            </span>
+            <span class="copy-done pointer-events-none hidden">
+                <Icon name="check" size={15} />
+            </span>
         </button>
     </div>
 </install-slab>

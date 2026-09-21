@@ -2,6 +2,10 @@
   --blume-background: oklch(0.993 0.002 90);
   --blume-muted: oklch(0.967 0.003 90);
   --blume-border: oklch(0.87 0.006 90 / 0.9);
+
+  caret-color: var(--blume-accent);
+  scrollbar-color: var(--blume-border) transparent;
+  scrollbar-width: thin;
 }
 
 :root[data-theme="dark"] {
@@ -18,12 +22,6 @@ body {
 ::selection {
   background: color-mix(in oklch, var(--blume-accent) 26%, transparent);
   color: var(--blume-foreground);
-}
-
-:root {
-  caret-color: var(--blume-accent);
-  scrollbar-color: var(--blume-border) transparent;
-  scrollbar-width: thin;
 }
 
 :focus-visible {
