@@ -2,7 +2,7 @@
 
 Schema-first, type-safe webhook routing built on the standard Web API [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) primitives, with runtime-agnostic signature verification support.
 
-Full documentation: [zapstudio.dev/webhooks](https://www.zapstudio.dev/webhooks)
+Full documentation: [zapstudio.dev/docs/webhooks](https://www.zapstudio.dev/docs/webhooks)
 
 ## Motivation
 

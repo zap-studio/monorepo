@@ -11,7 +11,7 @@ import { defineConfig } from "oxlint";
 
 export default defineConfig({
   extends: [base, react, reactDoctor, jsxRuntimeAutomatic, vitest],
-  ignorePatterns: ["packages/oxlint/src/anti-slop/**"],
+  ignorePatterns: ["packages/oxlint/src/anti-slop/**", "**/*.astro"],
   overrides: [
     {
       files: ["packages/react-hooks/**"],

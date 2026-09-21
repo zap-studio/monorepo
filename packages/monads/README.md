@@ -2,7 +2,7 @@
 
 `Result`/`Option` types and Rust-style functional combinators for explicit, type-safe error handling — an alternative to throw/catch and nullable checks.
 
-Full documentation: [zapstudio.dev/monads](https://www.zapstudio.dev/monads)
+Full documentation: [zapstudio.dev/docs/monads](https://www.zapstudio.dev/docs/monads)
 
 ## Motivation
 

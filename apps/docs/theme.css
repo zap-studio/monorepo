@@ -1,0 +1,30 @@
+:root {
+  --blume-background: oklch(0.993 0.002 90);
+  --blume-muted: oklch(0.967 0.003 90);
+  --blume-border: oklch(0.87 0.006 90 / 0.9);
+
+  caret-color: var(--blume-accent);
+  scrollbar-color: var(--blume-border) transparent;
+  scrollbar-width: thin;
+}
+
+:root[data-theme="dark"] {
+  --blume-background: oklch(0.155 0.004 90);
+  --blume-muted: oklch(0.2 0.004 90);
+  --blume-border: oklch(0.36 0.006 90 / 0.9);
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--blume-accent) 26%, transparent);
+  color: var(--blume-foreground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--blume-accent);
+  outline-offset: 3px;
+}

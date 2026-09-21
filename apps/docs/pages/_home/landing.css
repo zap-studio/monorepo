@@ -1,0 +1,125 @@
+:root {
+  --rule: oklch(0.83 0.006 90 / 0.9);
+  --rule-strong: oklch(0.62 0.01 90 / 0.55);
+  --pattern-fg: oklch(0.55 0.01 90 / 0.14);
+}
+
+:root[data-theme="dark"] {
+  --rule: oklch(0.38 0.006 90 / 0.9);
+  --rule-strong: oklch(0.58 0.01 90 / 0.45);
+  --pattern-fg: oklch(0.75 0.01 90 / 0.14);
+}
+
+html:has([data-landing]) {
+  overscroll-behavior-y: none;
+}
+
+body:has([data-landing]) > header {
+  border-bottom: 1px solid var(--rule);
+}
+
+.display {
+  font-family: var(--blume-font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+}
+
+.label {
+  color: var(--blume-muted-foreground);
+  font-family: var(--blume-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.label[aria-selected="true"],
+.label[aria-selected="true"]:hover {
+  background: var(--blume-foreground);
+  color: var(--blume-background);
+}
+
+.readout {
+  font-family: var(--blume-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.hatch {
+  background-image: repeating-linear-gradient(
+    315deg,
+    var(--pattern-fg) 0,
+    var(--pattern-fg) 1px,
+    transparent 0,
+    transparent 50%
+  );
+  background-size: 9px 9px;
+}
+
+.tech-icon svg {
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 1.5;
+}
+
+.plate {
+  background-color: currentColor;
+  mask-image: var(--plate-src);
+  mask-position: bottom center;
+  mask-repeat: no-repeat;
+  mask-size: cover;
+}
+
+.scroll-fade {
+  mask-image: linear-gradient(to right, #000 calc(100% - 3rem), transparent 100%);
+}
+
+@media (min-width: 64rem) {
+  .scroll-fade {
+    mask-image: none;
+  }
+}
+
+.cut {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--cut, 10px)) 0,
+    100% var(--cut, 10px),
+    100% 100%,
+    0 100%
+  );
+}
+
+.ink-link {
+  text-decoration-color: var(--rule-strong);
+  text-decoration-line: underline;
+  text-underline-offset: 0.22em;
+  transition:
+    background-color 0.12s linear,
+    color 0.12s linear;
+}
+
+.ink-link:hover {
+  background: var(--blume-foreground);
+  color: var(--blume-background);
+  text-decoration-color: transparent;
+}
+
+.press {
+  transition:
+    background-color 0.12s linear,
+    color 0.12s linear,
+    border-color 0.12s linear;
+}
+
+.press:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active {
+    filter: brightness(0.92);
+    transform: none;
+  }
+}

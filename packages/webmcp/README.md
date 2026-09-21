@@ -2,7 +2,7 @@
 
 A framework-agnostic, SSR-safe wrapper around the native WebMCP `document.modelContext` API, with a batch tool registry for exposing JavaScript tools to AI agents.
 
-Full documentation: [zapstudio.dev/webmcp](https://www.zapstudio.dev/webmcp)
+Full documentation: [zapstudio.dev/docs/webmcp](https://www.zapstudio.dev/docs/webmcp)
 
 ## Motivation
 

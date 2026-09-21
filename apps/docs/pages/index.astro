@@ -1,0 +1,93 @@
+---
+import data from "blume:data";
+import PageLayout from "blume/components/layout/PageLayout.astro";
+
+import "./_home/landing.css";
+
+import { catalog } from "../lib/catalog.ts";
+import Catalog from "./_home/Catalog.astro";
+import Cta from "./_home/Cta.astro";
+import Example from "./_home/Example.astro";
+import Footer from "./_home/Footer.astro";
+import Guarantees from "./_home/Guarantees.astro";
+import Hero from "./_home/Hero.astro";
+
+const { config } = data;
+
+const question = (name: string, text: string) => ({
+    "@type": "Question",
+    acceptedAnswer: { "@type": "Answer", text },
+    name,
+});
+
+const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+        question(
+            "What is Zap Studio?",
+            "Zap Studio is a collection of type-safe, framework-agnostic, composable, and tree-shakeable TypeScript libraries for the web, covering fetch, logging, retries, validation, webhooks, authorization, monads, React hooks, and lint/format presets.",
+        ),
+        question(
+            "Is Zap Studio free and open source?",
+            "Yes. Every package is MIT-licensed and published on GitHub, npm and JSR at no cost.",
+        ),
+        question(
+            "What packages does Zap Studio provide?",
+            catalog
+                .map((entry) => `${entry.name} (${entry.description})`)
+                .join(", "),
+        ),
+        question(
+            "Which runtimes does Zap Studio support?",
+            "All runtime packages ship standard ESM and target Node.js 18+, Bun 1.0+, Deno 1.42+, Cloudflare Workers, and the latest evergreen browsers.",
+        ),
+        question(
+            "How do I install a Zap Studio package?",
+            "Install the package you need from npm, e.g. `npm install @zap-studio/fetch`, or from JSR with `deno add jsr:@zap-studio/fetch`, then follow the getting-started guide for that package on zapstudio.dev.",
+        ),
+    ],
+};
+---
+
+<PageLayout
+    analytics={config.analytics}
+    appleIcon={config.appleIcon}
+    banner={config.banner}
+    favicon={config.favicon}
+    fontCssVars={data.fontCssVars}
+    logo={config.logo}
+    navigation={data.navigation}
+    ogEnabled={config.og.enabled}
+    page={{
+        description: config.description,
+        route: "/",
+        title: `${config.title} — ${config.description}`,
+    }}
+    searchEnabled={config.search.enabled}
+    site={{ description: config.description, title: config.title }}
+    siteUrl={config.site}
+    structuredDataEnabled={config.structuredData}
+    themeMode={config.theme.mode}
+>
+    <div
+        aria-hidden="true"
+        class="hatch pointer-events-none fixed inset-0 -z-10"
+        data-landing
+    ></div>
+
+    <div class="mx-auto w-full max-w-[76rem] border-[var(--rule)] border-x bg-background">
+        <Hero />
+        <Example />
+        <Catalog />
+        <Guarantees />
+        <Cta />
+    </div>
+
+    <script
+        is:inline
+        set:html={JSON.stringify(faqLd)}
+        type="application/ld+json"
+    ></script>
+    <Footer slot="footer" />
+</PageLayout>

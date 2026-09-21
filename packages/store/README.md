@@ -2,7 +2,7 @@
 
 A small state container. It works with any framework, or no framework at all. It has auto-tracked derived values and simple built-in persist.
 
-Full documentation: [zapstudio.dev/store](https://www.zapstudio.dev/store)
+Full documentation: [zapstudio.dev/docs/store](https://www.zapstudio.dev/docs/store)
 
 ## Motivation
 

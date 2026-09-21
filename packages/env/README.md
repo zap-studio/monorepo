@@ -2,7 +2,7 @@
 
 A runtime and framework-agnostic env var validator, built on [Standard Schema](https://standardschema.dev/).
 
-Full documentation: [zapstudio.dev/env](https://www.zapstudio.dev/env)
+Full documentation: [zapstudio.dev/docs/env](https://www.zapstudio.dev/docs/env)
 
 ## Motivation
 

@@ -6,7 +6,7 @@
   "sideEffects": false,
   "scripts": {
     "audit": "blume audit",
-    "build": "blume build",
+    "build": "pnpm -w run build && blume build",
     "check": "blume check",
     "deploy": "wrangler deploy",
     "dev": "blume dev",

@@ -1,0 +1,163 @@
+---
+import Icon from "blume/components/Icon.astro";
+
+interface Props {
+    class?: string;
+    package: string;
+}
+
+const { class: className, package: name } = Astro.props;
+
+const commands = [
+    { command: `npm install @zap-studio/${name}`, id: "npm", label: "npm" },
+    { command: `pnpm add @zap-studio/${name}`, id: "pnpm", label: "pnpm" },
+    { command: `bun add @zap-studio/${name}`, id: "bun", label: "bun" },
+    { command: `deno add jsr:@zap-studio/${name}`, id: "deno", label: "deno" },
+];
+---
+
+<install-slab class={`block ${className ?? ""}`}>
+    <div class="flex items-stretch border-[var(--rule)] border-x border-t border-b">
+        {commands.map((entry, index) => (
+            <button
+                aria-selected={index === 0 ? "true" : "false"}
+                class="label -mb-px flex-1 border-[var(--rule)] border-r px-3.5 py-2.5 text-muted-foreground transition-colors last:border-r-0 hover:bg-muted hover:text-foreground aria-selected:text-background"
+                data-manager={entry.id}
+                role="tab"
+                type="button"
+            >
+                {entry.label}
+            </button>
+        ))}
+    </div>
+
+    <div class="flex items-stretch border-[var(--rule)] border-x border-b bg-muted">
+        <span
+            aria-hidden="true"
+            class="readout flex select-none items-center pr-2 pl-4 text-accent"
+        >
+            $
+        </span>
+        {commands.map((entry, index) => (
+            <code
+                class="readout flex min-w-0 flex-1 items-center overflow-x-auto py-4 text-[13.5px] whitespace-nowrap aria-hidden:hidden"
+                aria-hidden={index === 0 ? "false" : "true"}
+                data-command={entry.id}
+            >
+                {entry.command}
+            </code>
+        ))}
+        <button
+            aria-label="Copy the install command"
+            class="flex w-12 shrink-0 items-center justify-center border-[var(--rule)] border-l text-muted-foreground transition-colors hover:bg-foreground hover:text-background"
+            data-copy
+            type="button"
+        >
+            <span class="sr-only" data-status aria-live="polite"></span>
+            <span class="copy-idle pointer-events-none flex">
+                <Icon name="copy" size={15} />
+            </span>
+            <span class="copy-done pointer-events-none hidden">
+                <Icon name="check" size={15} />
+            </span>
+        </button>
+    </div>
+</install-slab>
+
+<script>
+    class InstallSlab extends HTMLElement {
+        connectedCallback() {
+            const tabs = [
+                ...this.querySelectorAll<HTMLButtonElement>("[data-manager]"),
+            ];
+            const commands = [
+                ...this.querySelectorAll<HTMLElement>("[data-command]"),
+            ];
+            const copy = this.querySelector<HTMLButtonElement>("[data-copy]");
+            const status = this.querySelector<HTMLElement>("[data-status]");
+
+            const select = (manager: string) => {
+                for (const tab of tabs) {
+                    tab.setAttribute(
+                        "aria-selected",
+                        String(tab.dataset.manager === manager),
+                    );
+                }
+                for (const command of commands) {
+                    command.setAttribute(
+                        "aria-hidden",
+                        String(command.dataset.command !== manager),
+                    );
+                }
+                try {
+                    localStorage.setItem("zap-package-manager", manager);
+                } catch {}
+            };
+
+            for (const tab of tabs) {
+                tab.addEventListener("click", () =>
+                    select(tab.dataset.manager ?? "npm"),
+                );
+            }
+
+            try {
+                const remembered = localStorage.getItem("zap-package-manager");
+                if (
+                    remembered &&
+                    tabs.some((tab) => tab.dataset.manager === remembered)
+                ) {
+                    select(remembered);
+                }
+            } catch {}
+
+            copy?.addEventListener("click", async () => {
+                const active = commands.find(
+                    (command) =>
+                        command.getAttribute("aria-hidden") === "false",
+                );
+                if (!active?.textContent) {
+                    return;
+                }
+                try {
+                    await navigator.clipboard.writeText(
+                        active.textContent.trim(),
+                    );
+                    copy.dataset.copied = "true";
+                    if (status) {
+                        status.textContent = "Copied";
+                    }
+                    setTimeout(() => {
+                        delete copy.dataset.copied;
+                        if (status) {
+                            status.textContent = "";
+                        }
+                    }, 1600);
+                } catch {
+                    if (status) {
+                        status.textContent =
+                            "Copy failed — select the command instead";
+                    }
+                }
+            });
+        }
+    }
+
+    if (!customElements.get("install-slab")) {
+        customElements.define("install-slab", InstallSlab);
+    }
+</script>
+
+<style>
+    [data-copied] {
+        background: var(--blume-foreground);
+        color: var(--blume-background);
+    }
+
+    [data-copied] .copy-idle {
+        display: none;
+    }
+
+    [data-copied] .copy-done {
+        display: flex;
+    }
+</style>

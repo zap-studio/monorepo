@@ -1,0 +1,139 @@
+---
+import { brandIcons } from "../../lib/brand-icons.ts";
+import {
+    catalog,
+    formatBytes,
+    runtimeColumns,
+    runtimePackages,
+    sizesAvailable,
+} from "../../lib/catalog.ts";
+import Section from "./Section.astro";
+
+const totalBytes = runtimePackages.reduce(
+    (total, entry) => total + (entry.gzipBytes ?? 0),
+    0,
+);
+
+const marks: Record<string, string[]> = {
+    browser: [brandIcons.chrome, brandIcons.firefox, brandIcons.safari],
+    bun: [brandIcons.bun],
+    deno: [brandIcons.deno],
+    node: [brandIcons.node],
+    workers: [brandIcons.workers],
+};
+
+const markClass = {
+    full: "bg-foreground",
+    partial:
+        "border border-foreground bg-[linear-gradient(135deg,currentColor_0_50%,transparent_50%_100%)]",
+    tooling: "border border-dashed border-[var(--rule-strong)]",
+};
+
+const markLabel = {
+    full: "Runs here",
+    partial: "Runs here, with one catch",
+    tooling: "Never ships to your app",
+};
+---
+
+<Section
+    lead="Pick the one you need. Each package works on its own, and each one lists the runtimes it supports."
+    measure={
+        sizesAvailable
+            ? `${formatBytes(totalBytes)} for all of them, gzipped`
+            : undefined
+    }
+    title="Packages"
+>
+    <div class="scroll-fade overflow-x-auto">
+        <table class="w-full border-collapse text-left lg:min-w-[34rem]">
+            <thead>
+                <tr class="border-[var(--rule-strong)] border-b">
+                    <th class="label py-3 pr-6 font-normal" scope="col">
+                        Package
+                    </th>
+                    <th
+                        class="label py-3 pr-6 text-right font-normal"
+                        scope="col"
+                    >
+                        {sizesAvailable ? "Gzipped" : "Version"}
+                    </th>
+                    {runtimeColumns.map((column) => (
+                        <th
+                            class="hidden py-3 pr-5 font-normal lg:table-cell"
+                            scope="col"
+                        >
+                            <span class="flex gap-0.5 text-muted-foreground [&>svg]:size-3.5">
+                                {marks[column.id].map((mark) => (
+                                    <Fragment set:html={mark} />
+                                ))}
+                            </span>
+                            <span class="sr-only">{column.label}</span>
+                        </th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {catalog.map((entry) => (
+                    <tr class="group border-[var(--rule)] border-b transition-colors hover:bg-muted">
+                        <th
+                            class="pr-6 font-normal whitespace-nowrap"
+                            scope="row"
+                        >
+                            <a
+                                class="readout block py-3.5 text-sm"
+                                href={`/docs/${entry.slug}`}
+                            >
+                                <span class="underline-offset-4 group-hover:underline">
+                                    {entry.name}
+                                </span>
+                                <span
+                                    aria-hidden="true"
+                                    class="ml-1.5 inline-block text-muted-foreground opacity-0 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100"
+                                >
+                                    →
+                                </span>
+                            </a>
+                        </th>
+                        <td class="readout py-3.5 pr-6 text-right text-muted-foreground text-xs">
+                            {sizesAvailable && entry.gzipBytes !== null
+                                ? formatBytes(entry.gzipBytes)
+                                : entry.version}
+                        </td>
+                        {runtimeColumns.map((column) => (
+                            <td class="hidden py-3.5 pr-5 lg:table-cell">
+                                <span
+                                    aria-hidden="true"
+                                    class:list={[
+                                        "block size-2.5",
+                                        markClass[entry.support[column.id]],
+                                    ]}
+                                />
+                                <span class="sr-only">
+                                    {markLabel[entry.support[column.id]]}
+                                </span>
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-6 hidden flex-wrap items-center gap-x-8 gap-y-3 lg:flex">
+        {(["full", "partial", "tooling"] as const).map((state) => (
+            <span class="label flex items-center gap-2">
+                <span
+                    aria-hidden="true"
+                    class:list={["block size-2.5", markClass[state]]}
+                />
+                {markLabel[state]}
+            </span>
+        ))}
+    </div>
+
+    <p class="mt-5 max-w-[70ch] text-muted-foreground text-xs leading-relaxed">
+        Gzipped whole-package sizes, measured at build time. You ship only what
+        you import.
+    </p>
+</Section>

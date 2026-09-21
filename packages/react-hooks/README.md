@@ -2,7 +2,7 @@
 
 Small, focused React hooks. Each one ships as its own subpath export, so importing one never pulls in unrelated hooks.
 
-Full documentation: [zapstudio.dev/react-hooks](https://www.zapstudio.dev/react-hooks)
+Full documentation: [zapstudio.dev/docs/react-hooks](https://www.zapstudio.dev/docs/react-hooks)
 
 ## Motivation
 

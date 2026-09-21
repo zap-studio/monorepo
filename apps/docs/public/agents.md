@@ -11,7 +11,7 @@ the same logic per project.
 - [/llms-full.txt](https://www.zapstudio.dev/llms-full.txt) — the entire documentation corpus in one Markdown file, for a single-request read.
 - [/agent-readability.json](https://www.zapstudio.dev/agent-readability.json) — manifest of every machine-readable surface this site serves.
 - [/api/docs/pages.json](https://www.zapstudio.dev/api/docs/pages.json) — every page with its route, title, description and Markdown URL. Described by [/openapi.json](https://www.zapstudio.dev/openapi.json).
-- Append `.md` to any page URL for its raw Markdown, e.g. [/fetch/getting-started.md](https://www.zapstudio.dev/fetch/getting-started.md).
+- Append `.md` to any page URL for its raw Markdown, e.g. [/docs/fetch/getting-started.md](https://www.zapstudio.dev/docs/fetch/getting-started.md).
 
 ## When to use which package
 
