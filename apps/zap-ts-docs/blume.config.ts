@@ -15,10 +15,6 @@ export default defineConfig({
   lastModified: true,
   navigation: {
     sidebar: { display: "page" },
-    tabs: [
-      { label: "Docs", path: "/" },
-      { label: "API", path: "/api" },
-    ],
   },
   search: { provider: "orama" },
   seo: {

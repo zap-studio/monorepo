@@ -1,0 +1,126 @@
+---
+title: Billing
+description: Subscriptions, checkout and the customer portal, behind one interface that eight payment providers implement.
+---
+
+`@zap-ts/billing` gives the app subscriptions without tying it to a payment
+provider. Eight providers ship in the box — Stripe, Polar, Chargebee, Dodo
+Payments, Creem, Autumn and Commet — and each one exports the same names.
+The app imports `@zap-ts/billing/server` and `@zap-ts/billing/client`, and
+never names a provider.
+
+Stripe is the default.
+
+## How a subscription reaches the app
+
+Billing plugs into Better Auth. The server plugin owns checkout, the webhook
+and the customer portal; the client plugin gives the browser the calls that
+open them.
+
+```ts
+import { billingPlugin } from "@zap-ts/billing/server";
+```
+
+```ts
+import { checkout, openBillingPortal } from "@zap-ts/billing/client";
+```
+
+Subscriptions are stored in the `subscription` table of the app database, so a
+plan check is a query, not a round trip to the provider.
+
+## Plans
+
+A plan lives in `packages/billing/src/plans.ts`. One entry carries the ids of
+every provider at once, so a swap never leaves an id behind: each provider
+reads its own field and ignores the rest.
+
+```ts
+export const plans: Plan[] = [
+  {
+    name: "starter",
+    trialDays: 14,
+    stripe: { priceId: "price_...", seatPriceId: "price_..." },
+    polar: { productId: "...", slug: "starter" },
+    chargebee: { itemPriceId: "starter-USD-Monthly" },
+    // ...one field per provider
+  },
+];
+```
+
+The ids that ship are placeholders. Replace them with the ones from your own
+provider dashboard before checkout works.
+
+:::note
+`trialDays` is optional. Leave it out and the plan charges immediately.
+:::
+
+## Test mode and live mode
+
+Billing refuses to charge real money by accident. `BillingMode` is `"live"` or
+`"test"`, and for the providers that encode the mode in the key, it is read
+from the key itself:
+
+```ts
+const mode = isLiveKey(env.STRIPE_SECRET_KEY, "sk_live_") ? "live" : "test";
+```
+
+A fresh clone ships `STRIPE_SECRET_KEY=sk_test_local_dev`, which puts the app
+in test mode, and the billing page says so out loud. Nothing charges a card
+until you set a live key.
+
+## Who may manage billing
+
+Billing actions are authorized through `@zap-ts/authorization`, not left to
+the provider. Owners and admins of an organization may manage its
+subscription; every provider passes the same check to its
+`authorizeReference` hook.
+
+```ts
+import { canManageBilling } from "@zap-ts/billing/access";
+```
+
+Lifecycle events — a trial about to end, a failed payment, a cancellation —
+are turned into emails through `@zap-ts/mail`, addressed to the owners and
+admins of the organization.
+
+## Swapping the provider
+
+Two files, one import path each.
+
+1. In `packages/billing/src/server.ts`, change the export path from
+   `"./stripe/server"` to the provider you want, for example `"./polar/server"`.
+2. In `packages/billing/src/client.ts`, change the matching client path.
+3. Set that provider's variables in `.env.schema`.
+4. Fill in that provider's ids in `plans.ts`.
+
+Then regenerate the auth schema and migrate, because providers do not store
+subscriptions identically:
+
+```bash
+pnpm run auth:generate
+pnpm run db:migrate
+```
+
+Nothing else in the workspace changes. Every provider exports
+`billingPlugin`, `billingMode`, `readSubscription` and
+`billingCredentialsFromEnv` under the same names.
+
+## Environment
+
+Stripe, as shipped:
+
+```bash
+STRIPE_SECRET_KEY=sk_test_local_dev
+STRIPE_WEBHOOK_SECRET=whsec_local_dev
+```
+
+Each variable is declared in the root `.env.schema` with a link to the
+provider's own documentation. See [Environment](/guides/environment) for how
+varlock turns those declarations into the typed `ENV` the code imports.
+
+## Related
+
+- [Authorization](/packages/authorization) — the role check billing defers to
+- [Mail](/packages/mail) — where lifecycle emails are rendered and sent
+- [Swap a provider](/recipes/swap-a-provider) — the same move for storage and mail
+- [Going to production](/guides/going-to-production) — leaving test mode safely
