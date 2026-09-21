@@ -33,9 +33,12 @@ const readDownloads = async (): Promise<number | null> => {
       const body = await readJson(`https://api.npmjs.org/downloads/point/last-month/${entry.name}`);
       // SAFETY: the field is read off the parsed body and type-checked below.
       const count = (body as { downloads?: unknown }).downloads;
-      total += typeof count === "number" ? count : 0;
+      if (typeof count !== "number") {
+        return null;
+      }
+      total += count;
     } catch {
-      continue;
+      return null;
     }
   }
   return total > 0 ? total : null;
