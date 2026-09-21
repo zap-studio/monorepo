@@ -40,18 +40,6 @@ body:has([data-landing]) > header {
   color: var(--blume-background);
 }
 
-[data-copied] {
-  color: var(--blume-accent);
-}
-
-[data-copied] .copy-idle {
-  display: none;
-}
-
-[data-copied] .copy-done {
-  display: flex;
-}
-
 .readout {
   font-family: var(--blume-font-mono);
   font-variant-numeric: tabular-nums;
