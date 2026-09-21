@@ -31,13 +31,13 @@ catalog:
   "@vitest/browser-playwright": ^5.0.1
   "@vitest/coverage-v8": ^5.0.1
   arktype: ^2.2.3
-  blume: ^1.7.1
+  blume: ^1.7.2
   eslint: ^10.11.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
   eslint-plugin-playwright: ^2.12.0
-  eslint-plugin-regexp: ^3.3.0
+  eslint-plugin-regexp: ^3.3.1
   eslint-plugin-solid: ^0.18.0
   eslint-plugin-sonarjs: ^4.2.1
   eslint-plugin-storybook: ^10.6.0

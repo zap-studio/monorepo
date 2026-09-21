@@ -222,8 +222,8 @@ catalogs:
       specifier: ^2.2.3
       version: 2.2.3
     blume:
-      specifier: ^1.7.1
-      version: 1.7.1
+      specifier: ^1.7.2
+      version: 1.7.2
     eslint:
       specifier: ^10.11.0
       version: 10.11.0
@@ -240,8 +240,8 @@ catalogs:
       specifier: ^2.12.0
       version: 2.12.0
     eslint-plugin-regexp:
-      specifier: ^3.3.0
-      version: 3.3.0
+      specifier: ^3.3.1
+      version: 3.3.1
     eslint-plugin-solid:
       specifier: ^0.18.0
       version: 0.18.0
@@ -390,7 +390,7 @@ importers:
     dependencies:
       blume:
         specifier: 'catalog:'
-        version: 1.7.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1)
+        version: 1.7.2(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1)
       zod:
         specifier: 'catalog:'
         version: 4.6.5
@@ -577,7 +577,7 @@ importers:
         version: 2.12.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-regexp:
         specifier: 'catalog:'
-        version: 3.3.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))
+        version: 3.3.1(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-solid:
         specifier: 'catalog:'
         version: 0.18.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
@@ -1767,8 +1767,8 @@ packages:
   '@iarna/toml@2.2.5':
     resolution: {integrity: sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==}
 
-  '@iconify-json/lucide@1.2.134':
-    resolution: {integrity: sha512-MXzwT7H8Ii/aGN6NLtMbMLDaxLYsOxCKEdW0F5h3MemNUaUBqAxr9nz0mPlXzozd/piQyrdSiUyk0t5b5ErADg==}
+  '@iconify-json/lucide@1.2.135':
+    resolution: {integrity: sha512-M2RbCJMe/ZwRzGBxNGbqP3kEQ74iJjQyJsw5FgVQw+Kp8eJPQF1S19fiGJChG4yYLg73c8Z/fMnm07GTXUxmQA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -4243,8 +4243,8 @@ packages:
   blake3-wasm@2.1.5:
     resolution: {integrity: sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==}
 
-  blume@1.7.1:
-    resolution: {integrity: sha512-jHtqy36jzdwsF2MLkYhbaFZeOkmeNUwt/I5+h/S7wkhU4XgEgvKXUA8Vq/CUNswtIhO44Ss9PrvFvi3kD9XAAQ==}
+  blume@1.7.2:
+    resolution: {integrity: sha512-icdgj7SjLjBh0cpY7/SSqeKcBrAXmtzbU2Z6EjsXVspissscLqRHgYimCHsZZ4wKcrNvHMtYQ2Ysvn1G5xxXWw==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -5110,8 +5110,8 @@ packages:
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0 || ^10.0.0
 
-  eslint-plugin-regexp@3.3.0:
-    resolution: {integrity: sha512-TT0JTQbW7CRKohntpGAsMdQ1K3MsmJK4gdAhKJtIwlJ0JvuYxauymFgJdvqxIY4lqNj0EuRZWVrymQtEdJYEFg==}
+  eslint-plugin-regexp@3.3.1:
+    resolution: {integrity: sha512-58bGUci/AaWAo1ETj6Lsnmy6QXwnSyVONRA805828nnqp7vrTwdaQMc02vtowmYB3A5OB3SLr3r5HgmfxX4dLg==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
     peerDependencies:
       eslint: '>=9.38.0'
@@ -7171,8 +7171,8 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
-  simple-icons@16.31.0:
-    resolution: {integrity: sha512-dDEqvQrmxL7ZnqQtGHGjCNW6CfiwzAif+83Hol9JXAnAB6wh2zsZD7Sc1kWT0O/RRAKt7xfG8W6UZhYBPD+GAA==}
+  simple-icons@16.32.0:
+    resolution: {integrity: sha512-BwqATHxAulx7X6kNdTkecy7PBjLkgtAHcgrwYLd9iA+cD2At9DzhJwdwaSELk2+aZe01IfiM/Wxtyp68Dvup2A==}
     engines: {node: '>=0.12.18'}
 
   sirv@3.0.2:
@@ -8980,7 +8980,7 @@ snapshots:
 
   '@iarna/toml@2.2.5': {}
 
-  '@iconify-json/lucide@1.2.134':
+  '@iconify-json/lucide@1.2.135':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -11206,7 +11206,7 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  blume@1.7.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1):
+  blume@1.7.2(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1):
     dependencies:
       '@astrojs/check': 0.9.10(@emnapi/runtime@1.11.3)(prettier@3.9.8)(typescript@6.0.3)
       '@astrojs/markdown-satteri': 0.4.1
@@ -11216,7 +11216,7 @@ snapshots:
       '@astrojs/vercel': 11.0.10(astro@7.3.3(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@26.6.2)(@vercel/functions@3.9.8(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))(react@19.3.0)(supports-color@10.2.2)(ws@8.21.3)
       '@asyncapi/converter': 2.0.2
       '@clack/prompts': 1.8.1
-      '@iconify-json/lucide': 1.2.134
+      '@iconify-json/lucide': 1.2.135
       '@iconify/types': 2.0.0
       '@iconify/utils': 3.1.7
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@10.2.2)(zod@4.6.5)
@@ -11276,7 +11276,7 @@ snapshots:
       semver: 7.8.5
       sharp: 0.35.4(@types/node@26.6.2)
       shiki: 4.4.3
-      simple-icons: 16.31.0
+      simple-icons: 16.32.0
       string-width: 8.2.2
       sucrase: 3.35.1
       tailwindcss: 4.3.3
@@ -12323,7 +12323,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-regexp@3.3.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2)):
+  eslint-plugin-regexp@3.3.1(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2)):
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))
       '@eslint-community/regexpp': 4.12.2
@@ -14732,7 +14732,7 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-icons@16.31.0: {}
+  simple-icons@16.32.0: {}
 
   sirv@3.0.2:
     dependencies:
