@@ -17,11 +17,11 @@ const commands = [
 ---
 
 <install-slab class={`block ${className ?? ""}`}>
-    <div class="flex items-stretch border-[var(--rule)] border-x border-t">
+    <div class="flex items-stretch border-[var(--rule)] border-x border-t border-b">
         {commands.map((entry, index) => (
             <button
                 aria-selected={index === 0 ? "true" : "false"}
-                class="press label px-3.5 py-2.5 text-muted-foreground hover:text-foreground aria-selected:bg-foreground aria-selected:text-background"
+                class="label -mb-px flex-1 border-[var(--rule)] border-r px-3.5 py-2.5 text-muted-foreground transition-colors last:border-r-0 hover:bg-muted hover:text-foreground aria-selected:text-background"
                 data-manager={entry.id}
                 role="tab"
                 type="button"
@@ -31,7 +31,7 @@ const commands = [
         ))}
     </div>
 
-    <div class="flex items-stretch border-[var(--rule)] border-x border-y bg-muted">
+    <div class="flex items-stretch border-[var(--rule)] border-x border-b bg-muted">
         <span
             aria-hidden="true"
             class="readout flex select-none items-center pr-2 pl-4 text-accent"
