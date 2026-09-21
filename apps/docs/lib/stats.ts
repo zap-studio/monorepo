@@ -26,21 +26,23 @@ const readStars = async (): Promise<number | null> => {
   }
 };
 
-const readDownloads = async (): Promise<number | null> => {
-  let total = 0;
-  for (const entry of packages) {
-    try {
-      const body = await readJson(`https://api.npmjs.org/downloads/point/last-month/${entry.name}`);
-      // SAFETY: the field is read off the parsed body and type-checked below.
-      const count = (body as { downloads?: unknown }).downloads;
-      if (typeof count !== "number") {
-        return null;
-      }
-      total += count;
-    } catch {
-      return null;
-    }
+const readDownloadCount = async (name: string): Promise<number | null> => {
+  try {
+    const body = await readJson(`https://api.npmjs.org/downloads/point/last-month/${name}`);
+    // SAFETY: the field is read off the parsed body and type-checked below.
+    const count = (body as { downloads?: unknown }).downloads;
+    return typeof count === "number" ? count : null;
+  } catch {
+    return null;
   }
+};
+
+const readDownloads = async (): Promise<number | null> => {
+  const counts = await Promise.all(packages.map((entry) => readDownloadCount(entry.name)));
+  if (counts.includes(null)) {
+    return null;
+  }
+  const total = counts.reduce<number>((sum, count) => sum + (count ?? 0), 0);
   return total > 0 ? total : null;
 };
 

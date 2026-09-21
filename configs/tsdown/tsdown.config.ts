@@ -20,21 +20,20 @@ export default defineConfig({
   deps: { neverBundle: [/^node:/u] },
   hooks: {
     "build:done": ({ chunks }) => {
-      const sizes: Record<string, number> = {};
-      let outDir = "";
+      const jsChunks = chunks.filter((chunk) => chunk.fileName.endsWith(".js"));
+      const outDir = jsChunks.at(-1)?.outDir;
 
-      for (const chunk of chunks) {
-        if (!chunk.fileName.endsWith(".js")) {
-          continue;
-        }
-        const source = chunk.type === "chunk" ? chunk.code : chunk.source;
-        sizes[chunk.fileName] = gzipSync(Buffer.from(source), { level: 9 }).byteLength;
-        outDir = chunk.outDir;
-      }
-
-      if (outDir === "") {
+      if (outDir === undefined) {
         return;
       }
+
+      const sizes = Object.fromEntries(
+        jsChunks.map((chunk) => [
+          chunk.fileName,
+          gzipSync(Buffer.from(chunk.type === "chunk" ? chunk.code : chunk.source), { level: 9 })
+            .byteLength,
+        ]),
+      );
 
       writeFileSync(resolve(outDir, "../.size.json"), `${JSON.stringify(sizes, null, 2)}\n`);
     },

@@ -3,6 +3,8 @@
   "entry": [
     "apps/docs/blume.config.ts",
     "apps/docs/components.ts",
+    "apps/docs/pages/**",
+    "apps/docs/theme.css",
     "doctor.config.ts",
     "oxfmt.config.ts"
   ],
@@ -15,6 +17,7 @@
   },
   "ignoreFindings": ["apps/docs/content/**", "packages/oxlint/src/anti-slop/**"],
   "ignoreDependencies": [
+    "blume:data",
     "@e18e/eslint-plugin",
     "@stylexjs/eslint-plugin",
     "@tanstack/eslint-plugin-query",
