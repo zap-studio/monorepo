@@ -1,6 +1,3 @@
-# Routes that lived at the site root before the docs moved under /docs.
-# Frozen at the move: pages added since then never had a root URL.
-
 /cache  /docs/cache  301
 /cache/capacity-and-eviction  /docs/cache/capacity-and-eviction  301
 /cache/custom-policies  /docs/cache/custom-policies  301
