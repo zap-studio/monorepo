@@ -1,0 +1,68 @@
+---
+import { formatCount, loadStats } from "../../lib/stats.ts";
+import Install from "./Install.astro";
+
+const repoUrl = "https://github.com/zap-studio/monorepo";
+const { downloads, stars } = await loadStats();
+
+const proof = [
+  stars === null ? null : `${formatCount(stars)} stars on GitHub`,
+  downloads === null ? null : `${formatCount(downloads)} downloads a month`,
+  "MIT licensed",
+].filter((entry) => entry !== null);
+---
+
+<section class="mx-auto flex min-h-[calc(100svh-4rem)] max-w-5xl flex-col px-6 pt-12 pb-12 sm:pt-16 sm:pb-16">
+  <div class="my-auto w-full">
+    <h1 class="display max-w-[20ch] text-[clamp(2.5rem,6.2vw,4.75rem)] text-balance">
+      The boring parts of every app, already written
+    </h1>
+
+    <div class="mt-12 grid gap-x-16 gap-y-10 md:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+      <p class="max-w-[48ch] text-[1.0625rem] text-muted-foreground leading-relaxed">
+        TypeScript packages for the work every app repeats: HTTP calls, retries, caching,
+        validation, permissions, webhooks and logs. Install one, or all of them.
+      </p>
+
+      <div>
+        <Install package="permit" />
+
+        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+          <a
+            class="press cut inline-flex items-center gap-2 bg-foreground px-4 py-2.5 font-medium text-background hover:bg-accent hover:text-accent-foreground"
+            href="/docs/installation"
+            style="--cut:9px"
+          >
+            Get started
+            <span aria-hidden="true">→</span>
+          </a>
+          <a
+            class="ink-link inline-flex items-center px-0.5 py-1.5 text-muted-foreground"
+            href={repoUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            Source on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {
+    proof.length > 0 && (
+      <ul class="readout mt-12 flex flex-col items-center gap-y-1.5 text-muted-foreground text-xs sm:mt-16 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-3">
+        {proof.map((entry, index) => (
+          <li class="flex items-center gap-3">
+            {index > 0 && (
+              <span aria-hidden="true" class="hidden text-[var(--rule-strong)] sm:inline">
+                ·
+              </span>
+            )}
+            {entry}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>
