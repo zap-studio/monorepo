@@ -5,7 +5,7 @@ description: Get zap.ts running on your computer in five commands. You do not ne
 
 This page takes you from a fresh copy of zap.ts to a running app.
 
-You do not need a Stripe account, an Amazon account or an email provider. You
+You do not need a payment account, a storage account or an email provider. You
 do not need to create a settings file. Everything you need runs on your own
 computer.
 
@@ -13,15 +13,27 @@ computer.
 
 You need two programs installed:
 
-- **Node.js**, version 22.12 or newer. It runs JavaScript on your computer.
+- **Node.js**, version 24 or newer. It runs JavaScript on your computer.
 - **Docker**, with Docker Compose. It runs the database and two other services
   for you, so you do not have to install them one by one.
 
-zap.ts uses **pnpm** to install code libraries. If you do not have it, run:
+zap.ts uses **pnpm** to install code libraries. You do not install pnpm
+yourself. Node.js ships with a tool called Corepack that does it for you:
 
 ```bash
-npm install -g pnpm
+corepack enable
 ```
+
+Run that once. From then on, `pnpm` works inside zap.ts.
+
+Corepack reads the `packageManager` line in `package.json` and uses exactly
+the pnpm version written there. So everyone on your team runs the same
+version, and nobody has to check which one.
+
+:::note
+If `corepack` is not found, your Node.js is too old. Install Node.js 24 or
+newer and try again.
+:::
 
 ## The five commands
 

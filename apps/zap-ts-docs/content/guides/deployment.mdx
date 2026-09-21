@@ -1,0 +1,157 @@
+---
+title: Deployment
+description: How each zap.ts app ships to Cloudflare Workers, and how your settings and keys travel with it.
+---
+
+zap.ts apps run on Cloudflare Workers. A Worker is a small server that
+Cloudflare runs close to your users.
+
+Each app ships on its own. There is no single command that deploys everything.
+You choose what goes out, and when.
+
+## The commands
+
+Run these from the zap.ts folder.
+
+```bash
+pnpm run deploy:web
+pnpm run deploy:marketing
+pnpm run deploy:api
+pnpm run deploy:admin
+pnpm run deploy:docs
+```
+
+Each one builds that app, then sends it to Cloudflare.
+
+Deploying the web app does not touch the API. Deploying the API does not touch
+the marketing site. You can ship a fix to one app and leave the rest alone.
+
+:::warning
+`apps/docs/package.json` has no `deploy` script yet, so `pnpm run deploy:docs`
+stops with an error. Add the script before you ship the docs site.
+:::
+
+## The worker names
+
+Every app has a file called `wrangler.jsonc`. It tells Cloudflare how to run
+that app. The `name` field in it becomes the name of the Worker.
+
+| App | Worker name |
+| --- | --- |
+| `apps/web` | `zap-ts-web` |
+| `apps/marketing` | `zap-ts-marketing` |
+| `apps/api` | `zap-ts-api` |
+| `apps/admin` | `zap-ts-admin` |
+| `apps/docs` | `zap-ts-docs` |
+
+Change these names to your own product name before your first deploy. The name
+appears in the Cloudflare dashboard and in the default URL.
+
+## Why `emails` does not deploy
+
+`apps/emails` has no deploy command, and that is on purpose.
+
+It is a tool you run on your own computer. It shows you what your emails look
+like while you write them. Your users never open it, so there is nothing to
+put online.
+
+The emails themselves live in [`@zap-ts/mail`](/packages/mail). That package
+ships inside the apps that send email.
+
+## Bindings live in `wrangler.jsonc`
+
+A binding connects your Worker to another Cloudflare service. Bindings are not
+settings and not keys. They do not go in a `.env.local` file. They belong in
+`wrangler.jsonc`.
+
+zap.ts uses three of them.
+
+**Hyperdrive** connects the Worker to your Postgres database. It keeps a pool
+of open connections, so the database is fast to reach from anywhere. The web
+app, the API and the admin app each declare it:
+
+```jsonc
+"hyperdrive": [
+  {
+    "binding": "HYPERDRIVE",
+    "id": "f926bbaf3a884ba7b0ab90f130bb7bad",
+  },
+],
+```
+
+That `id` points at the starter kit's own database. Replace it with the id of
+your Hyperdrive, which you create in the Cloudflare dashboard. There is a
+`TODO` comment in `apps/admin/wrangler.jsonc` that says the same thing.
+
+**A queue** holds work the app wants to do later, so the user does not wait for
+it. Only `apps/web` declares it, as both a producer and a consumer:
+
+```jsonc
+"queues": {
+  "producers": [{ "binding": "QUEUE", "queue": "zap-ts-jobs" }],
+  "consumers": [
+    {
+      "queue": "zap-ts-jobs",
+      "max_batch_size": 10,
+      "max_batch_timeout": 5,
+      "max_retries": 3,
+      "dead_letter_queue": "zap-ts-jobs-dlq",
+    },
+  ],
+},
+```
+
+**The dead-letter queue** is `zap-ts-jobs-dlq`. A job that fails three times
+moves there instead of being lost. You can read it later and find out what
+went wrong.
+
+See [Queues](/packages/queues) for how jobs are written and read.
+
+## How your settings reach Cloudflare
+
+Every deploy runs through `varlock-wrangler`. Varlock is the tool that reads
+your `.env.schema` and `.env.local` files. See
+[Environment](/guides/environment) for how those work.
+
+At deploy time, varlock sorts your values into two groups:
+
+- **Non-sensitive values** go up as Cloudflare **vars**. A var is plain text.
+  You can read it in the dashboard. `SITE_URL` and `MAIL_PROVIDER` are vars.
+- **Sensitive values** go up as Cloudflare **secrets**. A secret is hidden
+  after you send it. Nobody can read it back. `STRIPE_SECRET_KEY` and
+  `BETTER_AUTH_SECRET` are secrets.
+
+The schema decides which is which. A value is sensitive unless the schema marks
+it `@sensitive=false`.
+
+:::warning
+Varlock owns these values. If you add a var or a secret by hand in the
+Cloudflare dashboard, the next deploy removes it.
+
+Add the value to your `.env.schema` and `.env.local` instead, then deploy
+again. That way the dashboard and your files never disagree.
+:::
+
+## Before you deploy
+
+Check that every value the app needs is really there:
+
+```bash
+pnpm run env:web
+```
+
+There is one of these per app: `env:web`, `env:marketing`, `env:api` and
+`env:admin`. Each one prints where every value came from. A missing required
+value stops the build and tells you its name.
+
+Then work through the [Going to production](/guides/going-to-production)
+checklist. It lists the things a deploy will not catch, such as demo data and
+test payment keys.
+
+## Related
+
+- [Going to production](/guides/going-to-production) — the checklist before launch
+- [Environment](/guides/environment) — how settings and keys work
+- [Queues](/packages/queues) — jobs that run later
+- [Database](/packages/database) — Postgres through Hyperdrive
+- [Web app](/apps/web) — the app behind the sign-in

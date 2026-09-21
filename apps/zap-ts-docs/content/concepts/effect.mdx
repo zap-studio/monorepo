@@ -1,0 +1,104 @@
+---
+title: Effect
+description: zap.ts uses Effect in the code that talks to the outside world. This page explains what you are looking at, so you can read it without learning it first.
+---
+
+Open almost any package in zap.ts and you will see this:
+
+```ts
+Effect.gen(function* () {
+  const rows = yield* tryBilling(() => database.select());
+});
+```
+
+That is [Effect](https://effect.website). You do not need to learn it to use
+zap.ts. But you do need to recognise it, so this page tells you what it is
+doing.
+
+## The problem it solves
+
+Some code can fail. Reading the database can fail. Sending an email can fail.
+Charging a card can fail.
+
+In normal TypeScript, a function that can fail looks the same as one that
+cannot:
+
+```ts
+function sendEmail(to: string): Promise<void>
+```
+
+Nothing there says what can go wrong. You find out when it happens, in
+production.
+
+## What Effect changes
+
+With Effect, what can go wrong is part of the type:
+
+```ts
+Effect<void, MailError>
+```
+
+This says: it gives back nothing when it works, and a `MailError` when it
+fails.
+
+Your editor now knows. If you forget to handle `MailError`, TypeScript tells
+you before you run anything.
+
+## Where zap.ts uses it
+
+Only in the parts that talk to the outside world:
+
+- `database` — reading and writing Postgres
+- `mail` — sending email
+- `storage` — uploading and downloading files
+- `billing` — talking to the payment company
+- `queues` — background jobs
+- `ai`, `analytics`, `flags`, `observability`
+
+Your pages and your React components do not use it. They call normal async
+functions.
+
+## The three things you will see
+
+**`Effect.gen`** groups steps that run in order. Read `yield*` as `await`.
+
+```ts
+Effect.gen(function* () {
+  const user = yield* findUser(id);
+  yield* sendEmail(user.email);
+});
+```
+
+**A `try` wrapper** turns a normal call into an Effect, and names what its
+failure is called:
+
+```ts
+tryBilling(() => stripe.subscriptions.list());
+```
+
+**`Effect.runPromise`** runs the whole thing and gives you a normal Promise
+back. This is the door between Effect code and ordinary code:
+
+```ts
+const emails = await Effect.runPromise(getOrganizationAdminEmails(url, orgId));
+```
+
+Most zap.ts packages call `runPromise` for you at the edge. So the function
+your app imports is usually a plain async function.
+
+## Do you have to use it?
+
+No.
+
+Write your own features in plain TypeScript with `async` and `await`. That
+works, and nothing in zap.ts forces you to change.
+
+Use Effect when you are editing the parts that already use it, or when you
+have a piece of code where many things can fail and you want the compiler to
+keep track.
+
+## Related
+
+- [Tech stack](/tech-stack) — the other choices and their reasons
+- [Database](/packages/database) — the package that uses it most
+- [Conventions](/concepts/conventions) — the rest of the codebase rules

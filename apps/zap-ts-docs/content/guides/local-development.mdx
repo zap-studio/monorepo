@@ -1,0 +1,168 @@
+---
+title: Local Development
+description: "Your day-to-day work in zap.ts: the Docker services, running several apps at once, the demo data and resetting the database."
+---
+
+This page is about normal work, after the first time. If you have not started
+zap.ts yet, read [Quickstart](/quickstart) first.
+
+## The three Docker services
+
+Docker runs three services for you. They replace three paid cloud services
+while you work on your own computer.
+
+Start them:
+
+```bash
+docker compose up -d
+```
+
+`-d` means "in the background". You start them once. They keep running, even
+after you close your terminal.
+
+| Service | What it does | Ports |
+| --- | --- | --- |
+| Postgres | The database. It stores your data. | 5432 |
+| Mailpit | A fake email inbox. | 1025 to send, 8025 for the web page |
+| MinIO | A file store for uploads. | 9000 for the API, 9001 for the web page |
+
+### Postgres
+
+Postgres listens on port 5432. The user is `postgres`, the password is
+`postgres` and the database is `postgres`.
+
+Your data lives in a Docker volume. A volume is a folder Docker keeps for you,
+so your data survives a restart.
+
+### Mailpit
+
+Your app does not send real email while you work. It sends to Mailpit on port
+1025 instead.
+
+Open [localhost:8025](http://localhost:8025) to read what your app sent. Every
+email lands there, whoever the address was.
+
+### MinIO
+
+MinIO stores uploaded files. It speaks the same language as Cloudflare R2, so your
+code does not change when you move to a real cloud later.
+
+Port 9000 is the one your code talks to. Port 9001 is a web page you can open:
+[localhost:9001](http://localhost:9001). Sign in with `minioadmin` as the user
+and `minioadmin` as the password.
+
+Docker also creates a bucket named `zap` for you. A bucket is a folder that
+holds your uploaded files.
+
+### Stopping and starting
+
+```bash
+docker compose stop    # pause the services, keep the data
+docker compose up -d   # start them again
+```
+
+## Running several apps at once
+
+Each app has its own command and its own port. Open one terminal window per
+app.
+
+```bash
+pnpm run dev:web         # port 3000
+pnpm run dev:marketing   # port 3001
+pnpm run dev:docs        # port 3002
+pnpm run dev:admin       # port 3003
+pnpm run dev:emails      # port 3004
+pnpm run dev:api         # port 8787
+```
+
+The ports are all different, so nothing clashes. You can run all six together.
+
+:::note
+The web app and the admin app keep separate sign-ins. Signing in to one does
+not sign you in to the other.
+:::
+
+## What the demo data contains
+
+`pnpm run db:seed` fills the database with a small example company.
+
+You get:
+
+- One organisation, named **Demo Organization**, with the slug `demo`.
+- Three users, one for each role in that organisation.
+- One active subscription on the `starter` plan, with three seats.
+
+The three users are:
+
+| Email | Name | Role |
+| --- | --- | --- |
+| `owner@demo.test` | Olivia Owner | owner |
+| `admin@demo.test` | Adam Admin | admin |
+| `member@demo.test` | Mia Member | member |
+
+They all share the same password: `demo1234`.
+
+The owner also carries the site-wide `admin` role. So the same account opens
+the back office on port 3003.
+
+### Running the seed again
+
+You can run `pnpm run db:seed` as often as you like.
+
+Every row it creates has a fixed id. The script deletes its own rows first,
+then writes them again. It never touches the rest of your data.
+
+Run it again after a migration. A migration is a file that changes the shape
+of the database.
+
+## Resetting the database
+
+Sometimes you want to start over with an empty database.
+
+```bash
+docker compose down -v
+docker compose up -d
+pnpm run db:migrate
+pnpm run db:seed
+```
+
+`-v` deletes the volume, so it deletes every row you had. Then you start
+Postgres again, create the tables again, and put the demo data back.
+
+:::warning
+`docker compose down -v` also deletes the files in MinIO. There is no undo.
+:::
+
+## Looking inside the database
+
+To see your tables and rows, run:
+
+```bash
+pnpm run db:studio
+```
+
+This opens Drizzle Studio. It is a web page where you read your tables, and
+change a row by hand when you need to.
+
+It is useful when a test fails and you want to know what is really stored.
+
+## The other database scripts
+
+| Script | What it does |
+| --- | --- |
+| `pnpm run db:generate` | Writes a new migration file after you change the schema |
+| `pnpm run db:migrate` | Applies the migration files to the database |
+| `pnpm run db:push` | Pushes your schema straight to the database, with no migration file |
+| `pnpm run db:seed` | Writes the demo data |
+| `pnpm run db:studio` | Opens Drizzle Studio |
+
+Use `db:generate` and `db:migrate` for real work. `db:push` is quick, but it
+leaves no file behind, so keep it for throwaway experiments.
+
+## Related
+
+- [Quickstart](/quickstart) — the first run
+- [Environment](/guides/environment) — settings and keys
+- [Database](/packages/database) — tables, schema and migrations
+- [Testing](/guides/testing) — giving a test a real database
+- [Project structure](/project-structure) — what each folder holds

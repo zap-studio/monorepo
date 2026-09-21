@@ -1,0 +1,157 @@
+---
+title: AI Agents
+description: How AGENTS.md tells an AI coding agent the rules of a zap.ts codebase, and how to extend it for your own product.
+---
+
+An AI coding agent is a tool that reads your code and writes code for you.
+Claude Code, Cursor and Copilot are three of them.
+
+An agent that does not know your rules will guess. It will add a version number
+where the project forbids one. It will write a mock where the linter blocks
+mocks. zap.ts stops that with one file.
+
+## What `AGENTS.md` is
+
+`AGENTS.md` sits at the root of the zap.ts folder. It holds the rules of the
+codebase, written for an agent to read.
+
+Most agents open it on their own when they start. You do not have to paste it
+into a chat. You do not have to ask.
+
+It is short on purpose. An agent reads it before every task, so every extra
+line costs something.
+
+## Why `CLAUDE.md` exists too
+
+Claude Code looks for a file named `CLAUDE.md`. In zap.ts, that file holds one
+line:
+
+```
+@AGENTS.md
+```
+
+That line means "read `AGENTS.md`". Nothing else.
+
+So the rules live in one file, and every tool finds them. When you change a
+rule, you change it once. `CLAUDE.md` never goes out of date, because there is
+nothing in it to go out of date.
+
+If your team uses a tool that wants its own file name, do the same thing:
+create the file and point it at `AGENTS.md`.
+
+## What the rules say
+
+`AGENTS.md` has four parts.
+
+### The check commands
+
+A table of the commands to run before finishing a piece of work:
+
+| Command | What it checks |
+| --- | --- |
+| `pnpm run typecheck` | TypeScript types, in every package |
+| `pnpm run lint` | Code problems, with type information |
+| `pnpm run format:check` | Code style |
+| `pnpm run test` | All tests, node and browser |
+| `pnpm run test:e2e` | The happy path of the web app, in a real browser |
+| `pnpm run fallow` | Files, exports and dependencies that nobody uses |
+| `pnpm run react-doctor` | Common React mistakes |
+| `pnpm run build` | That every package and app still builds |
+
+`pnpm run lint:fix` and `pnpm run format` fix what they can.
+
+The table also tells the agent it can check one package on its own, with
+`pnpm --filter <package> run <script>`. That is much faster than checking
+everything.
+
+### The test rules
+
+Where a test goes, what to name it, and how it gets a database. These are the
+same rules a person follows. See [Testing](/guides/testing) for the long
+version.
+
+The last rule matters most: **do not mock modules**. The linter blocks it, so
+an agent that tries will fail the check. The file says what to do instead. Pass
+the dependency in, or write a small fake.
+
+### The dependency rules
+
+Three lines, and they are absolute:
+
+- A library from outside the repository uses `catalog:`.
+- A package from inside the repository uses `workspace:*`.
+- Never write a version number in a `package.json`.
+
+This is the rule an agent breaks most often, because almost every other project
+does it the normal way. See [Dependencies](/guides/dependencies).
+
+### The writing-code rules
+
+Five short rules about how to build:
+
+1. Write the test first. Watch it fail, make it pass, then clean the code.
+2. YAGNI: write only what the task asks for. Do not add an abstraction that has
+   one caller.
+3. DRY, but not too early: move code out when you see it a third time, not a
+   second time.
+4. Choose the smallest change that works. Use the standard library first, then
+   a helper that already exists. Add a new dependency last.
+5. Comments say why. The code says what.
+
+These exist because an agent tends to build too much. It will add a settings
+option nobody asked for, or a wrapper around one function. Rule 2 and rule 4
+are there to stop it.
+
+## A known error in the file
+
+:::warning
+`AGENTS.md` says `createTestDatabase()` comes from a package called
+`@zap-ts/test-database`. That package does not exist.
+
+The real import is:
+
+```ts
+import { createTestDatabase } from "@zap-ts/testing/database";
+```
+
+The package is `@zap-ts/testing`, and it lives in `tooling/testing`. The
+`./database` part is the export you want.
+
+Fix this line in your own copy of `AGENTS.md`. Until you do, an agent that
+follows it will write an import that does not resolve.
+:::
+
+You can check it yourself. Open any test that uses a database, such as
+`packages/billing/src/access.node.test.ts`, and read the first lines.
+
+## Extending it for your product
+
+`AGENTS.md` covers zap.ts. It does not know your product. Add your own rules
+under the ones that are there.
+
+Good things to add:
+
+- **Words your product uses.** If a "workspace" in your app is not the same as
+  an organisation, say so. An agent that guesses this wrong writes confusing
+  code everywhere.
+- **Where new code goes.** "New API routes go in `apps/api/src/routes`." An
+  agent will otherwise put the file somewhere reasonable but wrong.
+- **What not to touch.** Generated files, for example. `auth.schema.ts` in
+  [`@zap-ts/database`](/packages/database) is written by a script. An agent that
+  edits it by hand loses the change on the next run.
+- **Commands you added.** If you add a script, add it to the table.
+
+Two things to avoid.
+
+Do not write long explanations. The agent reads the whole file every time. One
+short line beats a paragraph.
+
+Do not repeat what the code already says. If TypeScript types enforce a rule,
+the agent already sees it. Write down only what the code cannot show.
+
+## Related
+
+- [Testing](/guides/testing) — the full test rules
+- [Dependencies](/guides/dependencies) — the catalog rule
+- [Project structure](/project-structure) — what each folder holds
+- [Local development](/guides/local-development) — running the checks

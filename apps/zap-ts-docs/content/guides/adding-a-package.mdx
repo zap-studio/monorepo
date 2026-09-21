@@ -1,0 +1,177 @@
+---
+title: Adding a Package
+description: When a new shared package is worth creating, and the four small steps to make one that every app can import.
+---
+
+:::warning
+Read this first. Do not create a package for code that has one caller.
+
+If only one app uses the code, keep it inside that app. Move it to
+`packages/` when a second app needs it. A package you made too early is a
+folder you have to open, name and maintain for no gain.
+:::
+
+A package is a folder under `packages/`. It holds code that more than one app
+imports. It is never published to npm. It stays inside zap.ts.
+
+Two small packages make good models: `packages/storage` and `packages/queues`.
+Open them while you read this page.
+
+## Step 1: make the folder
+
+Pick a short, plain name. Then create two folders:
+
+```bash
+mkdir -p packages/invoicing/src
+```
+
+Put your code in `src`. Everything else the package needs is two small files.
+
+## Step 2: write the package.json
+
+Create `packages/invoicing/package.json`:
+
+```json
+{
+  "name": "@zap-ts/invoicing",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@zap-ts/environment": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@zap-ts/tsconfig": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
+```
+
+Here is what each line is for.
+
+- `name` always starts with `@zap-ts/`. That prefix is how the apps import it.
+- `private` stops anyone publishing the package to npm by accident.
+- `type: "module"` means the package uses `import`, not `require`.
+- `sideEffects: false` tells the bundler it can drop code nobody imports.
+- `scripts.typecheck` is the script the root `pnpm run typecheck` calls.
+
+There is no `version` field, and no version number anywhere. See
+[Dependencies](/guides/dependencies) for the rule.
+
+## The exports map
+
+`exports` lists the paths other code may import. Nothing else in the folder can
+be reached from outside.
+
+The example above has one entry, `"."`. So an app writes:
+
+```ts
+import { createInvoice } from "@zap-ts/invoicing";
+```
+
+You can add more entries when the package grows. `packages/database` does this:
+
+```json
+{
+  "exports": {
+    ".": "./src/client.ts",
+    "./schema": "./src/schema.ts"
+  }
+}
+```
+
+That second entry becomes `@zap-ts/database/schema`.
+
+Keep the map small. Each entry is a promise to the rest of the codebase, and a
+file you cannot move freely afterwards.
+
+## Step 3: write the tsconfig
+
+Create `packages/invoicing/tsconfig.json`. It is two lines:
+
+```json
+{
+  "extends": "@zap-ts/tsconfig/base.json",
+  "include": ["src"]
+}
+```
+
+`extends` pulls in the shared settings from `tooling/tsconfig`. Every package
+uses the same rules, so a type error looks the same everywhere.
+
+There are four shared files. Pick the one that matches where your code runs.
+
+| File | Use it when |
+| --- | --- |
+| `base.json` | Plain TypeScript, no browser and no Node types |
+| `node.json` | The code uses Node, for example to read a file |
+| `react.json` | The package holds React components |
+| `webworker.json` | The code runs on Cloudflare Workers |
+
+Most packages extend `base.json`, like `storage` and `queues` do.
+
+## Step 4: use it from an app
+
+In the `package.json` of the app that needs your package, add it with
+`workspace:*`:
+
+```json
+{
+  "dependencies": {
+    "@zap-ts/invoicing": "workspace:*"
+  }
+}
+```
+
+`workspace:*` means "the copy in this repository". pnpm links the folder
+straight into the app. Nothing is downloaded, and nothing is published.
+
+## Step 5: install
+
+```bash
+pnpm install
+```
+
+pnpm reads every `package.json` again, sees the new folder, and links it.
+
+You do not have to list the new package anywhere else. pnpm finds it because it
+sits under `packages/`.
+
+Now check that everything still types:
+
+```bash
+pnpm run typecheck
+```
+
+## A quick review
+
+1. `mkdir -p packages/<name>/src`
+2. Write `package.json` with the `@zap-ts/` name and an `exports` map.
+3. Write `tsconfig.json` that extends the shared one.
+4. Add `"@zap-ts/<name>": "workspace:*"` to the app that needs it.
+5. Run `pnpm install`.
+
+That is the whole package. Two config files and your code.
+
+## Before you add the second one
+
+Ask the question from the top of this page again. Does a second app really need
+this code?
+
+If the answer is no, the code belongs in the app. You can always move it later,
+and moving it later costs less than maintaining a folder nobody needed.
+
+## Related
+
+- [Dependencies](/guides/dependencies) — `catalog:` and `workspace:*`
+- [Project structure](/project-structure) — what lives where
+- [Storage](/packages/storage) — a small package to copy
+- [Queues](/packages/queues) — an even smaller one
+- [Testing](/guides/testing) — where the tests of your package go
