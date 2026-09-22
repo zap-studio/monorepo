@@ -24,6 +24,14 @@ docker compose up -d
 If Postgres is listed but says `unhealthy`, wait a few seconds and look again.
 It takes a moment to become ready the first time.
 
+On a Mac with [Colima](https://github.com/abiosoft/colima), `docker compose ps`
+fails with a message about the daemon when Colima is stopped. Colima does not
+start by itself after you restart your Mac:
+
+```bash
+colima start
+```
+
 If something else on your computer already uses port 5432, stop that program,
 or change the port in `docker-compose.yml`.
 

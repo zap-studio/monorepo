@@ -1,14 +1,14 @@
 ---
 title: Going to Production
-description: The checklist to work through before real users arrive. Demo data, test keys and placeholder ids all need replacing.
+description: The checklist to work through before real users arrive. Demo data, test keys, placeholder ids and the zap.ts branding all need replacing.
 ---
 
 [Deployment](/guides/deployment) shows you how to ship. This page shows you
 what you must not forget before you do.
 
-zap.ts starts with demo data and test keys, so it runs on your computer with no
-paid account. None of that belongs in production. Work through these eight
-steps in order.
+zap.ts starts with demo data, test keys and its own branding, so it runs on
+your computer with no paid account. None of that belongs in production. Work
+through these nine steps in order.
 
 ## 1. Remove the demo users and the demo organisation
 
@@ -143,6 +143,41 @@ Set `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT` and `SENTRY_AUTH_TOKEN` for
 errors. Set `POSTHOG_KEY` for usage. `POSTHOG_HOST` already points at
 `https://eu.i.posthog.com`, so change it only if your project is elsewhere.
 
+## 9. Replace the zap.ts branding with your own
+
+Your app still says zap.ts in a lot of places. Your users will see it.
+
+Start with the two files that hold the name. Both carry a
+`// TODO: Replace with your informations.` comment:
+
+- `apps/web/src/lib/site.ts` sets `SITE_NAME`.
+- `apps/marketing/src/lib/site.ts` sets `SITE_NAME`, and also
+  `SITE_TWITTER_HANDLE` and `SITE_AUTHOR`.
+
+Changing `SITE_NAME` covers a lot at once. The logo, the page titles, the
+sharing image and the web app manifest all read it.
+
+Then work through the rest:
+
+| What | Where |
+| --- | --- |
+| The logo mark | `apps/web/src/components/brand.tsx`. It uses a `Zap` icon from `lucide-react`. Swap in your own |
+| App icons | `icon-192.png` and `icon-512.png` in `apps/web/public` and `apps/marketing/public` |
+| Colours | The token files in [`@zap-ts/ui`](/packages/ui) |
+| Worker names | The `name` field in each `apps/*/wrangler.jsonc`. They all start with `zap-ts-` |
+| Email templates | `packages/mail/src/templates`. They carry a `TODO` about placeholder designs |
+| Legal pages | `apps/marketing/content/legal`. These are placeholders, not legal advice |
+| Blog post | `apps/marketing/content/blog` holds one example post. Delete it |
+
+When you think you are done, search the whole repository for what is left:
+
+```bash
+grep -ri "zap.ts\|zap-ts\|zap studio" apps packages --include="*.ts" --include="*.tsx" --include="*.mdx" --include="*.json*"
+```
+
+Ignore hits inside `@zap-ts/` import paths. Those are package names, not your
+brand, and they do not reach your users.
+
 ## Last check
 
 Print how every value resolves, one app at a time:
@@ -167,3 +202,4 @@ that one yourself.
 - [Mail](/packages/mail) — providers and templates
 - [Storage](/packages/storage) — file uploads to R2
 - [Observability](/packages/observability) — Sentry
+- [UI](/packages/ui) — colours and design tokens

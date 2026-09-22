@@ -17,6 +17,20 @@ You need two programs installed:
 - **Docker**, with Docker Compose. It runs the database and two other services
   for you, so you do not have to install them one by one.
 
+:::note
+On a Mac, [Colima](https://github.com/abiosoft/colima) is the easier way to get
+Docker. It is free, it does not run a desktop app in the background, and it
+uses less memory than Docker Desktop.
+
+```bash
+brew install colima docker docker-compose
+colima start
+```
+
+Run `colima start` once after each restart of your Mac. Every `docker` command
+on this page then works exactly as written.
+:::
+
 zap.ts uses **pnpm** to install code libraries. You do not install pnpm
 yourself. Node.js ships with a tool called Corepack that does it for you:
 

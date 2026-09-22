@@ -1,17 +1,20 @@
 ---
 title: Deployment
-description: How each zap.ts app ships to Cloudflare Workers, and how your settings and keys travel with it.
+description: Ship each zap.ts app to Cloudflare or to Vercel. You can also mix the two, and put each app where it fits best.
 ---
 
-zap.ts apps run on Cloudflare Workers. A Worker is a small server that
-Cloudflare runs close to your users.
+zap.ts supports two hosts: Cloudflare and Vercel.
 
-Each app ships on its own. There is no single command that deploys everything.
-You choose what goes out, and when.
+Cloudflare is what the starter kit is set up for. Vercel is supported too, and
+the parts that differ between them are already written.
 
-## The commands
+You do not have to choose one host for everything. Each app ships on its own,
+so you can put the marketing site on one and the API on the other. This page
+covers all three ways.
 
-Run these from the zap.ts folder.
+## Each app ships on its own
+
+There is no single command that deploys everything.
 
 ```bash
 pnpm run deploy:web
@@ -21,31 +24,11 @@ pnpm run deploy:admin
 pnpm run deploy:docs
 ```
 
-Each one builds that app, then sends it to Cloudflare.
-
 Deploying the web app does not touch the API. Deploying the API does not touch
-the marketing site. You can ship a fix to one app and leave the rest alone.
+the marketing site. You ship a fix to one app and leave the rest alone.
 
-:::warning
-`apps/docs/package.json` has no `deploy` script yet, so `pnpm run deploy:docs`
-stops with an error. Add the script before you ship the docs site.
-:::
-
-## The worker names
-
-Every app has a file called `wrangler.jsonc`. It tells Cloudflare how to run
-that app. The `name` field in it becomes the name of the Worker.
-
-| App | Worker name |
-| --- | --- |
-| `apps/web` | `zap-ts-web` |
-| `apps/marketing` | `zap-ts-marketing` |
-| `apps/api` | `zap-ts-api` |
-| `apps/admin` | `zap-ts-admin` |
-| `apps/docs` | `zap-ts-docs` |
-
-Change these names to your own product name before your first deploy. The name
-appears in the Cloudflare dashboard and in the default URL.
+This is also what makes mixing hosts possible. Nothing ties the apps together
+at deploy time.
 
 ## Why `emails` does not deploy
 
@@ -58,17 +41,36 @@ put online.
 The emails themselves live in [`@zap-ts/mail`](/packages/mail). That package
 ships inside the apps that send email.
 
-## Bindings live in `wrangler.jsonc`
+## Deploying to Cloudflare
+
+This is the default path. Every app already has the files it needs.
+
+An app runs as a Worker. A Worker is a small server that Cloudflare runs close
+to your users.
+
+Each app has a `wrangler.jsonc` file that tells Cloudflare how to run it. The
+`name` field becomes the name of the Worker:
+
+| App | Worker name |
+| --- | --- |
+| `apps/web` | `zap-ts-web` |
+| `apps/marketing` | `zap-ts-marketing` |
+| `apps/api` | `zap-ts-api` |
+| `apps/admin` | `zap-ts-admin` |
+| `apps/docs` | `zap-ts-docs` |
+
+Change these to your own product name before your first deploy. The name shows
+up in the Cloudflare dashboard and in the default URL.
+
+### Bindings
 
 A binding connects your Worker to another Cloudflare service. Bindings are not
 settings and not keys. They do not go in a `.env.local` file. They belong in
 `wrangler.jsonc`.
 
-zap.ts uses three of them.
-
 **Hyperdrive** connects the Worker to your Postgres database. It keeps a pool
-of open connections, so the database is fast to reach from anywhere. The web
-app, the API and the admin app each declare it:
+of open connections, because a Worker cannot keep its own. The web app, the API
+and the admin app each declare it:
 
 ```jsonc
 "hyperdrive": [
@@ -80,11 +82,10 @@ app, the API and the admin app each declare it:
 ```
 
 That `id` points at the starter kit's own database. Replace it with the id of
-your Hyperdrive, which you create in the Cloudflare dashboard. There is a
-`TODO` comment in `apps/admin/wrangler.jsonc` that says the same thing.
+your own Hyperdrive, which you create in the Cloudflare dashboard.
 
-**A queue** holds work the app wants to do later, so the user does not wait for
-it. Only `apps/web` declares it, as both a producer and a consumer:
+**A queue** holds work the app wants to do later, so the user does not wait.
+Only `apps/web` declares it, as both a producer and a consumer:
 
 ```jsonc
 "queues": {
@@ -102,23 +103,68 @@ it. Only `apps/web` declares it, as both a producer and a consumer:
 ```
 
 **The dead-letter queue** is `zap-ts-jobs-dlq`. A job that fails three times
-moves there instead of being lost. You can read it later and find out what
-went wrong.
+moves there instead of being lost. You can read it later and find out what went
+wrong.
 
-See [Queues](/packages/queues) for how jobs are written and read.
+## Deploying to Vercel
+
+Two packages already carry the Vercel versions of the parts that differ.
+
+**Background jobs.** Use `@zap-ts/queues-vercel` instead of
+`@zap-ts/queues-cloudflare`. Your job definitions do not change. They live in
+`@zap-ts/queues`, which knows about neither host. Only the adapter changes. See
+[Queues](/packages/queues).
+
+**Error reporting for the API.** `@zap-ts/observability` ships both
+`./hono/cloudflare` and `./hono/vercel`. Import the Vercel one. See
+[Observability](/packages/observability).
+
+Two more things change.
+
+**The database connection.** Hyperdrive is a Cloudflare service, so it does not
+apply. Point `DATABASE_URL` at your Postgres directly, and use a connection
+pooler from your database host if it offers one.
+
+**Settings and keys.** The `deploy:*` scripts run `varlock-wrangler`, which is
+the Cloudflare path. On Vercel, set your values in the Vercel project settings,
+or use `varlock` with Vercel's own CLI. Your `.env.schema` files stay exactly as
+they are: they describe what the app needs, not where it runs.
+
+## Mixing the two
+
+You can host each app wherever it suits it. Nothing in zap.ts assumes all apps
+share a host.
+
+A common split:
+
+| App | Host | Why |
+| --- | --- | --- |
+| `marketing` | Either | Static pages. Both are good at this |
+| `docs` | Either | Same |
+| `web` | Cloudflare | Hyperdrive and Queues are already wired |
+| `api` | Either | Both adapters exist |
+| `admin` | Same as `web` | It shares the database setup |
+
+Two rules when you mix.
+
+**Keep apps that share a database on the same host.** Otherwise you maintain
+two different connection setups for one database.
+
+**Point the apps at each other by URL.** `API_URL`, `SITE_URL` and `APP_URL`
+are settings. Set them to the real addresses, whatever host each app ended up
+on. Nothing else needs to know.
 
 ## How your settings reach Cloudflare
 
-Every deploy runs through `varlock-wrangler`. Varlock is the tool that reads
-your `.env.schema` and `.env.local` files. See
-[Environment](/guides/environment) for how those work.
+Every Cloudflare deploy runs through `varlock-wrangler`. Varlock reads your
+`.env.schema` and `.env.local` files. See [Environment](/guides/environment).
 
 At deploy time, varlock sorts your values into two groups:
 
 - **Non-sensitive values** go up as Cloudflare **vars**. A var is plain text.
   You can read it in the dashboard. `SITE_URL` and `MAIL_PROVIDER` are vars.
-- **Sensitive values** go up as Cloudflare **secrets**. A secret is hidden
-  after you send it. Nobody can read it back. `STRIPE_SECRET_KEY` and
+- **Sensitive values** go up as Cloudflare **secrets**. A secret is hidden after
+  you send it. Nobody can read it back. `STRIPE_SECRET_KEY` and
   `BETTER_AUTH_SECRET` are secrets.
 
 The schema decides which is which. A value is sensitive unless the schema marks
@@ -142,16 +188,16 @@ pnpm run env:web
 
 There is one of these per app: `env:web`, `env:marketing`, `env:api` and
 `env:admin`. Each one prints where every value came from. A missing required
-value stops the build and tells you its name.
+value stops the build and names it.
 
 Then work through the [Going to production](/guides/going-to-production)
-checklist. It lists the things a deploy will not catch, such as demo data and
-test payment keys.
+checklist. It lists the things a deploy will not catch, such as demo data, test
+payment keys and the zap.ts branding.
 
 ## Related
 
 - [Going to production](/guides/going-to-production) — the checklist before launch
 - [Environment](/guides/environment) — how settings and keys work
-- [Queues](/packages/queues) — jobs that run later
-- [Database](/packages/database) — Postgres through Hyperdrive
-- [Web app](/apps/web) — the app behind the sign-in
+- [Queues](/packages/queues) — jobs that run later, on either host
+- [Observability](/packages/observability) — error reporting on either host
+- [Self-host](/recipes/self-host) — running it on your own server instead

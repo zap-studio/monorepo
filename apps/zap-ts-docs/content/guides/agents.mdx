@@ -102,27 +102,15 @@ These exist because an agent tends to build too much. It will add a settings
 option nobody asked for, or a wrapper around one function. Rule 2 and rule 4
 are there to stop it.
 
-## A known error in the file
+## Keep it true
 
-:::warning
-`AGENTS.md` says `createTestDatabase()` comes from a package called
-`@zap-ts/test-database`. That package does not exist.
+`AGENTS.md` is only useful while it matches the code.
 
-The real import is:
+A rule that has gone stale is worse than no rule. The agent follows it with
+full confidence and writes something that does not work.
 
-```ts
-import { createTestDatabase } from "@zap-ts/testing/database";
-```
-
-The package is `@zap-ts/testing`, and it lives in `tooling/testing`. The
-`./database` part is the export you want.
-
-Fix this line in your own copy of `AGENTS.md`. Until you do, an agent that
-follows it will write an import that does not resolve.
-:::
-
-You can check it yourself. Open any test that uses a database, such as
-`packages/billing/src/access.node.test.ts`, and read the first lines.
+So when you move a package or rename an export, check whether `AGENTS.md`
+mentions it. Treat it like any other file that can go out of date.
 
 ## Extending it for your product
 

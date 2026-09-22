@@ -10,7 +10,8 @@ organization and billing. You run it on `app.<domain>`.
 This is the only app in the project that carries a user session. A session is
 the proof that a user has signed in.
 
-The app is built with TanStack Start and runs on Cloudflare Workers. A Worker
+The app is built with TanStack Start and runs on Cloudflare Workers by default. Vercel is supported too; see
+[Deployment](/guides/deployment). A Worker
 is a small server that Cloudflare runs close to your users. The pages live in
 `src/routes`. The name of a file there decides its URL.
 
