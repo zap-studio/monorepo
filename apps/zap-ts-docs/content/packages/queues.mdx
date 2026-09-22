@@ -155,6 +155,52 @@ them. A job is tried up to 3 times. After that it goes to `zap-ts-jobs-dlq`. A
 dead letter queue holds the jobs that never worked, so you can look at them
 later.
 
+## Opting in to Vercel
+
+`apps/web` ships on Cloudflare. Moving its jobs to Vercel Queues is six steps,
+and nothing outside this list changes:
+
+1. Swap the dependency in `apps/web/package.json`:
+   `@zap-ts/queues-cloudflare` becomes `@zap-ts/queues-vercel`. Never keep
+   both. The two packages export the same names, and the one you import
+   decides which platform the app talks to.
+2. Delete the `queue` handler from `apps/web/src/server.ts`, and the
+   `queues` block from `apps/web/wrangler.jsonc` with it.
+3. Add the consumer route at `apps/web/src/routes/api.jobs.ts`, the one shown
+   above.
+4. Declare the trigger, so Vercel knows which route serves which topic:
+
+   ```ts
+   // apps/web/nitro.config.ts
+   import { defineConfig } from "nitro";
+
+   export default defineConfig({
+     vercel: {
+       functionRules: {
+         "/api/jobs": {
+           experimentalTriggers: [{ type: "queue/v2beta", topic: "zap-ts-jobs" }],
+         },
+       },
+     },
+   });
+   ```
+
+   Nitro writes that rule into the build output, so the route is registered by
+   the deploy and not by hand in the dashboard. `vite.config.ts` must already
+   say `host: "vercel"`, which is what puts Nitro in the build.
+
+5. Create the queue in the Vercel project under the same name, and pass that
+   name to `JobQueueLive("zap-ts-jobs")` where you build the layer. The topic,
+   the trigger and the layer all carry the same string.
+6. Run `vercel link` and `vercel env pull` once in `apps/web`.
+   `@vercel/queue` signs its calls with the OIDC token they write, and
+   `pnpm run dev` then delivers a sent job to your route in process.
+
+:::warning
+`queue/v2beta` is the trigger type Vercel Queues uses today. It is still
+marked beta, so check the Vercel docs before a production deploy.
+:::
+
 ## Related
 
 - [Mail](/packages/mail) — the work the one job type does
