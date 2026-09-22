@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@zap-studio/typescript": "workspace:^",
     "typescript": "catalog:",
     "wrangler": "catalog:"
   },

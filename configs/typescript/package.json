@@ -5,12 +5,14 @@
   "license": "PROPRIETARY",
   "files": [
     "base.json",
+    "blume.json",
     "library.json",
     "react.json"
   ],
   "type": "module",
   "exports": {
     "./base.json": "./base.json",
+    "./blume.json": "./blume.json",
     "./library.json": "./library.json",
     "./react.json": "./react.json"
   }

@@ -398,6 +398,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.2
+      '@zap-studio/typescript':
+        specifier: workspace:^
+        version: link:../../configs/typescript
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -414,6 +417,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.2
+      '@zap-studio/typescript':
+        specifier: workspace:^
+        version: link:../../configs/typescript
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
