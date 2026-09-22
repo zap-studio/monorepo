@@ -108,27 +108,113 @@ wrong.
 
 ## Deploying to Vercel
 
-Two packages already carry the Vercel versions of the parts that differ.
+Five things change between the two hosts. Nothing else does. Your routes, your
+components, your database schema and your `.env.schema` files stay as they are.
 
-**Background jobs.** Use `@zap-ts/queues-vercel` instead of
-`@zap-ts/queues-cloudflare`. Your job definitions do not change. They live in
-`@zap-ts/queues`, which knows about neither host. Only the adapter changes. See
-[Queues](/packages/queues).
+### 1. The host of the build
 
-**Error reporting for the API.** `@zap-ts/observability` ships both
-`./hono/cloudflare` and `./hono/vercel`. Import the Vercel one. See
-[Observability](/packages/observability).
+Every app builds through `createViteConfig` from `@zap-ts/vite`. It takes a
+`host`:
 
-Two more things change.
+```ts
+// apps/web/vite.config.ts
+export default createViteConfig({ host: "vercel", port: 3000 });
+```
 
-**The database connection.** Hyperdrive is a Cloudflare service, so it does not
-apply. Point `DATABASE_URL` at your Postgres directly, and use a connection
-pooler from your database host if it offers one.
+`cloudflare` builds a Worker. `vercel` builds with [Nitro](https://nitro.build),
+which outputs what Vercel runs. That one word is the whole build change.
 
-**Settings and keys.** The `deploy:*` scripts run `varlock-wrangler`, which is
-the Cloudflare path. On Vercel, set your values in the Vercel project settings,
-or use `varlock` with Vercel's own CLI. Your `.env.schema` files stay exactly as
-they are: they describe what the app needs, not where it runs.
+`wrangler.jsonc` is then unused. Leave it if the app may move back, delete it
+if it will not.
+
+### 2. The database connection
+
+Hyperdrive is a Cloudflare service, so it does not exist here. Add the URL to
+the `.env.schema` of the repository root:
+
+```bash
+# @required @type=url
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/zap
+```
+
+Then one file per app reads it instead of the binding:
+
+```ts
+// apps/web/src/lib/database-url.ts
+import { env } from "@zap-ts/environment";
+
+export const databaseUrl = (): string => env.DATABASE_URL;
+```
+
+`apps/api/src/index.ts` reads the same binding and changes the same way.
+
+:::warning
+The URL has to be a **pooled** one. On Cloudflare, Hyperdrive keeps the pool. On
+Vercel nothing does, and a function that opens its own connection on every
+request will run your Postgres out of connections. Use the pooled URL of your
+database host, such as the pooler of Neon or the pgBouncer port of Supabase.
+:::
+
+### 3. Background jobs
+
+Swap `@zap-ts/queues-cloudflare` for `@zap-ts/queues-vercel` in the
+`package.json` of the app. Your job types do not move: they live in
+`@zap-ts/queues`, which knows about neither host.
+
+The consumer changes shape. Cloudflare delivers a batch to the `queue` handler
+of the Worker. Vercel calls a route of your app, once per job. So delete the
+`queue` handler from `apps/web/src/server.ts` and add the route:
+
+```ts
+// apps/web/src/routes/api.jobs.ts
+import { createFileRoute } from "@tanstack/react-router";
+import { handleJob } from "@zap-ts/queues-vercel/consumer";
+import { Effect } from "effect";
+
+export const Route = createFileRoute("/api/jobs")({
+  server: {
+    handlers: {
+      POST: handleJob((job) => Effect.log(`sending to ${job.to}`)),
+    },
+  },
+});
+```
+
+Then point the queue at that route in the Vercel dashboard, and create the
+queue with the same name you pass to `JobQueueLive`. Retries and the dead-letter
+queue are settings of the queue there, where on Cloudflare they sit in
+`wrangler.jsonc`. See [Queues](/packages/queues).
+
+### 4. Error reporting for the API
+
+`@zap-ts/observability` ships both `./hono/cloudflare` and `./hono/vercel`:
+
+```ts
+import { sentryMiddleware } from "@zap-ts/observability/hono/vercel";
+```
+
+See [Observability](/packages/observability).
+
+### 5. Settings and keys
+
+The `deploy:*` scripts run `varlock-wrangler`, which is the Cloudflare path. It
+does two things at once: it resolves your values, and it ships them to the host.
+On Vercel you keep the first half and change the second:
+
+```json
+// apps/web/package.json
+"deploy": "varlock run -- vercel deploy --prod"
+```
+
+`varlock run` resolves your `.env.schema` and `.env.local` the same way it
+always does, so the build sees the same values. What differs is where the
+values live at runtime: set them in the Vercel project settings, or push them
+with `vercel env add`.
+
+Nothing keeps the Vercel dashboard and your files in step, which is the one
+thing you lose. On Cloudflare, varlock overwrites the vars and secrets on every
+deploy. On Vercel, a value you add by hand in the dashboard stays until you
+remove it.
 
 ## Mixing the two
 

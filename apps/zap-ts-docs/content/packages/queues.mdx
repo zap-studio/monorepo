@@ -11,7 +11,7 @@ Queues are split into three packages:
 
 - `@zap-ts/queues` says what a job looks like. It has no code, only types.
 - `@zap-ts/queues-cloudflare` sends jobs and runs them on Cloudflare Queues.
-- `@zap-ts/queues-vercel` sends jobs on Vercel Queues.
+- `@zap-ts/queues-vercel` sends jobs and runs them on Vercel Queues.
 
 Your app depends on one platform package. The shape of the job stays the same
 on both.
@@ -99,8 +99,10 @@ makes sense next to another job.
 
 ## Running a job
 
-Only `@zap-ts/queues-cloudflare` has a `/consumer` path. A consumer is the
-code that takes jobs off the queue and runs them.
+Both platform packages export a `/consumer` path. A consumer is the code that
+takes jobs off the queue and runs them.
+
+On Cloudflare:
 
 ```ts
 import { handleJobBatch } from "@zap-ts/queues-cloudflare/consumer";
@@ -119,10 +121,29 @@ Cloudflare gives your Worker a batch. A batch is a small group of jobs.
 is marked as done. A job that fails is written to the log and put back on the
 queue, so the queue tries it again.
 
-`@zap-ts/queues-vercel` has no `/consumer` path. On Vercel you only send jobs
-from this package. Vercel runs them for you: it calls one of your own routes
-with the job. So on Vercel you write that route yourself. The retry rules are
-Vercel's, not this package's.
+On Vercel, jobs do not arrive in a batch. Vercel calls a route of your own
+app, once per job. So the consumer is a route, and it is built by `handleJob`:
+
+```ts
+import { createFileRoute } from "@tanstack/react-router";
+import { handleJob } from "@zap-ts/queues-vercel/consumer";
+import { Effect } from "effect";
+
+export const Route = createFileRoute("/api/jobs")({
+  server: {
+    handlers: {
+      POST: handleJob((job) => Effect.log(`sending to ${job.to}`)),
+    },
+  },
+});
+```
+
+`handleJob` gives you the same two outcomes as `handleJobBatch`. A job that
+works answers Vercel, and the job is done. A job that fails is written to the
+log and the route fails, so Vercel Queues delivers the job again.
+
+How many times it tries, and where a job goes after that, is set on the Vercel
+queue itself, not in this package.
 
 ## What ships in the web app
 
