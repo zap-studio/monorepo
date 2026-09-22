@@ -198,10 +198,37 @@ export const Route = createFileRoute("/api/jobs")({
 });
 ```
 
-Then point the queue at that route in the Vercel dashboard, and create the
-queue with the same name you pass to `JobQueueLive`. Retries and the dead-letter
-queue are settings of the queue there, where on Cloudflare they sit in
-`wrangler.jsonc`. See [Queues](/packages/queues).
+Then declare the trigger, so Vercel knows which route to call for which
+topic. Nitro writes it into the build output for you, from `nitro.config.ts`
+next to the `vite.config.ts` of the app:
+
+```ts
+// apps/web/nitro.config.ts
+import { defineConfig } from "nitro";
+
+export default defineConfig({
+  vercel: {
+    functionRules: {
+      "/api/jobs": {
+        experimentalTriggers: [{ type: "queue/v2beta", topic: "zap-ts-jobs" }],
+      },
+    },
+  },
+});
+```
+
+The topic is the name you pass to `JobQueueLive`, and the queue must exist in
+the Vercel project under that same name. Retries and the dead-letter queue are
+settings of the queue there, where on Cloudflare they sit in `wrangler.jsonc`,
+so delete the `queues` block from `apps/web/wrangler.jsonc` once the app has
+moved.
+
+Run `vercel link` and `vercel env pull` once in the app folder. `@vercel/queue`
+signs its calls with the OIDC token those commands put in place, and `pnpm run
+dev` then delivers a sent job to your route in process, the same way production
+does.
+
+See [Queues](/packages/queues) for the full opt-in list.
 
 ### 4. Error reporting for the API
 

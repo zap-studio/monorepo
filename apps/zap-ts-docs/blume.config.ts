@@ -13,6 +13,10 @@ export default defineConfig({
   description,
   github: { branch: "main", dir: "apps/zap-ts-docs", owner: "zap-studio", repo: "monorepo" },
   lastModified: true,
+  logo: {
+    image: { alt: siteName, dark: "/logo-dark.svg", light: "/logo-light.svg" },
+    text: "",
+  },
   navigation: {
     sidebar: { display: "page" },
   },
@@ -20,6 +24,7 @@ export default defineConfig({
   seo: {
     organization: {
       address: { addressCountry: "FR" },
+      logo: "/icon.svg",
       name: "Zap Studio",
       sameAs: ["https://github.com/zap-studio", repoUrl],
     },
