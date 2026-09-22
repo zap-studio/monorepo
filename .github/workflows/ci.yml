@@ -48,8 +48,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
   build-docs:
-    name: Build Docs
+    name: Build Docs (${{ matrix.app }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [docs, zap-ts-docs]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -57,13 +61,13 @@ jobs:
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
       - name: Build docs
-        run: pnpm --filter docs run build
+        run: pnpm --filter ${{ matrix.app }} run build
       - name: Type-check docs pages
-        run: pnpm --filter docs run check
+        run: pnpm --filter ${{ matrix.app }} run check
       - name: Validate docs links
-        run: pnpm --filter docs run validate
+        run: pnpm --filter ${{ matrix.app }} run validate
       - name: Audit docs
-        run: pnpm --filter docs run audit
+        run: pnpm --filter ${{ matrix.app }} run audit
 
   check:
     name: Check
