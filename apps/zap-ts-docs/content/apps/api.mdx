@@ -200,8 +200,12 @@ The file `wrangler.jsonc` holds the settings for Cloudflare. It names the
 Worker `zap-ts-api`. It turns on `nodejs_compat`, which lets Node code run on
 Workers. It also binds Hyperdrive to `HYPERDRIVE`.
 
-Replace the Hyperdrive id with your own before your first deploy. Then set your
-secrets in the Cloudflare dashboard.
+Replace the Hyperdrive id with your own before your first deploy.
+
+Keep your secrets in `.env.local`, not in the Cloudflare dashboard.
+`varlock-wrangler deploy` ships every value the schema declares, and it removes
+the ones added by hand in the dashboard. So a value set there disappears on the
+next deploy, and the API loses the credential it was holding.
 
 ## Related
 
