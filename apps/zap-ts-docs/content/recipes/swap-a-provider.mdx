@@ -8,7 +8,7 @@ zap.ts keeps outside companies behind its own packages. Your app calls
 
 So changing company is a settings change or a two-line change, not a rewrite.
 
-This page covers the three you are most likely to change.
+This page covers the four you are most likely to change.
 
 ## Email
 
@@ -22,14 +22,14 @@ MAIL_PROVIDER=smtp
 
 `MAIL_PROVIDER` accepts one of six values:
 
-| Value | What it does |
-| --- | --- |
-| `smtp` | Sends to Mailpit on your computer. The default |
-| `console` | Prints the email to your terminal instead of sending it |
-| `resend` | Sends with Resend |
-| `postmark` | Sends with Postmark |
-| `sendgrid` | Sends with SendGrid |
-| `brevo` | Sends with Brevo |
+| Value      | What it does                                            |
+| ---------- | ------------------------------------------------------- |
+| `smtp`     | Sends to Mailpit on your computer. The default          |
+| `console`  | Prints the email to your terminal instead of sending it |
+| `resend`   | Sends with Resend                                       |
+| `postmark` | Sends with Postmark                                     |
+| `sendgrid` | Sends with SendGrid                                     |
+| `brevo`    | Sends with Brevo                                        |
 
 Pick one, then add its key. For Resend:
 
@@ -112,6 +112,18 @@ command rewrites the table definition. The second applies it.
 Nothing else in your app changes. Every company exports the same function
 names, so your pages keep working. See [Billing](/packages/billing).
 
+## AI models
+
+AI is the one swap that lives in code, because each company ships its own
+adapter package. `packages/ai/src/index.ts` names the `createOpenai*`
+functions in three places: the imports, the `AIAdapters` type and the `AILive`
+layer. Change those three, change `DEFAULT_MODELS` to the names the new
+company uses, and declare its API key in the root `.env.schema`.
+
+The seven adapters are independent, so you can keep text on one company and
+speech on another. [AI](/packages/ai#changing-the-provider) has the steps, the
+list of adapter packages, and which capabilities each one covers.
+
 ## Why this works
 
 Each package exports the same names no matter which company is behind it.
@@ -124,6 +136,7 @@ mail company.
 
 ## Related
 
+- [AI](/packages/ai) — how models are called
 - [Billing](/packages/billing) — how payments are set up
 - [Mail](/packages/mail) — how email is sent
 - [Storage](/packages/storage) — how files are stored

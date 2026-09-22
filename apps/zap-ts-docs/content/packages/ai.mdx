@@ -34,9 +34,7 @@ import { AILive, generateText } from "@zap-ts/ai";
 import { Effect } from "effect";
 
 const answer = await Effect.runPromise(
-  generateText({ messages: [{ role: "user", content: "Hi!" }] }).pipe(
-    Effect.provide(AILive),
-  ),
+  generateText({ messages: [{ role: "user", content: "Hi!" }] }).pipe(Effect.provide(AILive)),
 );
 ```
 
@@ -48,9 +46,7 @@ import { generateText } from "@zap-ts/ai";
 
 import { runAI } from "../lib/ai";
 
-const answer = await runAI(
-  generateText({ messages: [{ role: "user", content: "Hi!" }] }),
-);
+const answer = await runAI(generateText({ messages: [{ role: "user", content: "Hi!" }] }));
 ```
 
 ## Wait, or stream
@@ -151,17 +147,100 @@ every call that uses that capability changes too.
 ## Changing the provider
 
 Only OpenAI is set up. `AILive` builds its seven adapters with the
-`createOpenai*` functions of `@tanstack/ai-openai`.
+`createOpenai*` functions of `@tanstack/ai-openai`. An adapter is one
+capability from one company, so a swap is one import, one type and one set of
+model names.
 
-To use another provider:
+`@tanstack/ai` has an adapter package per company:
+`@tanstack/ai-anthropic`, `@tanstack/ai-gemini`, `@tanstack/ai-mistral`,
+`@tanstack/ai-grok`, `@tanstack/ai-groq`, `@tanstack/ai-cohere`,
+`@tanstack/ai-ollama`, `@tanstack/ai-bedrock`, `@tanstack/ai-openrouter`,
+`@tanstack/ai-perplexity`, `@tanstack/ai-elevenlabs`, `@tanstack/ai-fal`, and
+more.
 
-1. In `packages/ai/src/index.ts`, replace those `createOpenai*` calls inside
-   `AILive` with the adapters of another `@tanstack/ai` adapter package.
-2. In the same file, change the model names in `DEFAULT_MODELS` to the names
-   that provider uses.
+### The five steps
+
+1. Add the adapter package. Put the version in `catalog:` in
+   `pnpm-workspace.yaml`, write `"@tanstack/ai-gemini": "catalog:"` in
+   `packages/ai/package.json`, then `pnpm install`. Never a version number in
+   a `package.json`.
+2. Declare the new key in the root `.env.schema`, next to `OPENAI_API_KEY`,
+   with its `@docs` link and its `@type`. Put the real key in `.env.local`.
+3. In `packages/ai/src/index.ts`, change the imports, the `AIAdapters` type
+   and the `AILive` layer together. They name the same functions three times:
+
+   ```ts
+   import {
+     createGeminiChat,
+     createGeminiEmbedding,
+     createGeminiImage,
+     createGeminiSpeech,
+     createGeminiSummarize,
+     createGeminiVideo,
+   } from "@tanstack/ai-gemini";
+
+   export type AIAdapters = {
+     embedding: ReturnType<typeof createGeminiEmbedding>;
+     // ...one line per capability
+   };
+
+   export const AILive: Layer.Layer<AI> = Layer.sync(AI, () => {
+     const apiKey = requireEnv("GEMINI_API_KEY");
+
+     return {
+       embedding: createGeminiEmbedding(DEFAULT_MODELS.embedding, apiKey),
+       // ...one line per capability
+     };
+   });
+   ```
+
+4. In the same file, change `DEFAULT_MODELS` to the names that company uses.
+   A model name from one company means nothing to another one.
+5. Run the gate: `pnpm run env:web && pnpm run typecheck && pnpm run test`.
 
 Nothing else changes. `generateText` and the other functions only ever see an
-adapter. They never see the provider behind it.
+adapter. They never see the company behind it.
+
+### Not every company does everything
+
+OpenAI is the one company that covers all seven capabilities. Most cover a
+few:
+
+| Package                   | Covers                                                  |
+| ------------------------- | ------------------------------------------------------- |
+| `@tanstack/ai-openai`     | all seven                                               |
+| `@tanstack/ai-gemini`     | text, summarize, embedding, image, video, speech, audio |
+| `@tanstack/ai-anthropic`  | text, summarize                                         |
+| `@tanstack/ai-mistral`    | text, embedding                                         |
+| `@tanstack/ai-elevenlabs` | speech, transcription                                   |
+| `@tanstack/ai-fal`        | video                                                   |
+
+Check the factory names the package exports before you start. They follow one
+shape, `create<Company><Capability>`.
+
+### Mixing companies
+
+The seven fields of `AIAdapters` are independent, so one field per company is
+fine. That is how you use a company that has no image model, or a voice
+company for speech only:
+
+```ts
+export const AILive: Layer.Layer<AI> = Layer.sync(AI, () => ({
+  text: createAnthropicChat(DEFAULT_MODELS.text, requireEnv("ANTHROPIC_API_KEY")),
+  summarize: createAnthropicSummarize(DEFAULT_MODELS.text, requireEnv("ANTHROPIC_API_KEY")),
+  speech: createElevenLabsSpeech(DEFAULT_MODELS.speech, requireEnv("ELEVENLABS_API_KEY")),
+  // ...the rest stay on OpenAI
+}));
+```
+
+Every key you read with `requireEnv` must exist when the layer is built. So
+declare each one in `.env.schema`, and keep the OpenAI key as long as one
+adapter still comes from OpenAI.
+
+A capability nobody in your app calls still needs an adapter, because
+`AIAdapters` has all seven fields. Leave that one on OpenAI, or drop the field
+from the type and from the layer, and the functions that use it stop
+typechecking.
 
 ## Environment
 

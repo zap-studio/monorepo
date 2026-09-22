@@ -47,16 +47,16 @@ create the file and point it at `AGENTS.md`.
 
 A table of the commands to run before finishing a piece of work:
 
-| Command | What it checks |
-| --- | --- |
-| `pnpm run typecheck` | TypeScript types, in every package |
-| `pnpm run lint` | Code problems, with type information |
-| `pnpm run format:check` | Code style |
-| `pnpm run test` | All tests, node and browser |
-| `pnpm run test:e2e` | The happy path of the web app, in a real browser |
-| `pnpm run fallow` | Files, exports and dependencies that nobody uses |
-| `pnpm run react-doctor` | Common React mistakes |
-| `pnpm run build` | That every package and app still builds |
+| Command                 | What it checks                                   |
+| ----------------------- | ------------------------------------------------ |
+| `pnpm run typecheck`    | TypeScript types, in every package               |
+| `pnpm run lint`         | Code problems, with type information             |
+| `pnpm run format:check` | Code style                                       |
+| `pnpm run test`         | All tests, node and browser                      |
+| `pnpm run test:e2e`     | The happy path of the web app, in a real browser |
+| `pnpm run fallow`       | Files, exports and dependencies that nobody uses |
+| `pnpm run react-doctor` | Common React mistakes                            |
+| `pnpm run build`        | That every package and app still builds          |
 
 `pnpm run lint:fix` and `pnpm run format` fix what they can.
 
@@ -102,6 +102,14 @@ These exist because an agent tends to build too much. It will add a settings
 option nobody asked for, or a wrapper around one function. Rule 2 and rule 4
 are there to stop it.
 
+## Skills go next to it
+
+`AGENTS.md` holds the rules. The recipes for single tasks — adding a feature,
+swapping a provider, deploying — live in `.claude/skills`, one folder each.
+
+An agent loads a skill only when that task comes up, so a recipe costs nothing
+until it is needed. See [Skills](/guides/skills).
+
 ## Keep it true
 
 `AGENTS.md` is only useful while it matches the code.
@@ -139,6 +147,7 @@ the agent already sees it. Write down only what the code cannot show.
 
 ## Related
 
+- [Skills](/guides/skills) — the task recipes that ship with zap.ts
 - [Testing](/guides/testing) — the full test rules
 - [Dependencies](/guides/dependencies) — the catalog rule
 - [Project structure](/project-structure) — what each folder holds
