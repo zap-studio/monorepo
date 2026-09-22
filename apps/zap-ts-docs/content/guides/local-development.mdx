@@ -20,11 +20,11 @@ docker compose up -d
 `-d` means "in the background". You start them once. They keep running, even
 after you close your terminal.
 
-| Service | What it does | Ports |
-| --- | --- | --- |
-| Postgres | The database. It stores your data. | 5432 |
-| Mailpit | A fake email inbox. | 1025 to send, 8025 for the web page |
-| MinIO | A file store for uploads. | 9000 for the API, 9001 for the web page |
+| Service  | What it does                       | Ports                                   |
+| -------- | ---------------------------------- | --------------------------------------- |
+| Postgres | The database. It stores your data. | 5432                                    |
+| Mailpit  | A fake email inbox.                | 1025 to send, 8025 for the web page     |
+| MinIO    | A file store for uploads.          | 9000 for the API, 9001 for the web page |
 
 ### Postgres
 
@@ -94,11 +94,11 @@ You get:
 
 The three users are:
 
-| Email | Name | Role |
-| --- | --- | --- |
-| `owner@demo.test` | Olivia Owner | owner |
-| `admin@demo.test` | Adam Admin | admin |
-| `member@demo.test` | Mia Member | member |
+| Email              | Name         | Role   |
+| ------------------ | ------------ | ------ |
+| `owner@demo.test`  | Olivia Owner | owner  |
+| `admin@demo.test`  | Adam Admin   | admin  |
+| `member@demo.test` | Mia Member   | member |
 
 They all share the same password: `demo1234`.
 
@@ -148,13 +148,13 @@ It is useful when a test fails and you want to know what is really stored.
 
 ## The other database scripts
 
-| Script | What it does |
-| --- | --- |
-| `pnpm run db:generate` | Writes a new migration file after you change the schema |
-| `pnpm run db:migrate` | Applies the migration files to the database |
-| `pnpm run db:push` | Pushes your schema straight to the database, with no migration file |
-| `pnpm run db:seed` | Writes the demo data |
-| `pnpm run db:studio` | Opens Drizzle Studio |
+| Script                 | What it does                                                        |
+| ---------------------- | ------------------------------------------------------------------- |
+| `pnpm run db:generate` | Writes a new migration file after you change the schema             |
+| `pnpm run db:migrate`  | Applies the migration files to the database                         |
+| `pnpm run db:push`     | Pushes your schema straight to the database, with no migration file |
+| `pnpm run db:seed`     | Writes the demo data                                                |
+| `pnpm run db:studio`   | Opens Drizzle Studio                                                |
 
 Use `db:generate` and `db:migrate` for real work. `db:push` is quick, but it
 leaves no file behind, so keep it for throwaway experiments.

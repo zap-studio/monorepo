@@ -108,12 +108,12 @@ uses the same rules, so a type error looks the same everywhere.
 
 There are four shared files. Pick the one that matches where your code runs.
 
-| File | Use it when |
-| --- | --- |
-| `base.json` | Plain TypeScript, no browser and no Node types |
-| `node.json` | The code uses Node, for example to read a file |
-| `react.json` | The package holds React components |
-| `webworker.json` | The code runs on Cloudflare Workers |
+| File             | Use it when                                    |
+| ---------------- | ---------------------------------------------- |
+| `base.json`      | Plain TypeScript, no browser and no Node types |
+| `node.json`      | The code uses Node, for example to read a file |
+| `react.json`     | The package holds React components             |
+| `webworker.json` | The code runs on Cloudflare Workers            |
 
 Most packages extend `base.json`, like `storage` and `queues` do.
 

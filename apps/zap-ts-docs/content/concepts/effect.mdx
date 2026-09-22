@@ -24,7 +24,7 @@ In normal TypeScript, a function that can fail looks the same as one that
 cannot:
 
 ```ts
-function sendEmail(to: string): Promise<void>
+function sendEmail(to: string): Promise<void>;
 ```
 
 Nothing there says what can go wrong. You find out when it happens, in
@@ -35,7 +35,7 @@ production.
 With Effect, what can go wrong is part of the type:
 
 ```ts
-Effect<void, MailError>
+Effect<void, MailError>;
 ```
 
 This says: it gives back nothing when it works, and a `MailError` when it

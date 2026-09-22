@@ -18,14 +18,14 @@ the value is needed, and whether the value is safe to send to the browser.
 The schema holds no real secret. The values in it are safe defaults for your
 own computer.
 
-| Schema | Holds | Read by |
-| --- | --- | --- |
-| `.env.schema` | The shared keys: Better Auth, Google, Stripe, OpenAI, mail, PostHog, Sentry, `R2_*` | `packages/*` |
-| `apps/web/.env.schema` | The shared keys, plus `API_URL` | `apps/web` |
-| `apps/admin/.env.schema` | The shared keys | `apps/admin` |
-| `apps/marketing/.env.schema` | `SITE_URL`, `APP_URL`, plus the PostHog and Sentry keys | `apps/marketing` |
-| `apps/api/.env.schema` | `CORS_ORIGINS`, `API_URL`, plus `SENTRY_*` and the keys it needs | `apps/api` |
-| `packages/database/.env.schema` | `DATABASE_URL` | The `db:*` scripts |
+| Schema                          | Holds                                                                               | Read by            |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------------ |
+| `.env.schema`                   | The shared keys: Better Auth, Google, Stripe, OpenAI, mail, PostHog, Sentry, `R2_*` | `packages/*`       |
+| `apps/web/.env.schema`          | The shared keys, plus `API_URL`                                                     | `apps/web`         |
+| `apps/admin/.env.schema`        | The shared keys                                                                     | `apps/admin`       |
+| `apps/marketing/.env.schema`    | `SITE_URL`, `APP_URL`, plus the PostHog and Sentry keys                             | `apps/marketing`   |
+| `apps/api/.env.schema`          | `CORS_ORIGINS`, `API_URL`, plus `SENTRY_*` and the keys it needs                    | `apps/api`         |
+| `packages/database/.env.schema` | `DATABASE_URL`                                                                      | The `db:*` scripts |
 
 :::note
 `DATABASE_URL` lives only in `packages/database/.env.schema`. It is not in the

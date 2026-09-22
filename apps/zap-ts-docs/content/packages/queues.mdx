@@ -110,9 +110,7 @@ import { Effect } from "effect";
 
 export default {
   queue: (batch) =>
-    Effect.runPromise(
-      handleJobBatch(batch, (job) => Effect.log(`sending to ${job.to}`)),
-    ),
+    Effect.runPromise(handleJobBatch(batch, (job) => Effect.log(`sending to ${job.to}`))),
 };
 ```
 

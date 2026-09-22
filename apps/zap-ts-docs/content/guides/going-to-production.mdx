@@ -17,11 +17,11 @@ through these nine steps in order.
 
 It creates one organisation, `Demo Organization`, and three users:
 
-| Email | Name | Role |
-| --- | --- | --- |
-| `owner@demo.test` | Olivia Owner | owner |
-| `admin@demo.test` | Adam Admin | admin |
-| `member@demo.test` | Mia Member | member |
+| Email              | Name         | Role   |
+| ------------------ | ------------ | ------ |
+| `owner@demo.test`  | Olivia Owner | owner  |
+| `admin@demo.test`  | Adam Admin   | admin  |
+| `member@demo.test` | Mia Member   | member |
 
 All three sign in with the password `demo1234`. The owner also carries the
 `admin` role, so that one account opens the back office too.
@@ -62,11 +62,11 @@ webhook gives you.
 
 Other providers use a setting instead of the key:
 
-| Provider | Setting | Change it to |
-| --- | --- | --- |
-| Polar | `POLAR_SERVER` | `production` |
-| Dodo Payments | `DODO_PAYMENTS_ENVIRONMENT` | `live_mode` |
-| Creem | `CREEM_ENVIRONMENT` | `live` |
+| Provider      | Setting                     | Change it to |
+| ------------- | --------------------------- | ------------ |
+| Polar         | `POLAR_SERVER`              | `production` |
+| Dodo Payments | `DODO_PAYMENTS_ENVIRONMENT` | `live_mode`  |
+| Creem         | `CREEM_ENVIRONMENT`         | `live`       |
 
 The billing page says on screen when the app is in test mode. Open it after the
 change and check that the message is gone.
@@ -159,15 +159,15 @@ sharing image and the web app manifest all read it.
 
 Then work through the rest:
 
-| What | Where |
-| --- | --- |
-| The logo mark | `apps/web/src/components/brand.tsx`. It uses a `Zap` icon from `lucide-react`. Swap in your own |
-| App icons | `icon-192.png` and `icon-512.png` in `apps/web/public` and `apps/marketing/public` |
-| Colours | The token files in [`@zap-ts/ui`](/packages/ui) |
-| Worker names | The `name` field in each `apps/*/wrangler.jsonc`. They all start with `zap-ts-` |
-| Email templates | `packages/mail/src/templates`. They carry a `TODO` about placeholder designs |
-| Legal pages | `apps/marketing/content/legal`. These are placeholders, not legal advice |
-| Blog post | `apps/marketing/content/blog` holds one example post. Delete it |
+| What            | Where                                                                                           |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| The logo mark   | `apps/web/src/components/brand.tsx`. It uses a `Zap` icon from `lucide-react`. Swap in your own |
+| App icons       | `icon-192.png` and `icon-512.png` in `apps/web/public` and `apps/marketing/public`              |
+| Colours         | The token files in [`@zap-ts/ui`](/packages/ui)                                                 |
+| Worker names    | The `name` field in each `apps/*/wrangler.jsonc`. They all start with `zap-ts-`                 |
+| Email templates | `packages/mail/src/templates`. They carry a `TODO` about placeholder designs                    |
+| Legal pages     | `apps/marketing/content/legal`. These are placeholders, not legal advice                        |
+| Blog post       | `apps/marketing/content/blog` holds one example post. Delete it                                 |
 
 When you think you are done, search the whole repository for what is left:
 

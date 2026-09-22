@@ -62,9 +62,7 @@ import { FileStorageLive, streamFile } from "@zap-ts/storage";
 import { Effect } from "effect";
 
 const program = Effect.scoped(
-  Effect.flatMap(streamFile("videos/clip.mp4"), (reader) =>
-    Effect.promise(() => reader.read()),
-  ),
+  Effect.flatMap(streamFile("videos/clip.mp4"), (reader) => Effect.promise(() => reader.read())),
 );
 
 await Effect.runPromise(program.pipe(Effect.provide(FileStorageLive)));
@@ -81,9 +79,7 @@ import { fileUrl, FileStorageLive } from "@zap-ts/storage";
 import { Effect } from "effect";
 
 const url = await Effect.runPromise(
-  fileUrl("notes/hello.txt", { expiresIn: 3600 }).pipe(
-    Effect.provide(FileStorageLive),
-  ),
+  fileUrl("notes/hello.txt", { expiresIn: 3600 }).pipe(Effect.provide(FileStorageLive)),
 );
 ```
 

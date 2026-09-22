@@ -22,14 +22,14 @@ knows they belong together.
 
 Each folder here is a separate website or server.
 
-| Folder | What it is |
-| --- | --- |
-| `web` | Your product. Users sign in to reach it. Address: `app.<domain>` |
+| Folder      | What it is                                                             |
+| ----------- | ---------------------------------------------------------------------- |
+| `web`       | Your product. Users sign in to reach it. Address: `app.<domain>`       |
 | `marketing` | Your public website: home page, blog, legal pages. Address: `<domain>` |
-| `admin` | Your back office. Address: `admin.<domain>` |
-| `api` | Your own public API, described with OpenAPI |
-| `docs` | A documentation site for your own product |
-| `emails` | A preview tool for your emails. It runs only on your computer |
+| `admin`     | Your back office. Address: `admin.<domain>`                            |
+| `api`       | Your own public API, described with OpenAPI                            |
+| `docs`      | A documentation site for your own product                              |
+| `emails`    | A preview tool for your emails. It runs only on your computer          |
 
 `web`, `marketing` and `admin` are three separate apps on purpose. A visitor
 reading your blog should not have to download your whole product first.
@@ -44,24 +44,24 @@ next to the page that needs it. See [API](/apps/api).
 
 Each folder here is a library. Apps import them. Nothing is copied.
 
-| Folder | What it does |
-| --- | --- |
-| `database` | Your tables, and the tool that talks to Postgres |
-| `authentication` | Sign-in, teams, two-factor codes, passkeys |
-| `authorization` | Who is allowed to do what |
-| `billing` | Subscriptions and payments |
-| `mail` | Sending email, and the email designs |
-| `storage` | File uploads |
-| `queues` | Work that runs later, in the background |
-| `queues-cloudflare` | Runs that background work on Cloudflare |
-| `queues-vercel` | Runs that background work on Vercel |
-| `ai` | Talking to AI models |
-| `analytics` | Seeing how people use your app |
-| `flags` | Turning features on and off without a new release |
-| `observability` | Catching and reporting errors |
-| `environment` | Reading your settings and keys safely |
-| `ui` | Buttons, forms, tables and the rest of the visual parts |
-| `tanstack-start` | The shared setup every app uses to start up |
+| Folder              | What it does                                            |
+| ------------------- | ------------------------------------------------------- |
+| `database`          | Your tables, and the tool that talks to Postgres        |
+| `authentication`    | Sign-in, teams, two-factor codes, passkeys              |
+| `authorization`     | Who is allowed to do what                               |
+| `billing`           | Subscriptions and payments                              |
+| `mail`              | Sending email, and the email designs                    |
+| `storage`           | File uploads                                            |
+| `queues`            | Work that runs later, in the background                 |
+| `queues-cloudflare` | Runs that background work on Cloudflare                 |
+| `queues-vercel`     | Runs that background work on Vercel                     |
+| `ai`                | Talking to AI models                                    |
+| `analytics`         | Seeing how people use your app                          |
+| `flags`             | Turning features on and off without a new release       |
+| `observability`     | Catching and reporting errors                           |
+| `environment`       | Reading your settings and keys safely                   |
+| `ui`                | Buttons, forms, tables and the rest of the visual parts |
+| `tanstack-start`    | The shared setup every app uses to start up             |
 
 ## `tooling/` — shared settings
 

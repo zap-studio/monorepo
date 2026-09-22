@@ -17,14 +17,14 @@ change or delete.
 
 zap.ts holds six apps:
 
-| App | Address | What it does |
-| --- | --- | --- |
-| `web` | `app.<domain>` | Your product. Users sign in here. |
-| `marketing` | `<domain>` | Your public website: home page, blog, legal pages. |
-| `admin` | `admin.<domain>` | Your back office. See users, ban them, sign in as them. |
-| `api` | — | Your own public API, for customers to build on. |
-| `docs` | — | A docs site for your own product. |
-| `emails` | — | A tool to preview your emails while you design them. |
+| App         | Address          | What it does                                            |
+| ----------- | ---------------- | ------------------------------------------------------- |
+| `web`       | `app.<domain>`   | Your product. Users sign in here.                       |
+| `marketing` | `<domain>`       | Your public website: home page, blog, legal pages.      |
+| `admin`     | `admin.<domain>` | Your back office. See users, ban them, sign in as them. |
+| `api`       | —                | Your own public API, for customers to build on.         |
+| `docs`      | —                | A docs site for your own product.                       |
+| `emails`    | —                | A tool to preview your emails while you design them.    |
 
 Shared code lives in `packages/`. Every app imports it. Nothing is copied
 twice.

@@ -69,13 +69,13 @@ to your users.
 Each app has a `wrangler.jsonc` file that tells Cloudflare how to run it. The
 `name` field becomes the name of the Worker:
 
-| App | Worker name |
-| --- | --- |
-| `apps/web` | `zap-ts-web` |
+| App              | Worker name        |
+| ---------------- | ------------------ |
+| `apps/web`       | `zap-ts-web`       |
 | `apps/marketing` | `zap-ts-marketing` |
-| `apps/api` | `zap-ts-api` |
-| `apps/admin` | `zap-ts-admin` |
-| `apps/docs` | `zap-ts-docs` |
+| `apps/api`       | `zap-ts-api`       |
+| `apps/admin`     | `zap-ts-admin`     |
+| `apps/docs`      | `zap-ts-docs`      |
 
 Change these to your own product name before your first deploy. The name shows
 up in the Cloudflare dashboard and in the default URL.
@@ -252,13 +252,13 @@ share a host.
 
 A common split:
 
-| App | Host | Why |
-| --- | --- | --- |
-| `marketing` | Either | Static pages. Both are good at this |
-| `docs` | Either | Same |
-| `web` | Cloudflare | Hyperdrive and Queues are already wired |
-| `api` | Either | Both adapters exist |
-| `admin` | Same as `web` | It shares the database setup |
+| App         | Host          | Why                                     |
+| ----------- | ------------- | --------------------------------------- |
+| `marketing` | Either        | Static pages. Both are good at this     |
+| `docs`      | Either        | Same                                    |
+| `web`       | Cloudflare    | Hyperdrive and Queues are already wired |
+| `api`       | Either        | Both adapters exist                     |
+| `admin`     | Same as `web` | It shares the database setup            |
 
 Two rules when you mix.
 

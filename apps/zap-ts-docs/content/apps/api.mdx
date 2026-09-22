@@ -24,13 +24,13 @@ it.
 
 So use each one for what it is good at.
 
-| Put it in `apps/web` | Put it in `apps/api` |
-| --- | --- |
-| Loading data for one of your pages | Routes your customers call from their own code |
-| Handling a form your own app submits | Anything you want to publish and document |
-| Any private action only your app takes | Anything that needs an API key |
+| Put it in `apps/web`                   | Put it in `apps/api`                           |
+| -------------------------------------- | ---------------------------------------------- |
+| Loading data for one of your pages     | Routes your customers call from their own code |
+| Handling a form your own app submits   | Anything you want to publish and document      |
+| Any private action only your app takes | Anything that needs an API key                 |
 
-You *can* use `apps/api` for private work too. Nothing stops you. It is useful
+You _can_ use `apps/api` for private work too. Nothing stops you. It is useful
 when several apps need the same route, or when you want one place that is
 described by OpenAPI. But it is not required, and starting there for your own
 app's logic gives you a network call you did not need.
@@ -57,13 +57,13 @@ that page.
 
 The API mounts five things. That is the whole surface.
 
-| Route               | What it does                                    |
-| ------------------- | ----------------------------------------------- |
-| `/api/auth/*`       | Every sign-in route, handled by Better Auth     |
-| `GET /health`       | Answers `{ "status": "ok" }`                    |
-| `GET /me`           | The signed-in user, or `401` if there is none   |
-| `GET /openapi.json` | The description of every route                  |
-| `GET /docs`         | A reading page for that description             |
+| Route               | What it does                                  |
+| ------------------- | --------------------------------------------- |
+| `/api/auth/*`       | Every sign-in route, handled by Better Auth   |
+| `GET /health`       | Answers `{ "status": "ok" }`                  |
+| `GET /me`           | The signed-in user, or `401` if there is none |
+| `GET /openapi.json` | The description of every route                |
+| `GET /docs`         | A reading page for that description           |
 
 Only `/health` and `/me` are written by hand. They live in `src/routes/`.
 
@@ -93,9 +93,7 @@ context, which is the object Hono passes to every route.
 So a route never calls Better Auth itself. It just asks the context.
 
 ```ts
-app.get("/me", sessionMiddleware(databaseUrl, corsOrigins), (c) =>
-  c.json(c.get("session")),
-);
+app.get("/me", sessionMiddleware(databaseUrl, corsOrigins), (c) => c.json(c.get("session")));
 ```
 
 The session is `null` when nobody is signed in. Your route decides what to do

@@ -79,7 +79,7 @@ This module also exports two types for your UI: `Session` and `Organization`.
 `@zap-ts/authentication/session` holds the reads the app makes.
 
 ```ts
-const session = yield* readSession(auth, headers);
+const session = yield * readSession(auth, headers);
 ```
 
 `readSession` does one thing that `auth.api.getSession` does not. The session
@@ -112,7 +112,7 @@ says whether that user may open the admin app.
 ask. It also closes the onboarding.
 
 ```ts
-const { askName, skip } = yield* readOnboardingState(auth, headers);
+const { askName, skip } = yield * readOnboardingState(auth, headers);
 ```
 
 Google gives you a name. So the name field only shows up when the sign-up left
@@ -133,12 +133,14 @@ the server can write it.
 ```ts
 import { listPendingInvitations } from "@zap-ts/authentication/invitations";
 
-const page = yield* listPendingInvitations(connectionString, "org_123", {
-  limit: 25,
-  offset: 0,
-  sortByEmail: true,
-  direction: "asc",
-});
+const page =
+  yield *
+  listPendingInvitations(connectionString, "org_123", {
+    limit: 25,
+    offset: 0,
+    sortByEmail: true,
+    direction: "asc",
+  });
 ```
 
 Better Auth returns every invitation of an organization at once, whatever its
