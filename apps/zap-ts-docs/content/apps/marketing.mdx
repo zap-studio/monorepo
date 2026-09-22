@@ -169,11 +169,17 @@ See [Environment](/guides/environment) to learn how varlock loads them.
 ## Deploying
 
 ```bash
-pnpm run deploy:marketing
+pnpm run deploy:marketing:cloudflare
+pnpm run deploy:marketing:vercel
 ```
 
-This runs `varlock-wrangler deploy`. It sends your environment variables up
-with the site. You do not set them by hand in the Cloudflare dashboard.
+The host is part of the name, so a deploy never goes somewhere you did not
+name. There is no `deploy` on its own.
+
+The Cloudflare one runs `varlock-wrangler deploy`. It sends your environment
+variables up with the site. You do not set them by hand in the Cloudflare
+dashboard. The Vercel one runs `varlock run -- vercel deploy --prod`, and there
+you set the variables yourself. See [Deployment](/guides/deployment).
 
 The site has no database, so there is nothing to migrate. A deploy is only new
 files.

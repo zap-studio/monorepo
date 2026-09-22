@@ -120,8 +120,17 @@ but does not look right.
 ## Deploying
 
 ```bash
-pnpm run deploy:docs
+pnpm run deploy:docs:cloudflare
+pnpm run deploy:docs:vercel
 ```
+
+There is no `deploy` on its own: the host is always part of the name, so a
+deploy never goes somewhere you did not name.
+
+The site is static, so both hosts serve the same built folder. On Cloudflare,
+`wrangler.jsonc` points at it. On Vercel, `vercel.json` does: it builds with
+`pnpm run build` and serves `dist`. There is nothing else to set on either
+host, because a static site has no environment variable and no server.
 
 The site is static. Blume builds plain HTML files into `apps/docs/dist/`, and
 `wrangler.jsonc` serves that folder from Cloudflare. Static means there is no

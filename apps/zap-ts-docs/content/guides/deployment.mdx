@@ -14,15 +14,33 @@ covers all three ways.
 
 ## Each app ships on its own
 
-There is no single command that deploys everything.
+There is no single command that deploys everything, and no command that leaves
+the host out. Every script names one app and one host:
 
 ```bash
-pnpm run deploy:web
-pnpm run deploy:marketing
-pnpm run deploy:api
-pnpm run deploy:admin
-pnpm run deploy:docs
+pnpm run deploy:web:cloudflare
+pnpm run deploy:web:vercel
+
+pnpm run deploy:marketing:cloudflare
+pnpm run deploy:marketing:vercel
+
+pnpm run deploy:api:cloudflare
+pnpm run deploy:api:vercel
+
+pnpm run deploy:admin:cloudflare
+pnpm run deploy:admin:vercel
+
+pnpm run deploy:docs:cloudflare
+pnpm run deploy:docs:vercel
 ```
+
+`pnpm run deploy:web` on its own does not exist. A deploy sends code and keys
+somewhere real, so the host is written out every time, and no default decides
+it for you.
+
+`docs` is the one app with no varlock in its deploy. It is static: it has no
+environment variable and no server, so both scripts only upload the built
+folder. On Vercel, `apps/docs/vercel.json` says how to build it.
 
 Deploying the web app does not touch the API. Deploying the API does not touch
 the marketing site. You ship a fix to one app and leave the rest alone.
@@ -197,24 +215,35 @@ See [Observability](/packages/observability).
 
 ### 5. Settings and keys
 
-The `deploy:*` scripts run `varlock-wrangler`, which is the Cloudflare path. It
-does two things at once: it resolves your values, and it ships them to the host.
-On Vercel you keep the first half and change the second:
+The two scripts of an app differ only in the second half:
 
 ```json
 // apps/web/package.json
-"deploy": "varlock run -- vercel deploy --prod"
+"deploy:cloudflare": "varlock-wrangler deploy",
+"deploy:vercel": "varlock run -- vercel deploy --prod"
 ```
 
-`varlock run` resolves your `.env.schema` and `.env.local` the same way it
-always does, so the build sees the same values. What differs is where the
-values live at runtime: set them in the Vercel project settings, or push them
-with `vercel env add`.
+`varlock-wrangler` does two things at once: it resolves your values, and it
+ships them to Cloudflare as vars and secrets. On Vercel you keep the first half
+and drop the second. `varlock run` resolves your `.env.schema` and `.env.local`
+the same way it always does, so the build sees the same values.
 
-Nothing keeps the Vercel dashboard and your files in step, which is the one
-thing you lose. On Cloudflare, varlock overwrites the vars and secrets on every
-deploy. On Vercel, a value you add by hand in the dashboard stays until you
-remove it.
+What Vercel does not get is the second half. Nothing pushes your values there,
+so you set them yourself, once, in the project settings or with the CLI:
+
+```bash
+vercel env add STRIPE_SECRET_KEY production
+```
+
+`pnpm run env:web` prints every value the app needs, and where it came from, so
+you know what the list is.
+
+:::warning
+This is the one guarantee you lose. On Cloudflare, varlock overwrites the vars
+and secrets on every deploy, so the dashboard cannot drift from your files. On
+Vercel, a value you add by hand stays until you change it by hand. When you
+change a value in `.env.schema`, change it in Vercel too.
+:::
 
 ## Mixing the two
 

@@ -166,11 +166,17 @@ checkout call itself, with the same redirect the provider would send back.
 ## Deploying
 
 ```bash
-pnpm run deploy:web
+pnpm run deploy:web:cloudflare
+pnpm run deploy:web:vercel
 ```
 
-This runs `varlock-wrangler deploy`. It sends your environment variables up with
-the app. You do not set them by hand in the Cloudflare dashboard.
+The host is part of the name, so a deploy never goes somewhere you did not
+name. There is no `deploy` on its own.
+
+The Cloudflare one runs `varlock-wrangler deploy`. It sends your environment
+variables up with the app. You do not set them by hand in the Cloudflare
+dashboard. The Vercel one runs `varlock run -- vercel deploy --prod`, and there
+you set the variables yourself. See [Deployment](/guides/deployment).
 
 The app declares no variables of its own. Its `.env.schema` takes the whole
 root `.env.schema`, and adds `API_URL` from `apps/api`.

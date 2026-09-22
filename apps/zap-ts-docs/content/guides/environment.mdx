@@ -141,8 +141,8 @@ The build then passes its checks with no real key anywhere.
 
 ## Values on a deploy
 
-Deploys run through `varlock-wrangler`. It reads your schema and sends the
-values to Cloudflare for you.
+A Cloudflare deploy runs through `varlock-wrangler`. It reads your schema and
+sends the values to Cloudflare for you.
 
 Values that are not sensitive go up as Cloudflare vars. Sensitive values go up
 as Cloudflare secrets.
@@ -152,6 +152,12 @@ Varlock owns those values. If you add one by hand in the Cloudflare dashboard,
 the next deploy removes it. Add it to your schema and your `.env.local`
 instead.
 :::
+
+A Vercel deploy runs through `varlock run`, which resolves the same values for
+the build but sends nothing anywhere. You put the values in Vercel yourself,
+with `vercel env add` or in the project settings. Your schema stays the source
+of truth for what an app needs; on Vercel it is not the source of truth for
+what the host holds. See [Deployment](/guides/deployment).
 
 ## Reading a variable in your code
 

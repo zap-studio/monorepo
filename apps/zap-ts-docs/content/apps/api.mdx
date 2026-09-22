@@ -188,8 +188,13 @@ varlock turns those lines into the typed `ENV` the code imports.
 ## Deploying
 
 ```bash
-pnpm run deploy:api
+pnpm run deploy:api:cloudflare
+pnpm run deploy:api:vercel
 ```
+
+The host is part of the name, so a deploy never goes somewhere you did not
+name. There is no `deploy` on its own. What changes between the two hosts is in
+[Deployment](/guides/deployment).
 
 The file `wrangler.jsonc` holds the settings for Cloudflare. It names the
 Worker `zap-ts-api`. It turns on `nodejs_compat`, which lets Node code run on

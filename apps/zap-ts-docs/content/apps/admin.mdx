@@ -153,11 +153,17 @@ small.
 ## Deploying
 
 ```bash
-pnpm run deploy:admin
+pnpm run deploy:admin:cloudflare
+pnpm run deploy:admin:vercel
 ```
 
-This runs `varlock-wrangler deploy`. It sends your environment variables up
-with the app. You do not set them by hand in the Cloudflare dashboard.
+The host is part of the name, so a deploy never goes somewhere you did not
+name. There is no `deploy` on its own.
+
+The Cloudflare one runs `varlock-wrangler deploy`. It sends your environment
+variables up with the app. You do not set them by hand in the Cloudflare
+dashboard. The Vercel one runs `varlock run -- vercel deploy --prod`, and there
+you set the variables yourself. See [Deployment](/guides/deployment).
 
 Point `admin.<domain>` at this Worker, and nothing else at it.
 
