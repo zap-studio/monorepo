@@ -1,0 +1,112 @@
+---
+title: Self-host
+description: Run zap.ts on your own server instead of Cloudflare, and what you take on when you do.
+---
+
+zap.ts is built for Cloudflare Workers. Adapters for Vercel are included too.
+
+You can run it on your own server instead. This page explains what changes,
+and what you become responsible for.
+
+## Read this first
+
+Self-hosting is not the cheap option. It is the option where you do the work.
+
+On Cloudflare, these are handled for you: running the app in many places
+around the world, scaling when traffic grows, renewing certificates, keeping
+the database connection pool healthy.
+
+On your own server, all of that is yours. Choose it because you must, for
+example because of a rule about where your data lives. Do not choose it to
+save a few euros a month.
+
+If you are not sure, start on Cloudflare. See
+[Deployment](/guides/deployment).
+
+## What you need to replace
+
+Five services are hosted for you by default. Each needs a replacement.
+
+| What            | Default                             | On your own server                   |
+| --------------- | ----------------------------------- | ------------------------------------ |
+| The app         | Cloudflare Workers                  | Node.js behind a reverse proxy       |
+| The database    | Postgres, through Hyperdrive        | Postgres that you run                |
+| Files           | Cloudflare R2                       | MinIO, which you already use locally |
+| Background jobs | Cloudflare Queues                   | A queue you run                      |
+| Email           | Resend, Postmark, SendGrid or Brevo | Your own SMTP server                 |
+
+## The database connection
+
+This is the part people miss.
+
+In production, zap.ts reaches Postgres through Hyperdrive. Hyperdrive keeps
+connections open and hands them out, because Workers cannot keep their own.
+
+On your own server, you do not need Hyperdrive. Your app is one long-running
+process, so it can hold a connection pool itself.
+
+Point `DATABASE_URL` at your Postgres and remove the Hyperdrive binding from
+the app's `wrangler.jsonc`.
+
+`DATABASE_URL` is declared in `packages/database/.env.schema`, not in the root
+schema.
+
+## Files
+
+You already run MinIO on your computer for local work. The same program runs
+on a server.
+
+The storage settings do not change shape. Point them at your MinIO:
+
+```bash
+R2_ACCESS_KEY_ID=your_key
+R2_SECRET_ACCESS_KEY=your_secret
+R2_BUCKET=zap
+R2_ENDPOINT=https://files.your-domain.com
+```
+
+Set `R2_ENDPOINT` to your own address. See [Storage](/packages/storage).
+
+## Background jobs
+
+Cloudflare Queues is the default, and it is Cloudflare's.
+
+`@zap-ts/queues` holds the job definitions and knows nothing about Cloudflare.
+`@zap-ts/queues-cloudflare` is the part that runs them there.
+
+To self-host, write your own small adapter next to it, using whatever queue
+you run. Copy the Cloudflare one as the model. See [Queues](/packages/queues).
+
+## Email
+
+Set `MAIL_PROVIDER=smtp` and point it at your own SMTP server.
+
+That is the same setting Mailpit uses locally, so nothing in your code
+changes. See [Swap a provider](/recipes/swap-a-provider).
+
+## What you now own
+
+Write this list down before you start:
+
+1. Renewing TLS certificates before they expire.
+2. Backing up Postgres, and testing that a backup actually restores.
+3. Security updates on the server.
+4. Watching disk space, especially for uploads and database logs.
+5. Bringing the app back up when it stops at three in the morning.
+
+None of this is hard. All of it is yours now.
+
+## A middle path
+
+You do not have to choose one or the other for everything.
+
+Keep the app on Cloudflare and run only the database yourself. That is a
+common setup when a rule says your data must stay in one country, and it
+leaves the hard scaling problems with Cloudflare.
+
+## Related
+
+- [Deployment](/guides/deployment) — the default path
+- [Going to production](/guides/going-to-production) — the checklist either way
+- [Storage](/packages/storage) — pointing files somewhere else
+- [Queues](/packages/queues) — how background jobs are built

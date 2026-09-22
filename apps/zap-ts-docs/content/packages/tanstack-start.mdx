@@ -1,0 +1,154 @@
+---
+title: TanStack Start
+description: The router, the HTML page, the entry files and the sign-in form that the TanStack Start apps of the repository share.
+---
+
+`@zap-ts/tanstack-start` holds the setup that `web`, `admin` and `marketing`
+would otherwise each write for themselves. TanStack Start is the framework
+that renders these apps on the server and then in the browser.
+
+An app that uses this package writes four very short files. The package fills
+in the rest: the router settings, the HTML page, the theme, the toasts, the
+progress bar and Sentry.
+
+The package gives you code. It does not give you a route. Your routes, your
+words and your look stay in your app.
+
+## What your app writes
+
+Here is the whole client entry file of `apps/web`, apart from the service
+worker:
+
+```ts
+import { hydrateApp } from "@zap-ts/tanstack-start/lib/hydrate";
+
+hydrateApp();
+```
+
+Hydration is the moment the browser takes over a page the server already
+drew. `hydrateApp` does that, inside `startTransition` and `StrictMode`.
+Importing `lib/hydrate` also starts Sentry in the browser, because the file
+imports `@zap-ts/observability/client`.
+
+The start file is one line:
+
+```ts
+export { startInstance } from "@zap-ts/tanstack-start/lib/start";
+```
+
+`startInstance` adds the two Sentry middlewares, so every request and every
+server function is traced.
+
+The server entry file uses `createAppServerEntry`. It wraps the TanStack Start
+handler so Sentry sees every request. You can pass your own `fetch` if the
+app has to touch the request first, which is what `apps/web` does to pick the
+language:
+
+```ts
+import { createAppServerEntry, handler } from "@zap-ts/tanstack-start/lib/server-entry";
+
+export default createAppServerEntry((request) =>
+  paraglideMiddleware(request, ({ request: localizedRequest }) => handler.fetch(localizedRequest)),
+);
+```
+
+## The router
+
+`lib/router` holds the router settings every app shares: scroll restoration,
+preloading a page when the user shows intent, and the three views for "not
+found", "error" and "loading".
+
+Those three views need words, and the words differ by app and by language. So
+you pass them in.
+
+`appRouterDefaults` takes the labels and returns the settings:
+
+```ts
+const router = createRouter({ routeTree, ...appRouterDefaults(labels) });
+```
+
+`localizedRouterOptions` is for an app that puts the language in the URL, like
+`/fr/pricing`. It adds the URL rewrite of Paraglide on top of
+`appRouterDefaults`. Paraglide is the translation library of the repository.
+You pass your route tree, your messages and the two URL functions of your
+app:
+
+```ts
+const router = createRouter(
+  localizedRouterOptions({ routeTree, messages: m, deLocalizeUrl, localizeUrl }),
+);
+```
+
+## The page
+
+`components/document` exports `Document`, the whole HTML page. It takes two
+props: `cssHref`, the address of the stylesheet of your app, and `lang`, the
+language of the page.
+
+Inside it you get:
+
+1. The head that TanStack Router fills with your titles and tags.
+2. A small script that picks the theme before the first paint, so the page
+   never flashes the wrong colours.
+3. `ThemeProvider` and the body styles from `@zap-ts/ui`.
+4. The progress bar, the toasts and the router outlet.
+5. The TanStack Router devtools and the StyleX dev runtime, in development
+   only.
+
+Your root route stays short:
+
+```tsx
+const RootComponent = () => <Document cssHref={appCss} lang={getLocale()} />;
+```
+
+`Document` already renders `ProgressBar` and `Toaster`, so you do not add
+them yourself. The progress bar is the thin line at the top of the page. It
+runs while the router loads a route, and it uses the `primary` colour token.
+
+To show a message from anywhere, including code that is not a React
+component, use the shared toast manager:
+
+```ts
+import { toastManager } from "@zap-ts/tanstack-start/lib/toast";
+
+toastManager.add({ title: "Saved", description: "Your changes are live." });
+```
+
+## The sign-in form
+
+`components/sign-in/form` exports `SignInForm`. It handles a password, a magic
+link, a one-time code, a passkey and Google, and it marks the method the user
+chose last time.
+
+It takes four props: `callbackUrl`, the address Better Auth returns to;
+`labels`, every piece of text; `onSignedIn`, what to do once the user is in;
+and `children`, the links you want under the form.
+
+Every label is a prop, so each app keeps its own words and its own
+translations.
+
+## Small helpers
+
+`lib/search` reads the search part of a URL safely. A search parameter comes
+from the user, so it can be anything:
+
+- `pageOf` turns a value into a page number. Anything wrong reads as the first
+  page.
+- `directionOf` returns `"asc"` unless the value is exactly `"desc"`.
+- `sortColumnOf` keeps only the columns you allow, and returns `null` for the
+  rest.
+
+```ts
+validateSearch: (input) => ({ page: pageOf(input.page) });
+```
+
+`lib/form` exports `textField`. It reads one text field of a submitted form,
+and returns an empty string when the field is missing or holds a file. So you
+always get a string back.
+
+## Related
+
+- [UI](/packages/ui) - the components, tokens and theme this package renders
+- [Observability](/packages/observability) - the Sentry setup it imports
+- [Authentication](/packages/authentication) - what the sign-in form calls
+- [Web](/apps/web) - an app built on this package

@@ -22,7 +22,7 @@ catalog:
   "@oxlint/plugins": ^1.83.0
   "@standard-schema/spec": ^1.1.0
   "@stylexjs/eslint-plugin": ^0.19.1
-  "@tanstack/eslint-plugin-query": ^5.103.1
+  "@tanstack/eslint-plugin-query": ^5.103.2
   "@tanstack/eslint-plugin-router": ^1.162.0
   "@types/node": ^26.6.2
   "@types/react": ^19.3.0
@@ -31,7 +31,7 @@ catalog:
   "@vitest/browser-playwright": ^5.0.1
   "@vitest/coverage-v8": ^5.0.1
   arktype: ^2.2.3
-  blume: ^1.7.2
+  blume: ^1.7.3
   eslint: ^10.11.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2

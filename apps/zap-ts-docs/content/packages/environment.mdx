@@ -1,0 +1,138 @@
+---
+title: Environment
+description: One typed env object for every package, built by varlock from the .env.schema files.
+---
+
+`@zap-ts/environment` gives the packages their settings. A setting is a value
+that changes between your machine and the server, like a password or a URL.
+These values are called environment variables.
+
+The package exports one thing: a typed `env` object. Typed means TypeScript
+knows the name and the shape of every variable. If you write a name that does
+not exist, the editor tells you before you run the app.
+
+The package is built on varlock. Varlock is a tool that reads a file called
+`.env.schema` and writes the TypeScript for you.
+
+This page is about the package. To learn how to set values, read
+[Environment](/guides/environment).
+
+## What the package exports
+
+There is one entry point, `@zap-ts/environment`. It has two exports.
+
+`env` holds the values:
+
+```ts
+import { env } from "@zap-ts/environment";
+
+const dsn = env.SENTRY_DSN;
+```
+
+`requireEnv` reads a variable that the schema marks as optional, but that your
+feature cannot work without. It throws an error that names the variable:
+
+```ts
+import { requireEnv } from "@zap-ts/environment";
+
+const key = requireEnv("OPENAI_API_KEY");
+```
+
+The error text is
+`Missing environment variable OPENAI_API_KEY, required by this feature.`
+That is much easier to fix than a failed call to an API.
+
+`requireEnv` only accepts variables that the schema types as text. TypeScript
+blocks the other names.
+
+Most packages of the repository use one of these two imports. `@zap-ts/mail`,
+`@zap-ts/storage`, `@zap-ts/billing`, `@zap-ts/authentication` and
+`@zap-ts/observability` all read their keys this way.
+
+## The generated file
+
+`packages/environment/src/env.ts` is written by varlock. Do not edit it. The
+file says so at the top, in large letters.
+
+The root `.env.schema` decides what goes in it. Its first lines are settings
+for varlock itself:
+
+```bash
+# @defaultRequired=false
+# @defaultSensitive=true
+# @generateTsTypes(path=./packages/environment/src/env.ts, exposeEnv=local)
+# ---
+```
+
+`@generateTsTypes` names the file to write. The `---` line ends the settings.
+Everything after it is a variable.
+
+Run this command to write the file again after you change the schema:
+
+```bash
+pnpm run env:packages
+```
+
+## How an app gets its own env
+
+Each app has its own `.env.schema`, next to its `package.json`. Apps do not
+import `@zap-ts/environment`. They import their own generated file, at
+`src/lib/env.ts`, which exports `ENV`:
+
+```ts
+import { ENV } from "./lib/env";
+```
+
+An app has its own file for a good reason. The root schema holds every
+variable of the repository. An app should only ship the variables it really
+uses. The marketing site has no reason to hold your database password.
+
+## The @import line
+
+The first lines of an app schema pull variables in from the root schema. This
+is the `@import` decorator:
+
+```bash
+# @import(../../.env.schema)
+```
+
+That line takes every variable. `apps/web` and `apps/admin` do this.
+
+`apps/api` takes only some of them, with `pick`:
+
+```bash
+# @import(../../.env.schema, pick=[SENTRY_*, BETTER_AUTH_*, MAIL_*, RESEND_API_KEY])
+```
+
+`pick` is a list of names inside square brackets. A name can end with `*`,
+which means "every variable that starts with these letters". So `SENTRY_*`
+takes `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT` and `SENTRY_AUTH_TOKEN`, all
+at once. A plain name like `RESEND_API_KEY` takes that one variable.
+
+The real line in `apps/api/.env.schema` is longer, because the API talks to
+every payment and mail provider.
+
+An app can also import from another app. `apps/web` does this to learn the
+address of the API:
+
+```bash
+# @import(../api/, pick=[API_URL, VARLOCK_ENV])
+```
+
+The path ends with a slash. Varlock then looks for the schema inside that
+folder.
+
+After the imports, the app adds the variables that belong only to it. Here is
+`apps/marketing`:
+
+```bash
+# @required @sensitive=false @type=url
+SITE_URL=https://zap-ts.zapstudio.dev
+```
+
+## Related
+
+- [Environment guide](/guides/environment) - how to set values and run the commands
+- [Observability](/packages/observability) - a package that reads `SENTRY_DSN` from `env`
+- [Billing](/packages/billing) - a package that reads its provider keys from `env`
+- [Going to production](/guides/going-to-production) - replacing the local values

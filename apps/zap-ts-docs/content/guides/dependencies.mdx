@@ -1,0 +1,97 @@
+---
+title: Dependencies
+description: How to add a library to zap.ts. There is one rule, and it keeps every app on the same version.
+---
+
+A dependency is a library your code uses. zap.ts has two kinds, and each one
+has its own rule.
+
+## The one rule
+
+Never write a version number in a `package.json` file.
+
+Every version lives in one file instead: `pnpm-workspace.yaml`. That list is
+called the catalog.
+
+## Why the catalog exists
+
+zap.ts holds six apps and fourteen packages. Without the catalog, the same
+library could sit at three different versions in three different folders.
+
+That causes two problems. Your app ships the same code twice, so it is bigger
+than it needs to be. And a bug appears in one app but not another, which is
+very hard to find.
+
+With the catalog, you upgrade a library in one line, and every app moves
+together.
+
+## Adding a library from outside
+
+Say you want to add `date-fns`.
+
+**Step 1.** Add the version to the catalog in `pnpm-workspace.yaml`:
+
+```yaml
+catalog:
+  date-fns: ^4.1.0
+```
+
+**Step 2.** In the `package.json` of the package that needs it, write
+`catalog:` where the version would normally go:
+
+```json
+{
+  "dependencies": {
+    "date-fns": "catalog:"
+  }
+}
+```
+
+**Step 3.** Install:
+
+```bash
+pnpm install
+```
+
+`catalog:` means "whatever version the catalog says". pnpm reads the catalog
+and fills it in.
+
+## Using a package from inside zap.ts
+
+When one package in zap.ts uses another, the rule is different. Write
+`workspace:*`:
+
+```json
+{
+  "dependencies": {
+    "@zap-ts/database": "workspace:*"
+  }
+}
+```
+
+`workspace:*` means "the copy in this repository". pnpm links the folder
+directly. It does not download anything.
+
+This is why a change you make in `packages/database` shows up in your app at
+once, with no publishing step.
+
+## Upgrading
+
+Change the version in the catalog. Then run `pnpm install`.
+
+Every package that wrote `catalog:` now uses the new version. You did not have
+to find them all.
+
+## A summary
+
+| Where the library comes from | What you write                                          |
+| ---------------------------- | ------------------------------------------------------- |
+| npm, the internet            | `"catalog:"`, with the version in `pnpm-workspace.yaml` |
+| Another folder in zap.ts     | `"workspace:*"`                                         |
+| Anywhere                     | Never a version number                                  |
+
+## Related
+
+- [Project structure](/project-structure) — which folders exist and why
+- [Adding a package](/guides/adding-a-package) — create a new shared package
+- [Conventions](/concepts/conventions) — the other rules the codebase follows

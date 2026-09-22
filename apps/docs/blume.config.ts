@@ -80,7 +80,6 @@ export default defineConfig({
   },
   theme: {
     accent: { dark: "hsl(43, 96%, 56%)", light: "hsl(38, 92%, 40%)" },
-    radius: "none",
     mode: "system",
   },
   title: siteName,

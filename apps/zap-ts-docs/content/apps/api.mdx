@@ -1,0 +1,213 @@
+---
+title: API
+description: Build your own public API here, described with OpenAPI. Your app's own private server logic does not need to live here.
+---
+
+`apps/api` is where you build a public API for your product.
+
+A public API lets other people write programs that use your product. Your
+customers can then connect your product to their own tools.
+
+It is built with [Hono](https://hono.dev), a small web framework. It runs on
+Cloudflare Workers by default, and on Vercel if you prefer. It describes
+itself with OpenAPI, a standard format that
+lists every route and what each one expects.
+
+## You do not have to put everything here
+
+This is the part people get wrong, so it is worth saying clearly.
+
+Your web app already has a server side. TanStack Start runs server code for
+you, inside `apps/web`. Reading from the database, checking a permission,
+saving a form: that code belongs in `apps/web`, close to the page that uses
+it.
+
+So use each one for what it is good at.
+
+| Put it in `apps/web`                   | Put it in `apps/api`                           |
+| -------------------------------------- | ---------------------------------------------- |
+| Loading data for one of your pages     | Routes your customers call from their own code |
+| Handling a form your own app submits   | Anything you want to publish and document      |
+| Any private action only your app takes | Anything that needs an API key                 |
+
+You _can_ use `apps/api` for private work too. Nothing stops you. It is useful
+when several apps need the same route, or when you want one place that is
+described by OpenAPI. But it is not required, and starting there for your own
+app's logic gives you a network call you did not need.
+
+## What comes with it
+
+The app starts small on purpose. The routes below are examples, not a finished
+API. You replace them with your own.
+
+## Running it
+
+```bash
+pnpm run dev:api
+```
+
+This runs `varlock-wrangler dev` inside `apps/api`. Varlock loads your
+environment first. Wrangler then starts the Worker on port 8787.
+
+Open `http://localhost:8787/docs` in your browser. You get a page that lists
+every route. Open `http://localhost:8787/openapi.json` to see the file behind
+that page.
+
+## The routes
+
+The API mounts five things. That is the whole surface.
+
+| Route               | What it does                                  |
+| ------------------- | --------------------------------------------- |
+| `/api/auth/*`       | Every sign-in route, handled by Better Auth   |
+| `GET /health`       | Answers `{ "status": "ok" }`                  |
+| `GET /me`           | The signed-in user, or `401` if there is none |
+| `GET /openapi.json` | The description of every route                |
+| `GET /docs`         | A reading page for that description           |
+
+Only `/health` and `/me` are written by hand. They live in `src/routes/`.
+
+Everything under `/api/auth/*` belongs to
+[Authentication](/packages/authentication). Sign-up, sign-in, email checks,
+organizations and billing all live there. The API does not list them again.
+
+`/me` is short on purpose. It reads the session, then returns three fields.
+
+```ts
+const session = c.get("session");
+
+if (!session) {
+  throw new HTTPException(401);
+}
+```
+
+Add your own routes in `src/routes/`. Then mount them in `src/app.ts`, next to
+`health` and `me`.
+
+### The session in the context
+
+A session is the record that says who is signed in. The file
+`src/middleware/session.ts` reads it once per request. It then puts it in the
+context, which is the object Hono passes to every route.
+
+So a route never calls Better Auth itself. It just asks the context.
+
+```ts
+app.get("/me", sessionMiddleware(databaseUrl, corsOrigins), (c) => c.json(c.get("session")));
+```
+
+The session is `null` when nobody is signed in. Your route decides what to do
+then.
+
+### What every request runs through
+
+Middleware is code that runs before your route. `createAppMiddleware` returns
+five of them, in this order:
+
+1. `requestId()` gives each request its own id.
+2. `logger()` writes a line for each request.
+3. `secureHeaders()` adds headers that protect the browser.
+4. `cors()` says which websites may call the API.
+5. `etag()` lets the browser reuse an answer it already has.
+
+CORS is the rule that says which websites may call the API. It only allows the
+origins you list. It also allows cookies, so the sign-in cookie can travel from
+the web app.
+
+Errors always look the same. A known error returns its own answer. Anything
+else returns a `500` with the request id. You can then match a log line to an
+answer.
+
+```ts
+return c.json({ error: "Internal Server Error", requestId: c.get("requestId") }, 500);
+```
+
+A request that does not match the expected shape gets a `422`. The answer lists
+the problems. This comes from `validationHook` in `src/lib/validator.ts`.
+
+That replaces the default of `hono-openapi`. The default answers `400` and
+sends the rejected input back. That would put a password or a token in the
+answer.
+
+## What it uses from the workspace
+
+- `@zap-ts/authentication`, for `createAuth` and `readSession`
+- `@zap-ts/observability`, for the Sentry middleware that reports errors
+- `hono-openapi` and `@scalar/hono-api-reference`, for the route description
+  and its reading page
+
+The API never imports the database package. Instead, `createApp` takes a
+`databaseUrl()` function. The Cloudflare entry point reads that URL from the
+Hyperdrive binding. Hyperdrive is the Cloudflare service that pools database
+connections.
+
+This is why the same `createApp` also runs in a test, with a test database.
+
+## Describing the routes
+
+```bash
+pnpm run openapi:generate
+```
+
+This script builds the app with a `databaseUrl` that throws an error on use.
+Writing the description must never touch the database. The script then asks the
+app for `/openapi.json` in memory. It writes the answer to
+`apps/docs/openapi.json`.
+
+That is the file [Docs](/apps/docs) shows as its API reference. Run this script
+after you add or change a route.
+
+The title, the version and the description live in `src/lib/openapi.ts`. A
+`TODO` comment marks them. Replace them with your own.
+
+## Environment
+
+`apps/api/.env.schema` declares two variables of its own.
+
+```bash
+CORS_ORIGINS=http://localhost:3000,http://localhost:3003
+API_URL=http://localhost:8787
+```
+
+`CORS_ORIGINS` is a list, separated by commas. It holds the web app and the
+admin app by default. The API uses it twice: once for CORS, and once to tell
+Better Auth which origins to trust.
+
+Every other variable comes from the root file. The API picks what it needs.
+
+```bash
+# @import(../../.env.schema, pick=[SENTRY_*, BETTER_AUTH_*, GOOGLE_*, STRIPE_*, ...])
+```
+
+So the auth secret, the Google keys, the billing keys and the mail keys are
+written once, at the root. See [Environment](/guides/environment) to learn how
+varlock turns those lines into the typed `ENV` the code imports.
+
+## Deploying
+
+```bash
+pnpm run deploy:api:cloudflare
+pnpm run deploy:api:vercel
+```
+
+The host is part of the name, so a deploy never goes somewhere you did not
+name. There is no `deploy` on its own. What changes between the two hosts is in
+[Deployment](/guides/deployment).
+
+The file `wrangler.jsonc` holds the settings for Cloudflare. It names the
+Worker `zap-ts-api`. It turns on `nodejs_compat`, which lets Node code run on
+Workers. It also binds Hyperdrive to `HYPERDRIVE`.
+
+Replace the Hyperdrive id with your own before your first deploy.
+
+Keep your secrets in `.env.local`, not in the Cloudflare dashboard.
+`varlock-wrangler deploy` ships every value the schema declares, and it removes
+the ones added by hand in the dashboard. So a value set there disappears on the
+next deploy, and the API loses the credential it was holding.
+
+## Related
+
+- [Authentication](/packages/authentication) — what `/api/auth/*` serves
+- [Observability](/packages/observability) — the Sentry middleware the entry point adds
+- [Docs](/apps/docs) — where the generated route description is shown
+- [Environment](/guides/environment) — varlock and the root `.env.schema`

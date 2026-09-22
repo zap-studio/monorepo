@@ -1,0 +1,157 @@
+---
+title: Billing
+description: Take payments and manage subscriptions. Seven payment companies are supported, and you can switch between them by changing two lines.
+---
+
+`@zap-ts/billing` lets your app charge money. It handles subscriptions,
+checkout and the customer portal.
+
+A subscription is a plan a customer pays for every month. Checkout is the page
+where they enter their card. The customer portal is where they change or
+cancel their plan later.
+
+Seven payment companies are supported: Stripe, Polar, Chargebee, Dodo
+Payments, Creem, Autumn and Commet. Stripe is set up by default.
+
+Each one is built the same way inside. Your app never names a payment company
+directly. It imports `@zap-ts/billing/server` and `@zap-ts/billing/client`.
+This is why you can switch companies later without rewriting your app.
+
+## How billing connects to the app
+
+Billing plugs into Better Auth, the part of zap.ts that handles sign-in.
+
+The server side handles checkout, the customer portal, and webhooks. A webhook
+is a message the payment company sends to your app when something changes, for
+example when a payment fails.
+
+```ts
+import { billingPlugin } from "@zap-ts/billing/server";
+```
+
+The client side gives the browser the two calls it needs.
+
+```ts
+import { checkout, openBillingPortal } from "@zap-ts/billing/client";
+```
+
+Subscriptions are saved in the `subscription` table in your own database. So
+when your app checks what a customer pays for, it reads your database. It does
+not ask the payment company. That is much faster.
+
+## Plans
+
+A plan is one thing a customer can buy, for example "Starter" or "Team".
+
+Plans live in one file: `packages/billing/src/plans.ts`.
+
+Each payment company gives its plans different ID numbers. One plan in this
+file holds the IDs for all seven companies at once.
+
+```ts
+export const plans: Plan[] = [
+  {
+    name: "starter",
+    trialDays: 14,
+    stripe: { priceId: "price_...", seatPriceId: "price_..." },
+    polar: { productId: "...", slug: "starter" },
+    chargebee: { itemPriceId: "starter-USD-Monthly" },
+    // ...one line for each company
+  },
+];
+```
+
+Each company reads only its own line and ignores the others. This is why
+switching companies does not leave an old ID behind.
+
+`trialDays` sets a free trial. Leave it out and the customer pays at once.
+
+:::note
+The IDs in this file are fake examples. Copy the real IDs from your payment
+company's dashboard. Checkout will not work until you do.
+:::
+
+## Test mode and live mode
+
+zap.ts will not charge a real card by accident.
+
+Billing runs in one of two modes: `test` or `live`. Test mode uses fake cards
+and charges nobody.
+
+Some payment companies put the mode inside the secret key itself. For those,
+zap.ts reads the key and works the mode out:
+
+```ts
+const mode = isLiveKey(env.STRIPE_SECRET_KEY, "sk_live_") ? "live" : "test";
+```
+
+A new copy of zap.ts comes with `STRIPE_SECRET_KEY=sk_test_local_dev`. That
+key starts with `sk_test_`, so the app runs in test mode. The billing page
+tells the user this on screen.
+
+Nothing charges a real card until you set a real live key.
+
+## Who is allowed to change billing
+
+Not every member of a team should be able to cancel the subscription.
+
+zap.ts checks this itself, in `@zap-ts/authorization`. It does not leave the
+decision to the payment company. Only owners and admins of an organisation can
+manage its billing.
+
+```ts
+import { canManageBilling } from "@zap-ts/billing/access";
+```
+
+All seven payment companies use this same check.
+
+When something happens to a subscription, zap.ts sends an email. It does this
+when a trial is about to end, when a payment fails, and when a customer
+cancels. The email goes to the owners and admins. See [Mail](/packages/mail).
+
+## Switching to another payment company
+
+You change two files. Each change is one import path.
+
+1. Open `packages/billing/src/server.ts`. Change `"./stripe/server"` to the
+   company you want, for example `"./polar/server"`.
+2. Open `packages/billing/src/client.ts`. Change the client path to match.
+3. Put that company's keys in `.env.schema`.
+4. Put that company's plan IDs in `plans.ts`.
+
+Then run these two commands:
+
+```bash
+pnpm run auth:generate
+pnpm run db:migrate
+```
+
+You need them because each company saves slightly different information about
+a subscription. The first command updates the shape of the table. The second
+applies that change to your database.
+
+Nothing else in your app changes. Every company exports the same names:
+`billingPlugin`, `billingMode`, `readSubscription` and
+`billingCredentialsFromEnv`.
+
+## Settings
+
+Stripe, as it comes:
+
+```bash
+STRIPE_SECRET_KEY=sk_test_local_dev
+STRIPE_WEBHOOK_SECRET=whsec_local_dev
+```
+
+These two lines live in the root `.env.schema` file. That file also holds a
+link to Stripe's own documentation for each key.
+
+See [Environment](/guides/environment) to learn how zap.ts turns these lines
+into settings your code can read safely.
+
+## Related
+
+- [Authorization](/packages/authorization) — the permission check billing uses
+- [Mail](/packages/mail) — where the billing emails are written and sent
+- [Swap a provider](/recipes/swap-a-provider) — the same steps for storage and mail
+- [Going to production](/guides/going-to-production) — how to leave test mode safely

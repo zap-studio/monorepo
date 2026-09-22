@@ -1,0 +1,132 @@
+---
+title: Tech stack
+description: Every main tool zap.ts is built with, what it does, and why it was chosen over the alternatives.
+---
+
+This page lists what zap.ts is built with. Each entry says what the tool does
+in plain words, and why it was picked.
+
+If you are only trying to get the app running, go to
+[Quickstart](/quickstart) instead.
+
+## The app itself
+
+**TanStack Start** builds the websites. It renders pages on the server first,
+so pages appear fast and search engines can read them.
+
+**TanStack Router** decides which page to show for which address. It checks
+your links while you write them, so a broken link is caught before you ship
+it.
+
+**StyleX** handles styling. It turns your styles into plain CSS when the app
+is built, so nothing extra runs in the browser.
+
+**Base UI** provides the parts that are hard to build well, such as menus and
+dialogs. They already work with a keyboard and a screen reader.
+
+## Where it runs
+
+**Cloudflare Workers** runs the apps. Your code runs in many places around the
+world, close to your users.
+
+**Wrangler** is the command that sends your code to Cloudflare.
+
+## Data
+
+**Postgres** is the database. It is the most common choice for this kind of
+app, and every hosting company supports it.
+
+**Drizzle** is the tool your code uses to talk to Postgres. You write your
+tables in TypeScript, and your editor then knows every column name. It stays
+close to real SQL, so what you write is what runs.
+
+**Hyperdrive** keeps database connections open in production, so Cloudflare
+does not open a new one for every request.
+
+## Sign-in and permissions
+
+**Better Auth** handles sign-in. It gives you teams, two-factor codes,
+passkeys, API keys and an admin panel. It stores users in your own database,
+so your user list stays yours.
+
+**@zap-studio/permit** decides who may do what. The rules sit in one place
+instead of being spread across your pages.
+
+## Payments
+
+**Seven payment companies** are supported: Stripe, Polar, Chargebee, Dodo
+Payments, Creem, Autumn and Commet. Stripe is set up by default.
+
+They all sit behind the same set of function names. You can switch by changing
+two lines. See [Billing](/packages/billing).
+
+## Email
+
+**Resend, Postmark, SendGrid or Brevo** send your email in production. You
+choose one.
+
+**react-email** designs the emails. You write them like normal pages, and the
+`emails` app shows you a live preview.
+
+**Mailpit** catches email on your own computer, so you never send a test
+message to a real person.
+
+## Files
+
+**Cloudflare R2** stores uploaded files in production. It does not charge you
+to read your files back, which most storage services do.
+
+**MinIO** does the same job on your own computer while you build.
+
+## Settings and keys
+
+**varlock** manages settings and secret keys. Each app writes down the keys it
+needs in a `.env.schema` file. varlock then checks them and builds a typed
+list your code can import.
+
+If a required key is missing, the build stops and names it. Secret values
+never reach the browser, and they are hidden in logs.
+
+## Watching for problems
+
+**Sentry** tells you when your app throws an error, and shows you the exact
+line.
+
+**PostHog** shows you how people use the app. It also powers feature flags,
+which let you turn a feature on for some users only.
+
+## Background work
+
+**Cloudflare Queues** runs slow work later, so the user does not wait. Sending
+an email or resizing a picture belongs here.
+
+Adapters for Vercel are included too, if you host there instead.
+
+## Writing style inside the code
+
+**Effect** is used in the parts that talk to the outside world: the database,
+email, file storage, payments.
+
+It makes failure part of the type. Your editor tells you what can go wrong
+before you run anything. See [Effect](/concepts/effect).
+
+## Tools while you work
+
+**pnpm** installs libraries. It keeps one copy of each library on disk instead
+of one copy per project.
+
+**oxlint** finds mistakes. **oxfmt** formats your code. Both are written in
+Rust, so they finish in under a second.
+
+**Vitest** runs the tests. **Playwright** opens a real browser and clicks
+through the app like a user would.
+
+**lefthook** runs the formatter and the linter automatically before each
+commit.
+
+## Related
+
+- [Project structure](/project-structure) — where each of these lives
+- [Effect](/concepts/effect) — how to read the code that uses it
+- [Conventions](/concepts/conventions) — the rules the codebase follows
+- [Quickstart](/quickstart) — get it running

@@ -1,0 +1,127 @@
+---
+title: Database
+description: One Postgres schema, two database clients, and the scripts that generate, migrate, seed and show your data.
+---
+
+`@zap-ts/database` owns the database side of the app. It holds the schema, the
+clients that talk to Postgres, and the migrations. A schema is the list of
+tables and their columns. A migration is a file that changes the shape of the
+database. No other package opens its own connection.
+
+You do not write the schema by hand. Better Auth generates it from the plugins
+in `@zap-ts/authentication`. Every other package reads what comes out.
+
+## Two clients
+
+The app runs on Effect, so the main client is an Effect layer.
+
+```ts
+import { Database, DatabaseLive } from "@zap-ts/database";
+```
+
+`Database` is the tag you ask for. `DatabaseLive(connectionString)` builds the
+layer that gives it to you. It uses `@effect/sql-pg`. It opens at most five
+connections.
+
+Better Auth cannot use a layer. It needs a plain Drizzle client. So it gets its
+own:
+
+```ts
+import { createAuthDatabase } from "@zap-ts/database/auth.database";
+import { env as cloudflareEnv } from "cloudflare:workers";
+
+const db = createAuthDatabase(cloudflareEnv.HYPERDRIVE.connectionString);
+```
+
+Both take a connection string each time you call them. A connection string is
+the address of your database. It comes from the Hyperdrive binding of the
+request. Hyperdrive keeps the real pool of connections.
+
+## The schema
+
+`@zap-ts/database/schema` exports every table. It also exports the `schema`
+object that Drizzle needs.
+
+```ts
+import { member, organization, user } from "@zap-ts/database/schema";
+```
+
+There are eleven tables: `user`, `session`, `account`, `verification`,
+`organization`, `member`, `invitation`, `subscription`, `twoFactor`, `passkey`
+and `apikey`. They live in `src/auth.schema.ts`, which is generated.
+`src/schema.ts` exports them again.
+
+:::warning
+Do not edit `src/auth.schema.ts` yourself. Change the Better Auth plugins
+instead. Then run `pnpm run auth:generate`.
+:::
+
+## The three commands
+
+You add a plugin, or a field on a plugin. Then you run three commands, in this
+order:
+
+```bash
+pnpm run auth:generate
+pnpm run db:generate
+pnpm run db:migrate
+```
+
+1. `auth:generate` runs the Better Auth tool. It reads
+   `packages/authentication/auth.config.ts`. It writes `src/auth.schema.ts`
+   again.
+2. `db:generate` compares that schema with the SQL files in `migrations/`. It
+   writes a new migration file for what changed.
+3. `db:migrate` runs the migration files your database has not run yet.
+
+There is also `pnpm run db:push`. It sends the schema straight to the database
+and writes no migration file. Use it only on a test database you do not mind
+losing.
+
+## Demo data
+
+```bash
+pnpm run db:seed
+```
+
+The seed script fills the database with demo data. It writes one organization
+and three users: an owner, an admin and a member. It also writes an active
+`starter` subscription.
+
+Every row has a fixed id. So the script replaces its own data and leaves the
+rest of your database alone. You can run it again after a migration.
+
+The three users sign in with their email and the password `demo1234`. The owner
+also has the `admin` role, so that account can open the back office.
+
+## Looking at your data
+
+```bash
+pnpm run db:studio
+```
+
+This opens Drizzle Studio in your browser. You can read and change rows there.
+It uses the schema in `src/schema.ts` and the same `DATABASE_URL` as the app.
+
+## Environment
+
+This package has its own `.env.schema` file, in `packages/database`. The
+database address lives there, not in the one at the root of the repository:
+
+```bash
+DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/postgres
+```
+
+That address points at the Postgres that `docker compose up` starts. So a fresh
+copy of the repository migrates and seeds with no setup from you.
+
+Every command above runs through `varlock run`. varlock loads the variable and
+checks it before drizzle-kit reads it. See [Environment](/guides/environment)
+for how `.env.schema` becomes the typed `ENV` that `drizzle.config.ts` imports.
+
+## Related
+
+- [Authentication](/packages/authentication) — the plugins the schema comes from
+- [Billing](/packages/billing) — the owner of the `subscription` table
+- [Testing](/guides/testing) — `createTestDatabase()` and the database the tests use
+- [Environment](/guides/environment) — varlock, `.env.schema` and the typed `ENV`

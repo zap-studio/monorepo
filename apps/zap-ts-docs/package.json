@@ -1,12 +1,12 @@
 {
-  "name": "docs",
+  "name": "zap-ts-docs",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "sideEffects": false,
   "scripts": {
     "audit": "blume audit",
-    "build": "pnpm -w run build && blume build",
+    "build": "blume build",
     "check": "blume check",
     "deploy": "wrangler deploy",
     "dev": "blume dev",
@@ -15,8 +15,7 @@
     "validate": "blume validate --strict"
   },
   "dependencies": {
-    "blume": "catalog:",
-    "zod": "catalog:"
+    "blume": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

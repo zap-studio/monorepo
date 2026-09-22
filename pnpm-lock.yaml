@@ -195,8 +195,8 @@ catalogs:
       specifier: ^0.19.1
       version: 0.19.1
     '@tanstack/eslint-plugin-query':
-      specifier: ^5.103.1
-      version: 5.103.1
+      specifier: ^5.103.2
+      version: 5.103.2
     '@tanstack/eslint-plugin-router':
       specifier: ^1.162.0
       version: 1.162.0
@@ -222,8 +222,8 @@ catalogs:
       specifier: ^2.2.3
       version: 2.2.3
     blume:
-      specifier: ^1.7.2
-      version: 1.7.2
+      specifier: ^1.7.3
+      version: 1.7.3
     eslint:
       specifier: ^10.11.0
       version: 10.11.0
@@ -390,7 +390,7 @@ importers:
     dependencies:
       blume:
         specifier: 'catalog:'
-        version: 1.7.2(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1)
+        version: 1.7.3(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1)
       zod:
         specifier: 'catalog:'
         version: 4.6.5
@@ -398,6 +398,28 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.2
+      '@zap-studio/typescript':
+        specifier: workspace:^
+        version: link:../../configs/typescript
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      wrangler:
+        specifier: 'catalog:'
+        version: 4.135.0(@types/node@26.6.2)
+
+  apps/zap-ts-docs:
+    dependencies:
+      blume:
+        specifier: 'catalog:'
+        version: 1.7.3(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1)
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.2
+      '@zap-studio/typescript':
+        specifier: workspace:^
+        version: link:../../configs/typescript
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -559,7 +581,7 @@ importers:
         version: 0.19.1
       '@tanstack/eslint-plugin-query':
         specifier: 'catalog:'
-        version: 5.103.1(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
+        version: 5.103.2(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
       '@tanstack/eslint-plugin-router':
         specifier: 'catalog:'
         version: 1.162.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
@@ -3338,8 +3360,8 @@ packages:
       csstype:
         optional: true
 
-  '@tanstack/eslint-plugin-query@5.103.1':
-    resolution: {integrity: sha512-xySFRZybHjeVJ4RRcQWTuES0c9vjg9NcBRgtp+L0EjvY1ObqJAjTPf3Rv4RysISFX5tXQRNWkzOSp4d9hKFn8A==}
+  '@tanstack/eslint-plugin-query@5.103.2':
+    resolution: {integrity: sha512-qycCzS4j5p7lLT6NUDcUURv3csrYS2VfnaxMDUn/bBi4MPjU0z+tAGoRPwPS3V86Z9yp6PG4p30MtbTOXo80NQ==}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
       typescript: ^5.6.0 || ^6.0.0 || ^7.0.0
@@ -4243,8 +4265,8 @@ packages:
   blake3-wasm@2.1.5:
     resolution: {integrity: sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==}
 
-  blume@1.7.2:
-    resolution: {integrity: sha512-icdgj7SjLjBh0cpY7/SSqeKcBrAXmtzbU2Z6EjsXVspissscLqRHgYimCHsZZ4wKcrNvHMtYQ2Ysvn1G5xxXWw==}
+  blume@1.7.3:
+    resolution: {integrity: sha512-+pZzMfphSI+Lg8tH7tzKvg6O4xijMk6kkcqXFybyuyDZajnKJB/2MuJSFO8c+IQrIYuZaQYyis5ez/x/vrqHAw==}
     engines: {node: '>=22.12.0'}
     hasBin: true
     peerDependencies:
@@ -6427,8 +6449,8 @@ packages:
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
 
-  module-replacements@3.3.0:
-    resolution: {integrity: sha512-AVZL23uePazQOZlb/QMGwxsUa1oWA62Cfe6ApPzgasUoF4cdCWAiRPVq4KkaQzXbIDAlpLhLG61Jx8Lju4wjTg==}
+  module-replacements@3.4.0:
+    resolution: {integrity: sha512-NKBNFM/uAUvSs+LOYfSly4EwrC9bgMoFuEnqNNjcDb910W+5IgS2KMB2ERLm5YZZm7R187jx1dMA9pOPvqbSbw==}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -8091,8 +8113,8 @@ packages:
     resolution: {integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
 
-  yargs@18.1.0:
-    resolution: {integrity: sha512-2rAgRKu54VsHkqI0/tYkmluGXHD4KW7yZoycuqDQ15QOTnc2VVfy0nN/1eMhnQLO00A+dwtK20xuCnc1YGeUyg==}
+  yargs@18.2.0:
+    resolution: {integrity: sha512-9OpKOLeaoNFecEp7P6iYbzze/5CqWoH7N3SMs/6y1XF4nMvFMspEGZzJ6uFi9MmQwXhyzqYoSEKO3tvA3Z/o2w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
 
   yocto-queue@0.1.0:
@@ -8200,7 +8222,7 @@ snapshots:
       chokidar: 4.0.3
       kleur: 4.1.5
       typescript: 6.0.3
-      yargs: 18.1.0
+      yargs: 18.2.0
     transitivePeerDependencies:
       - '@emnapi/runtime'
       - prettier
@@ -8655,7 +8677,7 @@ snapshots:
   '@e18e/eslint-plugin@0.8.1(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(oxlint@1.83.0(oxlint-tsgolint@7.0.2002))':
     dependencies:
       empathic: 2.1.0
-      module-replacements: 3.3.0
+      module-replacements: 3.4.0
       verkit: 0.4.1
     optionalDependencies:
       eslint: 10.11.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -10175,7 +10197,7 @@ snapshots:
       - preact
       - react
 
-  '@tanstack/eslint-plugin-query@5.103.1(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)':
+  '@tanstack/eslint-plugin-query@5.103.2(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)':
     dependencies:
       '@typescript-eslint/utils': 8.70.0(eslint@10.11.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
       eslint: 10.11.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -11206,7 +11228,7 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  blume@1.7.2(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1):
+  blume@1.7.3(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/node@26.6.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.8(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.8)(supports-color@10.2.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1):
     dependencies:
       '@astrojs/check': 0.9.10(@emnapi/runtime@1.11.3)(prettier@3.9.8)(typescript@6.0.3)
       '@astrojs/markdown-satteri': 0.4.1
@@ -13813,7 +13835,7 @@ snapshots:
 
   module-details-from-path@1.0.4: {}
 
-  module-replacements@3.3.0: {}
+  module-replacements@3.4.0: {}
 
   mri@1.2.0: {}
 
@@ -15562,7 +15584,7 @@ snapshots:
 
   yargs-parser@22.0.0: {}
 
-  yargs@18.1.0:
+  yargs@18.2.0:
     dependencies:
       cliui: 9.0.1
       escalade: 3.2.0
