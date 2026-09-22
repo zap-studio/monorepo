@@ -69,9 +69,16 @@ the right body for that event.
 You do not have to call these yourself. `@zap-ts/authentication` already sends
 the sign-in emails. `@zap-ts/billing` already sends the payment ones.
 
-The templates that ship are plain. They have no design and no logo. Replace
-them with your own. Keep the names of the exported functions, because the rest
-of the code imports those names.
+The templates that ship are designed and ready to send. They share one frame:
+a wordmark, a title, the text, one button, and a quiet line at the bottom. The
+frame lives in `packages/mail/src/templates/layout.tsx`, so your wordmark, your
+colours and your fonts are one file to change, not seven.
+
+Every rule is written inline and every box is a table, because email clients
+drop stylesheets and class names. Keep it that way when you rebrand.
+
+Keep the names of the exported functions if you rewrite a template, because the
+rest of the code imports those names.
 
 ## See a template in your browser
 

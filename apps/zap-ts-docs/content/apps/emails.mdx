@@ -1,6 +1,6 @@
 ---
 title: Emails
-description: A local preview app that shows every email template in your browser while you design it.
+description: A local preview app that shows every email template in your browser while you work on it.
 ---
 
 `apps/emails` lets you look at your emails while you write them. It opens each
@@ -34,8 +34,9 @@ preview of one real email:
 - `billing-payment-failed.tsx`
 - `billing-canceled.tsx`
 
-These files hold no design. Each one imports the real template from
-`@zap-ts/mail/templates`. It then calls that template with example values.
+A preview file holds no design of its own. Each one imports the real template
+from `@zap-ts/mail/templates`. It then calls that template with example values.
+The design you see is the design that ships.
 
 ```tsx
 import { verifyEmail } from "@zap-ts/mail/templates";
@@ -76,15 +77,13 @@ Change the templates, not the previews. The templates live in
 1. `authentication.tsx` holds the emails about accounts.
 2. `billing.tsx` holds the emails about payments.
 
-Both files start with the same comment:
+Both import their frame from `layout.tsx`, next to them. That file holds the
+wordmark, the colours, the fonts, the button and the code block. Change it once
+and every email changes.
 
-```tsx
-// TODO: Replace these placeholder templates with real branded designs.
-```
-
-The templates that ship are plain. They are a paragraph, a link, and another
-paragraph. They say the right thing, but they carry no design, no logo and no
-colors. Replace them with your own.
+To put your own brand on the emails, start with the three colour constants at
+the top of `layout.tsx` and the wordmark under them. The wording of each email
+lives in `authentication.tsx` and `billing.tsx`.
 
 :::note
 Your app and this preview app read the same files. So a change you see in the
