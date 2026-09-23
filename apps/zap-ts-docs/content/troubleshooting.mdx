@@ -227,6 +227,19 @@ export TEST_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/postgres
 pnpm run test:e2e
 ```
 
+If you see `Executable doesn't exist` instead, the browsers are not downloaded
+yet. Download them once:
+
+```bash
+pnpm exec playwright install chromium firefox webkit
+```
+
+If one browser still will not start, run the others while you look into it:
+
+```bash
+pnpm --filter web exec playwright test -c e2e/playwright.config.ts --project=chromium --project=webkit
+```
+
 ## Starting again from a clean database
 
 This deletes all your local data. Your code is not touched.

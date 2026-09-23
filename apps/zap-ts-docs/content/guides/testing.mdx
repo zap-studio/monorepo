@@ -6,6 +6,15 @@ description: How tests are organised in zap.ts, how to give a test a real databa
 zap.ts runs tests with [Vitest](https://vitest.dev). The end-to-end test uses
 [Playwright](https://playwright.dev) instead.
 
+Some tests run in real browsers. Download them once, from the zap.ts folder:
+
+```bash
+pnpm exec playwright install chromium firefox webkit
+```
+
+On Linux, add `--with-deps`. It also installs the system libraries the
+browsers need, so it asks for your password.
+
 Run everything:
 
 ```bash
