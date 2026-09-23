@@ -5,6 +5,59 @@ description: The problems people hit most often with zap.ts, and what to do abou
 
 This page lists the problems people hit most, with the fix for each.
 
+## Docker Compose is not found
+
+`docker compose version` says `unknown command`, or `docker compose up -d`
+says `unknown shorthand flag: 'd' in -d`. Docker is installed, but Docker
+Compose is not linked to it.
+
+:::note
+You may see two spellings: `docker-compose`, with a dash, and `docker compose`,
+with a space. They are the same tool. `docker-compose` is the program on its
+own. `docker compose` is the same program, run by `docker` as a plugin. Docker
+now recommends the space, and these docs use it. If only the dash works on your
+computer, type `docker-compose` wherever the docs say `docker compose`.
+:::
+
+**On a Mac with Colima**, install Colima, Docker and Docker Compose with
+Homebrew, then start Colima:
+
+```bash
+brew install colima docker docker-compose
+colima start
+```
+
+Homebrew installs Docker Compose, but it does not tell `docker` where to find
+it. Link it once:
+
+```bash
+mkdir -p ~/.docker/cli-plugins
+ln -sfn "$(brew --prefix)/opt/docker-compose/bin/docker-compose" ~/.docker/cli-plugins/docker-compose
+```
+
+Colima does not start by itself. Run `colima start` again after each restart
+of your Mac.
+
+**On a Mac with Docker Desktop**, there is nothing to do. Docker Desktop ships
+with Docker Compose already linked.
+
+**On Linux**, install Docker Engine from
+[Docker's own packages](https://docs.docker.com/engine/install/), not from the
+packages of your distribution. Docker's packages include Docker Compose, so
+`docker compose` works right away. Then follow the
+[post-install steps](https://docs.docker.com/engine/install/linux-postinstall/)
+so you can run `docker` without `sudo`.
+
+The `docker-compose` package of your distribution can be an old version, and
+it does not always add `docker compose`. If you have it, remove it and install
+`docker-compose-plugin` from Docker's packages.
+
+Check again:
+
+```bash
+docker compose version
+```
+
 ## The app cannot reach the database
 
 You see an error about a connection being refused on port 5432.
@@ -34,6 +87,26 @@ colima start
 
 If something else on your computer already uses port 5432, stop that program,
 or change the port in `docker-compose.yml`.
+
+The usual culprit is a Postgres you installed yourself. What you see depends
+on your system.
+
+**On a Mac**, `docker compose up -d` still works, but a Postgres installed with
+Homebrew answers on port 5432 before Docker does. Then `pnpm run db:migrate`
+stops with only `Command failed with exit code 1`, because that Postgres has no
+`postgres` user. Find its name, then stop it:
+
+```bash
+brew services list
+brew services stop postgresql@18
+```
+
+**On Linux**, `docker compose up -d` itself fails, with a message that the
+address is already in use. Stop the Postgres of your distribution:
+
+```bash
+sudo systemctl stop postgresql
+```
 
 ## The tables do not exist
 
