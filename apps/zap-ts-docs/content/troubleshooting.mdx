@@ -231,13 +231,7 @@ If you see `Executable doesn't exist` instead, the browsers are not downloaded
 yet. Download them once:
 
 ```bash
-pnpm exec playwright install chromium firefox webkit
-```
-
-If one browser still will not start, run the others while you look into it:
-
-```bash
-pnpm --filter web exec playwright test -c e2e/playwright.config.ts --project=chromium --project=webkit
+pnpm exec playwright install chromium webkit
 ```
 
 ## Starting again from a clean database

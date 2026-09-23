@@ -9,7 +9,7 @@ zap.ts runs tests with [Vitest](https://vitest.dev). The end-to-end test uses
 Some tests run in real browsers. Download them once, from the zap.ts folder:
 
 ```bash
-pnpm exec playwright install chromium firefox webkit
+pnpm exec playwright install chromium webkit
 ```
 
 On Linux, add `--with-deps`. It also installs the system libraries the
@@ -109,7 +109,7 @@ pnpm run test:e2e
 ```
 
 This one does not use Vitest. It uses Playwright, it starts a real dev server,
-and it runs in three browsers: Chrome, Firefox and Safari.
+and it runs in two browsers: Chrome and Safari.
 
 It needs a real Postgres. Set `TEST_DATABASE_URL` before you run it, or it
 stops and tells you so:
