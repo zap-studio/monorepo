@@ -53,7 +53,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [docs, zap-ts-docs]
+        app: [docs]
     steps:
       - uses: actions/checkout@v7
         with:

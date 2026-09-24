@@ -1,4 +1,0 @@
-{
-  "extends": "@zap-studio/typescript/blume.json",
-  "include": ["blume.config.ts", "components.ts", "lib"]
-}

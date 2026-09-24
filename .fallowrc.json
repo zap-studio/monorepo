@@ -5,7 +5,6 @@
     "apps/docs/components.ts",
     "apps/docs/pages/**",
     "apps/docs/theme.css",
-    "apps/zap-ts-docs/blume.config.ts",
     "doctor.config.ts",
     "oxfmt.config.ts"
   ],
@@ -18,7 +17,6 @@
   },
   "ignoreFindings": [
     "apps/docs/content/**",
-    "apps/zap-ts-docs/content/**",
     "packages/oxlint/src/anti-slop/**"
   ],
   "ignoreDependencies": [
