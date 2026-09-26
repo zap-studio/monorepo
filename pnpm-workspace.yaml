@@ -30,8 +30,8 @@ catalog:
   "@varlock/bumpy": ^1.18.1
   "@vitest/browser-playwright": ^5.0.1
   "@vitest/coverage-v8": ^5.0.1
-  arktype: ^2.2.3
-  blume: ^1.7.3
+  arktype: ^2.2.5
+  blume: ^2.0.3
   eslint: ^10.11.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
@@ -48,7 +48,7 @@ catalog:
   oxfmt: ^0.70.0
   oxlint: ^1.85.0
   oxlint-plugin-react-doctor: ^0.9.14
-  oxlint-tsgolint: ^7.0.2002
+  oxlint-tsgolint: ^7.0.2003
   playwright: ^1.63.0
   publint: ^0.3.24
   react: ^19.3.0
@@ -60,5 +60,5 @@ catalog:
   valibot: ^1.5.0
   vitest: ^5.0.1
   vitest-browser-react: ^2.3.0
-  wrangler: ^4.136.2
+  wrangler: ^4.140.0
   zod: ^4.6.5

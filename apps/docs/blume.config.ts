@@ -9,7 +9,7 @@ const description =
   "Type-safe, framework-agnostic and composable TypeScript libraries for the web.";
 
 export default defineConfig({
-  ai: {
+  agents: {
     llmsTxt: {
       details: [
         "## When to use Zap Studio",
@@ -41,7 +41,7 @@ export default defineConfig({
   deployment: { site: "https://www.zapstudio.dev" },
   description,
   github: { branch: "main", dir: "apps/docs", owner: "zap-studio", repo: "monorepo" },
-  lastModified: true,
+  lastModified: "git",
   logo: {
     image: { alt: siteName, dark: "/logo-dark.svg", light: "/logo-light.svg" },
     text: "",
