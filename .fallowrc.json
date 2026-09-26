@@ -15,10 +15,7 @@
   "health": {
     "ignore": ["packages/oxlint/src/anti-slop/**"]
   },
-  "ignoreFindings": [
-    "apps/docs/content/**",
-    "packages/oxlint/src/anti-slop/**"
-  ],
+  "ignoreFindings": ["apps/docs/content/**", "packages/oxlint/src/anti-slop/**"],
   "ignoreDependencies": [
     "blume:data",
     "@e18e/eslint-plugin",
