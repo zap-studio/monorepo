@@ -43,7 +43,7 @@ catalog:
   eslint-plugin-storybook: ^10.6.0
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
-  fallow: ^3.29.0
+  fallow: ^3.30.0
   lefthook: ^2.1.14
   oxfmt: ^0.70.0
   oxlint: ^1.85.0

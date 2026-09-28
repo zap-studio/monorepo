@@ -258,8 +258,8 @@ catalogs:
       specifier: ^7.16.2
       version: 7.16.2
     fallow:
-      specifier: ^3.29.0
-      version: 3.29.0
+      specifier: ^3.30.0
+      version: 3.30.0
     lefthook:
       specifier: ^2.1.14
       version: 2.1.14
@@ -348,7 +348,7 @@ importers:
         version: 10.11.0(jiti@2.7.0)(supports-color@10.2.2)
       fallow:
         specifier: 'catalog:'
-        version: 3.29.0
+        version: 3.30.0
       lefthook:
         specifier: 'catalog:'
         version: 2.1.14
@@ -390,7 +390,7 @@ importers:
     dependencies:
       blume:
         specifier: 'catalog:'
-        version: 2.0.3(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.9(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.9)(supports-color@10.2.2)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1)
+        version: 2.0.3(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.9(ws@8.22.0))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.9)(supports-color@10.2.2)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.22.0)(yaml@2.9.1)
       zod:
         specifier: 'catalog:'
         version: 4.6.5
@@ -870,8 +870,8 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@4.0.94':
-    resolution: {integrity: sha512-hcp7GLnMynH6NfMnemgvW9acn7j3WsUe/dHFzX3/fhPit08xhm1aYmDGHMiIT6YwsXVBxkit9TriKb2SGAOg+Q==}
+  '@ai-sdk/gateway@4.0.96':
+    resolution: {integrity: sha512-1aniRTzEf9T7uRHdKnBQ36WgEVQswK6wDgkPVsNMl+sPy7otcmrBa2HEurdFBS51s1q3/UXlh8nNcguwU79Hkg==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1689,43 +1689,43 @@ packages:
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@fallow-cli/darwin-arm64@3.29.0':
-    resolution: {integrity: sha512-2l5vyoPGfQ61wOqGPurhg2PQRqUUXOf4glQGR0N+C6nFYhQYUIkgHGlVlbhANAMC1dz6vP3trnJtZZQ5RrKm8Q==}
+  '@fallow-cli/darwin-arm64@3.30.0':
+    resolution: {integrity: sha512-u3MkZKaHH/dX3qm5ks44QRSsTIspDbaJhoNG5y0j7nl2LPo1ZcM5Feyt6lxta007KKH8YgS6TgwCFaYZjzdOvQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@fallow-cli/darwin-x64@3.29.0':
-    resolution: {integrity: sha512-KdZ900Wh3hHht9pjgxbnMG6+zt5iJZKiCj1vDHaO4YjhAtRJB20KTG/pCCvA+zxMbd0KAym5JEQW0eyg6w7t3g==}
+  '@fallow-cli/darwin-x64@3.30.0':
+    resolution: {integrity: sha512-zufVDV7HaAcNBFPEKmERL6b/0lMIswFCSPq2EvzgtPke+1GQC/Vb7CzrSoWc/pHovnOcTL72yc3POFgd3ZOA/A==}
     cpu: [x64]
     os: [darwin]
 
-  '@fallow-cli/linux-arm64-gnu@3.29.0':
-    resolution: {integrity: sha512-c45YITgyS+4DVXurb2bjwC9+9EI4FDSIB8bHCMzbA6yJTfNu7XjCZ+2cZ/QDBMurK7K8j/a28ZLgMBp3DPTXXw==}
+  '@fallow-cli/linux-arm64-gnu@3.30.0':
+    resolution: {integrity: sha512-/Gq+zVOc/s1tVAUhLoSA4nBhs4RK59u8pBjNzhJBPdwIAtDQ9jXpCAKPzG5JZuYXKoQ6hSpQDJnrH1v7pCsZxA==}
     cpu: [arm64]
     os: [linux]
 
-  '@fallow-cli/linux-arm64-musl@3.29.0':
-    resolution: {integrity: sha512-Dbvp9r9ZdgJxmh0uKKnFcKdLX48BuNN2PqiiLBrM9vszz65l1ZkqnAbMp/CobgzRmlRbN/QeWXartEceGk+tBA==}
+  '@fallow-cli/linux-arm64-musl@3.30.0':
+    resolution: {integrity: sha512-T41dkQRNICfi17lJqchxJSsDtshcJdqMOPBKrLwIGs1At23qX6PBjmQGkCyHhyKMBFSOKFmISwzG722X7ZYi7w==}
     cpu: [arm64]
     os: [linux]
 
-  '@fallow-cli/linux-x64-gnu@3.29.0':
-    resolution: {integrity: sha512-5gEHQiqbV06amMKo0B/80/d5H1jqQcCReeqia8MCvcfX6VSDN81BFS7ZLL7Uf2nkw/Uu0I9hQ06W1Qv0Dt+C6g==}
+  '@fallow-cli/linux-x64-gnu@3.30.0':
+    resolution: {integrity: sha512-+cEZI516t2POYTDeNhijjuHvToNgTobez71maiib6nxivoixl8M6hzj838/8/DTrLy3AxXBH6bfOax78F95FnA==}
     cpu: [x64]
     os: [linux]
 
-  '@fallow-cli/linux-x64-musl@3.29.0':
-    resolution: {integrity: sha512-jv43KWWfi4rVmLgzarMG6hXg7kbd3gWeC38WxfQJ8Vw/BIfIMpwyNCdSQAYysc9wd514MklZgDEgpBiqNT9yog==}
+  '@fallow-cli/linux-x64-musl@3.30.0':
+    resolution: {integrity: sha512-QX8ZUQSFEMhkGc0fBOcoSjHiv1mconxpWBu0XW+i/K+XlAnjAYsFrQ8lrKJajSzURgon7iTAy7NfFNY1zJVyTw==}
     cpu: [x64]
     os: [linux]
 
-  '@fallow-cli/win32-arm64-msvc@3.29.0':
-    resolution: {integrity: sha512-2/gIXh9syxI+9NvB5XiB+J7xmgFGi1/KKm32esI1TwIbUiutYxgKJeqU35UhuMbBASnNpcGhPuI9CND5jF8Q/g==}
+  '@fallow-cli/win32-arm64-msvc@3.30.0':
+    resolution: {integrity: sha512-LajU38z7LKbmBTGYuJPsxyIZs/tgqRkW6jFDdJJctd/VEexwuAC4tdODCdyXuYYbavjorgJQH2bB+XmicAPkmg==}
     cpu: [arm64]
     os: [win32]
 
-  '@fallow-cli/win32-x64-msvc@3.29.0':
-    resolution: {integrity: sha512-0BcmnrTajg5hEohjhdaY3cxvfmCjFhSt3n9Vo0yY5odvpkF3J7dK8am9sArsjL64nuV9VRajhWLaEMtchTbKRw==}
+  '@fallow-cli/win32-x64-msvc@3.30.0':
+    resolution: {integrity: sha512-YgMSneNsCWUPuyOdseDVGQx9AhuOjzmUaoNILhBfu7MhdI4oOHEtBSftdTenp0E7tXRCzPpMMWuCL17l7IvwSg==}
     cpu: [x64]
     os: [win32]
 
@@ -1761,8 +1761,8 @@ packages:
   '@iarna/toml@2.2.5':
     resolution: {integrity: sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==}
 
-  '@iconify-json/lucide@1.2.136':
-    resolution: {integrity: sha512-Wk+OeDVKkw+1LELZqRR3gXWIy5jNx5XjNMvVc9KoygJYmGqclv36FYqseRuJuxBIKDggdoZWNBxNRrOkiRbtwQ==}
+  '@iconify-json/lucide@1.2.137':
+    resolution: {integrity: sha512-uKz1+tFbv1RFX/mJQNksdnyKJijNfRGSNnxfiyKtr+dLNfA3ERph+IgpXClKGOlV/5GsZwLv2jgJXQ/bjF/JAg==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -3951,8 +3951,8 @@ packages:
     resolution: {integrity: sha512-nHlms9BkP8ZiY79HrwCGiA2DcNaXrAaJrCM/BEqQ7MEsSKyCk+2A76xPGylIfASZSZE0SaU3T0bNSg4rBPIJAQ==}
     hasBin: true
 
-  ai@7.0.116:
-    resolution: {integrity: sha512-gmkVGPzTNPcJixBiG9zUvP3gmvwko85dHiKrxFKK0zcVJIIu1FP6YDo3jna+ZrC2twMAsUPLr5htCwZjCINH3Q==}
+  ai@7.0.118:
+    resolution: {integrity: sha512-ZjkbbOffH09yQAjeZ5yGXd8ePTQlFIyKH5aW0s0LOMmvaR1TSoeg5wVURwLvFry/IzzaLndmw9glTKwWRoog3Q==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -3983,8 +3983,8 @@ packages:
     resolution: {integrity: sha512-MxT4XZL7pzLHpuvhDKdMaQHMGGkJDLluKBLsbstn+8wv9sWcFT6h+0ve9qkml95amVTZtZV83gQe2hY+ojgHLg==}
     hasBin: true
 
-  ansi-regex@6.3.0:
-    resolution: {integrity: sha512-WpDfL7NO6j7tH88IDBNVdUJxDh9nmCteAVW9dsep846XdwF4naCBK+/tGLX3KJgcpgMRXCFlTM2hKGoK9FsdrQ==}
+  ansi-regex@6.4.0:
+    resolution: {integrity: sha512-KzTVk2tCWAHtYrvvvaP8bJKJq2pVinhLcGEQdtLIYPbmNGNyYe8QwNaTUYQp2J7/vIsUKt5QCqAfUkYyG9DkOw==}
     engines: {node: '>=12'}
 
   ansi-styles@6.2.3:
@@ -5129,13 +5129,13 @@ packages:
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
-  fallow-type-aware@3.29.0:
-    resolution: {integrity: sha512-sOvnKEffm7xv/M2OGD4a6zKg75w/DBtUZsh4PFq/cCSVf4l6l1DtbPlYK+B8Ti1m5AG4jYCj1ZdeMixtLLypog==}
+  fallow-type-aware@3.30.0:
+    resolution: {integrity: sha512-I/PDTJVhQkgFzNiPiEpL6D7zmg8sjow55qIZYWu9bzpfwGt9zxepnGykTqmqLVHh4e7QWpjzjjNcPimQAVeDFw==}
     engines: {node: '>=20'}
     hasBin: true
 
-  fallow@3.29.0:
-    resolution: {integrity: sha512-V4yaBW/fKUNDjTlP3WBp+kfGYzLtHb1dMzjsTo3LHXZNtAAqXGDJLKcuuTLyX6vSjcMqEB5lHnoeUi1Y2o7Sjg==}
+  fallow@3.30.0:
+    resolution: {integrity: sha512-+TPkF4TjdmYuT3WC6NxLwnaIL6RWPtBIu8ue0RBSQWmLrATMc4lNm8jEhXIy2jbgTk3RTs+0i6NZZZo7AzK0SQ==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -6114,8 +6114,8 @@ packages:
     resolution: {integrity: sha512-/wQXC9iBxoGV8p3erbvaXs9h77VyLDBH6GdayVjj3hEcSQhFU4N1WUhUppotCEqlIxI2pRMwjwBSwTB1MfZBgQ==}
     engines: {node: '>=22.12.0'}
 
-  micromark-core-commonmark@2.0.3:
-    resolution: {integrity: sha512-RDBrHEMSxVFLg6xvnXmb1Ayr2WzLAWjeSATAoxwKYJV94TeNavgoIdA0a9ytzDSVzBy2YKFK+emCPOEibLeCrg==}
+  micromark-core-commonmark@2.0.4:
+    resolution: {integrity: sha512-wxEeE8v8XVvOrxn1TZj74qYhAtTQsSqufHVS3uNVyT1MupXxhyaHk8/9xDNPh9BmL77QNDgWTkZ3RsYHB2ry7w==}
 
   micromark-extension-gfm-autolink-literal@2.1.0:
     resolution: {integrity: sha512-oOg7knzhicgQ3t4QCjCWgTmfNhvQbDDnJeVu9v81r7NltNCVmhPy1fJRX27pISafdjL+SVc4d3l48Gb6pbRypw==}
@@ -6144,8 +6144,8 @@ packages:
   micromark-factory-label@2.0.1:
     resolution: {integrity: sha512-VFMekyQExqIW7xIChcXn4ok29YE3rnuyveW3wZQWWqF4Nv9Wk5rgJ99KzPvHjkmPXF93FXIbBp6YdW3t71/7Vg==}
 
-  micromark-factory-space@2.0.1:
-    resolution: {integrity: sha512-zRkxjtBxxLd2Sc0d+fbnEunsTj46SWXgXciZmHq0kDYGnck/ZSGj9/wULTV95uoeYiK5hRXP2mJ98Uo4cq/LQg==}
+  micromark-factory-space@2.1.0:
+    resolution: {integrity: sha512-fS8hnLIjnjvdQIj39Geug8wWsR0HrYZ43KShKxNfwT7t2LOHo/LbWZEzEaSOjwtjdCsjoE6syHhonEzW0zv0+Q==}
 
   micromark-factory-title@2.0.1:
     resolution: {integrity: sha512-5bZ+3CjhAd9eChYTHsjy6TGxpOFSKgKKJPJxr293jTbfry2KDoWkhBb6TcPVB4NmzaPhMs1Frm9AZH7OD4Cjzw==}
@@ -6171,6 +6171,9 @@ packages:
   micromark-util-decode-string@2.0.1:
     resolution: {integrity: sha512-nDV/77Fj6eH1ynwscYTOsbK7rR//Uj0bZXBwJZRfaLEJ1iGBR6kIfNmlNqaqJf649EP0F3NWNdeJi03elllNUQ==}
 
+  micromark-util-edit-map@1.0.0:
+    resolution: {integrity: sha512-Pa2ljlsEL6sVwFaYeyrOLSYbQt73JvGbPOYFq+9AElXiSnfI5Q4465RRZ1sHv7lDjDOnGRDDaqPXqClqWK/q1Q==}
+
   micromark-util-encode@2.0.1:
     resolution: {integrity: sha512-c3cVx2y4KqUnwopcO9b/SCdo2O67LwJJ/UyqGfbigahfegL9myoEFoDYZgkT7f36T0bLrM9hZTAaAyH+PCAXjw==}
 
@@ -6192,11 +6195,11 @@ packages:
   micromark-util-symbol@2.0.1:
     resolution: {integrity: sha512-vs5t8Apaud9N28kgCrRUdEed4UJ+wWNvicHLPxCa9ENlYuAY31M0ETy5y1vA33YoNPDFTghEbnh6efaE8h4x0Q==}
 
-  micromark-util-types@2.0.2:
-    resolution: {integrity: sha512-Yw0ECSpJoViF1qTU4DC6NwtC4aWGt1EkzaQB8KPPyCRR8z9TWeV0HbEFGTO+ZY1wB22zmxnJqhPyTpOVCpeHTA==}
+  micromark-util-types@2.0.3:
+    resolution: {integrity: sha512-oxB2Ik03hI0gv+VNn9tnh1t1YEe9MDPptViAEgfdf3YQHsn0pzGTgCdlSCJXcwhqm8phaEuM7zeEu3QQzVBrPg==}
 
-  micromark@4.0.2:
-    resolution: {integrity: sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA==}
+  micromark@4.0.3:
+    resolution: {integrity: sha512-oGYfQzHSG5dOMovQcJ3fyTmZlWAWpi0XA0sJwJs+i6OT88o1+Jtw/8z0CmdowSLxGhhFK89rQ/oXph/wN02PNw==}
 
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
@@ -7307,8 +7310,8 @@ packages:
   ufo@1.6.4:
     resolution: {integrity: sha512-JFNbkD1Svwe0KvGi8GOeLcP4kAWQ609twvCdcHxq1oSL8svv39ZuSvajcD8B+5D0eL4+s1Is2D/O6KN3qcTeRA==}
 
-  uint8array-extras@1.5.0:
-    resolution: {integrity: sha512-rvKSBiC5zqCCiDZ9kAOszZcDvdAHwwIKJG33Ykj43OKcWsnmcBRL09YTU4nOeHZ8Y2a7l1MgTd08SBe9A8Qj6A==}
+  uint8array-extras@1.6.0:
+    resolution: {integrity: sha512-8iAasVS4wUx0gPLjH8Xtz2PeDzTSiy8QiLGu2DT3X5GU+egFEQhpnbtkehbAwjvDcxIERmCYcysiODFmE3Ud0Q==}
     engines: {node: '>=18'}
 
   ultrahtml@1.7.0:
@@ -7812,8 +7815,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.21.3:
-    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -7920,7 +7923,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@4.0.94(zod@4.6.5)':
+  '@ai-sdk/gateway@4.0.96(zod@4.6.5)':
     dependencies:
       '@ai-sdk/provider': 4.0.18
       '@ai-sdk/provider-utils': 5.0.49(zod@4.6.5)
@@ -8079,17 +8082,17 @@ snapshots:
       github-slugger: 2.0.0
       satteri: 0.10.5
 
-  '@astrojs/mdx@8.0.2(@astrojs/markdown-satteri@0.4.2)(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))':
+  '@astrojs/mdx@8.0.2(@astrojs/markdown-satteri@0.4.2)(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
       '@astrojs/internal-helpers': 0.11.0
       '@astrojs/markdown-satteri': 0.4.2
-      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1)
+      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1)
       es-module-lexer: 2.3.2
 
-  '@astrojs/node@11.1.6(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))(supports-color@10.2.2)':
+  '@astrojs/node@11.1.6(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))(supports-color@10.2.2)':
     dependencies:
       '@astrojs/internal-helpers': 0.11.0
-      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1)
+      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1)
       send: 1.2.1(supports-color@10.2.2)
       server-destroy: 1.0.1
     transitivePeerDependencies:
@@ -8132,14 +8135,14 @@ snapshots:
       is-docker: 4.0.0
       package-manager-detector: 1.8.0
 
-  '@astrojs/vercel@11.0.11(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))(react@19.3.0)(supports-color@10.2.2)(ws@8.21.3)':
+  '@astrojs/vercel@11.0.11(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))(react@19.3.0)(supports-color@10.2.2)(ws@8.22.0)':
     dependencies:
       '@astrojs/internal-helpers': 0.11.0
       '@vercel/analytics': 2.0.1(react@19.3.0)
-      '@vercel/functions': 3.9.9(ws@8.21.3)
+      '@vercel/functions': 3.9.9(ws@8.22.0)
       '@vercel/nft': 1.11.0(supports-color@10.2.2)
       '@vercel/routing-utils': 6.6.0
-      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1)
+      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1)
       esbuild: 0.28.2
       tinyglobby: 0.2.17
     transitivePeerDependencies:
@@ -8666,28 +8669,28 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@fallow-cli/darwin-arm64@3.29.0':
+  '@fallow-cli/darwin-arm64@3.30.0':
     optional: true
 
-  '@fallow-cli/darwin-x64@3.29.0':
+  '@fallow-cli/darwin-x64@3.30.0':
     optional: true
 
-  '@fallow-cli/linux-arm64-gnu@3.29.0':
+  '@fallow-cli/linux-arm64-gnu@3.30.0':
     optional: true
 
-  '@fallow-cli/linux-arm64-musl@3.29.0':
+  '@fallow-cli/linux-arm64-musl@3.30.0':
     optional: true
 
-  '@fallow-cli/linux-x64-gnu@3.29.0':
+  '@fallow-cli/linux-x64-gnu@3.30.0':
     optional: true
 
-  '@fallow-cli/linux-x64-musl@3.29.0':
+  '@fallow-cli/linux-x64-musl@3.30.0':
     optional: true
 
-  '@fallow-cli/win32-arm64-msvc@3.29.0':
+  '@fallow-cli/win32-arm64-msvc@3.30.0':
     optional: true
 
-  '@fallow-cli/win32-x64-msvc@3.29.0':
+  '@fallow-cli/win32-x64-msvc@3.30.0':
     optional: true
 
   '@github/browserslist-config@1.0.0': {}
@@ -8714,7 +8717,7 @@ snapshots:
 
   '@iarna/toml@2.2.5': {}
 
-  '@iconify-json/lucide@1.2.136':
+  '@iconify-json/lucide@1.2.137':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -9430,10 +9433,10 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@scalar/astro@0.4.23(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))':
+  '@scalar/astro@0.4.23(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))':
     dependencies:
       '@scalar/client-side-rendering': 0.4.5
-      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1)
+      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1)
 
   '@scalar/client-side-rendering@0.4.5':
     dependencies:
@@ -10197,11 +10200,11 @@ snapshots:
     dependencies:
       execa: 5.1.1
 
-  '@vercel/functions@3.9.9(ws@8.21.3)':
+  '@vercel/functions@3.9.9(ws@8.22.0)':
     dependencies:
       '@vercel/oidc': 3.8.9
     optionalDependencies:
-      ws: 8.21.3
+      ws: 8.22.0
 
   '@vercel/nft@1.11.0(supports-color@10.2.2)':
     dependencies:
@@ -10273,7 +10276,7 @@ snapshots:
       sirv: 3.0.2
       tinyrainbow: 3.1.1
       vitest: 5.0.2(@opentelemetry/api@1.9.1)(@types/node@26.6.3)(@vitest/browser-playwright@5.0.2)(@vitest/coverage-v8@5.0.2)(@vitest/ui@5.0.2)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
-      ws: 8.21.3
+      ws: 8.22.0
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -10504,9 +10507,9 @@ snapshots:
       prompts: 2.4.2
       yaml: 2.9.1
 
-  ai@7.0.116(zod@4.6.5):
+  ai@7.0.118(zod@4.6.5):
     dependencies:
-      '@ai-sdk/gateway': 4.0.94(zod@4.6.5)
+      '@ai-sdk/gateway': 4.0.96(zod@4.6.5)
       '@ai-sdk/provider': 4.0.18
       '@ai-sdk/provider-utils': 5.0.49(zod@4.6.5)
       zod: 4.6.5
@@ -10541,7 +10544,7 @@ snapshots:
     dependencies:
       process-ancestry: 0.1.0
 
-  ansi-regex@6.3.0: {}
+  ansi-regex@6.4.0: {}
 
   ansi-styles@6.2.3: {}
 
@@ -10632,7 +10635,7 @@ snapshots:
       estree-walker: 3.0.3
       js-tokens: 10.0.0
 
-  astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1):
+  astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1):
     dependencies:
       '@astrojs/compiler-rs': 0.5.1
       '@astrojs/internal-helpers': 0.11.0
@@ -10680,7 +10683,7 @@ snapshots:
       tinyglobby: 0.2.17
       ultrahtml: 1.7.0
       unifont: 0.7.5
-      unstorage: 1.17.5(@vercel/functions@3.9.9(ws@8.21.3))
+      unstorage: 1.17.5(@vercel/functions@3.9.9(ws@8.22.0))
       verkit: 0.4.1
       vite: 8.3.1(@types/node@22.20.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
       vitefu: 1.1.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
@@ -10762,22 +10765,22 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  blume@2.0.3(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.9(ws@8.21.3))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.9)(supports-color@10.2.2)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.21.3)(yaml@2.9.1):
+  blume@2.0.3(@emnapi/runtime@1.11.3)(@shikijs/themes@4.4.3)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.9.9(ws@8.22.0))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.9)(supports-color@10.2.2)(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.22.0)(yaml@2.9.1):
     dependencies:
       '@astrojs/check': 0.9.10(@emnapi/runtime@1.11.3)(prettier@3.9.9)(typescript@6.0.3)
       '@astrojs/markdown-satteri': 0.4.2
-      '@astrojs/mdx': 8.0.2(@astrojs/markdown-satteri@0.4.2)(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))
-      '@astrojs/node': 11.1.6(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))(supports-color@10.2.2)
+      '@astrojs/mdx': 8.0.2(@astrojs/markdown-satteri@0.4.2)(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))
+      '@astrojs/node': 11.1.6(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))(supports-color@10.2.2)
       '@astrojs/react': 6.0.6(@types/node@22.20.4)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(supports-color@10.2.2)(yaml@2.9.1)
-      '@astrojs/vercel': 11.0.11(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))(react@19.3.0)(supports-color@10.2.2)(ws@8.21.3)
+      '@astrojs/vercel': 11.0.11(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))(react@19.3.0)(supports-color@10.2.2)(ws@8.22.0)
       '@clack/prompts': 1.8.1
-      '@iconify-json/lucide': 1.2.136
+      '@iconify-json/lucide': 1.2.137
       '@iconify/types': 2.0.0
       '@iconify/utils': 3.1.7
       '@modelcontextprotocol/sdk': 1.30.1(supports-color@10.2.2)(zod@4.6.5)
       '@orama/orama': 3.1.18
       '@pierre/diffs': 1.5.1(@shikijs/themes@4.4.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@scalar/astro': 0.4.23(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1))
+      '@scalar/astro': 0.4.23(astro@7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1))
       '@scalar/openapi-parser': 0.29.7
       '@scalar/openapi-types': 0.9.7
       '@shikijs/transformers': 4.4.3
@@ -10787,8 +10790,8 @@ snapshots:
       '@types/mdast': 4.0.4
       '@types/node': 22.20.4
       '@vercel/analytics': 2.0.1(react@19.3.0)
-      ai: 7.0.116(zod@4.6.5)
-      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.21.3))(jiti@2.7.0)(yaml@2.9.1)
+      ai: 7.0.118(zod@4.6.5)
+      astro: 7.3.5(@types/node@22.20.4)(@vercel/functions@3.9.9(ws@8.22.0))(jiti@2.7.0)(yaml@2.9.1)
       babel-plugin-react-compiler: 1.0.0
       chokidar: 5.0.0
       citty: 0.2.2
@@ -11049,7 +11052,7 @@ snapshots:
       env-paths: 3.0.0
       json-schema-typed: 8.0.2
       semver: 7.8.5
-      uint8array-extras: 1.5.0
+      uint8array-extras: 1.6.0
 
   confbox@0.1.8: {}
 
@@ -12097,24 +12100,24 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fallow-type-aware@3.29.0:
+  fallow-type-aware@3.30.0:
     dependencies:
       typescript: 7.0.2
     optional: true
 
-  fallow@3.29.0:
+  fallow@3.30.0:
     dependencies:
       detect-libc: 2.1.2
     optionalDependencies:
-      '@fallow-cli/darwin-arm64': 3.29.0
-      '@fallow-cli/darwin-x64': 3.29.0
-      '@fallow-cli/linux-arm64-gnu': 3.29.0
-      '@fallow-cli/linux-arm64-musl': 3.29.0
-      '@fallow-cli/linux-x64-gnu': 3.29.0
-      '@fallow-cli/linux-x64-musl': 3.29.0
-      '@fallow-cli/win32-arm64-msvc': 3.29.0
-      '@fallow-cli/win32-x64-msvc': 3.29.0
-      fallow-type-aware: 3.29.0
+      '@fallow-cli/darwin-arm64': 3.30.0
+      '@fallow-cli/darwin-x64': 3.30.0
+      '@fallow-cli/linux-arm64-gnu': 3.30.0
+      '@fallow-cli/linux-arm64-musl': 3.30.0
+      '@fallow-cli/linux-x64-gnu': 3.30.0
+      '@fallow-cli/linux-x64-musl': 3.30.0
+      '@fallow-cli/win32-arm64-msvc': 3.30.0
+      '@fallow-cli/win32-x64-msvc': 3.30.0
+      fallow-type-aware: 3.30.0
 
   fast-deep-equal@3.1.3: {}
 
@@ -12940,12 +12943,12 @@ snapshots:
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
-      micromark: 4.0.2(supports-color@10.2.2)
+      micromark: 4.0.3(supports-color@10.2.2)
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-decode-string: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
       unist-util-stringify-position: 4.0.0
     transitivePeerDependencies:
       - supports-color
@@ -13078,42 +13081,43 @@ snapshots:
       ts-dedent: 2.3.0
       uuid: 14.0.2
 
-  micromark-core-commonmark@2.0.3:
+  micromark-core-commonmark@2.0.4:
     dependencies:
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       micromark-factory-destination: 2.0.1
       micromark-factory-label: 2.0.1
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-factory-title: 2.0.1
       micromark-factory-whitespace: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-chunked: 2.0.1
       micromark-util-classify-character: 2.0.1
+      micromark-util-edit-map: 1.0.0
       micromark-util-html-tag-name: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-resolve-all: 2.0.1
       micromark-util-subtokenize: 2.1.0
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-autolink-literal@2.1.0:
     dependencies:
       micromark-util-character: 2.1.1
       micromark-util-sanitize-uri: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-footnote@2.1.0:
     dependencies:
       devlop: 1.1.0
-      micromark-core-commonmark: 2.0.3
-      micromark-factory-space: 2.0.1
+      micromark-core-commonmark: 2.0.4
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-sanitize-uri: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-strikethrough@2.1.0:
     dependencies:
@@ -13122,27 +13126,27 @@ snapshots:
       micromark-util-classify-character: 2.0.1
       micromark-util-resolve-all: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-table@2.1.2:
     dependencies:
       devlop: 1.1.0
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-tagfilter@2.0.0:
     dependencies:
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm-task-list-item@2.1.0:
     dependencies:
       devlop: 1.1.0
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-extension-gfm@3.0.0:
     dependencies:
@@ -13153,44 +13157,44 @@ snapshots:
       micromark-extension-gfm-tagfilter: 2.0.0
       micromark-extension-gfm-task-list-item: 2.1.0
       micromark-util-combine-extensions: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-destination@2.0.1:
     dependencies:
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-label@2.0.1:
     dependencies:
       devlop: 1.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
-  micromark-factory-space@2.0.1:
+  micromark-factory-space@2.1.0:
     dependencies:
       micromark-util-character: 2.1.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-title@2.0.1:
     dependencies:
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-factory-whitespace@2.0.1:
     dependencies:
-      micromark-factory-space: 2.0.1
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-character@2.1.1:
     dependencies:
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-chunked@2.0.1:
     dependencies:
@@ -13200,12 +13204,12 @@ snapshots:
     dependencies:
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-combine-extensions@2.0.1:
     dependencies:
       micromark-util-chunked: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-decode-numeric-character-reference@2.0.2:
     dependencies:
@@ -13218,6 +13222,10 @@ snapshots:
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-symbol: 2.0.1
 
+  micromark-util-edit-map@1.0.0:
+    dependencies:
+      micromark-util-types: 2.0.3
+
   micromark-util-encode@2.0.1: {}
 
   micromark-util-html-tag-name@2.0.1: {}
@@ -13228,7 +13236,7 @@ snapshots:
 
   micromark-util-resolve-all@2.0.1:
     dependencies:
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-sanitize-uri@2.0.1:
     dependencies:
@@ -13241,31 +13249,32 @@ snapshots:
       devlop: 1.1.0
       micromark-util-chunked: 2.0.1
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
 
   micromark-util-symbol@2.0.1: {}
 
-  micromark-util-types@2.0.2: {}
+  micromark-util-types@2.0.3: {}
 
-  micromark@4.0.2(supports-color@10.2.2):
+  micromark@4.0.3(supports-color@10.2.2):
     dependencies:
       '@types/debug': 4.1.13
       debug: 4.4.3(supports-color@10.2.2)
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
-      micromark-core-commonmark: 2.0.3
-      micromark-factory-space: 2.0.1
+      micromark-core-commonmark: 2.0.4
+      micromark-factory-space: 2.1.0
       micromark-util-character: 2.1.1
       micromark-util-chunked: 2.0.1
       micromark-util-combine-extensions: 2.0.1
       micromark-util-decode-numeric-character-reference: 2.0.2
+      micromark-util-edit-map: 1.0.0
       micromark-util-encode: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
       micromark-util-resolve-all: 2.0.1
       micromark-util-sanitize-uri: 2.0.1
       micromark-util-subtokenize: 2.1.0
       micromark-util-symbol: 2.0.1
-      micromark-util-types: 2.0.2
+      micromark-util-types: 2.0.3
     transitivePeerDependencies:
       - supports-color
 
@@ -14334,7 +14343,7 @@ snapshots:
 
   strip-ansi@7.2.0:
     dependencies:
-      ansi-regex: 6.3.0
+      ansi-regex: 6.4.0
 
   strip-bom-string@1.0.0: {}
 
@@ -14615,7 +14624,7 @@ snapshots:
 
   ufo@1.6.4: {}
 
-  uint8array-extras@1.5.0: {}
+  uint8array-extras@1.6.0: {}
 
   ultrahtml@1.7.0: {}
 
@@ -14716,7 +14725,7 @@ snapshots:
       rolldown: 1.2.11
       vite: 8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
 
-  unstorage@1.17.5(@vercel/functions@3.9.9(ws@8.21.3)):
+  unstorage@1.17.5(@vercel/functions@3.9.9(ws@8.22.0)):
     dependencies:
       anymatch: 3.1.3
       chokidar: 5.0.0
@@ -14727,7 +14736,7 @@ snapshots:
       ofetch: 1.5.1
       ufo: 1.6.4
     optionalDependencies:
-      '@vercel/functions': 3.9.9(ws@8.21.3)
+      '@vercel/functions': 3.9.9(ws@8.22.0)
 
   update-browserslist-db@1.3.3(browserslist@4.29.1):
     dependencies:
@@ -15038,7 +15047,7 @@ snapshots:
 
   ws@8.21.0: {}
 
-  ws@8.21.3: {}
+  ws@8.22.0: {}
 
   xdg-app-paths@5.5.1:
     dependencies:
