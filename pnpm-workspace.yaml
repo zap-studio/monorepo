@@ -40,11 +40,11 @@ catalog:
   eslint-plugin-regexp: ^3.3.1
   eslint-plugin-solid: ^0.18.0
   eslint-plugin-sonarjs: ^4.2.2
-  eslint-plugin-storybook: ^10.6.0
+  eslint-plugin-storybook: ^10.6.1
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
   fallow: ^3.30.0
-  lefthook: ^2.1.14
+  lefthook: ^2.1.15
   oxfmt: ^0.71.0
   oxlint: ^1.86.0
   oxlint-plugin-react-doctor: ^0.9.14
@@ -60,5 +60,5 @@ catalog:
   valibot: ^1.5.0
   vitest: ^5.0.2
   vitest-browser-react: ^2.3.0
-  wrangler: ^4.143.0
+  wrangler: ^4.144.0
   zod: ^4.6.5
