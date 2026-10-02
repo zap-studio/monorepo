@@ -28,10 +28,10 @@ catalog:
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
   "@varlock/bumpy": ^1.18.1
-  "@vitest/browser-playwright": ^5.0.2
-  "@vitest/coverage-v8": ^5.0.2
-  arktype: ^2.2.5
-  blume: ^2.0.3
+  "@vitest/browser-playwright": ^5.0.3
+  "@vitest/coverage-v8": ^5.0.3
+  arktype: ^2.2.6
+  blume: ^2.1.0
   eslint: ^10.11.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
@@ -43,7 +43,7 @@ catalog:
   eslint-plugin-storybook: ^10.6.1
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
-  fallow: ^3.30.0
+  fallow: ^3.31.0
   lefthook: ^2.1.15
   oxfmt: ^0.71.0
   oxlint: ^1.86.0
@@ -58,7 +58,7 @@ catalog:
   typescript: ^7.0.2
   unplugin-unused: ^0.6.0
   valibot: ^1.5.0
-  vitest: ^5.0.2
+  vitest: ^5.0.3
   vitest-browser-react: ^2.3.0
-  wrangler: ^4.144.0
+  wrangler: ^4.145.0
   zod: ^4.6.5
