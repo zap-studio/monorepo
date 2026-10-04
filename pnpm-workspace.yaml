@@ -22,7 +22,7 @@ catalog:
   "@oxlint/plugins": ^1.86.0
   "@standard-schema/spec": ^1.1.0
   "@stylexjs/eslint-plugin": ^0.19.1
-  "@tanstack/eslint-plugin-query": ^5.104.0
+  "@tanstack/eslint-plugin-query": ^5.104.1
   "@tanstack/eslint-plugin-router": ^1.162.0
   "@types/node": ^26.6.4
   "@types/react": ^19.3.0
@@ -31,8 +31,8 @@ catalog:
   "@vitest/browser-playwright": ^5.0.3
   "@vitest/coverage-v8": ^5.0.3
   arktype: ^2.2.7
-  blume: ^2.1.0
-  eslint: ^10.11.0
+  blume: ^2.1.1
+  eslint: ^10.12.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
@@ -60,5 +60,5 @@ catalog:
   valibot: ^1.5.0
   vitest: ^5.0.3
   vitest-browser-react: ^2.3.0
-  wrangler: ^4.146.0
+  wrangler: ^4.147.0
   zod: ^4.6.5
