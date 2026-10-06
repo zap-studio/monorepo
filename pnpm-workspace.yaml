@@ -47,12 +47,12 @@ catalog:
   lefthook: ^2.1.16
   oxfmt: ^0.71.0
   oxlint: ^1.86.0
-  oxlint-plugin-react-doctor: ^0.9.14
+  oxlint-plugin-react-doctor: ^0.9.17
   oxlint-tsgolint: ^7.0.2003
   playwright: ^1.63.0
   publint: ^0.3.25
   react: ^19.3.0
-  react-doctor: ^0.9.14
+  react-doctor: ^0.9.17
   react-dom: ^19.3.0
   tsdown: ^0.23.0
   typescript: ^7.0.2
