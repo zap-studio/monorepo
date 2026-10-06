@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: lint
-      run: pnpm exec oxlint --fix --type-aware --type-check {staged_files}
+      run: pnpm exec oxlint --fix --type-aware --type-check --no-error-on-unmatched-pattern {staged_files}
       glob:
         - "**/*.js"
         - "**/*.jsx"
