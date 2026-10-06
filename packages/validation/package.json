@@ -37,7 +37,8 @@
     "access": "public"
   },
   "scripts": {
-    "prepublishOnly": "pnpm -C ../.. run build"
+    "prepublishOnly": "pnpm -C ../.. run build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@standard-schema/spec": "catalog:"

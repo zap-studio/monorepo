@@ -16,7 +16,7 @@
     "react-doctor": "pnpm exec react-doctor .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "for f in packages/*/tsconfig.json apps/*/tsconfig.json; do tsc --noEmit -p \"$f\" || exit 1; done"
+    "typecheck": "pnpm -r --if-present run typecheck"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",

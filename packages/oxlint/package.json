@@ -75,6 +75,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run verify && pnpm -C ../.. run build",
+    "typecheck": "tsc --noEmit",
     "verify": "node scripts/verify-presets.mjs"
   },
   "dependencies": {
