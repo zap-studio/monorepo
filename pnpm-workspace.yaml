@@ -19,7 +19,7 @@ catalog:
   "@opentelemetry/core": ^2.11.0
   "@opentelemetry/sdk-metrics": ^2.11.0
   "@opentelemetry/sdk-trace-base": ^2.11.0
-  "@oxlint/plugins": ^1.86.0
+  "@oxlint/plugins": ^1.87.0
   "@standard-schema/spec": ^1.1.0
   "@stylexjs/eslint-plugin": ^0.19.1
   "@tanstack/eslint-plugin-query": ^5.104.1
@@ -31,12 +31,12 @@ catalog:
   "@vitest/browser-playwright": ^5.0.3
   "@vitest/coverage-v8": ^5.0.3
   arktype: ^2.2.7
-  blume: ^2.1.1
+  blume: ^2.1.2
   eslint: ^10.12.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
-  eslint-plugin-playwright: ^2.12.0
+  eslint-plugin-playwright: ^2.12.1
   eslint-plugin-regexp: ^3.3.1
   eslint-plugin-solid: ^0.18.1
   eslint-plugin-sonarjs: ^4.2.2
@@ -44,9 +44,9 @@ catalog:
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
   fallow: ^3.31.0
-  lefthook: ^2.1.16
-  oxfmt: ^0.71.0
-  oxlint: ^1.86.0
+  lefthook: ^2.1.17
+  oxfmt: ^0.72.0
+  oxlint: ^1.87.0
   oxlint-plugin-react-doctor: ^0.9.17
   oxlint-tsgolint: ^7.0.2003
   playwright: ^1.63.0
