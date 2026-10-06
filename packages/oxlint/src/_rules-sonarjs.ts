@@ -297,7 +297,7 @@ export const sonarjsRules: RuleMap = {
   "no-sonar-comments": "off",
   // cosmetic — oxfmt's territory
   "no-tab": "off",
-  // fully redundant with noUnusedParameters in configs/typescript/base.json
+  // fully redundant with noUnusedParameters in tooling/typescript/base.json
   "no-unused-function-argument": "off",
   // cosmetic — oxfmt's territory
   "shorthand-property-grouping": "off",

@@ -25,7 +25,7 @@ pnpm install
 
 - `apps/`
 - `packages/`
-- `configs/`
+- `tooling/`
 
 ## Local checks
 

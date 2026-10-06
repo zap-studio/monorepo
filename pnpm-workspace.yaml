@@ -1,6 +1,6 @@
 packages:
   - "apps/*"
-  - "configs/*"
+  - "tooling/*"
   - "packages/*"
 
 catalogMode: prefer

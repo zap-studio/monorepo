@@ -4,7 +4,7 @@
   "author": "Alexandre Trotel",
   "type": "module",
   "scripts": {
-    "build": "tsdown --config ./configs/tsdown/tsdown.config.ts",
+    "build": "tsdown --config ./tooling/tsdown/tsdown.config.ts",
     "dev": "pnpm --filter docs run dev",
     "fallow": "pnpm exec fallow --summary",
     "format": "pnpm exec oxfmt",
