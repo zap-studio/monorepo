@@ -37,10 +37,11 @@ You also need a schema library that implements [Standard Schema](https://standar
 ## Quick Start
 
 ```ts
-import { z } from "zod";
+import type { Resources, Actions } from "@zap-studio/permit";
+
 import { ConsoleLogger } from "@zap-studio/logger";
 import { createPolicy, allow, deny, when } from "@zap-studio/permit";
-import type { Resources, Actions } from "@zap-studio/permit";
+import { z } from "zod";
 
 const resources = {
   post: z.object({ id: z.string(), authorId: z.string() }),

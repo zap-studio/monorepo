@@ -115,8 +115,9 @@ cache.peek("a"); // same as get(), but no recency/frequency bump
 `EvictionPolicy<K>` is a public interface — implement your own algorithm (random replacement, ...) as a plain object, no subclassing.
 
 ```ts
-import { createCache } from "@zap-studio/cache";
 import type { EvictionPolicy } from "@zap-studio/cache/types";
+
+import { createCache } from "@zap-studio/cache";
 
 const random = <K>(): EvictionPolicy<K> => {
   const keys = new Set<K>();

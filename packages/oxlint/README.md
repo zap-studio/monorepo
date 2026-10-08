@@ -23,7 +23,6 @@ Every release of this package is verified against the exact `oxlint` version its
 Every preset owns its own slice of rules and nothing else's — `react` doesn't bring accessibility rules, `nextjs` doesn't bring hooks rules, `tanstack-start` doesn't bring the TanStack Query plugin. List every preset your project actually needs in `extends`, importing each by name from the package root:
 
 ```ts
-import { defineConfig } from "oxlint";
 import {
   base,
   react,
@@ -32,6 +31,7 @@ import {
   jsxRuntimeAutomatic,
   nextjs,
 } from "@zap-studio/oxlint";
+import { defineConfig } from "oxlint";
 
 export default defineConfig({
   extends: [base, react, reactA11y, reactDoctor, jsxRuntimeAutomatic, nextjs],
@@ -43,9 +43,9 @@ This is more imports than a bundled "one big preset" would need — that's the t
 Every preset is also reachable by its own subpath, if you'd rather import one preset per line instead of destructuring the root:
 
 ```ts
-import { defineConfig } from "oxlint";
 import base from "@zap-studio/oxlint/base";
 import react from "@zap-studio/oxlint/react";
+import { defineConfig } from "oxlint";
 
 export default defineConfig({
   extends: [base, react],
@@ -156,9 +156,9 @@ Split by test runner and testing library — take the one(s) you actually use, n
 Every preset is already just `plugins`/`jsPlugins`/`rules` wrapped in `defineConfig` — import the named exports directly instead of the default if you want to merge pieces by hand or override one rule from a large preset like `react-doctor`:
 
 ```ts
-import { defineConfig } from "oxlint";
 import { basePlugins, baseJsPlugins, baseRules } from "@zap-studio/oxlint/base";
 import { reactDoctorJsPlugins, reactDoctorRulesFinal } from "@zap-studio/oxlint/react-doctor";
+import { defineConfig } from "oxlint";
 
 export default defineConfig({
   plugins: basePlugins,

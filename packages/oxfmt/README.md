@@ -13,9 +13,9 @@ npm install --save-dev @zap-studio/oxfmt oxfmt
 ## Usage
 
 ```ts
+import zapStudio from "@zap-studio/oxfmt/base";
 // oxfmt.config.ts
 import { defineConfig } from "oxfmt";
-import zapStudio from "@zap-studio/oxfmt/base";
 
 export default defineConfig(zapStudio);
 ```
@@ -23,8 +23,8 @@ export default defineConfig(zapStudio);
 Tailwind CSS projects:
 
 ```ts
-import { defineConfig } from "oxfmt";
 import zapStudio from "@zap-studio/oxfmt/tailwind";
+import { defineConfig } from "oxfmt";
 
 export default defineConfig(zapStudio);
 ```

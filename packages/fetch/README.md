@@ -37,8 +37,8 @@ You also need a schema library that implements [Standard Schema](https://standar
 ## Quick Start
 
 ```ts
-import { ConsoleLogger } from "@zap-studio/logger";
 import { createFetch } from "@zap-studio/fetch";
+import { ConsoleLogger } from "@zap-studio/logger";
 import { z } from "zod";
 
 const UserSchema = z.object({
@@ -143,8 +143,8 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 Pass a `logger?: Logger` from [`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger) to `createFetch(...)` to observe requests, responses, and validation failures. Omit it and nothing is logged.
 
 ```ts
-import { ConsoleLogger } from "@zap-studio/logger";
 import { createFetch } from "@zap-studio/fetch";
+import { ConsoleLogger } from "@zap-studio/logger";
 
 const logger = new ConsoleLogger({ minLevel: "debug" });
 const { api } = createFetch({ baseURL: "https://api.example.com", logger });
@@ -183,8 +183,8 @@ wrap the call with `@zap-studio/monads`'s `fromPromise`, mapping the rejection i
 your error type:
 
 ```ts
-import { fromPromise } from "@zap-studio/monads";
 import { api } from "@zap-studio/fetch";
+import { fromPromise } from "@zap-studio/monads";
 
 const result = fromPromise(
   api.get("/users/1", UserSchema, { throwOnFetchError: true, throwOnValidationError: true }),

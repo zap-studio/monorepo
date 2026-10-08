@@ -35,9 +35,9 @@ npm install @zap-studio/retry
 ## Quick Start
 
 ```ts
+import { $fetch } from "@zap-studio/fetch";
 import { ConsoleLogger } from "@zap-studio/logger";
 import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
-import { $fetch } from "@zap-studio/fetch";
 
 const logger = new ConsoleLogger({ minLevel: "debug" });
 
@@ -151,8 +151,9 @@ controller.abort(new Error("Request canceled"));
 As plain objects implementing `RetryPolicy` — just a `next(...)` function, no subclassing.
 
 ```ts
-import { runRetryPolicy } from "@zap-studio/retry";
 import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "@zap-studio/retry";
+
+import { runRetryPolicy } from "@zap-studio/retry";
 
 const stepDelay = (maxAttempts: number, stepMs: number): RetryPolicy => ({
   next(input: RetryDecisionInput): RetryDecision {

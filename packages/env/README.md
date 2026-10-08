@@ -88,15 +88,16 @@ Each var is on its own line — `process.env.DATABASE_URL`, not `process.env` as
 ```ts
 // packages/db/src/env-schema.ts
 import type { EnvironmentSchema } from "@zap-studio/env";
+
 import { z } from "zod";
 
 export const dbEnvironmentSchema = {
   server: { DATABASE_URL: z.string().url() },
 } satisfies EnvironmentSchema;
 
+import { dbEnvironmentSchema } from "@your-org/db";
 // apps/api/src/env.ts
 import { createEnvironment } from "@zap-studio/env";
-import { dbEnvironmentSchema } from "@your-org/db";
 import { z } from "zod";
 
 export const env = createEnvironment({
@@ -133,8 +134,8 @@ Available presets: `vercel`, `netlify`, `render`, `railway`, `fly`, `coolify`, `
 `generateEnvironmentExample(...)` reads a schema and returns a `.env.example` file as a string. The schema has the same `shared`/`server`/`client`/`extends` shape as `createEnvironment`, but without the runtime-only options. It never reads any real env values, so it is safe to run in CI and commit:
 
 ```ts
-import { writeFileSync } from "node:fs";
 import { generateEnvironmentExample } from "@zap-studio/env";
+import { writeFileSync } from "node:fs";
 import { z } from "zod";
 
 writeFileSync(
