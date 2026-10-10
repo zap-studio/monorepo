@@ -39,8 +39,7 @@
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "unplugin-unused": "catalog:",
-    "vitest": "catalog:",
-    "vitest-browser-react": "catalog:"
+    "vitest": "catalog:"
   },
   "engines": {
     "pnpm": ">=11.0.0"

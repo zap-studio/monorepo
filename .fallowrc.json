@@ -1,6 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "entry": [
+    ".github/scripts/publish-jsr.mjs",
     "apps/docs/blume.config.ts",
     "apps/docs/components.ts",
     "apps/docs/pages/**",
@@ -17,6 +18,7 @@
   },
   "ignoreFindings": ["apps/docs/content/**", "packages/oxlint/src/anti-slop/**"],
   "ignoreDependencies": [
+    "eslint",
     "blume:data",
     "@e18e/eslint-plugin",
     "@stylexjs/eslint-plugin",
