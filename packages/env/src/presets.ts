@@ -55,7 +55,7 @@ const preset = (keys: readonly string[]): EnvironmentSchema => ({
  *
  * @see https://vercel.com/docs/environment-variables/system-environment-variables
  */
-export const vercel: EnvironmentSchema = preset([
+const vercel: EnvironmentSchema = preset([
   "VERCEL",
   "VERCEL_ENV",
   "VERCEL_TARGET_ENV",
@@ -82,7 +82,7 @@ export const vercel: EnvironmentSchema = preset([
  *
  * @see https://docs.netlify.com/build/configure-builds/environment-variables/
  */
-export const netlify: EnvironmentSchema = preset([
+const netlify: EnvironmentSchema = preset([
   "NETLIFY",
   "BUILD_ID",
   "CONTEXT",
@@ -105,7 +105,7 @@ export const netlify: EnvironmentSchema = preset([
  *
  * @see https://render.com/docs/environment-variables
  */
-export const render: EnvironmentSchema = preset([
+const render: EnvironmentSchema = preset([
   "RENDER",
   "RENDER_SERVICE_ID",
   "RENDER_SERVICE_NAME",
@@ -124,7 +124,7 @@ export const render: EnvironmentSchema = preset([
  *
  * @see https://docs.railway.com/variables/reference
  */
-export const railway: EnvironmentSchema = preset([
+const railway: EnvironmentSchema = preset([
   "RAILWAY_PUBLIC_DOMAIN",
   "RAILWAY_PRIVATE_DOMAIN",
   "RAILWAY_PROJECT_NAME",
@@ -147,7 +147,7 @@ export const railway: EnvironmentSchema = preset([
  *
  * @see https://fly.io/docs/machines/runtime-environment/
  */
-export const fly: EnvironmentSchema = preset([
+const fly: EnvironmentSchema = preset([
   "FLY_APP_NAME",
   "FLY_MACHINE_ID",
   "FLY_ALLOC_ID",
@@ -166,7 +166,7 @@ export const fly: EnvironmentSchema = preset([
  *
  * @see https://coolify.io/docs/knowledge-base/environment-variables
  */
-export const coolify: EnvironmentSchema = preset([
+const coolify: EnvironmentSchema = preset([
   "COOLIFY_FQDN",
   "COOLIFY_URL",
   "COOLIFY_BRANCH",
@@ -180,7 +180,7 @@ export const coolify: EnvironmentSchema = preset([
  *
  * @see https://developers.cloudflare.com/pages/configuration/build-configuration/
  */
-export const cloudflare: EnvironmentSchema = preset([
+const cloudflare: EnvironmentSchema = preset([
   "CF_PAGES",
   "CF_PAGES_BRANCH",
   "CF_PAGES_COMMIT_SHA",
@@ -192,7 +192,7 @@ export const cloudflare: EnvironmentSchema = preset([
  *
  * @see https://docs.deno.com/deploy/reference/env_vars_and_contexts/
  */
-export const denoDeploy: EnvironmentSchema = preset([
+const denoDeploy: EnvironmentSchema = preset([
   "DENO_DEPLOY",
   "DENO_DEPLOY_ORG_ID",
   "DENO_DEPLOY_ORG_SLUG",
@@ -202,3 +202,5 @@ export const denoDeploy: EnvironmentSchema = preset([
   "DENO_DEPLOYMENT_ID",
   "DENO_TIMELINE",
 ]);
+
+export { vercel, netlify, render, railway, fly, coolify, cloudflare, denoDeploy };

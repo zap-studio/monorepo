@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorR3fRules: RuleMap = {
+const reactDoctorR3fRules: RuleMap = {
   "r3f-cap-device-pixel-ratio": "warn",
   "r3f-limit-shadowed-point-lights": "warn",
   "r3f-no-advancing-clock-in-use-frame": "warn",
@@ -81,3 +81,5 @@ export const reactDoctorR3fRules: RuleMap = {
   "r3f-webgpu-no-unregistered-pipeline-pass": "error",
   "r3f-webgpu-require-async-init": "error",
 };
+
+export { reactDoctorR3fRules };

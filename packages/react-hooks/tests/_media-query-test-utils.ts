@@ -16,7 +16,7 @@ interface MatchMediaMock {
  * through `@vitest/browser-playwright`), so most properties work as normal.
  * Only `matches` is replaced, and `dispatchEvent` triggers the real listeners.
  */
-export const createMatchMediaMock = (initialMatches: boolean): MatchMediaMock => {
+const createMatchMediaMock = (initialMatches: boolean): MatchMediaMock => {
   let matches = initialMatches;
   const mediaQueryList = window.matchMedia("not all");
 
@@ -32,3 +32,5 @@ export const createMatchMediaMock = (initialMatches: boolean): MatchMediaMock =>
     },
   };
 };
+
+export { createMatchMediaMock };

@@ -19,7 +19,7 @@ import type { Err, Ok, Result, ResultMatchers } from "./types.ts";
  * const result = ok(42); // Ok<number>
  * ```
  */
-export const ok = <T>(value: T): Ok<T> => ({ ok: true, value });
+const ok = <T>(value: T): Ok<T> => ({ ok: true, value });
 
 /**
  * Wraps a value in a failed `Result`.
@@ -29,13 +29,13 @@ export const ok = <T>(value: T): Ok<T> => ({ ok: true, value });
  * const result = err("not found"); // Err<string>
  * ```
  */
-export const err = <E>(error: E): Err<E> => ({ error, ok: false });
+const err = <E>(error: E): Err<E> => ({ error, ok: false });
 
 /** Type guard: `true` when `result` is `Ok`. */
-export const isOk = <T, E>(result: Result<T, E>): result is Ok<T> => result.ok;
+const isOk = <T, E>(result: Result<T, E>): result is Ok<T> => result.ok;
 
 /** Type guard: `true` when `result` is `Err`. */
-export const isErr = <T, E>(result: Result<T, E>): result is Err<E> => !result.ok;
+const isErr = <T, E>(result: Result<T, E>): result is Err<E> => !result.ok;
 
 /**
  * Transforms the value inside an `Ok`, passing `Err` through unchanged.
@@ -45,7 +45,7 @@ export const isErr = <T, E>(result: Result<T, E>): result is Err<E> => !result.o
  * pipe(ok(2), map((n) => n * 2)); // Ok(4)
  * ```
  */
-export const map =
+const map =
   <T, U>(fn: (value: T) => U): (<E>(result: Result<T, E>) => Result<U, E>) =>
   <E>(result: Result<T, E>): Result<U, E> =>
     isOk(result) ? ok(fn(result.value)) : result;
@@ -58,7 +58,7 @@ export const map =
  * pipe(err("bad"), mapErr((msg) => new Error(msg)));
  * ```
  */
-export const mapErr =
+const mapErr =
   <E, F>(fn: (error: E) => F): (<T>(result: Result<T, E>) => Result<T, F>) =>
   <T>(result: Result<T, E>): Result<T, F> =>
     isErr(result) ? err(fn(result.error)) : result;
@@ -75,7 +75,7 @@ export const mapErr =
  * pipe(ok("42"), andThen(parse)); // Ok(42)
  * ```
  */
-export const andThen =
+const andThen =
   <T, U, E>(fn: (value: T) => Result<U, E>): ((result: Result<T, E>) => Result<U, E>) =>
   (result: Result<T, E>): Result<U, E> =>
     isOk(result) ? fn(result.value) : result;
@@ -90,7 +90,7 @@ export const andThen =
  * pipe(ok(1), orElse((e) => ok(0))); // Ok(1), fn not called
  * ```
  */
-export const orElse =
+const orElse =
   <T, E, F>(fn: (error: E) => Result<T, F>): ((result: Result<T, E>) => Result<T, F>) =>
   (result: Result<T, E>): Result<T, F> =>
     isErr(result) ? fn(result.error) : result;
@@ -103,7 +103,7 @@ export const orElse =
  * pipe(err("bad"), unwrapOr(0)); // 0
  * ```
  */
-export const unwrapOr =
+const unwrapOr =
   <T>(defaultValue: T): (<E>(result: Result<T, E>) => T) =>
   <E>(result: Result<T, E>): T =>
     isOk(result) ? result.value : defaultValue;
@@ -116,7 +116,7 @@ export const unwrapOr =
  * pipe(err("bad"), unwrapOrElse((e) => e.length)); // 3
  * ```
  */
-export const unwrapOrElse =
+const unwrapOrElse =
   <T, E>(fn: (error: E) => T): ((result: Result<T, E>) => T) =>
   (result: Result<T, E>): T =>
     isOk(result) ? result.value : fn(result.error);
@@ -136,7 +136,7 @@ export const unwrapOrElse =
  * unwrap(err("bad")); // throws
  * ```
  */
-export const unwrap = <T, E>(result: Result<T, E>): T => {
+const unwrap = <T, E>(result: Result<T, E>): T => {
   if (isOk(result)) {
     return result.value;
   }
@@ -155,7 +155,7 @@ export const unwrap = <T, E>(result: Result<T, E>): T => {
  * ); // "got 42"
  * ```
  */
-export const match =
+const match =
   <T, E, U>(matchers: ResultMatchers<T, E, U>): ((result: Result<T, E>) => U) =>
   (result: Result<T, E>): U =>
     isOk(result) ? matchers.ok(result.value) : matchers.err(result.error);
@@ -175,7 +175,7 @@ export const match =
  * safeParse("not json"); // Err(SyntaxError: Unexpected token ...)
  * ```
  */
-export function fromThrowable<Args extends unknown[], T>(
+function fromThrowable<Args extends unknown[], T>(
   fn: (...args: Args) => T,
 ): (...args: Args) => Result<T, unknown>;
 /**
@@ -196,11 +196,11 @@ export function fromThrowable<Args extends unknown[], T>(
  * safeParse("not json"); // Err("Unexpected token ...")
  * ```
  */
-export function fromThrowable<Args extends unknown[], T, E>(
+function fromThrowable<Args extends unknown[], T, E>(
   fn: (...args: Args) => T,
   mapError: (error: unknown) => E,
 ): (...args: Args) => Result<T, E>;
-export function fromThrowable<Args extends unknown[], T, E>(
+function fromThrowable<Args extends unknown[], T, E>(
   fn: (...args: Args) => T,
   mapError?: (error: unknown) => E,
 ): (...args: Args) => Result<T, unknown> {
@@ -212,3 +212,19 @@ export function fromThrowable<Args extends unknown[], T, E>(
     }
   };
 }
+
+export {
+  ok,
+  err,
+  isOk,
+  isErr,
+  map,
+  mapErr,
+  andThen,
+  orElse,
+  unwrapOr,
+  unwrapOrElse,
+  unwrap,
+  match,
+  fromThrowable,
+};

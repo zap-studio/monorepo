@@ -7,7 +7,9 @@
  * Not a hook and not shipped: the `_` prefix on the filename excludes it from
  * the build.
  */
-export const asTestDouble = <T>(value: unknown): T =>
+const asTestDouble = <T>(value: unknown): T =>
   // SAFETY: the single place in this package's tests where a shape is asserted rather
   // than checked. Every call site states what the code under test reads off the double.
   value as T;
+
+export { asTestDouble };

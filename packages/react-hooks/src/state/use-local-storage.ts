@@ -3,7 +3,7 @@ import { type SetStoredValue, type WebStorageResult, useWebStorage } from "./_we
 export type { SetStoredValue };
 
 /** The tuple returned by `useLocalStorage`. */
-export type UseLocalStorageResult<T> = WebStorageResult<T>;
+type UseLocalStorageResult<T> = WebStorageResult<T>;
 
 const getLocalStorage = (): Storage => window.localStorage;
 
@@ -22,5 +22,8 @@ const getLocalStorage = (): Storage => window.localStorage;
  * const [theme, setTheme, clearTheme, themeError] = useLocalStorage("theme", "light");
  * ```
  */
-export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorageResult<T> =>
+const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorageResult<T> =>
   useWebStorage(getLocalStorage, key, initialValue);
+
+export { useLocalStorage };
+export type { UseLocalStorageResult };

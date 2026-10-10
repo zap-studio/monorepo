@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
 /** The shape returned by `useWorker`. */
-export interface UseWorkerResult<TMessage, TResult> {
+interface UseWorkerResult<TMessage, TResult> {
   run: (message: TMessage) => Promise<TResult>;
   supported: boolean;
   terminate: () => void;
@@ -26,7 +26,7 @@ const isSupported = (): boolean => typeof Worker !== "undefined";
  * const total = await run(42);
  * ```
  */
-export const useWorker = <TMessage = unknown, TResult = unknown>(
+const useWorker = <TMessage = unknown, TResult = unknown>(
   createWorker: () => Worker,
 ): UseWorkerResult<TMessage, TResult> => {
   const supported = isSupported();
@@ -73,3 +73,6 @@ export const useWorker = <TMessage = unknown, TResult = unknown>(
 
   return { run, supported, terminate };
 };
+
+export { useWorker };
+export type { UseWorkerResult };

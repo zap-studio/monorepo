@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
  * const throttledScrollY = useThrottledValue(scrollY, 200);
  * ```
  */
-export const useThrottledValue = <T>(value: T, delayMs: number): T => {
+const useThrottledValue = <T>(value: T, delayMs: number): T => {
   const [throttled, setThrottled] = useState(value);
   const isFirstRef = useRef(true);
   const lastUpdateRef = useRef(0);
@@ -40,3 +40,5 @@ export const useThrottledValue = <T>(value: T, delayMs: number): T => {
 
   return throttled;
 };
+
+export { useThrottledValue };

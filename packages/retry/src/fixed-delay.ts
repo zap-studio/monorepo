@@ -12,7 +12,7 @@ import type { RetryDecision, RetryDecisionInput, RetryPolicy } from "./types.ts"
  * @example
  * const options: FixedDelayOptions = { maxAttempts: 3, delayMs: 250 };
  */
-export interface FixedDelayOptions {
+interface FixedDelayOptions {
   /**
    * Maximum number of attempts (including the first) before giving up.
    */
@@ -32,7 +32,7 @@ export interface FixedDelayOptions {
  *   delayMs: 250,
  * });
  */
-export const fixedDelay = (options: FixedDelayOptions): RetryPolicy => {
+const fixedDelay = (options: FixedDelayOptions): RetryPolicy => {
   const { maxAttempts, delayMs } = options;
 
   return {
@@ -52,3 +52,6 @@ export const fixedDelay = (options: FixedDelayOptions): RetryPolicy => {
     },
   };
 };
+
+export { fixedDelay };
+export type { FixedDelayOptions };

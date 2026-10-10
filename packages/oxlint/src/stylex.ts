@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { stylexRules } from "./_rules-stylex.ts";
 
-export const stylexJsPlugins: ExternalPluginEntry[] = [
+const stylexJsPlugins: ExternalPluginEntry[] = [
   { name: "stylex", specifier: resolvePlugin("@stylexjs/eslint-plugin") },
 ];
 
-export const stylexRulesFinal: DummyRuleMap = prefixed("stylex", stylexRules);
+const stylexRulesFinal: DummyRuleMap = prefixed("stylex", stylexRules);
 
 const stylex: OxlintConfig = defineConfig({
   jsPlugins: stylexJsPlugins,
@@ -18,3 +18,5 @@ const stylex: OxlintConfig = defineConfig({
 });
 
 export default stylex;
+
+export { stylexJsPlugins, stylexRulesFinal };

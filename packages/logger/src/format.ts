@@ -29,7 +29,7 @@ type LineWithContextFormatter = (
  * classicFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date() });
  * // ["server started", { port: 3000 }]
  */
-export const classicFormat: LineWithContextFormatter = (record) =>
+const classicFormat: LineWithContextFormatter = (record) =>
   record.context === undefined ? [record.message] : [record.message, record.context];
 
 /**
@@ -59,7 +59,7 @@ const jsonReplacer = (_key: string, value: unknown) => {
  * jsonFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date(0) });
  * // ['{"port":3000,"time":0,"level":"info","msg":"server started"}']
  */
-export const jsonFormat: SingleLineFormatter = (record) => [
+const jsonFormat: SingleLineFormatter = (record) => [
   JSON.stringify(
     {
       ...record.context,
@@ -120,7 +120,7 @@ const formatLogfmtValue = (value: unknown): string => {
  * compactFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date(0) });
  * // ['port=3000 time=1970-01-01T00:00:00.000Z level=info msg="server started"']
  */
-export const compactFormat: SingleLineFormatter = (record) => {
+const compactFormat: SingleLineFormatter = (record) => {
   const fields = {
     ...record.context,
     level: record.level,
@@ -247,7 +247,7 @@ const formatClockTime = (date: Date): string =>
  * prettyFormat({ level: "info", message: "server started", context: { port: 3000 }, timestamp: new Date() });
  * // ["12:34:56.789 INFO  server started", { port: 3000 }]  (colored, when supported)
  */
-export const prettyFormat: LineWithContextFormatter = (record) => {
+const prettyFormat: LineWithContextFormatter = (record) => {
   const time = formatClockTime(record.timestamp);
   const label = record.level.toUpperCase().padEnd(LEVEL_LABEL_WIDTH);
   const colored = isColorSupported();
@@ -258,3 +258,5 @@ export const prettyFormat: LineWithContextFormatter = (record) => {
 
   return record.context === undefined ? [prefix] : [prefix, record.context];
 };
+
+export { classicFormat, jsonFormat, compactFormat, prettyFormat };

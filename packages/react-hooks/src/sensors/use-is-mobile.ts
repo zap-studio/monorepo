@@ -13,5 +13,7 @@ const DEFAULT_BREAKPOINT_PX = 768;
  * const isCompact = useIsMobile(1024); // true below 1024px
  * ```
  */
-export const useIsMobile = (breakpointPx: number = DEFAULT_BREAKPOINT_PX): boolean =>
+const useIsMobile = (breakpointPx: number = DEFAULT_BREAKPOINT_PX): boolean =>
   useMediaQueryMatch(`(max-width: ${breakpointPx - 1}px)`);
+
+export { useIsMobile };

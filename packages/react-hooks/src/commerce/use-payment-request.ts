@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 
 /** Status reported by `usePaymentRequest`. */
-export type PaymentRequestStatus = "complete" | "error" | "idle" | "processing";
+type PaymentRequestStatus = "complete" | "error" | "idle" | "processing";
 
 /** The shape returned by `usePaymentRequest`. */
-export interface UsePaymentRequestResult {
+interface UsePaymentRequestResult {
   error: Error | undefined;
   pay: (
     methodData: PaymentMethodData[],
@@ -41,7 +41,7 @@ const isSupported = (): boolean => typeof PaymentRequest !== "undefined";
  * await response?.complete("success");
  * ```
  */
-export const usePaymentRequest = (): UsePaymentRequestResult => {
+const usePaymentRequest = (): UsePaymentRequestResult => {
   const supported = isSupported();
   const [status, setStatus] = useState<PaymentRequestStatus>("idle");
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -75,3 +75,6 @@ export const usePaymentRequest = (): UsePaymentRequestResult => {
 
   return { error, pay, status, supported };
 };
+
+export { usePaymentRequest };
+export type { PaymentRequestStatus, UsePaymentRequestResult };

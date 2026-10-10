@@ -26,7 +26,7 @@
  * });
  * ```
  */
-export class VerificationError extends Error {
+class VerificationError extends Error {
   /**
    * Creates a verification error with a human-readable message.
    *
@@ -37,3 +37,5 @@ export class VerificationError extends Error {
     this.name = "VerificationError";
   }
 }
+
+export { VerificationError };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** Minimal shape of the Battery Status API's `BatteryManager`, as used by `useBattery`. */
-export interface BatteryManager extends EventTarget {
+interface BatteryManager extends EventTarget {
   readonly charging: boolean;
   readonly chargingTime: number;
   readonly dischargingTime: number;
@@ -13,7 +13,7 @@ interface NavigatorWithBattery extends Navigator {
 }
 
 /** The shape returned by `useBattery`. */
-export interface BatteryState {
+interface BatteryState {
   charging?: boolean;
   chargingTime?: number;
   dischargingTime?: number;
@@ -42,7 +42,7 @@ const readBatteryState = (battery: BatteryManager): BatteryState => ({
  * const { supported, level, charging } = useBattery();
  * ```
  */
-export const useBattery = (): BatteryState => {
+const useBattery = (): BatteryState => {
   const [state, setState] = useState<BatteryState>(UNSUPPORTED_STATE);
   const [battery, setBattery] = useState<BatteryManager | undefined>(undefined);
 
@@ -93,3 +93,6 @@ export const useBattery = (): BatteryState => {
 
   return state;
 };
+
+export { useBattery };
+export type { BatteryManager, BatteryState };

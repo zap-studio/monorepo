@@ -21,7 +21,7 @@ const getOrCreateFaviconLink = (): HTMLLinkElement => {
  * useFavicon(hasUnread ? "/favicon-unread.svg" : "/favicon.svg");
  * ```
  */
-export const useFavicon = (href: string): void => {
+const useFavicon = (href: string): void => {
   useEffect(() => {
     const link = getOrCreateFaviconLink();
     const previousHref = link.href;
@@ -31,3 +31,5 @@ export const useFavicon = (href: string): void => {
     };
   }, [href]);
 };
+
+export { useFavicon };

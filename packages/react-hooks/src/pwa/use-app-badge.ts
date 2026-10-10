@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 /** The shape returned by `useAppBadge`. */
-export interface UseAppBadgeResult {
+interface UseAppBadgeResult {
   clearBadge: () => Promise<void>;
   setBadge: (count?: number) => Promise<void>;
   supported: boolean;
@@ -22,7 +22,7 @@ const isSupported = (): boolean =>
  * setBadge(unreadCount); // or setBadge() for a plain dot, clearBadge() to remove it
  * ```
  */
-export const useAppBadge = (): UseAppBadgeResult => {
+const useAppBadge = (): UseAppBadgeResult => {
   const supported = isSupported();
 
   const setBadge = useCallback(async (count?: number): Promise<void> => {
@@ -41,3 +41,6 @@ export const useAppBadge = (): UseAppBadgeResult => {
 
   return { clearBadge, setBadge, supported };
 };
+
+export { useAppBadge };
+export type { UseAppBadgeResult };

@@ -33,7 +33,7 @@ import { AbortError, RetryError } from "./errors.ts";
  * await defaultSleep(250); // waits 250ms
  * ```
  */
-export const defaultSleep = async (delayMs: number): Promise<void> => {
+const defaultSleep = async (delayMs: number): Promise<void> => {
   if (delayMs <= 0) {
     return;
   }
@@ -507,7 +507,7 @@ const defaultIsKnownError = <TError extends Error>(error: unknown): error is TEr
  *   `RetryError` and returned as the terminal failure instead of thrown.
  * @throws {Error} Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
  */
-export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
+function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   options: RetryRunOptions & { throwOnExhausted: false },
@@ -543,7 +543,7 @@ export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>
  * const data = await runRetryPolicy(linearBackoff, async () => fetchFlakyResource());
  * ```
  */
-export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
+function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   options?: RetryRunOptions & { throwOnExhausted?: true },
@@ -571,7 +571,7 @@ export function runRetryPolicy<T, TError extends Error = Error, TData = unknown>
  * const result = await runRetryPolicy(policy, doWork, { throwOnExhausted: false });
  * if (!result.ok) console.error(result.error);
  */
-export async function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
+async function runRetryPolicy<T, TError extends Error = Error, TData = unknown>(
   policy: RetryPolicy<TError, TData>,
   execute: (attempt: number) => Promise<T>,
   options: RetryRunOptions = {},
@@ -592,3 +592,5 @@ export async function runRetryPolicy<T, TError extends Error = Error, TData = un
 
   return await runThrowMode(resolvedPolicy, execute, sleep, signal, logger);
 }
+
+export { defaultSleep, runRetryPolicy };

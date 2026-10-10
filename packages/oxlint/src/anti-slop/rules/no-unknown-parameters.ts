@@ -41,7 +41,7 @@ function parameterName(parameter: Parameter, sourceText: string): string {
 }
 
 /** Disallow unknown inputs except explicitly named error-cause enrichment. */
-export const noUnknownParametersRule: Rule = defineRule({
+const noUnknownParametersRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -82,3 +82,5 @@ export const noUnknownParametersRule: Rule = defineRule({
     };
   },
 });
+
+export { noUnknownParametersRule };

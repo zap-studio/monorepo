@@ -4,20 +4,20 @@
  * this, so we define our own here. Shared by `useUnstableFiber` and
  * `useUnstableRenderReason`.
  */
-export interface ContextDependency {
+interface ContextDependency {
   memoizedValue: unknown;
   next: ContextDependency | null;
 }
 
 /** One entry in a Fiber's list of hooks. Each hook call gets one entry, in the order the hooks were called. */
-export interface HookNode {
+interface HookNode {
   memoizedState: unknown;
   next: HookNode | null;
   queue: unknown;
 }
 
 /** The Fiber fields this file's helpers read. */
-export interface FiberLike {
+interface FiberLike {
   alternate: FiberLike | null;
   dependencies: { firstContext: ContextDependency | null } | null;
   memoizedProps: Record<string, unknown> | null;
@@ -42,7 +42,7 @@ interface FiberBearingElement extends Element {
  * Gets the internal Fiber object React attaches to a mounted DOM node.
  * Returns `undefined` if React never mounted this node.
  */
-export const readHostFiber = (node: Element): FiberLike | undefined => {
+const readHostFiber = (node: Element): FiberLike | undefined => {
   const key = getReactFiberKey(node);
   if (!key) {
     return undefined;
@@ -58,10 +58,7 @@ export const readHostFiber = (node: Element): FiberLike | undefined => {
  * function component. If none is found within `maxWalk` steps (default
  * `DEFAULT_MAX_WALK`), returns the highest ancestor reached.
  */
-export const findOwnerFiber = (
-  hostFiber: FiberLike,
-  maxWalk: number = DEFAULT_MAX_WALK,
-): FiberLike => {
+const findOwnerFiber = (hostFiber: FiberLike, maxWalk: number = DEFAULT_MAX_WALK): FiberLike => {
   let current: FiberLike | null = hostFiber;
   let last = hostFiber;
   for (let i = 0; i < maxWalk && current; i += 1) {
@@ -87,7 +84,7 @@ export const findOwnerFiber = (
  * `maxWalk` caps how many hooks after `skip` get visited (default
  * `DEFAULT_MAX_WALK`).
  */
-export const collectStateHookValues = (
+const collectStateHookValues = (
   head: HookNode | null,
   skip: number = 0,
   maxWalk: number = DEFAULT_MAX_WALK,
@@ -111,10 +108,7 @@ export const collectStateHookValues = (
  * list. `maxWalk` caps how many context entries get visited (default
  * `DEFAULT_MAX_WALK`).
  */
-export const collectContextValues = (
-  fiber: FiberLike,
-  maxWalk: number = DEFAULT_MAX_WALK,
-): unknown[] => {
+const collectContextValues = (fiber: FiberLike, maxWalk: number = DEFAULT_MAX_WALK): unknown[] => {
   const values: unknown[] = [];
   let node = fiber.dependencies?.firstContext ?? null;
   for (let i = 0; i < maxWalk && node; i += 1) {
@@ -125,11 +119,11 @@ export const collectContextValues = (
 };
 
 /** Compares two value snapshots (from `collectStateHookValues`/`collectContextValues`) and returns `true` if they differ. */
-export const arraysDiffer = (a: unknown[], b: unknown[]): boolean =>
+const arraysDiffer = (a: unknown[], b: unknown[]): boolean =>
   a.length !== b.length || a.some((value, index) => !Object.is(value, b[index]));
 
 /** Compares two props objects key by key and returns `true` if they differ. Used with consecutive `memoizedProps` reads. */
-export const propsDiffer = (
+const propsDiffer = (
   a: Record<string, unknown> | null,
   b: Record<string, unknown> | null,
 ): boolean => {
@@ -147,3 +141,13 @@ export const propsDiffer = (
   }
   return false;
 };
+
+export {
+  readHostFiber,
+  findOwnerFiber,
+  collectStateHookValues,
+  collectContextValues,
+  arraysDiffer,
+  propsDiffer,
+};
+export type { ContextDependency, HookNode, FiberLike };

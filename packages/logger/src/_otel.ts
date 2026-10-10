@@ -17,7 +17,7 @@ import { isSpanContextValid, trace } from "@opentelemetry/api";
  * span is active. Explicit `context` keys win on collision. Returns
  * `context` unchanged (including `undefined`) when no span is active.
  */
-export const withTraceContext = (
+const withTraceContext = (
   context: Record<string, unknown> | undefined,
 ): Record<string, unknown> | undefined => {
   const spanContext = trace.getActiveSpan()?.spanContext();
@@ -31,3 +31,5 @@ export const withTraceContext = (
     ...context,
   };
 };
+
+export { withTraceContext };

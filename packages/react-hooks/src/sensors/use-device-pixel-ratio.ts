@@ -18,7 +18,7 @@ const getSnapshot = (): number => window.devicePixelRatio;
  * const dpr = useDevicePixelRatio();
  * ```
  */
-export const useDevicePixelRatio = (): number => {
+const useDevicePixelRatio = (): number => {
   const subscribe = useCallback((onStoreChange: () => void) => {
     let mediaQueryList = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
 
@@ -35,3 +35,5 @@ export const useDevicePixelRatio = (): number => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useDevicePixelRatio };

@@ -1,7 +1,7 @@
 import { type WebStorageResult, useWebStorage } from "./_web-storage.ts";
 
 /** The tuple returned by `useSessionStorage`. */
-export type UseSessionStorageResult<T> = WebStorageResult<T>;
+type UseSessionStorageResult<T> = WebStorageResult<T>;
 
 const getSessionStorage = (): Storage => window.sessionStorage;
 
@@ -21,5 +21,8 @@ const getSessionStorage = (): Storage => window.sessionStorage;
  * const [draft, setDraft, clearDraft, draftError] = useSessionStorage("draft", "");
  * ```
  */
-export const useSessionStorage = <T>(key: string, initialValue: T): UseSessionStorageResult<T> =>
+const useSessionStorage = <T>(key: string, initialValue: T): UseSessionStorageResult<T> =>
   useWebStorage(getSessionStorage, key, initialValue);
+
+export { useSessionStorage };
+export type { UseSessionStorageResult };

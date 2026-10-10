@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `useVisualViewport`. */
-export interface VisualViewportState {
+interface VisualViewportState {
   height: number;
   offsetLeft: number;
   offsetTop: number;
@@ -72,7 +72,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const { height, scale } = useVisualViewport();
  * ```
  */
-export const useVisualViewport = (): VisualViewportState => {
+const useVisualViewport = (): VisualViewportState => {
   const cacheRef = useRef<VisualViewportState>(FALLBACK_VIEWPORT);
 
   const getSnapshot = useCallback((): VisualViewportState => {
@@ -85,3 +85,6 @@ export const useVisualViewport = (): VisualViewportState => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useVisualViewport };
+export type { VisualViewportState };

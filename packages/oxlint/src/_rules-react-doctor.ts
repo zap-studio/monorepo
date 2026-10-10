@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorRules: RuleMap = {
+const reactDoctorRules: RuleMap = {
   "active-static-asset": "warn",
   "activity-wraps-effect-heavy-subtree": "warn",
   "advanced-event-handler-refs": "warn",
@@ -420,3 +420,5 @@ export const reactDoctorRules: RuleMap = {
   "require-autoplay-video-poster": "off",
   "require-scale-reveal-transform-origin": "off",
 };
+
+export { reactDoctorRules };

@@ -9,7 +9,7 @@ function containsForbiddenSymbolName(name: string): boolean {
 }
 
 /** Ban the case-insensitive substring "shape" in every JavaScript and TypeScript symbol name. */
-export const noForbiddenTermInSymbolNamesRule: Rule = defineRule({
+const noForbiddenTermInSymbolNamesRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -38,3 +38,5 @@ export const noForbiddenTermInSymbolNamesRule: Rule = defineRule({
     };
   },
 });
+
+export { noForbiddenTermInSymbolNamesRule };

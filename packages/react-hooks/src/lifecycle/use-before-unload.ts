@@ -20,10 +20,7 @@ import { useEffect, useRef } from "react";
  * }, isDirty);
  * ```
  */
-export const useBeforeUnload = (
-  handler: (event: BeforeUnloadEvent) => void,
-  enabled = true,
-): void => {
+const useBeforeUnload = (handler: (event: BeforeUnloadEvent) => void, enabled = true): void => {
   const handlerRef = useRef(handler);
   useEffect(() => {
     handlerRef.current = handler;
@@ -39,3 +36,5 @@ export const useBeforeUnload = (
     return () => window.removeEventListener("beforeunload", listener);
   }, [enabled]);
 };
+
+export { useBeforeUnload };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** The shape returned by `useMousePosition`. */
-export interface MousePosition {
+interface MousePosition {
   clientX: number;
   clientY: number;
   pageX: number;
@@ -41,7 +41,7 @@ const toPosition = (event: MouseEvent): MousePosition => ({
  * const { clientX, clientY } = useMousePosition();
  * ```
  */
-export const useMousePosition = (): MousePosition => {
+const useMousePosition = (): MousePosition => {
   const [position, setPosition] = useState<MousePosition>(INITIAL_POSITION);
 
   useEffect(() => {
@@ -55,3 +55,6 @@ export const useMousePosition = (): MousePosition => {
 
   return position;
 };
+
+export { useMousePosition };
+export type { MousePosition };

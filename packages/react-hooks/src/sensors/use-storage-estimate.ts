@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useIsClient } from "./use-is-client.ts";
 
 /** The shape returned by `useStorageEstimate`. */
-export interface StorageEstimateState {
+interface StorageEstimateState {
   quota?: number;
   supported: boolean;
   usage?: number;
@@ -29,7 +29,7 @@ interface EstimateData {
  * const { usage, quota, supported } = useStorageEstimate();
  * ```
  */
-export const useStorageEstimate = (): StorageEstimateState => {
+const useStorageEstimate = (): StorageEstimateState => {
   const isClient = useIsClient();
   const supported = isClient && isSupported();
   const [data, setData] = useState<EstimateData>({});
@@ -61,3 +61,6 @@ export const useStorageEstimate = (): StorageEstimateState => {
 
   return { ...data, supported };
 };
+
+export { useStorageEstimate };
+export type { StorageEstimateState };

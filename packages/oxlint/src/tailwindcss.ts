@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { tailwindcssRules } from "./_rules-tailwindcss.ts";
 
-export const tailwindcssJsPlugins: ExternalPluginEntry[] = [
+const tailwindcssJsPlugins: ExternalPluginEntry[] = [
   { name: "tailwindcss", specifier: resolvePlugin("eslint-plugin-tailwindcss") },
 ];
 
-export const tailwindcssRulesFinal: DummyRuleMap = prefixed("tailwindcss", tailwindcssRules);
+const tailwindcssRulesFinal: DummyRuleMap = prefixed("tailwindcss", tailwindcssRules);
 
 const tailwindcss: OxlintConfig = defineConfig({
   jsPlugins: tailwindcssJsPlugins,
@@ -18,3 +18,5 @@ const tailwindcss: OxlintConfig = defineConfig({
 });
 
 export default tailwindcss;
+
+export { tailwindcssJsPlugins, tailwindcssRulesFinal };

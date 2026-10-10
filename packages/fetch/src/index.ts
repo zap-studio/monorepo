@@ -57,7 +57,7 @@ export type {
  *
  * console.log(GLOBAL_DEFAULTS.throwOnFetchError); // true
  */
-export const GLOBAL_DEFAULTS: FetchDefaults = {
+const GLOBAL_DEFAULTS: FetchDefaults = {
   baseURL: "",
   throwOnFetchError: true,
   throwOnValidationError: true,
@@ -495,21 +495,21 @@ const createMethod = (fetchFn: $Fetch, method: string): $Fetch => {
  *   console.log("Validated user:", result.value);
  * }
  */
-export async function $fetch<TSchema extends StandardSchemaV1>(
+async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
   options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
-export async function $fetch<TSchema extends StandardSchemaV1>(
+async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
   options?: ExtendedRequestInit & { throwOnValidationError?: true },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
+async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
-export async function $fetch(
+async function $fetch(
   input: FetchInput,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
   optionsOrUndefined?: ExtendedRequestInit,
@@ -544,7 +544,7 @@ export async function $fetch(
  *   return post; // post is typed as { id: number; title: string; content: string; }
  * }
  */
-export const api: ApiMethods = {
+const api: ApiMethods = {
   delete: createMethod($fetch, "DELETE"),
   get: createMethod($fetch, "GET"),
   patch: createMethod($fetch, "PATCH"),
@@ -579,7 +579,7 @@ export const api: ApiMethods = {
  * // Or use $fetch directly
  * const response = await $fetch("/users", UserSchema, { method: "POST", json: { name: "John" } });
  */
-export const createFetch = (factoryOptions: Partial<FetchDefaults> = {}): FetchInstance => {
+const createFetch = (factoryOptions: Partial<FetchDefaults> = {}): FetchInstance => {
   const defaults: FetchDefaults = {
     ...GLOBAL_DEFAULTS,
     ...factoryOptions,
@@ -630,3 +630,5 @@ export const createFetch = (factoryOptions: Partial<FetchDefaults> = {}): FetchI
     api: customApi,
   };
 };
+
+export { GLOBAL_DEFAULTS, $fetch, api, createFetch };

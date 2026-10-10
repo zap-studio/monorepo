@@ -23,10 +23,10 @@ const getCookieStore = (): CookieStore | undefined => {
 };
 
 /** Options `useCookie`'s `set()` accepts, beyond the cookie's name/value. */
-export type SetCookieOptions = Omit<CookieInit, "name" | "value">;
+type SetCookieOptions = Omit<CookieInit, "name" | "value">;
 
 /** The shape returned by `useCookie`. */
-export interface UseCookieResult {
+interface UseCookieResult {
   remove: () => Promise<void>;
   set: (value: string, options?: SetCookieOptions) => Promise<void>;
   supported: boolean;
@@ -48,7 +48,7 @@ export interface UseCookieResult {
  * if (supported) await set("dark", { path: "/" });
  * ```
  */
-export const useCookie = (name: string): UseCookieResult => {
+const useCookie = (name: string): UseCookieResult => {
   const [value, setValueState] = useState<string | undefined>(undefined);
   const supported = Boolean(getCookieStore());
 
@@ -106,3 +106,6 @@ export const useCookie = (name: string): UseCookieResult => {
 
   return { remove, set, supported, value };
 };
+
+export { useCookie };
+export type { SetCookieOptions, UseCookieResult };

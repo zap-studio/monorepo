@@ -27,7 +27,7 @@
  * }
  * ```
  */
-export class WebMCPNotSupportedError extends Error {
+class WebMCPNotSupportedError extends Error {
   /**
    * Creates a WebMCP-not-supported error with a descriptive default message.
    */
@@ -41,3 +41,5 @@ export class WebMCPNotSupportedError extends Error {
     this.name = "WebMCPNotSupportedError";
   }
 }
+
+export { WebMCPNotSupportedError };

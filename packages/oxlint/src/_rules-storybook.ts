@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const storybookRules: RuleMap = {
+const storybookRules: RuleMap = {
   "await-interactions": "error",
   "context-in-play-function": "error",
   "default-exports": "error",
@@ -26,3 +26,5 @@ export const storybookRules: RuleMap = {
   // naming convention, not a broken story
   "prefer-pascal-case": "warn",
 };
+
+export { storybookRules };

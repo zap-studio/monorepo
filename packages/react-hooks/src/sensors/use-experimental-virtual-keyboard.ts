@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** Minimal shape of the (experimental, Chromium-only) VirtualKeyboard API, as used by `useExperimentalVirtualKeyboard`. */
-export interface VirtualKeyboard extends EventTarget {
+interface VirtualKeyboard extends EventTarget {
   readonly boundingRect: { height: number; width: number; x: number; y: number };
 }
 
@@ -10,7 +10,7 @@ interface NavigatorWithVirtualKeyboard extends Navigator {
 }
 
 /** The shape returned by `useExperimentalVirtualKeyboard`. */
-export interface VirtualKeyboardRect {
+interface VirtualKeyboardRect {
   height: number;
   width: number;
   x: number;
@@ -50,7 +50,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const { height } = useExperimentalVirtualKeyboard(); // on-screen keyboard height, in px
  * ```
  */
-export const useExperimentalVirtualKeyboard = (): VirtualKeyboardRect => {
+const useExperimentalVirtualKeyboard = (): VirtualKeyboardRect => {
   const cacheRef = useRef<VirtualKeyboardRect>(FALLBACK_RECT);
 
   const getSnapshot = useCallback((): VirtualKeyboardRect => {
@@ -63,3 +63,6 @@ export const useExperimentalVirtualKeyboard = (): VirtualKeyboardRect => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useExperimentalVirtualKeyboard };
+export type { VirtualKeyboard, VirtualKeyboardRect };

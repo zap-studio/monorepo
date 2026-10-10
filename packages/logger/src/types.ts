@@ -16,19 +16,19 @@
  * Ordered `"all" < "trace" < "debug" < "info" < "warn" < "error" < "fatal" <
  * "none"`.
  */
-export type LogLevel = "all" | "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "none";
+type LogLevel = "all" | "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "none";
 
 /**
  * `LogLevel` values that correspond to a callable `Logger` method, i.e.
  * every level except the `"all"`/`"none"` filtering boundaries.
  */
-export type CallableLogLevel = Exclude<LogLevel, "all" | "none">;
+type CallableLogLevel = Exclude<LogLevel, "all" | "none">;
 
 /**
  * A single log call's data, built right before it's written (below-threshold
  * calls never reach a formatter).
  */
-export interface LogRecord {
+interface LogRecord {
   /**
    * The level the message was logged at.
    */
@@ -55,7 +55,7 @@ export interface LogRecord {
  * @example
  * const upperFormat: LogFormatter = (record) => [record.message.toUpperCase()];
  */
-export type LogFormatter = (record: LogRecord) => unknown[];
+type LogFormatter = (record: LogRecord) => unknown[];
 
 /**
  * Logger contract consumed by `@zap-studio/*` packages that accept an
@@ -74,7 +74,7 @@ export type LogFormatter = (record: LogRecord) => unknown[];
  *   fatal: (message, context) => console.error(message, context),
  * };
  */
-export interface Logger {
+interface Logger {
   /**
    * Logs a trace-level message, the most verbose level.
    */
@@ -100,3 +100,5 @@ export interface Logger {
    */
   fatal: (message: string, context?: Record<string, unknown>) => void;
 }
+
+export type { LogLevel, CallableLogLevel, LogRecord, LogFormatter, Logger };

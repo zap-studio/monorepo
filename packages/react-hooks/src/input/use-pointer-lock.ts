@@ -1,7 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `usePointerLock`. */
-export interface UsePointerLockResult<T extends Element> {
+interface UsePointerLockResult<T extends Element> {
   exit: () => void;
   locked: boolean;
   ref: RefObject<T | null>;
@@ -30,7 +30,7 @@ const isSupported = (): boolean =>
  * return <canvas ref={ref} onClick={() => request()} />;
  * ```
  */
-export const usePointerLock = <T extends Element = HTMLElement>(): UsePointerLockResult<T> => {
+const usePointerLock = <T extends Element = HTMLElement>(): UsePointerLockResult<T> => {
   const supported = isSupported();
   const ref = useRef<T | null>(null);
   const [locked, setLocked] = useState(false);
@@ -64,3 +64,6 @@ export const usePointerLock = <T extends Element = HTMLElement>(): UsePointerLoc
 
   return { exit, locked, ref, request, supported };
 };
+
+export { usePointerLock };
+export type { UsePointerLockResult };

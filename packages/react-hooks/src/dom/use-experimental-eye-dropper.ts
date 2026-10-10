@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { getEyeDropperConstructor, type EyeDropperOpenOptions } from "./_eye-dropper-api.ts";
 
 /** The shape returned by `useExperimentalEyeDropper`. */
-export interface UseExperimentalEyeDropperResult {
+interface UseExperimentalEyeDropperResult {
   open: (options?: EyeDropperOpenOptions) => Promise<string | undefined>;
   supported: boolean;
 }
@@ -26,7 +26,7 @@ const isAbortError = (error: unknown): boolean =>
  * const hex = supported ? await open() : undefined;
  * ```
  */
-export const useExperimentalEyeDropper = (): UseExperimentalEyeDropperResult => {
+const useExperimentalEyeDropper = (): UseExperimentalEyeDropperResult => {
   const supported = Boolean(getEyeDropperConstructor());
 
   const open = useCallback(async (options?: EyeDropperOpenOptions): Promise<string | undefined> => {
@@ -47,3 +47,6 @@ export const useExperimentalEyeDropper = (): UseExperimentalEyeDropperResult => 
 
   return useMemo(() => ({ open, supported }), [open, supported]);
 };
+
+export { useExperimentalEyeDropper };
+export type { UseExperimentalEyeDropperResult };

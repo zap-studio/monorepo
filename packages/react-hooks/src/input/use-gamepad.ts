@@ -51,7 +51,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const isControllerConnected = gamepads.length > 0;
  * ```
  */
-export const useGamepad = (): Gamepad[] => {
+const useGamepad = (): Gamepad[] => {
   const cacheRef = useRef<Gamepad[]>(EMPTY_GAMEPADS);
 
   const getSnapshot = useCallback((): Gamepad[] => {
@@ -64,3 +64,5 @@ export const useGamepad = (): Gamepad[] => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useGamepad };

@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorTanstackQueryRules: RuleMap = {
+const reactDoctorTanstackQueryRules: RuleMap = {
   "query-destructure-result": "warn",
   "query-floating-mutate-async": "warn",
   "query-mutation-missing-invalidation": "warn",
@@ -11,3 +11,5 @@ export const reactDoctorTanstackQueryRules: RuleMap = {
   "query-no-void-query-fn": "warn",
   "query-stable-query-client": "warn",
 };
+
+export { reactDoctorTanstackQueryRules };

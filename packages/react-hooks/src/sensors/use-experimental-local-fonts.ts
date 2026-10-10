@@ -9,7 +9,7 @@ import {
 export type { LocalFontData, QueryLocalFontsOptions } from "./_local-font-access-api.ts";
 
 /** The shape returned by `useExperimentalLocalFonts`. */
-export interface UseExperimentalLocalFontsResult {
+interface UseExperimentalLocalFontsResult {
   query: (options?: QueryLocalFontsOptions) => Promise<LocalFontData[] | undefined>;
   supported: boolean;
 }
@@ -33,7 +33,7 @@ const isAbortError = (error: unknown): boolean =>
  * const fonts = supported ? await query() : undefined;
  * ```
  */
-export const useExperimentalLocalFonts = (): UseExperimentalLocalFontsResult => {
+const useExperimentalLocalFonts = (): UseExperimentalLocalFontsResult => {
   const supported = Boolean(getQueryLocalFonts());
 
   const query = useCallback(
@@ -56,3 +56,6 @@ export const useExperimentalLocalFonts = (): UseExperimentalLocalFontsResult => 
 
   return useMemo(() => ({ query, supported }), [query, supported]);
 };
+
+export { useExperimentalLocalFonts };
+export type { UseExperimentalLocalFontsResult };

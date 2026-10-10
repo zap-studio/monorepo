@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /** A small copy of the Generic Sensor API's types. This is an experimental, Chrome-only API, not declared elsewhere. */
-export interface GenericSensorErrorEvent extends Event {
+interface GenericSensorErrorEvent extends Event {
   readonly error: DOMException;
 }
 
 /** Shape common to every Generic Sensor API sensor instance (`Accelerometer`, `Gyroscope`, etc). */
-export interface GenericSensorInstance extends EventTarget {
+interface GenericSensorInstance extends EventTarget {
   readonly activated: boolean;
   readonly hasReading: boolean;
   onerror: ((this: GenericSensorInstance, event: GenericSensorErrorEvent) => void) | null;
@@ -16,7 +16,7 @@ export interface GenericSensorInstance extends EventTarget {
 }
 
 /** Options every Generic Sensor API constructor accepts. */
-export interface GenericSensorOptions {
+interface GenericSensorOptions {
   frequency?: number;
 }
 
@@ -25,7 +25,7 @@ type GenericSensorConstructor<TSensor extends GenericSensorInstance> = new (
 ) => TSensor;
 
 /** Every Generic Sensor API constructor this package looks up on `window`. */
-export type GenericSensorConstructorName =
+type GenericSensorConstructorName =
   | "AbsoluteOrientationSensor"
   | "Accelerometer"
   | "AmbientLightSensor"
@@ -59,7 +59,7 @@ const getGenericSensorConstructor = <TSensor extends GenericSensorInstance>(
 };
 
 /** The shape returned by every public Generic Sensor API hook. */
-export interface UseGenericSensorResult<TReading> {
+interface UseGenericSensorResult<TReading> {
   activated: boolean;
   error: DOMException | undefined;
   reading: TReading | undefined;
@@ -75,7 +75,7 @@ export interface UseGenericSensorResult<TReading> {
  * block) or it fails later (for example, a denied permission), both cases
  * are reported through `error` instead of throwing an exception.
  */
-export const useGenericSensor = <TSensor extends GenericSensorInstance, TReading>(
+const useGenericSensor = <TSensor extends GenericSensorInstance, TReading>(
   constructorName: GenericSensorConstructorName,
   readReading: (sensor: TSensor) => TReading,
   options?: GenericSensorOptions,
@@ -130,4 +130,13 @@ export const useGenericSensor = <TSensor extends GenericSensorInstance, TReading
     () => ({ activated, error, reading, start, stop, supported }),
     [activated, error, reading, start, stop, supported],
   );
+};
+
+export { useGenericSensor };
+export type {
+  GenericSensorErrorEvent,
+  GenericSensorInstance,
+  GenericSensorOptions,
+  GenericSensorConstructorName,
+  UseGenericSensorResult,
 };

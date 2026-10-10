@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The setter returned by `useHashState`. */
-export type SetHash = (next: string | ((prev: string) => string)) => void;
+type SetHash = (next: string | ((prev: string) => string)) => void;
 
 const readHash = (): string => location.hash;
 
@@ -20,7 +20,7 @@ const readHash = (): string => location.hash;
  * setHash("#section-2");
  * ```
  */
-export const useHashState = (): [string, SetHash] => {
+const useHashState = (): [string, SetHash] => {
   const [hash, setHashState] = useState<string>(() =>
     typeof window === "undefined" ? "" : readHash(),
   );
@@ -42,3 +42,6 @@ export const useHashState = (): [string, SetHash] => {
 
   return [hash, setHash];
 };
+
+export { useHashState };
+export type { SetHash };

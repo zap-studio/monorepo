@@ -6,7 +6,7 @@ const brandsDirectory = resolve(process.cwd(), "lib/brands");
 const readBrand = (name: string): string =>
   readFileSync(`${brandsDirectory}/${name}.svg`, "utf8").trim();
 
-export const brandIcons = {
+const brandIcons = {
   bun: readBrand("bun"),
   chrome: readBrand("chrome"),
   deno: readBrand("deno"),
@@ -15,3 +15,5 @@ export const brandIcons = {
   safari: readBrand("safari"),
   workers: readBrand("workers"),
 } as const;
+
+export { brandIcons };

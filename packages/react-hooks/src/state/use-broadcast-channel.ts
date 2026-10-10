@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useBroadcastChannel`. */
-export interface UseBroadcastChannelResult<T> {
+interface UseBroadcastChannelResult<T> {
   lastMessage: T | undefined;
   postMessage: (message: T) => void;
   supported: boolean;
@@ -25,7 +25,7 @@ const isSupported = (): boolean => typeof BroadcastChannel !== "undefined";
  * postMessage("item-added");
  * ```
  */
-export const useBroadcastChannel = <T>(name: string): UseBroadcastChannelResult<T> => {
+const useBroadcastChannel = <T>(name: string): UseBroadcastChannelResult<T> => {
   const [lastMessage, setLastMessage] = useState<T | undefined>(undefined);
   const channelRef = useRef<BroadcastChannel | null>(null);
   const supported = isSupported();
@@ -54,3 +54,6 @@ export const useBroadcastChannel = <T>(name: string): UseBroadcastChannelResult<
 
   return { lastMessage, postMessage, supported };
 };
+
+export { useBroadcastChannel };
+export type { UseBroadcastChannelResult };

@@ -1,7 +1,7 @@
 /** A small copy of the Web NFC API's types. This is an experimental API, only in Chrome on Android, not declared elsewhere. */
 
 /** A single NDEF record, as carried by a scanned message's `records`. */
-export interface NDEFRecord {
+interface NDEFRecord {
   readonly data?: DataView;
   readonly encoding?: string;
   readonly id?: string;
@@ -11,12 +11,12 @@ export interface NDEFRecord {
 }
 
 /** The NDEF message a `reading` event carries — an ordered list of records. */
-export interface NDEFMessage {
+interface NDEFMessage {
   readonly records: readonly NDEFRecord[];
 }
 
 /** A record as written, before the tag encodes it. */
-export interface NDEFRecordInit {
+interface NDEFRecordInit {
   data?: unknown;
   encoding?: string;
   id?: string;
@@ -26,19 +26,15 @@ export interface NDEFRecordInit {
 }
 
 /** Anything `NDEFReader.write()` accepts — a string, raw bytes, or an explicit record list. */
-export type NDEFMessageSource =
-  | ArrayBuffer
-  | ArrayBufferView
-  | string
-  | { records: NDEFRecordInit[] };
+type NDEFMessageSource = ArrayBuffer | ArrayBufferView | string | { records: NDEFRecordInit[] };
 
 /** Options `NDEFReader.write()` accepts, beyond the message itself. */
-export interface NDEFWriteOptions {
+interface NDEFWriteOptions {
   overwrite?: boolean;
 }
 
 /** The `reading` event, carrying the scanned message and the tag's serial number. */
-export interface NDEFReadingEvent extends Event {
+interface NDEFReadingEvent extends Event {
   readonly message: NDEFMessage;
   readonly serialNumber: string;
 }
@@ -93,10 +89,20 @@ export type { NDEFReader, NDEFReaderConstructor };
  * directly in the hook body on every render, including server-side
  * rendering, not only inside an effect.
  */
-export const getNdefReaderConstructor = (): NDEFReaderConstructor | undefined => {
+const getNdefReaderConstructor = (): NDEFReaderConstructor | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
   // SAFETY: NDEFReader is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox, desktop Chrome) gives undefined instead of throwing.
   return (window as WebNfcWindow).NDEFReader;
+};
+
+export { getNdefReaderConstructor };
+export type {
+  NDEFRecord,
+  NDEFMessage,
+  NDEFRecordInit,
+  NDEFMessageSource,
+  NDEFWriteOptions,
+  NDEFReadingEvent,
 };

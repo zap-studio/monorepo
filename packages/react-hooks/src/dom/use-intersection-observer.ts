@@ -3,7 +3,7 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useIntersectionObserver`. */
-export interface UseIntersectionObserverResult<T extends Element> {
+interface UseIntersectionObserverResult<T extends Element> {
   entry: IntersectionObserverEntry | undefined;
   inView: boolean;
   ref: RefObject<T | null>;
@@ -35,7 +35,7 @@ const isSupported = (): boolean => typeof IntersectionObserver !== "undefined";
  * return <div ref={ref}>{inView ? "Visible" : "Off-screen"}</div>;
  * ```
  */
-export const useIntersectionObserver = <T extends Element = HTMLElement>(
+const useIntersectionObserver = <T extends Element = HTMLElement>(
   options?: IntersectionObserverInit,
 ): UseIntersectionObserverResult<T> => {
   const ref = useRef<T | null>(null);
@@ -70,3 +70,6 @@ export const useIntersectionObserver = <T extends Element = HTMLElement>(
 };
 
 export { useIntersectionObserver as useInView };
+
+export { useIntersectionObserver };
+export type { UseIntersectionObserverResult };

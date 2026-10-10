@@ -3,7 +3,7 @@ import { type RefObject, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** Anything `useEventListener` can attach to: a DOM node, `window`/`document`, or a ref to one. */
-export type EventListenerTarget =
+type EventListenerTarget =
   | Document
   | EventTarget
   | RefObject<EventTarget | null>
@@ -73,7 +73,7 @@ const normalizeOptions = (
  * useEventListener(window, "resize", () => console.log("resized"));
  * ```
  */
-export const useEventListener = <E extends Event = Event>(
+const useEventListener = <E extends Event = Event>(
   target: EventListenerTarget,
   type: string,
   handler: (event: E) => void,
@@ -111,3 +111,6 @@ export const useEventListener = <E extends Event = Event>(
     };
   }, [element, type, capture, once, passive, signal]);
 };
+
+export { useEventListener };
+export type { EventListenerTarget };

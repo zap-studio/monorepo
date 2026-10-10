@@ -12,4 +12,6 @@ import { useMediaQueryMatch } from "./_media-query.ts";
  * const isPrinting = usePrintMode();
  * ```
  */
-export const usePrintMode = (): boolean => useMediaQueryMatch("print");
+const usePrintMode = (): boolean => useMediaQueryMatch("print");
+
+export { usePrintMode };

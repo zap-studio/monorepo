@@ -10,4 +10,6 @@ import { useMediaQueryMatch } from "./_media-query.ts";
  * const prefersDark = usePrefersDarkMode();
  * ```
  */
-export const usePrefersDarkMode = (): boolean => useMediaQueryMatch("(prefers-color-scheme: dark)");
+const usePrefersDarkMode = (): boolean => useMediaQueryMatch("(prefers-color-scheme: dark)");
+
+export { usePrefersDarkMode };

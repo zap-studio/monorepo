@@ -6,7 +6,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 /** The shape returned by `useInstallPrompt`. */
-export interface UseInstallPromptResult {
+interface UseInstallPromptResult {
   canInstall: boolean;
   installed: boolean;
   promptInstall: () => Promise<"accepted" | "dismissed" | "unavailable">;
@@ -27,7 +27,7 @@ export interface UseInstallPromptResult {
  * if (canInstall) return <button onClick={() => promptInstall()}>Install</button>;
  * ```
  */
-export const useInstallPrompt = (): UseInstallPromptResult => {
+const useInstallPrompt = (): UseInstallPromptResult => {
   const [canInstall, setCanInstall] = useState(false);
   const [installed, setInstalled] = useState(false);
   const beforeInstallEventRef = useRef<BeforeInstallPromptEvent | null>(null);
@@ -68,3 +68,6 @@ export const useInstallPrompt = (): UseInstallPromptResult => {
 
   return { canInstall, installed, promptInstall };
 };
+
+export { useInstallPrompt };
+export type { UseInstallPromptResult };

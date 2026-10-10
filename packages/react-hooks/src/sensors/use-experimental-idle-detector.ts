@@ -24,7 +24,7 @@ interface IdleSession {
 }
 
 /** The shape returned by `useExperimentalIdleDetector`. */
-export interface UseExperimentalIdleDetectorResult {
+interface UseExperimentalIdleDetectorResult {
   requestPermission: () => Promise<boolean>;
   screenState: IdleScreenState | undefined;
   start: (options?: Omit<IdleDetectorStartOptions, "signal">) => Promise<boolean>;
@@ -53,7 +53,7 @@ export interface UseExperimentalIdleDetectorResult {
  * </button>
  * ```
  */
-export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult => {
+const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult => {
   const supported = Boolean(getIdleDetectorConstructor());
   const [userState, setUserState] = useState<IdleUserState | undefined>(undefined);
   const [screenState, setScreenState] = useState<IdleScreenState | undefined>(undefined);
@@ -120,3 +120,6 @@ export const useExperimentalIdleDetector = (): UseExperimentalIdleDetectorResult
     [requestPermission, screenState, start, stop, supported, userState],
   );
 };
+
+export { useExperimentalIdleDetector };
+export type { UseExperimentalIdleDetectorResult };

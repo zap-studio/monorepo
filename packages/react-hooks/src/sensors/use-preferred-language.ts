@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `usePreferredLanguage`. */
-export interface PreferredLanguage {
+interface PreferredLanguage {
   language: string;
   languages: readonly string[];
 }
@@ -28,7 +28,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const { language } = usePreferredLanguage(); // e.g. "en-US"
  * ```
  */
-export const usePreferredLanguage = (): PreferredLanguage => {
+const usePreferredLanguage = (): PreferredLanguage => {
   const cacheRef = useRef<PreferredLanguage>(FALLBACK_LANGUAGE);
 
   const getSnapshot = useCallback((): PreferredLanguage => {
@@ -47,3 +47,6 @@ export const usePreferredLanguage = (): PreferredLanguage => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { usePreferredLanguage };
+export type { PreferredLanguage };

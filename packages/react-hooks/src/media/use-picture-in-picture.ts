@@ -3,7 +3,7 @@ import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
 import { useTrackedRefElement } from "../lifecycle/_tracked-ref-element.ts";
 
 /** The shape returned by `usePictureInPicture`. */
-export interface UsePictureInPictureResult<T extends HTMLVideoElement> {
+interface UsePictureInPictureResult<T extends HTMLVideoElement> {
   active: boolean;
   enter: () => Promise<void>;
   exit: () => Promise<void>;
@@ -34,7 +34,7 @@ const isSupported = (): boolean =>
  * return <video ref={ref} onDoubleClick={() => (active ? exit() : enter())} />;
  * ```
  */
-export const usePictureInPicture = <
+const usePictureInPicture = <
   T extends HTMLVideoElement = HTMLVideoElement,
 >(): UsePictureInPictureResult<T> => {
   const supported = isSupported();
@@ -75,3 +75,6 @@ export const usePictureInPicture = <
 
   return { active, enter, exit, ref, supported };
 };
+
+export { usePictureInPicture };
+export type { UsePictureInPictureResult };

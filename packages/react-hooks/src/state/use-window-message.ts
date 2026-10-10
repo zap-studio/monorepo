@@ -3,14 +3,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** One received message, as tracked by `useWindowMessage`. */
-export interface WindowMessage<T> {
+interface WindowMessage<T> {
   data: T;
   origin: string;
   source: MessageEventSource | null;
 }
 
 /** The shape returned by `useWindowMessage`. */
-export interface UseWindowMessageResult<T> {
+interface UseWindowMessageResult<T> {
   lastError: MessageEvent | undefined;
   lastMessage: WindowMessage<T> | undefined;
   postMessage: (targetWindow: Window, message: T, targetOrigin: string) => void;
@@ -34,7 +34,7 @@ export interface UseWindowMessageResult<T> {
  * postMessage(iframeRef.current!.contentWindow!, "hello", "https://trusted.example");
  * ```
  */
-export const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowMessageResult<T> => {
+const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowMessageResult<T> => {
   const [lastMessage, setLastMessage] = useState<WindowMessage<T> | undefined>(undefined);
   const [lastError, setLastError] = useState<MessageEvent | undefined>(undefined);
   const originFilterRef = useRef(originFilter);
@@ -65,3 +65,6 @@ export const useWindowMessage = <T = unknown>(originFilter?: string): UseWindowM
 
   return { lastError, lastMessage, postMessage };
 };
+
+export { useWindowMessage };
+export type { WindowMessage, UseWindowMessageResult };

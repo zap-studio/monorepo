@@ -14,7 +14,7 @@ interface MagnetometerSensor extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalMagnetometer`. The magnetic field in µT along each axis. */
-export interface MagnetometerReading {
+interface MagnetometerReading {
   x: number | null;
   y: number | null;
   z: number | null;
@@ -27,7 +27,7 @@ const readMagnetometer = (sensor: MagnetometerSensor): MagnetometerReading => ({
 });
 
 /** The shape returned by `useExperimentalMagnetometer`. */
-export type UseExperimentalMagnetometerResult = UseGenericSensorResult<MagnetometerReading>;
+type UseExperimentalMagnetometerResult = UseGenericSensorResult<MagnetometerReading>;
 
 /**
  * Reads the device's `Magnetometer`. This is experimental, only works in
@@ -46,7 +46,7 @@ export type UseExperimentalMagnetometerResult = UseGenericSensorResult<Magnetome
  * <button onClick={start} disabled={!supported}>Enable magnetometer</button>
  * ```
  */
-export const useExperimentalMagnetometer = (
+const useExperimentalMagnetometer = (
   options?: GenericSensorOptions,
 ): UseExperimentalMagnetometerResult =>
   useGenericSensor<MagnetometerSensor, MagnetometerReading>(
@@ -54,3 +54,6 @@ export const useExperimentalMagnetometer = (
     readMagnetometer,
     options,
   );
+
+export { useExperimentalMagnetometer };
+export type { MagnetometerReading, UseExperimentalMagnetometerResult };

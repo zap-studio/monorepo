@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const testingLibraryRules: RuleMap = {
+const testingLibraryRules: RuleMap = {
   "await-async-events": "error",
   "await-async-queries": "error",
   "await-async-utils": "error",
@@ -52,3 +52,5 @@ export const testingLibraryRules: RuleMap = {
   // not applicable outside framework wrappers
   "render-result-naming-convention": "off",
 };
+
+export { testingLibraryRules };

@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorNextjsRules: RuleMap = {
+const reactDoctorNextjsRules: RuleMap = {
   "nextjs-async-client-component": "error",
   "nextjs-async-dynamic-api-not-awaited": "error",
   "nextjs-error-boundary-missing-use-client": "error",
@@ -27,3 +27,5 @@ export const reactDoctorNextjsRules: RuleMap = {
   "nextjs-no-use-search-params-without-suspense": "warn",
   "nextjs-no-vercel-og-import": "warn",
 };
+
+export { reactDoctorNextjsRules };

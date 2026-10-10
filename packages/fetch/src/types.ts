@@ -14,7 +14,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * const input: FetchInput = "/users/1";
  * const withUrl: FetchInput = new URL("https://api.example.com/users/1");
  */
-export type FetchInput = Parameters<typeof fetch>[0];
+type FetchInput = Parameters<typeof fetch>[0];
 
 type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];
 
@@ -59,7 +59,7 @@ interface CustomRequestInit {
  *   throwOnFetchError: true,
  * };
  */
-export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
+type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
 
 /**
  * Internal defaults used by fetchInternal
@@ -71,7 +71,7 @@ export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomReque
  *   throwOnValidationError: true,
  * };
  */
-export interface FetchDefaults {
+interface FetchDefaults {
   /**
    * Base URL to prepend to all requests
    * @default ""
@@ -117,7 +117,7 @@ export interface FetchDefaults {
  * const fetchUser: $Fetch = $fetch;
  * const user = await fetchUser("/users/1", UserSchema);
  */
-export interface $Fetch {
+interface $Fetch {
   /**
    * Fetch with schema validation and throwOnValidationError: false
    * @param input - URL or path to fetch
@@ -186,7 +186,7 @@ export interface $Fetch {
  *   options: {},
  * };
  */
-export interface NormalizedRequest {
+interface NormalizedRequest {
   /** Resolved string URL from the input (string or `URL`; `Request` uses `request.url`). */
   url: string;
   /** Original `Request` clone, present when the input was a `Request`. */
@@ -201,7 +201,7 @@ export interface NormalizedRequest {
  * @example
  * const user = await api.get("/users/1", UserSchema);
  */
-export interface ApiMethods {
+interface ApiMethods {
   /**
    * DELETE method fetch function
    */
@@ -230,7 +230,7 @@ export interface ApiMethods {
  * @example
  * const { $fetch, api } = createFetch({ baseURL: "https://api.example.com" });
  */
-export interface FetchInstance {
+interface FetchInstance {
   /**
    * Configured `$fetch` function.
    */
@@ -240,3 +240,13 @@ export interface FetchInstance {
    */
   api: ApiMethods;
 }
+
+export type {
+  FetchInput,
+  ExtendedRequestInit,
+  FetchDefaults,
+  $Fetch,
+  NormalizedRequest,
+  ApiMethods,
+  FetchInstance,
+};

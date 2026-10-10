@@ -1,10 +1,10 @@
 import { type UserMediaResult, useMediaCapture } from "./_user-media.ts";
 
 /** Status reported by `useScreenCapture`. */
-export type ScreenCaptureStatus = UserMediaResult["status"];
+type ScreenCaptureStatus = UserMediaResult["status"];
 
 /** The shape returned by `useScreenCapture`. */
-export type UseScreenCaptureResult = UserMediaResult;
+type UseScreenCaptureResult = UserMediaResult;
 
 const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getDisplayMedia === "function";
@@ -23,7 +23,7 @@ const isSupported = (): boolean =>
  * <button onClick={start}>Share screen</button>
  * ```
  */
-export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreenCaptureResult =>
+const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreenCaptureResult =>
   useMediaCapture({
     args: options,
     capture: (currentOptions) => navigator.mediaDevices.getDisplayMedia(currentOptions),
@@ -35,3 +35,6 @@ export const useScreenCapture = (options?: DisplayMediaStreamOptions): UseScreen
     supported: isSupported,
     unsupportedMessage: "getDisplayMedia is not supported by this browser.",
   });
+
+export { useScreenCapture };
+export type { ScreenCaptureStatus, UseScreenCaptureResult };

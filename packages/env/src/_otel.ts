@@ -27,7 +27,7 @@ const tracer: Tracer = trace.getTracer(pkg.name, pkg.version);
  * error. Validation runs once at startup, not on every request, so the
  * span costs very little.
  */
-export const withValidateSpan = <T>(run: () => T): T => {
+const withValidateSpan = <T>(run: () => T): T => {
   const span = tracer.startSpan("env.validate", { kind: SpanKind.INTERNAL });
 
   try {
@@ -47,3 +47,5 @@ export const withValidateSpan = <T>(run: () => T): T => {
     span.end();
   }
 };
+
+export { withValidateSpan };

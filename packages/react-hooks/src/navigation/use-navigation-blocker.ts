@@ -4,7 +4,7 @@ import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-ef
 import { getNavigation } from "./_navigation-api.ts";
 
 /** The shape returned by `useNavigationBlocker`. */
-export interface NavigationBlockerResult {
+interface NavigationBlockerResult {
   blocked: boolean;
   proceed: () => void;
   reset: () => void;
@@ -33,7 +33,7 @@ export interface NavigationBlockerResult {
  * if (blocked) return <ConfirmLeaveDialog onConfirm={proceed} onCancel={reset} />;
  * ```
  */
-export const useNavigationBlocker = (
+const useNavigationBlocker = (
   shouldBlock: (destinationUrl: string) => boolean,
 ): NavigationBlockerResult => {
   const [blocked, setBlocked] = useState(false);
@@ -86,3 +86,6 @@ export const useNavigationBlocker = (
 
   return { blocked, proceed, reset };
 };
+
+export { useNavigationBlocker };
+export type { NavigationBlockerResult };

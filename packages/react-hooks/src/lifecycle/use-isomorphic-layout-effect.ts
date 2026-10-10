@@ -20,5 +20,7 @@ import { useEffect, useLayoutEffect } from "react";
  * }, [messages]);
  * ```
  */
-export const useIsomorphicLayoutEffect: typeof useLayoutEffect =
+const useIsomorphicLayoutEffect: typeof useLayoutEffect =
   typeof document === "undefined" ? useEffect : useLayoutEffect;
+
+export { useIsomorphicLayoutEffect };

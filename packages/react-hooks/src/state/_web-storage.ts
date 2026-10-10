@@ -4,10 +4,10 @@ import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-ef
 import { isUpdaterFunction } from "./_updater.ts";
 
 /** A new value, or a function that returns one based on the previous value. Same shape as `useState`'s setter. */
-export type SetStoredValue<T> = T | ((prev: T) => T);
+type SetStoredValue<T> = T | ((prev: T) => T);
 
 /** The tuple returned by `useLocalStorage`/`useSessionStorage`. */
-export type WebStorageResult<T> = [
+type WebStorageResult<T> = [
   value: T,
   setValue: (next: SetStoredValue<T>) => void,
   remove: () => void,
@@ -28,7 +28,7 @@ const readStoredValue = <T>(storage: Storage, key: string, initialValue: T): T =
  * Shared logic for syncing state to a `Storage` object (localStorage or
  * sessionStorage), used by `useLocalStorage` and `useSessionStorage`.
  */
-export const useWebStorage = <T>(
+const useWebStorage = <T>(
   getStorage: () => Storage,
   key: string,
   initialValue: T,
@@ -89,3 +89,6 @@ export const useWebStorage = <T>(
 
   return [value, setValue, remove, error];
 };
+
+export { useWebStorage };
+export type { SetStoredValue, WebStorageResult };

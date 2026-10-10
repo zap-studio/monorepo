@@ -2,7 +2,7 @@
  * A small local type definition for the Barcode Detection API. MDN marks
  * this API as experimental. It only works in Chromium browsers.
  */
-export type BarcodeFormat =
+type BarcodeFormat =
   | "aztec"
   | "codabar"
   | "code_128"
@@ -19,7 +19,7 @@ export type BarcodeFormat =
   | "upc_e";
 
 /** A single barcode found by `BarcodeDetector.detect()`. */
-export interface DetectedBarcode {
+interface DetectedBarcode {
   readonly boundingBox: DOMRectReadOnly;
   readonly cornerPoints: readonly { x: number; y: number }[];
   readonly format: BarcodeFormat;
@@ -27,7 +27,7 @@ export interface DetectedBarcode {
 }
 
 /** The image sources `BarcodeDetector.detect()` accepts. */
-export type BarcodeDetectorSource =
+type BarcodeDetectorSource =
   | Blob
   | HTMLCanvasElement
   | HTMLImageElement
@@ -55,10 +55,13 @@ interface BarcodeDetectionWindow {
  * calls this directly in the hook body on every render, including during
  * server-side rendering, not only inside an effect.
  */
-export const getBarcodeDetectorConstructor = (): BarcodeDetectorConstructor | undefined => {
+const getBarcodeDetectorConstructor = (): BarcodeDetectorConstructor | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
   // SAFETY: BarcodeDetector is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as BarcodeDetectionWindow).BarcodeDetector;
 };
+
+export { getBarcodeDetectorConstructor };
+export type { BarcodeFormat, DetectedBarcode, BarcodeDetectorSource };

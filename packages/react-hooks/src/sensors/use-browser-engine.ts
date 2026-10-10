@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 /** Rendering engine identified by `useBrowserEngine`. */
-export type BrowserEngine = "blink" | "gecko" | "unknown" | "webkit";
+type BrowserEngine = "blink" | "gecko" | "unknown" | "webkit";
 
 interface NavigatorWithUserAgentData extends Navigator {
   readonly userAgentData?: unknown;
@@ -51,5 +51,8 @@ const getServerSnapshot = (): BrowserEngine => "unknown";
  * ) : null;
  * ```
  */
-export const useBrowserEngine = (): BrowserEngine =>
+const useBrowserEngine = (): BrowserEngine =>
   useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+export { useBrowserEngine };
+export type { BrowserEngine };

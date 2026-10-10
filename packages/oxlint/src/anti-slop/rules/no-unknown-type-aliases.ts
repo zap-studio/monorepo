@@ -13,7 +13,7 @@ function referencedAliasName(type: ESTree.TSType): string | null {
 }
 
 /** Ban named aliases that merely conceal TypeScript's unknown top type. */
-export const noUnknownTypeAliasesRule: Rule = defineRule({
+const noUnknownTypeAliasesRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -68,3 +68,5 @@ export const noUnknownTypeAliasesRule: Rule = defineRule({
     };
   },
 });
+
+export { noUnknownTypeAliasesRule };

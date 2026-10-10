@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useSet`. */
-export interface UseSetResult<T> {
+interface UseSetResult<T> {
   add: (value: T) => void;
   clear: () => void;
   delete: (value: T) => void;
@@ -22,7 +22,7 @@ export interface UseSetResult<T> {
  * add("a");
  * ```
  */
-export const useSet = <T>(initialValues?: Iterable<T>): UseSetResult<T> => {
+const useSet = <T>(initialValues?: Iterable<T>): UseSetResult<T> => {
   const [set, setSet] = useState<Set<T>>(() => new Set(initialValues));
   const setRef = useRef(set);
   useEffect(() => {
@@ -62,3 +62,6 @@ export const useSet = <T>(initialValues?: Iterable<T>): UseSetResult<T> => {
 
   return { add, clear, delete: deleteValue, has, set };
 };
+
+export { useSet };
+export type { UseSetResult };

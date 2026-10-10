@@ -1,13 +1,13 @@
 import { type UserMediaResult, useMediaStream } from "./_user-media.ts";
 
 /** Options accepted by `useCamera`. */
-export interface UseCameraOptions {
+interface UseCameraOptions {
   audio?: boolean;
   video?: boolean | MediaTrackConstraints;
 }
 
 /** The shape returned by `useCamera`. */
-export type UseCameraResult = UserMediaResult;
+type UseCameraResult = UserMediaResult;
 
 /**
  * A shortcut version of `useUserMedia` for the common case: just turn on
@@ -20,5 +20,8 @@ export type UseCameraResult = UserMediaResult;
  * <button onClick={start}>Enable camera + mic</button>
  * ```
  */
-export const useCamera = (options: UseCameraOptions = {}): UseCameraResult =>
+const useCamera = (options: UseCameraOptions = {}): UseCameraResult =>
   useMediaStream({ audio: options.audio ?? false, video: options.video ?? true });
+
+export { useCamera };
+export type { UseCameraOptions, UseCameraResult };

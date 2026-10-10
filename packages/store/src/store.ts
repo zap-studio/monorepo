@@ -54,7 +54,7 @@ const readPersisted = <S>(options: StoreOptions | undefined, initialState: S): S
  * counter.getState(); // { count: 0 }
  * ```
  */
-export function createStore<S extends object>(
+function createStore<S extends object>(
   initialState: S,
   actionsFactory?: undefined,
   options?: StoreOptions,
@@ -84,13 +84,13 @@ export function createStore<S extends object>(
  * const unsubscribe = counter.subscribe((state) => console.log(state));
  * ```
  */
-export function createStore<S extends object, A extends Record<string, unknown>>(
+function createStore<S extends object, A extends Record<string, unknown>>(
   initialState: S,
   actionsFactory: ActionsFactory<S, A>,
   options?: StoreOptions,
 ): Store<S, A>;
 
-export function createStore<S extends object, A extends Record<string, unknown>>(
+function createStore<S extends object, A extends Record<string, unknown>>(
   initialState: S,
   actionsFactory?: ActionsFactory<S, A>,
   options?: StoreOptions,
@@ -131,3 +131,5 @@ export function createStore<S extends object, A extends Record<string, unknown>>
     subscribe: (listener) => node.subscribe(() => listener(snapshot(node.peek()))),
   };
 }
+
+export { createStore };

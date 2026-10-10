@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 /** The shape returned by `useVibrate`. */
-export interface UseVibrateResult {
+interface UseVibrateResult {
   supported: boolean;
   vibrate: (pattern: VibratePattern) => boolean;
 }
@@ -21,7 +21,7 @@ const isSupported = (): boolean =>
  * if (supported) vibrate([100, 50, 100]);
  * ```
  */
-export const useVibrate = (): UseVibrateResult => {
+const useVibrate = (): UseVibrateResult => {
   const supported = isSupported();
 
   const vibrate = useCallback(
@@ -31,3 +31,6 @@ export const useVibrate = (): UseVibrateResult => {
 
   return { supported, vibrate };
 };
+
+export { useVibrate };
+export type { UseVibrateResult };

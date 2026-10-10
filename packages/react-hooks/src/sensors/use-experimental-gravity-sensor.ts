@@ -14,7 +14,7 @@ interface GravitySensorInstance extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalGravitySensor`. Just the gravity part of acceleration, in m/s² along each axis. */
-export interface GravityReading {
+interface GravityReading {
   x: number | null;
   y: number | null;
   z: number | null;
@@ -27,7 +27,7 @@ const readGravity = (sensor: GravitySensorInstance): GravityReading => ({
 });
 
 /** The shape returned by `useExperimentalGravitySensor`. */
-export type UseExperimentalGravitySensorResult = UseGenericSensorResult<GravityReading>;
+type UseExperimentalGravitySensorResult = UseGenericSensorResult<GravityReading>;
 
 /**
  * Reads the device's `GravitySensor`. This is experimental, only works in
@@ -47,7 +47,10 @@ export type UseExperimentalGravitySensorResult = UseGenericSensorResult<GravityR
  * <button onClick={start} disabled={!supported}>Enable gravity sensor</button>
  * ```
  */
-export const useExperimentalGravitySensor = (
+const useExperimentalGravitySensor = (
   options?: GenericSensorOptions,
 ): UseExperimentalGravitySensorResult =>
   useGenericSensor<GravitySensorInstance, GravityReading>("GravitySensor", readGravity, options);
+
+export { useExperimentalGravitySensor };
+export type { GravityReading, UseExperimentalGravitySensorResult };

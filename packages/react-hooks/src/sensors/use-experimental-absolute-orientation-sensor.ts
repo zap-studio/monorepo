@@ -12,7 +12,7 @@ interface AbsoluteOrientationSensorInstance extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalAbsoluteOrientationSensor`. It gives the device's rotation as a quaternion `[x, y, z, w]`. */
-export interface AbsoluteOrientationReading {
+interface AbsoluteOrientationReading {
   quaternion: [number, number, number, number] | null;
 }
 
@@ -23,7 +23,7 @@ const readAbsoluteOrientation = (
 });
 
 /** The shape returned by `useExperimentalAbsoluteOrientationSensor`. */
-export type UseExperimentalAbsoluteOrientationSensorResult =
+type UseExperimentalAbsoluteOrientationSensorResult =
   UseGenericSensorResult<AbsoluteOrientationReading>;
 
 /**
@@ -44,7 +44,7 @@ export type UseExperimentalAbsoluteOrientationSensorResult =
  * <button onClick={start} disabled={!supported}>Enable orientation sensor</button>
  * ```
  */
-export const useExperimentalAbsoluteOrientationSensor = (
+const useExperimentalAbsoluteOrientationSensor = (
   options?: GenericSensorOptions,
 ): UseExperimentalAbsoluteOrientationSensorResult =>
   useGenericSensor<AbsoluteOrientationSensorInstance, AbsoluteOrientationReading>(
@@ -52,3 +52,6 @@ export const useExperimentalAbsoluteOrientationSensor = (
     readAbsoluteOrientation,
     options,
   );
+
+export { useExperimentalAbsoluteOrientationSensor };
+export type { AbsoluteOrientationReading, UseExperimentalAbsoluteOrientationSensorResult };

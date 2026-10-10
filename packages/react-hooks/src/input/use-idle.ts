@@ -24,7 +24,7 @@ const ACTIVITY_EVENTS = [
  * const isIdle = useIdle(5 * 60_000); // idle after 5 minutes
  * ```
  */
-export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
+const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
   const [idle, setIdle] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -57,3 +57,5 @@ export const useIdle = (timeoutMs: number = DEFAULT_TIMEOUT_MS): boolean => {
 
   return idle;
 };
+
+export { useIdle };

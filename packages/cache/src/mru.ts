@@ -29,7 +29,7 @@ interface Node<K> {
  * const cache = createCache<string, number>(2, { policy: mru() });
  * ```
  */
-export const mru = <K>(): EvictionPolicy<K> => {
+const mru = <K>(): EvictionPolicy<K> => {
   const nodes = new Map<K, Node<K>>();
   let tail: K | null = null; // most-recently-used
 
@@ -107,3 +107,5 @@ export const mru = <K>(): EvictionPolicy<K> => {
     },
   };
 };
+
+export { mru };

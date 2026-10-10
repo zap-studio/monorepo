@@ -43,10 +43,7 @@ const recordPermitCheck = (decision: "allow" | "deny"): void => {
  * `permit.check {permission}`, setting `permit.decision` and recording the
  * `permit.checks` counter from `run`'s boolean result.
  */
-export const withCheckSpan = async (
-  permission: string,
-  run: () => Promise<boolean>,
-): Promise<boolean> => {
+const withCheckSpan = async (permission: string, run: () => Promise<boolean>): Promise<boolean> => {
   const span = tracer.startSpan(`permit.check ${permission}`, {
     kind: SpanKind.INTERNAL,
   });
@@ -63,3 +60,5 @@ export const withCheckSpan = async (
     span.end();
   }
 };
+
+export { withCheckSpan };

@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
  * useEffect(() => { fetchResults(debouncedQuery); }, [debouncedQuery]);
  * ```
  */
-export const useDebouncedValue = <T>(value: T, delayMs: number): T => {
+const useDebouncedValue = <T>(value: T, delayMs: number): T => {
   const [debounced, setDebounced] = useState(value);
 
   useEffect(() => {
@@ -23,3 +23,5 @@ export const useDebouncedValue = <T>(value: T, delayMs: number): T => {
 
   return debounced;
 };
+
+export { useDebouncedValue };

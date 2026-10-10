@@ -52,7 +52,7 @@ function isForbiddenAssertionChain(node: TypeAssertionExpression): boolean {
 }
 
 /** Disallow nested TypeScript type assertions, while permitting chains made only of const assertions. */
-export const noChainedTypeAssertionsRule: Rule = defineRule({
+const noChainedTypeAssertionsRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -76,3 +76,5 @@ export const noChainedTypeAssertionsRule: Rule = defineRule({
     };
   },
 });
+
+export { noChainedTypeAssertionsRule };

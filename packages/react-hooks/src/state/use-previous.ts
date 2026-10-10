@@ -12,7 +12,7 @@ import { useEffect, useRef } from "react";
  * const delta = previousCount === undefined ? 0 : count - previousCount;
  * ```
  */
-export const usePrevious = <T>(value: T): T | undefined => {
+const usePrevious = <T>(value: T): T | undefined => {
   const ref = useRef<T | undefined>(undefined);
 
   useEffect(() => {
@@ -22,3 +22,5 @@ export const usePrevious = <T>(value: T): T | undefined => {
   // oxlint-disable-next-line react/refs -- we read the ref during render on purpose. It holds the value from the last render. We cannot get this value from the current render.
   return ref.current;
 };
+
+export { usePrevious };

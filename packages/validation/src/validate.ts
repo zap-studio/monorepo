@@ -33,7 +33,7 @@ const isPromiseLike = <T>(value: T | PromiseLike<T>): value is PromiseLike<T> =>
  * overloaded implementation can be assigned a named type instead of an
  * anonymous object type.
  */
-export interface StandardValidateFn {
+interface StandardValidateFn {
   <TSchema extends StandardSchemaV1>(
     input: unknown,
     schema: TSchema,
@@ -52,7 +52,7 @@ export interface StandardValidateFn {
  * overloaded implementation can be assigned a named type instead of an
  * anonymous object type.
  */
-export interface StandardValidateSyncFn {
+interface StandardValidateSyncFn {
   <TSchema extends StandardSchemaV1>(
     input: unknown,
     schema: TSchema,
@@ -74,7 +74,7 @@ export interface StandardValidateSyncFn {
  * const options: StandardValidateOptions = { throwOnError: true };
  * ```
  */
-export interface StandardValidateOptions {
+interface StandardValidateOptions {
   /**
    * When `true`, a {@link ValidationError} will be thrown if validation fails.
    *
@@ -96,7 +96,7 @@ export interface StandardValidateOptions {
  * }
  * ```
  */
-export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
+const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
   value !== null &&
   value !== undefined &&
   (typeof value === "object" || typeof value === "function") &&
@@ -141,7 +141,7 @@ export const isStandardSchema = (value?: unknown): value is StandardSchemaV1 =>
  * }
  * ```
  */
-export const standardValidate: StandardValidateFn = async <TSchema extends StandardSchemaV1>(
+const standardValidate: StandardValidateFn = async <TSchema extends StandardSchemaV1>(
   input: unknown,
   schema: TSchema,
   options?: StandardValidateOptions,
@@ -207,7 +207,7 @@ export const standardValidate: StandardValidateFn = async <TSchema extends Stand
  * }
  * ```
  */
-export const standardValidateSync: StandardValidateSyncFn = <TSchema extends StandardSchemaV1>(
+const standardValidateSync: StandardValidateSyncFn = <TSchema extends StandardSchemaV1>(
   input: unknown,
   schema: TSchema,
   options?: StandardValidateOptions,
@@ -263,7 +263,7 @@ export const standardValidateSync: StandardValidateSyncFn = <TSchema extends Sta
  * }
  * ```
  */
-export const createStandardValidator = <TSchema extends StandardSchemaV1>(
+const createStandardValidator = <TSchema extends StandardSchemaV1>(
   schema: TSchema,
 ): {
   (
@@ -338,7 +338,7 @@ export const createStandardValidator = <TSchema extends StandardSchemaV1>(
  * }
  * ```
  */
-export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
+const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
   schema: TSchema,
 ): {
   (
@@ -390,3 +390,12 @@ export const createStandardValidatorSync = <TSchema extends StandardSchemaV1>(
 
   return validate;
 };
+
+export {
+  isStandardSchema,
+  standardValidate,
+  standardValidateSync,
+  createStandardValidator,
+  createStandardValidatorSync,
+};
+export type { StandardValidateFn, StandardValidateSyncFn, StandardValidateOptions };

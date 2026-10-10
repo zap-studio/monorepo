@@ -1,7 +1,7 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useFullscreen`. */
-export interface UseFullscreenResult<T extends Element> {
+interface UseFullscreenResult<T extends Element> {
   enter: () => Promise<void>;
   exit: () => Promise<void>;
   isFullscreen: boolean;
@@ -28,7 +28,7 @@ const isSupported = (): boolean =>
  * return <div ref={ref}><button onClick={toggle}>{isFullscreen ? "Exit" : "Enter"}</button></div>;
  * ```
  */
-export const useFullscreen = <T extends Element = HTMLElement>(): UseFullscreenResult<T> => {
+const useFullscreen = <T extends Element = HTMLElement>(): UseFullscreenResult<T> => {
   const supported = isSupported();
   const ref = useRef<T | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -70,3 +70,6 @@ export const useFullscreen = <T extends Element = HTMLElement>(): UseFullscreenR
 
   return { enter, exit, isFullscreen, ref, supported, toggle };
 };
+
+export { useFullscreen };
+export type { UseFullscreenResult };

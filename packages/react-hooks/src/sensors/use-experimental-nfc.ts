@@ -25,13 +25,13 @@ interface NfcSession {
 }
 
 /** The most recent tag read while scanning. */
-export interface NfcReading {
+interface NfcReading {
   records: readonly NDEFRecord[];
   serialNumber: string;
 }
 
 /** The shape returned by `useExperimentalNfc`. */
-export interface UseExperimentalNfcResult {
+interface UseExperimentalNfcResult {
   error: Error | undefined;
   makeReadOnly: () => Promise<boolean>;
   reading: NfcReading | undefined;
@@ -72,7 +72,7 @@ const toError = (caught: unknown): Error =>
  * {reading ? <p>Tag {reading.serialNumber}</p> : null}
  * ```
  */
-export const useExperimentalNfc = (): UseExperimentalNfcResult => {
+const useExperimentalNfc = (): UseExperimentalNfcResult => {
   const supported = Boolean(getNdefReaderConstructor());
   const [reading, setReading] = useState<NfcReading | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -164,3 +164,6 @@ export const useExperimentalNfc = (): UseExperimentalNfcResult => {
 
   return { error, makeReadOnly, reading, scan, scanning, stop, supported, write };
 };
+
+export { useExperimentalNfc };
+export type { NfcReading, UseExperimentalNfcResult };

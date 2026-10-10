@@ -14,7 +14,7 @@ interface GyroscopeSensor extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalGyroscope`. Rotation speed in rad/s around each axis. */
-export interface GyroscopeReading {
+interface GyroscopeReading {
   x: number | null;
   y: number | null;
   z: number | null;
@@ -27,7 +27,7 @@ const readGyroscope = (sensor: GyroscopeSensor): GyroscopeReading => ({
 });
 
 /** The shape returned by `useExperimentalGyroscope`. */
-export type UseExperimentalGyroscopeResult = UseGenericSensorResult<GyroscopeReading>;
+type UseExperimentalGyroscopeResult = UseGenericSensorResult<GyroscopeReading>;
 
 /**
  * Reads the device's `Gyroscope`. This is experimental, only works in
@@ -46,7 +46,8 @@ export type UseExperimentalGyroscopeResult = UseGenericSensorResult<GyroscopeRea
  * <button onClick={start} disabled={!supported}>Enable gyroscope</button>
  * ```
  */
-export const useExperimentalGyroscope = (
-  options?: GenericSensorOptions,
-): UseExperimentalGyroscopeResult =>
+const useExperimentalGyroscope = (options?: GenericSensorOptions): UseExperimentalGyroscopeResult =>
   useGenericSensor<GyroscopeSensor, GyroscopeReading>("Gyroscope", readGyroscope, options);
+
+export { useExperimentalGyroscope };
+export type { GyroscopeReading, UseExperimentalGyroscopeResult };

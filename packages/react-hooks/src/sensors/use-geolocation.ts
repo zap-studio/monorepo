@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useIsClient } from "./use-is-client.ts";
 
 /** The `coords` shape `useGeolocation` reports on success — a flattened `GeolocationCoordinates`. */
-export interface GeolocationCoordinatesState {
+interface GeolocationCoordinatesState {
   accuracy: number;
   altitude: number | null;
   altitudeAccuracy: number | null;
@@ -14,20 +14,20 @@ export interface GeolocationCoordinatesState {
 }
 
 /** The `error` shape `useGeolocation` reports on failure or when unsupported. */
-export interface GeolocationErrorState {
+interface GeolocationErrorState {
   code: number;
   message: string;
 }
 
 /** The shape returned by `useGeolocation`. */
-export interface GeolocationState {
+interface GeolocationState {
   coords?: GeolocationCoordinatesState;
   error?: GeolocationErrorState;
   loading: boolean;
 }
 
 /** Options accepted by `useGeolocation`, passed through to the underlying `PositionOptions`. */
-export interface UseGeolocationOptions {
+interface UseGeolocationOptions {
   enableHighAccuracy?: boolean;
   maximumAge?: number;
   timeout?: number;
@@ -70,7 +70,7 @@ const toErrorState = (error: GeolocationPositionError): GeolocationErrorState =>
  * // useGeolocation({ watch: true }) for continuous updates
  * ```
  */
-export const useGeolocation = (options: UseGeolocationOptions = {}): GeolocationState => {
+const useGeolocation = (options: UseGeolocationOptions = {}): GeolocationState => {
   const { enableHighAccuracy, maximumAge, timeout, watch = false } = options;
 
   const isClient = useIsClient();
@@ -113,4 +113,12 @@ export const useGeolocation = (options: UseGeolocationOptions = {}): Geolocation
   }, [supported, enableHighAccuracy, maximumAge, timeout, watch]);
 
   return isClient && !supported ? { error: UNSUPPORTED_ERROR, loading: false } : state;
+};
+
+export { useGeolocation };
+export type {
+  GeolocationCoordinatesState,
+  GeolocationErrorState,
+  GeolocationState,
+  UseGeolocationOptions,
 };

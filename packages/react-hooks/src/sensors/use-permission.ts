@@ -14,7 +14,7 @@ import { useIsClient } from "./use-is-client.ts";
  * const cameraPermission = usePermission("camera");
  * ```
  */
-export const usePermission = (name: PermissionName): PermissionState | undefined => {
+const usePermission = (name: PermissionName): PermissionState | undefined => {
   const isClient = useIsClient();
   const supported = isClient && typeof navigator !== "undefined" && !!navigator.permissions;
 
@@ -60,3 +60,5 @@ export const usePermission = (name: PermissionName): PermissionState | undefined
 
   return state;
 };
+
+export { usePermission };

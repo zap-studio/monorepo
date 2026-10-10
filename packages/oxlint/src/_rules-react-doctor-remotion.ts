@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorRemotionRules: RuleMap = {
+const reactDoctorRemotionRules: RuleMap = {
   "remotion-calculate-metadata-fetch-signal": "error",
   "remotion-deterministic-randomness": "error",
   "remotion-no-css-animation": "error",
@@ -11,3 +11,5 @@ export const reactDoctorRemotionRules: RuleMap = {
   "remotion-no-next-image": "error",
   "remotion-stable-delay-render-handle": "error",
 };
+
+export { reactDoctorRemotionRules };

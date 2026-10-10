@@ -15,7 +15,7 @@ import { useIsClient } from "./use-is-client.ts";
  * if (!fontsReady) return <Skeleton />;
  * ```
  */
-export const useFontsReady = (): boolean => {
+const useFontsReady = (): boolean => {
   const isClient = useIsClient();
   const supported = isClient && typeof document !== "undefined" && !!document.fonts;
   const [loaded, setLoaded] = useState(false);
@@ -43,3 +43,5 @@ export const useFontsReady = (): boolean => {
 
   return supported ? loaded : isClient;
 };
+
+export { useFontsReady };

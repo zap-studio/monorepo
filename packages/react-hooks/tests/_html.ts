@@ -7,7 +7,7 @@
  * exists only to satisfy `github/unescaped-html-literal`, which requires an
  * `html` tagged template for any string literal starting with `<letter`.
  */
-export const html = (
-  strings: TemplateStringsArray,
-  ...values: readonly (number | string)[]
-): string => strings.reduce((result, part, index) => result + part + (values[index] ?? ""), "");
+const html = (strings: TemplateStringsArray, ...values: readonly (number | string)[]): string =>
+  strings.reduce((result, part, index) => result + part + (values[index] ?? ""), "");
+
+export { html };

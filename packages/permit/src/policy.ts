@@ -111,7 +111,7 @@ const parsePermission = <
  * await policy.can(ctx, "post:write", post); // depends on ctx.user.id
  * ```
  */
-export const createPolicy = <
+const createPolicy = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
@@ -280,7 +280,7 @@ const mergePoliciesWithStrategy = <
  * // Both policies must allow for the action to be permitted
  * ```
  */
-export const mergePoliciesAnd = <
+const mergePoliciesAnd = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
@@ -302,10 +302,12 @@ export const mergePoliciesAnd = <
  * // If either policy allows, the action is permitted
  * ```
  */
-export const mergePoliciesOr = <
+const mergePoliciesOr = <
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(
   ...policies: Policy<TContext, TResources, TActions>[]
 ): Policy<TContext, TResources, TActions> => mergePoliciesWithStrategy(policies, "or");
+
+export { createPolicy, mergePoliciesAnd, mergePoliciesOr };

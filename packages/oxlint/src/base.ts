@@ -9,7 +9,7 @@ import { githubRules } from "./_rules-github.ts";
 import { regexpRules } from "./_rules-regexp.ts";
 import { sonarjsRules } from "./_rules-sonarjs.ts";
 
-export const basePlugins: NonNullable<OxlintConfig["plugins"]> = [
+const basePlugins: NonNullable<OxlintConfig["plugins"]> = [
   "eslint",
   "typescript",
   "unicorn",
@@ -18,7 +18,7 @@ export const basePlugins: NonNullable<OxlintConfig["plugins"]> = [
   "promise",
 ];
 
-export const baseJsPlugins: ExternalPluginEntry[] = [
+const baseJsPlugins: ExternalPluginEntry[] = [
   { name: "anti-slop", specifier: antiSlopSpecifier },
   { name: "regexp", specifier: resolvePlugin("eslint-plugin-regexp") },
   { name: "sonarjs", specifier: resolvePlugin("eslint-plugin-sonarjs") },
@@ -26,7 +26,7 @@ export const baseJsPlugins: ExternalPluginEntry[] = [
   { name: "e18e", specifier: resolvePlugin("@e18e/eslint-plugin") },
 ];
 
-export const baseRules: DummyRuleMap = {
+const baseRules: DummyRuleMap = {
   "import/no-cycle": ["error", { maxDepth: 3 }],
   "eslint/func-style": ["error", "expression"],
   ...prefixed("regexp", regexpRules),
@@ -46,7 +46,7 @@ export const baseRules: DummyRuleMap = {
   "anti-slop/require-safety-comment-for-type-assertion": "error",
 };
 
-export const baseOptions: NonNullable<OxlintConfig["options"]> = {
+const baseOptions: NonNullable<OxlintConfig["options"]> = {
   typeAware: true,
   typeCheck: true,
 };
@@ -59,3 +59,5 @@ const base: OxlintConfig = defineConfig({
 });
 
 export default base;
+
+export { basePlugins, baseJsPlugins, baseRules, baseOptions };

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Status reported by `useUserMedia`/`useCamera`. */
-export type MediaStreamStatus = "active" | "error" | "idle" | "requesting";
+type MediaStreamStatus = "active" | "error" | "idle" | "requesting";
 
 /** The shape returned by `useUserMedia`/`useCamera`. */
-export interface UserMediaResult {
+interface UserMediaResult {
   error: Error | undefined;
   start: () => Promise<void>;
   status: MediaStreamStatus;
@@ -16,7 +16,7 @@ const isSupported = (): boolean =>
   typeof navigator !== "undefined" && typeof navigator.mediaDevices?.getUserMedia === "function";
 
 /** Config accepted by the shared `useMediaCapture` implementation. */
-export interface UseMediaCaptureOptions<Args> {
+interface UseMediaCaptureOptions<Args> {
   /** Latest arguments passed to `capture`; read fresh on every `start()` call. */
   args: Args;
   /** Requests the `MediaStream`, e.g. `getUserMedia`/`getDisplayMedia`. */
@@ -38,7 +38,7 @@ export interface UseMediaCaptureOptions<Args> {
  * API. Backs `useMediaStream` (`getUserMedia`) and `useScreenCapture`
  * (`getDisplayMedia`) — they only differ in how the stream is requested.
  */
-export const useMediaCapture = <Args>({
+const useMediaCapture = <Args>({
   args,
   capture,
   onStarted,
@@ -111,10 +111,13 @@ export const useMediaCapture = <Args>({
  * Handles starting and stopping `getUserMedia` for both `useUserMedia`
  * and `useCamera`.
  */
-export const useMediaStream = (constraints: MediaStreamConstraints): UserMediaResult =>
+const useMediaStream = (constraints: MediaStreamConstraints): UserMediaResult =>
   useMediaCapture({
     args: constraints,
     capture: (currentConstraints) => navigator.mediaDevices.getUserMedia(currentConstraints),
     supported: isSupported,
     unsupportedMessage: "getUserMedia is not supported by this browser.",
   });
+
+export { useMediaCapture, useMediaStream };
+export type { MediaStreamStatus, UserMediaResult, UseMediaCaptureOptions };

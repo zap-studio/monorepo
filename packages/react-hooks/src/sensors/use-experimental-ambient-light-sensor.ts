@@ -12,7 +12,7 @@ interface AmbientLightSensorInstance extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalAmbientLightSensor`. The light level around the device, in lux. */
-export interface AmbientLightReading {
+interface AmbientLightReading {
   illuminance: number | null;
 }
 
@@ -21,7 +21,7 @@ const readAmbientLight = (sensor: AmbientLightSensorInstance): AmbientLightReadi
 });
 
 /** The shape returned by `useExperimentalAmbientLightSensor`. */
-export type UseExperimentalAmbientLightSensorResult = UseGenericSensorResult<AmbientLightReading>;
+type UseExperimentalAmbientLightSensorResult = UseGenericSensorResult<AmbientLightReading>;
 
 /**
  * Reads the device's `AmbientLightSensor`. This is experimental, only
@@ -40,7 +40,7 @@ export type UseExperimentalAmbientLightSensorResult = UseGenericSensorResult<Amb
  * <button onClick={start} disabled={!supported}>Enable ambient light sensor</button>
  * ```
  */
-export const useExperimentalAmbientLightSensor = (
+const useExperimentalAmbientLightSensor = (
   options?: GenericSensorOptions,
 ): UseExperimentalAmbientLightSensorResult =>
   useGenericSensor<AmbientLightSensorInstance, AmbientLightReading>(
@@ -48,3 +48,6 @@ export const useExperimentalAmbientLightSensor = (
     readAmbientLight,
     options,
   );
+
+export { useExperimentalAmbientLightSensor };
+export type { AmbientLightReading, UseExperimentalAmbientLightSensorResult };

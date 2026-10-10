@@ -15,5 +15,7 @@ const getServerSnapshot = (): boolean => false;
  * const cookiesEnabled = useCookieEnabled();
  * ```
  */
-export const useCookieEnabled = (): boolean =>
+const useCookieEnabled = (): boolean =>
   useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+export { useCookieEnabled };

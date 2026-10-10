@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `useOrientation`. */
-export interface Orientation {
+interface Orientation {
   angle: number;
   type?: OrientationType;
 }
@@ -38,7 +38,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const { angle, type } = useOrientation();
  * ```
  */
-export const useOrientation = (): Orientation => {
+const useOrientation = (): Orientation => {
   const cacheRef = useRef<Orientation>(FALLBACK_ORIENTATION);
 
   const getSnapshot = useCallback((): Orientation => {
@@ -51,3 +51,6 @@ export const useOrientation = (): Orientation => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useOrientation };
+export type { Orientation };

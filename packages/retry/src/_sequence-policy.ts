@@ -11,7 +11,7 @@ import type {
 
 import { RetryError } from "./errors.ts";
 
-export const createSequencePolicy = (
+const createSequencePolicy = (
   decisions: RetryDecision[],
 ): Required<Pick<RetryPolicy<Error, string>, "isKnownError" | "next" | "onExhausted">> & {
   seen: RetryDecisionInput<Error, string>[];
@@ -46,7 +46,7 @@ export const createSequencePolicy = (
   };
 };
 
-export const createCustomTerminalPolicy = (): RetryPolicy => ({
+const createCustomTerminalPolicy = (): RetryPolicy => ({
   next(): RetryDecision {
     return { delayMs: 0, reason: "policy-declined", shouldRetry: false };
   },
@@ -58,7 +58,7 @@ export const createCustomTerminalPolicy = (): RetryPolicy => ({
   },
 });
 
-export const expectFailureResult = (
+const expectFailureResult = (
   result: RetryRunResult<string>,
 ): {
   ok: false;
@@ -71,3 +71,5 @@ export const expectFailureResult = (
 
   return result;
 };
+
+export { createSequencePolicy, createCustomTerminalPolicy, expectFailureResult };

@@ -14,14 +14,14 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * const vars: EnvironmentVariableSchemaMap = { PORT: z.coerce.number() };
  * ```
  */
-export type EnvironmentVariableSchemaMap = Record<string, StandardSchemaV1>;
+type EnvironmentVariableSchemaMap = Record<string, StandardSchemaV1>;
 
 /**
  * The type a value can have for one key in a resolved env object (for
  * example `process.env` or `import.meta.env`, or dotenv output), before
  * validation.
  */
-export type RawEnvironmentVariableValue = boolean | number | string | undefined;
+type RawEnvironmentVariableValue = boolean | number | string | undefined;
 
 /**
  * Makes sure every key in a `client` shape starts with `TClientPrefix`.
@@ -59,7 +59,7 @@ type PrefixedClientVariableSchemas<
  * });
  * ```
  */
-export interface EnvironmentSchema<
+interface EnvironmentSchema<
   TShared extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
   TServer extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
   TClient extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
@@ -80,7 +80,7 @@ export interface EnvironmentSchema<
  * when the shape is `undefined`, for example when `shared`, `server`, or
  * `client` is left out.
  */
-export type InferEnvironmentVariableSchemaMapOutput<TSchemas> =
+type InferEnvironmentVariableSchemaMapOutput<TSchemas> =
   TSchemas extends EnvironmentVariableSchemaMap
     ? { [K in keyof TSchemas]: StandardSchemaV1.InferOutput<TSchemas[K]> }
     : Record<string, never>;
@@ -110,7 +110,7 @@ type UnionToIntersection<TUnion> = (
 /**
  * Gets the merged output type of every schema added through `extends`.
  */
-export type InferExtendsMergedOutput<TExtends> = TExtends extends readonly EnvironmentSchema[]
+type InferExtendsMergedOutput<TExtends> = TExtends extends readonly EnvironmentSchema[]
   ? UnionToIntersection<InferEnvironmentSchemaOutput<TExtends[number]>>
   : Record<string, never>;
 
@@ -120,7 +120,7 @@ export type InferExtendsMergedOutput<TExtends> = TExtends extends readonly Envir
  * the access and validation behavior, and schema composing through
  * `extends`.
  */
-export interface CreateEnvironmentOptions<
+interface CreateEnvironmentOptions<
   TShared extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
   TServer extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
   TClient extends EnvironmentVariableSchemaMap = EnvironmentVariableSchemaMap,
@@ -183,7 +183,7 @@ export interface CreateEnvironmentOptions<
  * options object: first the `extends` sources, then `shared`, `server`,
  * and `client`.
  */
-export type InferCreateEnvironmentOutput<TOptions extends CreateEnvironmentOptions> =
+type InferCreateEnvironmentOutput<TOptions extends CreateEnvironmentOptions> =
   InferExtendsMergedOutput<TOptions["extends"]> &
     InferEnvironmentVariableSchemaMapOutput<TOptions["shared"]> &
     InferEnvironmentVariableSchemaMapOutput<TOptions["server"]> &
@@ -193,8 +193,19 @@ export type InferCreateEnvironmentOutput<TOptions extends CreateEnvironmentOptio
  * One merged env var: which bucket it came from, its schema, and, for a
  * `client` var, the prefix its source used.
  */
-export interface ResolvedEnvironmentVariableEntry {
+interface ResolvedEnvironmentVariableEntry {
   readonly bucket: "client" | "server" | "shared";
   readonly clientPrefix?: string;
   readonly schema: StandardSchemaV1;
 }
+
+export type {
+  EnvironmentVariableSchemaMap,
+  RawEnvironmentVariableValue,
+  EnvironmentSchema,
+  InferEnvironmentVariableSchemaMapOutput,
+  InferExtendsMergedOutput,
+  CreateEnvironmentOptions,
+  InferCreateEnvironmentOutput,
+  ResolvedEnvironmentVariableEntry,
+};

@@ -8,7 +8,7 @@ import {
 } from "./_file-system-access-api.ts";
 
 /** The shape returned by `useFilePicker`. */
-export interface UseFilePickerResult {
+interface UseFilePickerResult {
   showDirectoryPicker: (
     options?: DirectoryPickerOptions,
   ) => Promise<FileSystemDirectoryHandle | undefined>;
@@ -39,7 +39,7 @@ const isAbortError = (error: unknown): boolean =>
  * const handles = supported ? await showOpenFilePicker({ multiple: true }) : undefined;
  * ```
  */
-export const useFilePicker = (): UseFilePickerResult => {
+const useFilePicker = (): UseFilePickerResult => {
   const supported = Boolean(getFileSystemAccess().showOpenFilePicker);
 
   const showOpenFilePicker = useCallback(
@@ -101,3 +101,6 @@ export const useFilePicker = (): UseFilePickerResult => {
     [showDirectoryPicker, showOpenFilePicker, showSaveFilePicker, supported],
   );
 };
+
+export { useFilePicker };
+export type { UseFilePickerResult };

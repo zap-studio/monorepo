@@ -16,7 +16,7 @@ import { usePendingTimeoutRef } from "./_pending-timeout-ref.ts";
  * window.addEventListener("scroll", throttledScroll);
  * ```
  */
-export const useThrottle = <Args extends unknown[]>(
+const useThrottle = <Args extends unknown[]>(
   callback: (...args: Args) => void,
   delayMs: number,
 ): ((...args: Args) => void) => {
@@ -42,3 +42,5 @@ export const useThrottle = <Args extends unknown[]>(
     [delayMs, timeoutRef],
   );
 };
+
+export { useThrottle };

@@ -68,7 +68,7 @@ function moduleMockCall(sourceCode: SourceCode, callee: ESTree.Expression): bool
 }
 
 /** Ban test framework module mocking in favor of real dependency seams. */
-export const noModuleMockingRule: Rule = defineRule({
+const noModuleMockingRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -91,3 +91,5 @@ export const noModuleMockingRule: Rule = defineRule({
     };
   },
 });
+
+export { noModuleMockingRule };

@@ -36,7 +36,7 @@ function hasSafetyComment(sourceCode: SourceCode, node: TypeAssertion): boolean 
 }
 
 /** Require every non-const type assertion to state the invariant TypeScript cannot express. */
-export const requireSafetyCommentForTypeAssertionRule: Rule = defineRule({
+const requireSafetyCommentForTypeAssertionRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -60,3 +60,5 @@ export const requireSafetyCommentForTypeAssertionRule: Rule = defineRule({
     };
   },
 });
+
+export { requireSafetyCommentForTypeAssertionRule };

@@ -3,7 +3,7 @@ import { type RefObject, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useFileDrop`. */
-export interface UseFileDropResult<T extends HTMLElement> {
+interface UseFileDropResult<T extends HTMLElement> {
   isOver: boolean;
   ref: RefObject<T | null>;
 }
@@ -30,7 +30,7 @@ const filesFrom = (event: DragEvent): File[] => [...(event.dataTransfer?.files ?
  * return <div ref={ref}>{isOver ? "Drop to upload" : "Drag files here"}</div>;
  * ```
  */
-export const useFileDrop = <T extends HTMLElement = HTMLElement>(
+const useFileDrop = <T extends HTMLElement = HTMLElement>(
   onDrop: (files: File[]) => void,
 ): UseFileDropResult<T> => {
   const ref = useRef<T | null>(null);
@@ -80,3 +80,6 @@ export const useFileDrop = <T extends HTMLElement = HTMLElement>(
 };
 
 export { useFileDrop as useDropzone };
+
+export { useFileDrop };
+export type { UseFileDropResult };

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 /** The shape returned by `useCopyToClipboard`. */
-export interface UseCopyToClipboardResult {
+interface UseCopyToClipboardResult {
   copied: boolean;
   copy: (text: string) => Promise<boolean>;
   error: Error | undefined;
@@ -24,7 +24,7 @@ const DEFAULT_RESET_AFTER_MS = 2000;
  * <button onClick={() => copy(code)}>{copied ? "Copied!" : "Copy"}</button>
  * ```
  */
-export const useCopyToClipboard = (
+const useCopyToClipboard = (
   resetAfterMs: number = DEFAULT_RESET_AFTER_MS,
 ): UseCopyToClipboardResult => {
   const [copied, setCopied] = useState(false);
@@ -58,3 +58,6 @@ export const useCopyToClipboard = (
 
   return { copied, copy, error };
 };
+
+export { useCopyToClipboard };
+export type { UseCopyToClipboardResult };

@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
  * useUnmount(() => socket.close());
  * ```
  */
-export const useUnmount = (cleanup: () => void): void => {
+const useUnmount = (cleanup: () => void): void => {
   const cleanupRef = useRef(cleanup);
   useEffect(() => {
     cleanupRef.current = cleanup;
@@ -19,3 +19,5 @@ export const useUnmount = (cleanup: () => void): void => {
 
   useEffect(() => () => cleanupRef.current(), []);
 };
+
+export { useUnmount };

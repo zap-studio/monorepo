@@ -1,5 +1,7 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const tanstackRouterRules: RuleMap = {
+const tanstackRouterRules: RuleMap = {
   "create-route-property-order": "error",
 };
+
+export { tanstackRouterRules };

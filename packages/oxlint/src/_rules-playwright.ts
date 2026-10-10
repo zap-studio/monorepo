@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const playwrightRules: RuleMap = {
+const playwrightRules: RuleMap = {
   "consistent-spacing-between-blocks": "warn",
   "expect-expect": "warn",
   "max-nested-describe": "warn",
@@ -73,3 +73,5 @@ export const playwrightRules: RuleMap = {
   // needs a tagging convention/workflow this repo doesn't have
   "require-tags": "off",
 };
+
+export { playwrightRules };

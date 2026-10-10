@@ -10,7 +10,7 @@
  * @example
  * const context: RetryErrorContext = { attempts: 3, lastError: new Error("network") };
  */
-export interface RetryErrorContext {
+interface RetryErrorContext {
   /**
    * Count of completed attempts at exhaustion.
    */
@@ -31,7 +31,7 @@ export interface RetryErrorContext {
  * @example
  * const context: AbortErrorContext = { cause: new Error("shutting down") };
  */
-export interface AbortErrorContext {
+interface AbortErrorContext {
   /**
    * When the abort `reason` was an `Error`, the optional wrapped cause.
    */
@@ -47,7 +47,7 @@ export interface AbortErrorContext {
  *   lastError: new Error("network"),
  * });
  */
-export class RetryError extends Error {
+class RetryError extends Error {
   /**
    * Total attempts performed before exhaustion.
    */
@@ -92,7 +92,7 @@ export class RetryError extends Error {
  * }
  * ```
  */
-export class AbortError extends Error {
+class AbortError extends Error {
   /**
    * Optional wrapped cause when the native abort `reason` was an `Error`.
    */
@@ -110,3 +110,6 @@ export class AbortError extends Error {
     this.cause = context.cause;
   }
 }
+
+export { RetryError, AbortError };
+export type { RetryErrorContext, AbortErrorContext };

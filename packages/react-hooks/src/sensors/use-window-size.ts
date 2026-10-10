@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `useWindowSize`. */
-export interface WindowSize {
+interface WindowSize {
   height: number;
   width: number;
 }
@@ -29,7 +29,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const { width, height } = useWindowSize();
  * ```
  */
-export const useWindowSize = (): WindowSize => {
+const useWindowSize = (): WindowSize => {
   const cacheRef = useRef<WindowSize>(FALLBACK_SIZE);
 
   const getSnapshot = useCallback((): WindowSize => {
@@ -42,3 +42,6 @@ export const useWindowSize = (): WindowSize => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useWindowSize };
+export type { WindowSize };

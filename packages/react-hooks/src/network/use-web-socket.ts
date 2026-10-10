@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Connection status reported by `useWebSocket`. */
-export type WebSocketStatus = "closed" | "connecting" | "open";
+type WebSocketStatus = "closed" | "connecting" | "open";
 
 /** The shape returned by `useWebSocket`. */
-export interface UseWebSocketResult {
+interface UseWebSocketResult {
   close: () => void;
   lastMessage: MessageEvent | undefined;
   send: (data: Parameters<WebSocket["send"]>[0]) => void;
@@ -24,7 +24,7 @@ export interface UseWebSocketResult {
  * if (status === "open") send("ping");
  * ```
  */
-export const useWebSocket = (url: string | undefined): UseWebSocketResult => {
+const useWebSocket = (url: string | undefined): UseWebSocketResult => {
   const [status, setStatus] = useState<WebSocketStatus>(url ? "connecting" : "closed");
   const [lastMessage, setLastMessage] = useState<MessageEvent | undefined>(undefined);
   const socketRef = useRef<WebSocket | null>(null);
@@ -70,3 +70,6 @@ export const useWebSocket = (url: string | undefined): UseWebSocketResult => {
 
   return { close, lastMessage, send, status };
 };
+
+export { useWebSocket };
+export type { WebSocketStatus, UseWebSocketResult };

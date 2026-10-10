@@ -12,7 +12,7 @@ import type { LogLevel } from "./types.ts";
  * (logs everything) to `"none"` (silences everything). Not specific to any
  * one `Logger` implementation.
  */
-export const LOG_LEVEL_ORDER: readonly LogLevel[] = [
+const LOG_LEVEL_ORDER: readonly LogLevel[] = [
   "all",
   "trace",
   "debug",
@@ -26,5 +26,7 @@ export const LOG_LEVEL_ORDER: readonly LogLevel[] = [
 /**
  * Whether `level` meets or exceeds `minLevel` in {@link LOG_LEVEL_ORDER}.
  */
-export const isLevelEnabled = (level: LogLevel, minLevel: LogLevel): boolean =>
+const isLevelEnabled = (level: LogLevel, minLevel: LogLevel): boolean =>
   LOG_LEVEL_ORDER.indexOf(level) >= LOG_LEVEL_ORDER.indexOf(minLevel);
+
+export { LOG_LEVEL_ORDER, isLevelEnabled };

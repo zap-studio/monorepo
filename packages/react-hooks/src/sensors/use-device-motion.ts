@@ -5,7 +5,7 @@ interface DeviceMotionEventConstructorWithPermission {
 }
 
 /** The motion fields `useDeviceMotion` reports — mirrors `DeviceMotionEvent`. */
-export interface DeviceMotionState {
+interface DeviceMotionState {
   acceleration: DeviceMotionEvent["acceleration"];
   accelerationIncludingGravity: DeviceMotionEvent["accelerationIncludingGravity"];
   interval: number;
@@ -13,7 +13,7 @@ export interface DeviceMotionState {
 }
 
 /** The shape returned by `useDeviceMotion`. */
-export interface UseDeviceMotionResult extends DeviceMotionState {
+interface UseDeviceMotionResult extends DeviceMotionState {
   requestPermission: () => Promise<boolean>;
   supported: boolean;
 }
@@ -56,7 +56,7 @@ const requestDeviceMotionPermission = async (): Promise<boolean> => {
  * <button onClick={requestPermission}>Enable motion controls</button>
  * ```
  */
-export const useDeviceMotion = (): UseDeviceMotionResult => {
+const useDeviceMotion = (): UseDeviceMotionResult => {
   const [state, setState] = useState<DeviceMotionState>(INITIAL_STATE);
   const supported = typeof window !== "undefined" && Boolean(window.DeviceMotionEvent);
 
@@ -74,3 +74,6 @@ export const useDeviceMotion = (): UseDeviceMotionResult => {
     [state, supported],
   );
 };
+
+export { useDeviceMotion };
+export type { DeviceMotionState, UseDeviceMotionResult };

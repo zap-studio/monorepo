@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-export const reactDoctorInkRules: RuleMap = {
+const reactDoctorInkRules: RuleMap = {
   "ink-ctrl-c-handler-requires-exit-option": "error",
   "ink-no-bare-process-exit": "error",
   "ink-no-direct-raw-mode": "error",
@@ -26,3 +26,5 @@ export const reactDoctorInkRules: RuleMap = {
   "ink-newline-inside-text": "off",
   "ink-suspense-requires-concurrent": "off",
 };
+
+export { reactDoctorInkRules };

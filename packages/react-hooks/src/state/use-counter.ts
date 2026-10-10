@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 
 /** Options accepted by `useCounter`. */
-export interface UseCounterOptions {
+interface UseCounterOptions {
   max?: number;
   min?: number;
 }
 
 /** The shape returned by `useCounter`. */
-export interface UseCounterResult {
+interface UseCounterResult {
   count: number;
   decrement: (step?: number) => void;
   increment: (step?: number) => void;
@@ -26,7 +26,7 @@ export interface UseCounterResult {
  * const { count, increment, decrement, reset } = useCounter(0, { min: 0, max: 10 });
  * ```
  */
-export const useCounter = (initialValue = 0, options: UseCounterOptions = {}): UseCounterResult => {
+const useCounter = (initialValue = 0, options: UseCounterOptions = {}): UseCounterResult => {
   const { max, min } = options;
 
   const clamp = useCallback(
@@ -52,3 +52,6 @@ export const useCounter = (initialValue = 0, options: UseCounterOptions = {}): U
 
   return { count, decrement, increment, reset, set };
 };
+
+export { useCounter };
+export type { UseCounterOptions, UseCounterResult };

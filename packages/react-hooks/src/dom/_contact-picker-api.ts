@@ -1,8 +1,8 @@
 /** A simple local copy of the Contact Picker API types. This API is experimental (see MDN) and only works in Chromium browsers. */
-export type ContactProperty = "address" | "email" | "icon" | "name" | "tel";
+type ContactProperty = "address" | "email" | "icon" | "name" | "tel";
 
 /** A single postal address, as returned in a `ContactInfo`'s `address` field. */
-export interface ContactAddress {
+interface ContactAddress {
   readonly addressLine: readonly string[];
   readonly city: string;
   readonly country: string;
@@ -16,7 +16,7 @@ export interface ContactAddress {
 }
 
 /** A single contact returned by `ContactsManager.select()`. Only the fields you requested via `ContactProperty` are filled in. */
-export interface ContactInfo {
+interface ContactInfo {
   address?: ContactAddress[];
   email?: string[];
   icon?: Blob[];
@@ -25,7 +25,7 @@ export interface ContactInfo {
 }
 
 /** Options `ContactsManager.select()` accepts, beyond which properties to request. */
-export interface ContactSelectOptions {
+interface ContactSelectOptions {
   multiple?: boolean;
 }
 
@@ -43,10 +43,13 @@ interface NavigatorWithContacts extends Navigator {
  * `useExperimentalContactPicker` calls this function directly during render
  * (including on the server), not just inside an effect.
  */
-export const getContactsManager = (): ContactsManager | undefined => {
+const getContactsManager = (): ContactsManager | undefined => {
   if (typeof navigator === "undefined") {
     return undefined;
   }
   // SAFETY: contacts is not declared on Navigator. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (navigator as NavigatorWithContacts).contacts;
 };
+
+export { getContactsManager };
+export type { ContactProperty, ContactAddress, ContactInfo, ContactSelectOptions };

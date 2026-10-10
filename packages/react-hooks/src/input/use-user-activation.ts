@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `useUserActivation`. */
-export interface UserActivationState {
+interface UserActivationState {
   hasBeenActive: boolean;
   isActive: boolean;
 }
@@ -56,7 +56,7 @@ const subscribe = (onStoreChange: () => void) => {
  * if (isActive) audio.play(); // gate autoplay behind a real user gesture
  * ```
  */
-export const useUserActivation = (): UserActivationState => {
+const useUserActivation = (): UserActivationState => {
   const cacheRef = useRef<UserActivationState>(FALLBACK_STATE);
 
   const getSnapshot = useCallback((): UserActivationState => {
@@ -69,3 +69,6 @@ export const useUserActivation = (): UserActivationState => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
+
+export { useUserActivation };
+export type { UserActivationState };

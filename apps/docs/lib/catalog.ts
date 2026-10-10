@@ -5,9 +5,9 @@ import { type PackageInfo, packages } from "./packages.ts";
 
 const packagesDirectory = resolve(process.cwd(), "../../packages");
 
-export type Support = "full" | "partial" | "tooling";
+type Support = "full" | "partial" | "tooling";
 
-export interface CatalogEntry extends PackageInfo {
+interface CatalogEntry extends PackageInfo {
   dependencies: number;
   gzipBytes: number | null;
   note?: string;
@@ -15,7 +15,7 @@ export interface CatalogEntry extends PackageInfo {
   support: Record<RuntimeId, Support>;
 }
 
-export const runtimeColumns = [
+const runtimeColumns = [
   { id: "node", label: "Node" },
   { id: "bun", label: "Bun" },
   { id: "deno", label: "Deno" },
@@ -23,7 +23,7 @@ export const runtimeColumns = [
   { id: "browser", label: "Browser" },
 ] as const;
 
-export type RuntimeId = (typeof runtimeColumns)[number]["id"];
+type RuntimeId = (typeof runtimeColumns)[number]["id"];
 
 const everywhere = {
   browser: "full",
@@ -113,7 +113,7 @@ const countDependencies = (manifest: Manifest): number =>
 const countSubpaths = (manifest: Manifest): number =>
   Object.keys(manifest.exports ?? {}).filter((key) => !key.endsWith("package.json")).length;
 
-export const catalog: CatalogEntry[] = packages.map((entry) => {
+const catalog: CatalogEntry[] = packages.map((entry) => {
   const manifest = readManifest(entry.slug);
   return {
     ...entry,
@@ -127,13 +127,16 @@ export const catalog: CatalogEntry[] = packages.map((entry) => {
   };
 });
 
-export const sizesAvailable = catalog.every((entry) => entry.gzipBytes !== null);
+const sizesAvailable = catalog.every((entry) => entry.gzipBytes !== null);
 
-export const formatBytes = (bytes: number): string => {
+const formatBytes = (bytes: number): string => {
   if (bytes < 1000) {
     return `${bytes} B`;
   }
   return `${(bytes / 1000).toFixed(bytes < 10_000 ? 1 : 0)} kB`;
 };
 
-export const runtimePackages = catalog.filter((entry) => entry.support.node !== "tooling");
+const runtimePackages = catalog.filter((entry) => entry.support.node !== "tooling");
+
+export { runtimeColumns, catalog, sizesAvailable, formatBytes, runtimePackages };
+export type { Support, CatalogEntry, RuntimeId };

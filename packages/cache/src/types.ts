@@ -19,7 +19,7 @@
  *   clear: () => {},
  * };
  */
-export interface EvictionPolicy<K> {
+interface EvictionPolicy<K> {
   /**
    * Called after a live (non-expired) read via `Cache.get(...)`.
    *
@@ -56,7 +56,7 @@ export interface EvictionPolicy<K> {
  *   onEvict: (key, value) => console.log("evicted", key, value),
  * };
  */
-export interface CacheOptions<K, V> {
+interface CacheOptions<K, V> {
   /**
    * Eviction policy used to pick a victim key when the cache is over
    * capacity.
@@ -86,7 +86,7 @@ export interface CacheOptions<K, V> {
  * @example
  * const options: SetOptions = { ttl: 5_000 };
  */
-export interface SetOptions {
+interface SetOptions {
   /**
    * Time-to-live in milliseconds for this entry, overriding the cache-wide
    * default from `CacheOptions.ttl`.
@@ -102,7 +102,7 @@ export interface SetOptions {
  * cache.set("a", 1);
  * cache.get("a"); // 1
  */
-export interface Cache<K, V> {
+interface Cache<K, V> {
   /**
    * Returns the value for `key`, or `undefined` when absent or expired.
    *
@@ -164,3 +164,5 @@ export interface Cache<K, V> {
    */
   [Symbol.iterator]: () => IterableIterator<[K, V]>;
 }
+
+export type { EvictionPolicy, CacheOptions, SetOptions, Cache };

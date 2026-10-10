@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 /** Options accepted by `useSpeechSynthesis`'s `speak()`. */
-export interface SpeakOptions {
+interface SpeakOptions {
   lang?: string;
   pitch?: number;
   rate?: number;
@@ -9,7 +9,7 @@ export interface SpeakOptions {
 }
 
 /** The shape returned by `useSpeechSynthesis`. */
-export interface UseSpeechSynthesisResult {
+interface UseSpeechSynthesisResult {
   cancel: () => void;
   speak: (text: string, options?: SpeakOptions) => void;
   speaking: boolean;
@@ -31,7 +31,7 @@ const isSupported = (): boolean => typeof window !== "undefined" && Boolean(wind
  * <button onClick={() => speak("Hello there")} disabled={speaking}>Speak</button>
  * ```
  */
-export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
+const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
   const supported = isSupported();
   const [speaking, setSpeaking] = useState(false);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
@@ -87,3 +87,6 @@ export const useSpeechSynthesis = (): UseSpeechSynthesisResult => {
 
   return { cancel, speak, speaking, supported };
 };
+
+export { useSpeechSynthesis };
+export type { SpeakOptions, UseSpeechSynthesisResult };

@@ -3,7 +3,7 @@ import { type RefObject, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useHover`. */
-export interface UseHoverResult<T extends HTMLElement> {
+interface UseHoverResult<T extends HTMLElement> {
   hovered: boolean;
   ref: RefObject<T | null>;
 }
@@ -25,7 +25,7 @@ export interface UseHoverResult<T extends HTMLElement> {
  * return <div ref={ref}>{hovered ? "Hovering" : "Not hovering"}</div>;
  * ```
  */
-export const useHover = <T extends HTMLElement = HTMLElement>(): UseHoverResult<T> => {
+const useHover = <T extends HTMLElement = HTMLElement>(): UseHoverResult<T> => {
   const ref = useRef<T | null>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -52,3 +52,6 @@ export const useHover = <T extends HTMLElement = HTMLElement>(): UseHoverResult<
 
   return { hovered, ref };
 };
+
+export { useHover };
+export type { UseHoverResult };

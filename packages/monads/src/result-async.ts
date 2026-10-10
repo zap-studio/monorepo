@@ -24,7 +24,7 @@ import {
 } from "./result.ts";
 
 /** A `Promise<Result<T, E>>` wrapper with chainable, async-aware combinators. */
-export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
+class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
   /** The wrapped promise, resolving to a `Result<T, E>`. */
   private readonly promise: Promise<Result<T, E>>;
 
@@ -152,7 +152,7 @@ export class ResultAsync<T, E> implements PromiseLike<Result<T, E>> {
  * });
  * ```
  */
-export const fromPromise = <T, E>(
+const fromPromise = <T, E>(
   promise: Promise<T>,
   mapError: (error: unknown) => E,
 ): ResultAsync<T, E> =>
@@ -165,3 +165,5 @@ export const fromPromise = <T, E>(
       }
     })(),
   );
+
+export { ResultAsync, fromPromise };

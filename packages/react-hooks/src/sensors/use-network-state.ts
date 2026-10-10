@@ -17,4 +17,6 @@ export type { NetworkState } from "./_network.ts";
  * const { online, effectiveType, saveData } = useNetworkState();
  * ```
  */
-export const useNetworkState = (): NetworkState => useNetworkSnapshot();
+const useNetworkState = (): NetworkState => useNetworkSnapshot();
+
+export { useNetworkState };

@@ -49,7 +49,7 @@ const readDep = <T>(dep: Dependency<T>): T => (dep.getState ? dep.getState() : d
  * const unsubscribe = double.subscribe((value) => console.log(value));
  * ```
  */
-export const derive = <const Deps extends readonly Dependency[], T>(
+const derive = <const Deps extends readonly Dependency[], T>(
   deps: Deps,
   fn: (...values: DepValues<Deps>) => T,
 ): Readable<T> => {
@@ -115,3 +115,5 @@ export const derive = <const Deps extends readonly Dependency[], T>(
     },
   };
 };
+
+export { derive };

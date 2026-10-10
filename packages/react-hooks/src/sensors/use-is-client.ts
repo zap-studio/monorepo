@@ -11,4 +11,6 @@ import { useMountState } from "./_mount-state.ts";
  * return isClient ? <ClientOnlyWidget /> : null;
  * ```
  */
-export const useIsClient = (): boolean => useMountState(true, false);
+const useIsClient = (): boolean => useMountState(true, false);
+
+export { useIsClient };

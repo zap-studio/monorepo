@@ -22,7 +22,7 @@ import type { EvictionPolicy } from "./types.ts";
  * const cache = createCache<string, number>(2, { policy: lru() });
  * ```
  */
-export const lru = <K>(): EvictionPolicy<K> => {
+const lru = <K>(): EvictionPolicy<K> => {
   const order = new Map<K, true>();
 
   const touch = (key: K): void => {
@@ -54,3 +54,5 @@ export const lru = <K>(): EvictionPolicy<K> => {
     },
   };
 };
+
+export { lru };

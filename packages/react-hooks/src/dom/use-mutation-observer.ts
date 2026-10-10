@@ -29,7 +29,7 @@ const DEFAULT_OPTIONS: MutationObserverInit = {
  * return <div ref={ref}>{children}</div>;
  * ```
  */
-export const useMutationObserver = <T extends Element = HTMLElement>(
+const useMutationObserver = <T extends Element = HTMLElement>(
   callback: (mutations: MutationRecord[]) => void,
   options: MutationObserverInit = DEFAULT_OPTIONS,
 ): RefObject<T | null> => {
@@ -78,3 +78,5 @@ export const useMutationObserver = <T extends Element = HTMLElement>(
 
   return ref;
 };
+
+export { useMutationObserver };

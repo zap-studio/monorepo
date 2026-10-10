@@ -15,7 +15,7 @@ export type {
 } from "./_contact-picker-api.ts";
 
 /** The shape returned by `useExperimentalContactPicker`. */
-export interface UseExperimentalContactPickerResult {
+interface UseExperimentalContactPickerResult {
   getProperties: () => Promise<ContactProperty[] | undefined>;
   select: (
     properties: ContactProperty[],
@@ -45,7 +45,7 @@ const isAbortError = (error: unknown): boolean =>
  *   : undefined;
  * ```
  */
-export const useExperimentalContactPicker = (): UseExperimentalContactPickerResult => {
+const useExperimentalContactPicker = (): UseExperimentalContactPickerResult => {
   const supported = Boolean(getContactsManager());
 
   const select = useCallback(
@@ -76,3 +76,6 @@ export const useExperimentalContactPicker = (): UseExperimentalContactPickerResu
 
   return useMemo(() => ({ getProperties, select, supported }), [getProperties, select, supported]);
 };
+
+export { useExperimentalContactPicker };
+export type { UseExperimentalContactPickerResult };

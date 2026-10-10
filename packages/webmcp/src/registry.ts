@@ -10,7 +10,7 @@ import type { ModelContextTool, RegisterToolOptions } from "./types.ts";
 import { registerTool } from "./register.ts";
 
 /** A batch container for tools that mount and unmount together. */
-export interface ToolRegistry {
+interface ToolRegistry {
   /** Adds a tool to the registry. Returns the registry for chaining. */
   add: (tool: ModelContextTool, options?: RegisterToolOptions) => ToolRegistry;
   /** Every tool added so far, in insertion order. */
@@ -47,7 +47,7 @@ export interface ToolRegistry {
  * registry.unmount(); // unregisters both, e.g. on route leave
  * ```
  */
-export const createToolRegistry = (): ToolRegistry => {
+const createToolRegistry = (): ToolRegistry => {
   const entries: { options: RegisterToolOptions | undefined; tool: ModelContextTool }[] = [];
   let unregisterFns: (() => void)[] = [];
   let generation = 0;
@@ -99,3 +99,6 @@ export const createToolRegistry = (): ToolRegistry => {
 
   return registry;
 };
+
+export { createToolRegistry };
+export type { ToolRegistry };

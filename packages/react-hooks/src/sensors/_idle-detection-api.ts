@@ -1,10 +1,10 @@
 /** A small copy of the Idle Detection API's types. This is an experimental, Chrome-only API, not declared elsewhere. */
-export type IdleScreenState = "locked" | "unlocked";
+type IdleScreenState = "locked" | "unlocked";
 /** Whether the user has interacted with the device within the detector's idle threshold. */
-export type IdleUserState = "active" | "idle";
+type IdleUserState = "active" | "idle";
 
 /** Options `IdleDetector.start()` accepts. */
-export interface IdleDetectorStartOptions {
+interface IdleDetectorStartOptions {
   signal?: AbortSignal;
   threshold?: number;
 }
@@ -29,10 +29,13 @@ interface IdleDetectionWindow {
  * reads this directly in the hook body on every render, including
  * server-side rendering, not only inside an effect.
  */
-export const getIdleDetectorConstructor = (): IdleDetectorConstructor | undefined => {
+const getIdleDetectorConstructor = (): IdleDetectorConstructor | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
   // SAFETY: IdleDetector is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as IdleDetectionWindow).IdleDetector;
 };
+
+export { getIdleDetectorConstructor };
+export type { IdleScreenState, IdleUserState, IdleDetectorStartOptions };

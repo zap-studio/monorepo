@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useWakeLock`. */
-export interface UseWakeLockResult {
+interface UseWakeLockResult {
   active: boolean;
   release: () => Promise<void>;
   request: () => Promise<void>;
@@ -25,7 +25,7 @@ const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(n
  * if (supported) await request(); // keep the screen awake
  * ```
  */
-export const useWakeLock = (): UseWakeLockResult => {
+const useWakeLock = (): UseWakeLockResult => {
   const supported = isSupported();
   const [active, setActive] = useState(false);
   const sentinelRef = useRef<WakeLockSentinel | null>(null);
@@ -83,3 +83,6 @@ export const useWakeLock = (): UseWakeLockResult => {
 
   return { active, release, request, supported };
 };
+
+export { useWakeLock };
+export type { UseWakeLockResult };

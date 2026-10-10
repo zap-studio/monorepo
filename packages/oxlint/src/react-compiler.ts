@@ -2,12 +2,12 @@ import type { DummyRuleMap, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
-export const reactCompilerPlugins: NonNullable<OxlintConfig["plugins"]> = ["react"];
+const reactCompilerPlugins: NonNullable<OxlintConfig["plugins"]> = ["react"];
 
 // oxlint 1.79.0 replaced the single nursery `react/react-compiler` rule with these 22
 // category-specific rules covering the same Rules-of-React checks — see
 // https://oxc.rs/blog/2026-08-18-react-compiler-support.
-export const reactCompilerRules: DummyRuleMap = {
+const reactCompilerRules: DummyRuleMap = {
   "react/capitalized-calls": "error",
   "react/error-boundaries": "error",
   "react/exhaustive-effect-dependencies": "error",
@@ -38,3 +38,5 @@ const reactCompiler: OxlintConfig = defineConfig({
 });
 
 export default reactCompiler;
+
+export { reactCompilerPlugins, reactCompilerRules };

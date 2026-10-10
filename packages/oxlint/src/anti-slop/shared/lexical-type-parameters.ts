@@ -29,7 +29,7 @@ function collectInferTypeParameterNames(
 }
 
 /** Collect type binders that are in scope at a node and can shadow module aliases. */
-export function lexicalTypeParameterNames(
+function lexicalTypeParameterNames(
   node: ESTree.Node,
   visitorKeys: VisitorKeys,
 ): ReadonlySet<string> {
@@ -56,3 +56,5 @@ export function lexicalTypeParameterNames(
   }
   return names;
 }
+
+export { lexicalTypeParameterNames };

@@ -3,7 +3,7 @@ import { type RefObject, useCallback, useEffect, useRef, useState } from "react"
 import { useTrackedRefElement } from "../lifecycle/_tracked-ref-element.ts";
 
 /** The shape returned by `usePopover`. */
-export interface UsePopoverResult<T extends HTMLElement> {
+interface UsePopoverResult<T extends HTMLElement> {
   hide: () => void;
   isOpen: boolean;
   ref: RefObject<T | null>;
@@ -40,7 +40,7 @@ const isSupported = (): boolean =>
  * </>;
  * ```
  */
-export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverResult<T> => {
+const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverResult<T> => {
   const supported = isSupported();
   const ref = useRef<T | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -74,3 +74,6 @@ export const usePopover = <T extends HTMLElement = HTMLElement>(): UsePopoverRes
 
   return { hide, isOpen, ref, show, supported, toggle };
 };
+
+export { usePopover };
+export type { UsePopoverResult };

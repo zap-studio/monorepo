@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { cypressRules } from "./_rules-cypress.ts";
 
-export const cypressJsPlugins: ExternalPluginEntry[] = [
+const cypressJsPlugins: ExternalPluginEntry[] = [
   { name: "cypress", specifier: resolvePlugin("eslint-plugin-cypress") },
 ];
 
-export const cypressRulesFinal: DummyRuleMap = prefixed("cypress", cypressRules);
+const cypressRulesFinal: DummyRuleMap = prefixed("cypress", cypressRules);
 
 const cypress: OxlintConfig = defineConfig({
   jsPlugins: cypressJsPlugins,
@@ -18,3 +18,5 @@ const cypress: OxlintConfig = defineConfig({
 });
 
 export default cypress;
+
+export { cypressJsPlugins, cypressRulesFinal };

@@ -3,7 +3,7 @@ import { type DependencyList, useEffect, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `useAsync`. */
-export interface UseAsyncState<T> {
+interface UseAsyncState<T> {
   data?: T;
   error?: Error;
   loading: boolean;
@@ -31,10 +31,7 @@ export interface UseAsyncState<T> {
  * const { data, loading, error } = useAsync(() => fetchUser(id), [id]);
  * ```
  */
-export const useAsync = <T>(
-  asyncFn: () => Promise<T>,
-  deps: DependencyList = [],
-): UseAsyncState<T> => {
+const useAsync = <T>(asyncFn: () => Promise<T>, deps: DependencyList = []): UseAsyncState<T> => {
   const [state, setState] = useState<UseAsyncState<T>>({ loading: true });
   const asyncFnRef = useRef(asyncFn);
   useIsomorphicLayoutEffect(() => {
@@ -72,3 +69,6 @@ export const useAsync = <T>(
 
   return state;
 };
+
+export { useAsync };
+export type { UseAsyncState };

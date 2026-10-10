@@ -11,7 +11,7 @@ import { VerificationError } from "./errors.ts";
 /**
  * Compares two byte arrays in constant time to prevent timing attacks.
  */
-export const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
+const constantTimeEquals = (a: Uint8Array, b: Uint8Array): boolean => {
   if (a.length !== b.length) {
     return false;
   }
@@ -88,7 +88,7 @@ const normalizeSignature = (signature: string): string =>
  * @throws {VerificationError}
  * Thrown when verifier setup fails or request verification does not pass.
  */
-export const createHmacVerifier = ({
+const createHmacVerifier = ({
   headerName,
   secret,
   algo = "sha256",
@@ -132,3 +132,5 @@ export const createHmacVerifier = ({
     }
   };
 };
+
+export { constantTimeEquals, createHmacVerifier };

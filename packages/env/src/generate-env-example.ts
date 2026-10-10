@@ -84,7 +84,7 @@ const renderEntry = (key: string, entry: ResolvedEnvironmentVariableEntry): stri
  *   `clientPrefix`, or if a key is declared by more than one composed
  *   source with a different schema.
  */
-export const generateEnvironmentExample = (
+const generateEnvironmentExample = (
   options: EnvironmentSchema & { readonly extends?: readonly EnvironmentSchema[] },
 ): string => {
   const merged = mergeEnvironmentSchemas([...(options.extends ?? []), options]);
@@ -99,3 +99,5 @@ export const generateEnvironmentExample = (
     .join("\n\n")
     .concat("\n");
 };
+
+export { generateEnvironmentExample };
