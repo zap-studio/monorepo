@@ -2,6 +2,15 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "zap-studio-docs",
   "compatibility_date": "2026-08-01",
+  "placement": {
+    "mode": "smart",
+  },
+  "observability": {
+    "enabled": true,
+    "issues": {
+      "enabled": true,
+    },
+  },
   "assets": {
     "directory": "./dist",
     "html_handling": "drop-trailing-slash",
