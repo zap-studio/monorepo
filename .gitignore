@@ -11,7 +11,6 @@ dist/
 build/
 coverage/
 .nyc_output/
-.react-doctor/
 .vite/
 **/.out/
 **/.output/

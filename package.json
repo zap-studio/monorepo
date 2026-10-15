@@ -12,7 +12,6 @@
     "lint:fix": "pnpm exec oxlint --fix --type-aware --type-check",
     "prepare": "lefthook install",
     "publish:check": "pnpm run build && pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run test",
-    "react-doctor": "pnpm exec react-doctor .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "pnpm -r --if-present run typecheck"
@@ -33,7 +32,6 @@
     "oxlint-tsgolint": "catalog:",
     "playwright": "catalog:",
     "publint": "catalog:",
-    "react-doctor": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "unplugin-unused": "catalog:",
