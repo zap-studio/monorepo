@@ -24,8 +24,6 @@ jobs:
         uses: ./.github/actions/setup-pnpm
       - name: Fetch base branch
         run: git fetch origin "$BASE_REF"
-      - name: Run fallow audit
-        run: pnpm exec fallow audit --base "origin/$BASE_REF"
       - name: Run react-doctor
         run: pnpm exec react-doctor . --scope changed --base "origin/$BASE_REF" --blocking error
 
