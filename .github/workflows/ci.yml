@@ -21,8 +21,15 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
       - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+          run_install: true
       - name: Check pending releases
         run: pnpm exec bumpy ci check
         env:
@@ -39,8 +46,15 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
       - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+          run_install: true
       - name: Build docs
         run: pnpm --filter ${{ matrix.app }} run build
       - name: Type-check docs pages
@@ -57,8 +71,15 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
       - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+          run_install: true
       - name: Build packages
         run: pnpm run build
       - name: Run format check
@@ -82,8 +103,15 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
       - name: Setup pnpm
-        uses: ./.github/actions/setup-pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+          run_install: true
       - name: Build packages
         run: pnpm run build
       - name: Install browser
