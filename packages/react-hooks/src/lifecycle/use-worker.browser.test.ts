@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
@@ -81,7 +81,8 @@ describe("useWorker", () => {
       responsePromise = result.current.run(21);
     });
 
-    const worker = MockWorker.instances[0]!;
+    const worker = MockWorker.instances[0];
+    assert(worker);
     expect(worker.postedMessages).toEqual([21]);
 
     let response = 0;
@@ -103,7 +104,7 @@ describe("useWorker", () => {
       firstPromise = result.current.run(1);
     });
     await act(async () => {
-      MockWorker.instances[0]!.dispatchEvent(new MessageEvent("message", { data: 2 }));
+      MockWorker.instances[0]?.dispatchEvent(new MessageEvent("message", { data: 2 }));
       await firstPromise;
     });
 
@@ -112,7 +113,7 @@ describe("useWorker", () => {
       secondPromise = result.current.run(3);
     });
     await act(async () => {
-      MockWorker.instances[0]!.dispatchEvent(new MessageEvent("message", { data: 4 }));
+      MockWorker.instances[0]?.dispatchEvent(new MessageEvent("message", { data: 4 }));
       await secondPromise;
     });
 
@@ -132,7 +133,7 @@ describe("useWorker", () => {
 
     let error: Error | undefined;
     await act(async () => {
-      MockWorker.instances[0]!.dispatchEvent(
+      MockWorker.instances[0]?.dispatchEvent(
         new ErrorEvent("error", { message: "worker crashed" }),
       );
       try {
@@ -157,7 +158,7 @@ describe("useWorker", () => {
       firstPromise = result.current.run(1);
     });
     await act(async () => {
-      MockWorker.instances[0]!.dispatchEvent(new MessageEvent("message", { data: 1 }));
+      MockWorker.instances[0]?.dispatchEvent(new MessageEvent("message", { data: 1 }));
       await firstPromise;
     });
 
@@ -171,7 +172,7 @@ describe("useWorker", () => {
       secondPromise = result.current.run(2);
     });
     await act(async () => {
-      MockWorker.instances[1]!.dispatchEvent(new MessageEvent("message", { data: 2 }));
+      MockWorker.instances[1]?.dispatchEvent(new MessageEvent("message", { data: 2 }));
       await secondPromise;
     });
 
@@ -189,7 +190,7 @@ describe("useWorker", () => {
       runPromise = result.current.run("x");
     });
     await act(async () => {
-      MockWorker.instances[0]!.dispatchEvent(new MessageEvent("message", { data: "y" }));
+      MockWorker.instances[0]?.dispatchEvent(new MessageEvent("message", { data: "y" }));
       await runPromise;
     });
 

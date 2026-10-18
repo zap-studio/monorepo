@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, assert, describe, expect, it, vi } from "vitest";
 
 import { act, renderHook } from "../../tests/_react.ts";
 import { asTestDouble } from "../../tests/_test-double.ts";
@@ -68,7 +68,8 @@ describe("usePerformanceObserver", () => {
     const callback = vi.fn<PerformanceObserverCallback>();
     await renderHook(() => usePerformanceObserver(callback, { entryTypes: ["longtask"] }));
 
-    const observer = MockPerformanceObserver.instances[0]!;
+    const observer = MockPerformanceObserver.instances[0];
+    assert(observer);
     const list = asTestDouble<PerformanceObserverEntryList>({});
     await act(() => {
       observer.callback(list, asTestDouble<PerformanceObserver>(observer));
@@ -87,7 +88,8 @@ describe("usePerformanceObserver", () => {
     );
 
     await rerender({ callback: secondCallback });
-    const observer = MockPerformanceObserver.instances[0]!;
+    const observer = MockPerformanceObserver.instances[0];
+    assert(observer);
     await act(() => {
       observer.callback(
         asTestDouble<PerformanceObserverEntryList>({}),

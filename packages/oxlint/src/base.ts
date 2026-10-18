@@ -29,6 +29,7 @@ const baseJsPlugins: ExternalPluginEntry[] = [
 const baseRules: DummyRuleMap = {
   "import/no-cycle": ["error", { maxDepth: 3 }],
   "eslint/func-style": ["error", "expression"],
+  "typescript/no-non-null-assertion": "error",
   ...prefixed("regexp", regexpRules),
   ...prefixed("sonarjs", sonarjsRules),
   ...prefixed("github", githubRules),
