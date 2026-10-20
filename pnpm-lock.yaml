@@ -195,8 +195,8 @@ catalogs:
       specifier: ^0.19.1
       version: 0.19.1
     '@tanstack/eslint-plugin-query':
-      specifier: ^5.104.3
-      version: 5.104.3
+      specifier: ^5.104.4
+      version: 5.104.4
     '@tanstack/eslint-plugin-router':
       specifier: ^1.162.0
       version: 1.162.0
@@ -222,8 +222,8 @@ catalogs:
       specifier: ^2.2.8
       version: 2.2.8
     blume:
-      specifier: ^2.2.3
-      version: 2.2.3
+      specifier: ^2.2.4
+      version: 2.2.4
     eslint:
       specifier: ^10.13.0
       version: 10.13.0
@@ -375,7 +375,7 @@ importers:
     dependencies:
       blume:
         specifier: 'catalog:'
-        version: 2.2.3(@emnapi/runtime@1.11.3)(@shikijs/themes@4.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.10.1(ws@8.22.0))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.10)(supports-color@10.2.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.22.0)(yaml@2.9.1)
+        version: 2.2.4(@emnapi/runtime@1.11.3)(@shikijs/themes@4.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.10.1(ws@8.22.0))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.10)(supports-color@10.2.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.22.0)(yaml@2.9.1)
       zod:
         specifier: 'catalog:'
         version: 4.6.7
@@ -543,7 +543,7 @@ importers:
         version: 0.19.1
       '@tanstack/eslint-plugin-query':
         specifier: 'catalog:'
-        version: 5.104.3(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
+        version: 5.104.4(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
       '@tanstack/eslint-plugin-router':
         specifier: 'catalog:'
         version: 1.162.0(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
@@ -1479,8 +1479,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/lucide@1.2.145':
-    resolution: {integrity: sha512-eYBZipY6g4bbJNyKBAEq1wBy3mJ2jKtI4O2K30ArO2lMpVDOEuQfu5aDZhiimj1+Q/mIrn3ZxnDeX1BbILxkwQ==}
+  '@iconify-json/lucide@1.2.146':
+    resolution: {integrity: sha512-T7qetsZJ682CCVT2X8C5uYEF6G/mtSoPl8F87wvu1LbfeVt4RxdP03NtaAs4RrrAXbWHBLjKrb8cmMtDucoI5g==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -2803,8 +2803,8 @@ packages:
       csstype:
         optional: true
 
-  '@tanstack/eslint-plugin-query@5.104.3':
-    resolution: {integrity: sha512-rIWTUJ2oo+YtHpwQwlOLRlkxzd1FAbig+UGHGZQC/QNnxaSPCDejAkR+ouOVn4tBeqyoY6nMSVFRjucJnnollQ==}
+  '@tanstack/eslint-plugin-query@5.104.4':
+    resolution: {integrity: sha512-hdiLHE3zgGgZ3oxRqmVwWNk/hfCIvA6thpMZso15Z2LrEdlABKrrQvfiL33ta8sMSdm8ABRMSeFZeN9a0P1q3A==}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
       typescript: ^5.6.0 || ^6.0.0 || ^7.0.0
@@ -3615,8 +3615,8 @@ packages:
   blake3-wasm@2.1.5:
     resolution: {integrity: sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==}
 
-  blume@2.2.3:
-    resolution: {integrity: sha512-8hQEumRGxZDg8haZeZaCl9c7aGLfS8fxNvcSFw+hhicCPqLTJB1ZHUyRkHWYufJ7l3Y2ZABiucCANPfkGxgFmw==}
+  blume@2.2.4:
+    resolution: {integrity: sha512-QIX+tCH5e83rgPhQY/KKQgSxggjXby+Z6qChq2zkApborfS+yz8Y0Ik25YEvyOCjiarcjNh8d53xcAOm77wfzw==}
     engines: {node: '>=22.19.0'}
     hasBin: true
     peerDependencies:
@@ -5741,8 +5741,8 @@ packages:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
 
-  node-html-parser@9.0.4:
-    resolution: {integrity: sha512-reUSrZkF1rO7hEYe5mJwtbVcQ6mB5QrViCZH6Wv+iz3er/PA9Q50gol15dMLQRDfdli4VzqPMPR24HNRFgVKFw==}
+  node-html-parser@9.0.5:
+    resolution: {integrity: sha512-LpUc74Ax3L6AsxTEqoep0GDqCBbsPjtn74sYaiazxGXfwhe6iqD4E5sHTJFCU+wBxVMX+Dd7mvLim0QM1vsvpw==}
 
   node-mock-http@1.0.5:
     resolution: {integrity: sha512-KQyt/wLjG3TAc7DOUhpqWzgd4ERxR80JOlTK5VE5R1S12IaPVN5qkj4klBce9HPG1Njuup4Sb5bljaT34lIyjw==}
@@ -6042,8 +6042,8 @@ packages:
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
 
-  postcss@8.5.30:
-    resolution: {integrity: sha512-zkd+e9S1AQHhmaBKye9zlFHWjOwVgqXl1q3ECYy8561K7qxR2cREf/STLskulBFd78k6AOFeA+ff1TtEzk9bAA==}
+  postcss@8.5.31:
+    resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
     engines: {node: ^10 || ^12 || >=14}
 
   prelude-ls@1.2.1:
@@ -7875,7 +7875,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@iconify-json/lucide@1.2.145':
+  '@iconify-json/lucide@1.2.146':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -8785,7 +8785,7 @@ snapshots:
       - preact
       - react
 
-  '@tanstack/eslint-plugin-query@5.104.3(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)':
+  '@tanstack/eslint-plugin-query@5.104.4(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)':
     dependencies:
       '@typescript-eslint/utils': 8.71.2(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
       eslint: 10.13.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -9713,7 +9713,7 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  blume@2.2.3(@emnapi/runtime@1.11.3)(@shikijs/themes@4.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.10.1(ws@8.22.0))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.10)(supports-color@10.2.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.22.0)(yaml@2.9.1):
+  blume@2.2.4(@emnapi/runtime@1.11.3)(@shikijs/themes@4.5.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(@vercel/functions@3.10.1(ws@8.22.0))(csstype@3.2.3)(esbuild@0.28.2)(prettier@3.9.10)(supports-color@10.2.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(ws@8.22.0)(yaml@2.9.1):
     dependencies:
       '@astrojs/check': 0.9.10(@emnapi/runtime@1.11.3)(prettier@3.9.10)(typescript@6.0.3)
       '@astrojs/markdown-satteri': 0.4.4
@@ -9722,7 +9722,7 @@ snapshots:
       '@astrojs/react': 7.1.0(@types/node@22.20.5)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.145.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(yaml@2.9.1)
       '@astrojs/vercel': 11.0.15(astro@7.4.0(@types/node@22.20.5)(@vercel/functions@3.10.1(ws@8.22.0))(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))(react@19.3.1)(supports-color@10.2.2)(ws@8.22.0)
       '@clack/prompts': 1.8.1
-      '@iconify-json/lucide': 1.2.145
+      '@iconify-json/lucide': 1.2.146
       '@iconify/types': 2.0.0
       '@iconify/utils': 3.1.7
       '@modelcontextprotocol/sdk': 1.32.1(supports-color@10.2.2)(zod@4.6.7)
@@ -9767,7 +9767,7 @@ snapshots:
       mermaid: 12.2.0
       micromark-extension-gfm: 3.0.0
       nanotar: 0.3.0
-      node-html-parser: 9.0.4
+      node-html-parser: 9.0.5
       openapi-sampler: 1.7.6
       oxc-transform-react: 0.145.0
       p-limit: 7.3.3
@@ -10801,8 +10801,8 @@ snapshots:
     dependencies:
       '@typescript-eslint/utils': 8.71.2(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@7.0.2)
       eslint: 10.13.0(jiti@2.7.0)(supports-color@10.2.2)
-      postcss: 8.5.30
-      postcss-nested: 7.0.2(postcss@8.5.30)
+      postcss: 8.5.31
+      postcss-nested: 7.0.2(postcss@8.5.31)
       synckit: 0.11.13
       tailwind-api-utils: 1.0.3(tailwindcss@4.3.3)
       tailwindcss: 4.3.3
@@ -12211,7 +12211,7 @@ snapshots:
 
   node-gyp-build@4.8.4: {}
 
-  node-html-parser@9.0.4:
+  node-html-parser@9.0.5:
     dependencies:
       css-select: 5.2.2
       entities: 8.1.0
@@ -12561,9 +12561,9 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-nested@7.0.2(postcss@8.5.30):
+  postcss-nested@7.0.2(postcss@8.5.31):
     dependencies:
-      postcss: 8.5.30
+      postcss: 8.5.31
       postcss-selector-parser: 7.1.6
 
   postcss-selector-parser@6.0.10:
@@ -12578,7 +12578,7 @@ snapshots:
 
   postcss-value-parser@4.2.0: {}
 
-  postcss@8.5.30:
+  postcss@8.5.31:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -13533,7 +13533,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.30
+      postcss: 8.5.31
       rolldown: 1.2.14
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -13547,7 +13547,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.30
+      postcss: 8.5.31
       rolldown: 1.2.14
       tinyglobby: 0.2.17
     optionalDependencies:
