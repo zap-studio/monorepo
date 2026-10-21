@@ -15,6 +15,4 @@
  * Only ever called in the browser, never during server rendering, so it
  * doesn't need its own `typeof window === "undefined"` check.
  */
-const getNavigation = (): Navigation | undefined => window.navigation;
-
-export { getNavigation };
+export const getNavigation = (): Navigation | undefined => window.navigation;

@@ -38,7 +38,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
  *
  * @public
  */
-class ValidationError extends Error {
+export class ValidationError extends Error {
   /**
    * The validation issues reported by the schema.
    */
@@ -55,5 +55,3 @@ class ValidationError extends Error {
     this.issues = issues;
   }
 }
-
-export { ValidationError };

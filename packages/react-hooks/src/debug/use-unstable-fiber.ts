@@ -5,13 +5,13 @@ import { isProductionBuild } from "./_env.ts";
 import { findOwnerFiber, readHostFiber, type FiberLike } from "./_fiber.ts";
 
 /** Options accepted by `useUnstableFiber`. */
-interface UseUnstableFiberOptions {
+export interface UseUnstableFiberOptions {
   /** How many ancestors to walk up while looking for a function component, before giving up. Defaults to `DEFAULT_MAX_WALK` (50). */
   maxWalk?: number;
 }
 
 /** The shape returned by `useUnstableFiber`. */
-interface UseUnstableFiberResult<T extends Element> {
+export interface UseUnstableFiberResult<T extends Element> {
   fiber: FiberLike | null;
   ref: RefObject<T | null>;
 }
@@ -33,7 +33,7 @@ interface UseUnstableFiberResult<T extends Element> {
  * return <div ref={ref}>{typeof fiber?.type === "function" ? fiber.type.name : "?"}</div>;
  * ```
  */
-const useUnstableFiber = <T extends Element = HTMLElement>(
+export const useUnstableFiber = <T extends Element = HTMLElement>(
   options?: UseUnstableFiberOptions,
 ): UseUnstableFiberResult<T> => {
   const ref = useRef<T | null>(null);
@@ -58,6 +58,3 @@ const useUnstableFiber = <T extends Element = HTMLElement>(
     return { fiber: null, ref };
   }
 };
-
-export { useUnstableFiber };
-export type { UseUnstableFiberOptions, UseUnstableFiberResult };

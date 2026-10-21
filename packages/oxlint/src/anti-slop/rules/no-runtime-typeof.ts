@@ -24,7 +24,7 @@ function isInsideTypeGuard(node: ESTree.Node): boolean {
 }
 
 /** Disallow runtime typeof checks that narrow unparsed values instead of decoding them. */
-const noRuntimeTypeofRule: Rule = defineRule({
+export const noRuntimeTypeofRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -62,5 +62,3 @@ const noRuntimeTypeofRule: Rule = defineRule({
     };
   },
 });
-
-export { noRuntimeTypeofRule };

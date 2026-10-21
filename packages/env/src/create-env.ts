@@ -179,7 +179,7 @@ const createEnvironmentImpl = (options: CreateEnvironmentOptions): unknown => {
  * @throws {EnvironmentValidationError} If validation fails and `onValidationError`
  *   is not provided.
  */
-const createEnvironment =
+export const createEnvironment =
   // SAFETY: this declared type comes from `TExtends`, `TShared`, `TServer`,
   // and `TClient`. TypeScript cannot write that type as the plain
   // `unknown` that `createEnvironmentImpl` returns. But `createEnvironmentImpl` reads and
@@ -198,5 +198,3 @@ const createEnvironment =
     InferEnvironmentVariableSchemaMapOutput<TShared> &
     InferEnvironmentVariableSchemaMapOutput<TServer> &
     InferEnvironmentVariableSchemaMapOutput<TClient>;
-
-export { createEnvironment };

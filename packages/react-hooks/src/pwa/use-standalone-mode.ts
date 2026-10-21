@@ -12,6 +12,4 @@ import { useMediaQueryMatch } from "../sensors/_media-query.ts";
  * const isStandalone = useStandaloneMode();
  * ```
  */
-const useStandaloneMode = (): boolean => useMediaQueryMatch("(display-mode: standalone)");
-
-export { useStandaloneMode };
+export const useStandaloneMode = (): boolean => useMediaQueryMatch("(display-mode: standalone)");

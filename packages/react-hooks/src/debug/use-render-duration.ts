@@ -4,7 +4,7 @@ import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-ef
 import { isProductionBuild } from "./_env.ts";
 
 /** One `<Profiler>` `onRender` sample, as recorded by `useRenderDuration`. */
-interface RenderDurationSample {
+export interface RenderDurationSample {
   actualDuration: number;
   baseDuration: number;
   commitTime: number;
@@ -14,7 +14,7 @@ interface RenderDurationSample {
 }
 
 /** The shape returned by `useRenderDuration`. */
-interface UseRenderDurationResult {
+export interface UseRenderDurationResult {
   last: RenderDurationSample | null;
   onRender: ProfilerOnRenderCallback;
   samples: RenderDurationSample[];
@@ -47,7 +47,7 @@ const NOOP_RESULT: UseRenderDurationResult = {
  * );
  * ```
  */
-const useRenderDuration = (limit = 20): UseRenderDurationResult => {
+export const useRenderDuration = (limit = 20): UseRenderDurationResult => {
   const [samples, setSamples] = useState<RenderDurationSample[]>([]);
   const limitRef = useRef(limit);
   useIsomorphicLayoutEffect(() => {
@@ -71,6 +71,3 @@ const useRenderDuration = (limit = 20): UseRenderDurationResult => {
 
   return { last: samples.at(-1) ?? null, onRender, samples };
 };
-
-export { useRenderDuration };
-export type { RenderDurationSample, UseRenderDurationResult };

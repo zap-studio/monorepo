@@ -1,25 +1,25 @@
 /** One accepted file type entry, as passed to `showOpenFilePicker`/`showSaveFilePicker`. */
-interface FilePickerAcceptType {
+export interface FilePickerAcceptType {
   accept: Record<string, string[]>;
   description?: string;
 }
 
 /** Options `showOpenFilePicker` accepts. */
-interface OpenFilePickerOptions {
+export interface OpenFilePickerOptions {
   excludeAcceptAllOption?: boolean;
   multiple?: boolean;
   types?: FilePickerAcceptType[];
 }
 
 /** Options `showSaveFilePicker` accepts. */
-interface SaveFilePickerOptions {
+export interface SaveFilePickerOptions {
   excludeAcceptAllOption?: boolean;
   suggestedName?: string;
   types?: FilePickerAcceptType[];
 }
 
 /** Options `showDirectoryPicker` accepts. */
-interface DirectoryPickerOptions {
+export interface DirectoryPickerOptions {
   id?: string;
   mode?: "read" | "readwrite";
 }
@@ -35,18 +35,10 @@ interface FileSystemAccessWindow {
  * `useFilePicker` calls this function directly during render (including on
  * the server), not just inside an effect.
  */
-const getFileSystemAccess = (): FileSystemAccessWindow => {
+export const getFileSystemAccess = (): FileSystemAccessWindow => {
   if (typeof window === "undefined") {
     return {};
   }
   // SAFETY: these File System Access functions are not declared on Window. We read them as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return window as FileSystemAccessWindow;
-};
-
-export { getFileSystemAccess };
-export type {
-  FilePickerAcceptType,
-  OpenFilePickerOptions,
-  SaveFilePickerOptions,
-  DirectoryPickerOptions,
 };

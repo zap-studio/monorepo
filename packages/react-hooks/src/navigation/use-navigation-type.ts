@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 /** The classification `useNavigationType` returns. */
-type NavigationEntryType = "back_forward" | "navigate" | "prerender" | "reload";
+export type NavigationEntryType = "back_forward" | "navigate" | "prerender" | "reload";
 
 const FALLBACK_NAVIGATION_TYPE: NavigationEntryType = "navigate";
 
@@ -45,8 +45,5 @@ const subscribe = () => () => {};
  * if (navigationType === "reload") restoreScrollPosition();
  * ```
  */
-const useNavigationType = (): NavigationEntryType =>
+export const useNavigationType = (): NavigationEntryType =>
   useSyncExternalStore(subscribe, readNavigationType, getServerSnapshot);
-
-export { useNavigationType };
-export type { NavigationEntryType };

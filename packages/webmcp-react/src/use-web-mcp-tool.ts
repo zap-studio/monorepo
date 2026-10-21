@@ -12,7 +12,7 @@ import { registerTool } from "@zap-studio/webmcp";
 import { useEffect, useState } from "react";
 
 /** The shape returned by `useWebMCPTool`. */
-interface UseWebMCPToolResult {
+export interface UseWebMCPToolResult {
   /**
    * Set when registration fails — most commonly because the browser doesn't
    * support WebMCP, or `tool` failed validation. `null` while pending or
@@ -57,7 +57,7 @@ interface UseWebMCPToolResult {
  * }
  * ```
  */
-const useWebMCPTool = <TInput = unknown>(
+export const useWebMCPTool = <TInput = unknown>(
   tool: ModelContextTool<TInput>,
   deps: DependencyList = [],
 ): UseWebMCPToolResult => {
@@ -95,6 +95,3 @@ const useWebMCPTool = <TInput = unknown>(
 
   return { error };
 };
-
-export { useWebMCPTool };
-export type { UseWebMCPToolResult };

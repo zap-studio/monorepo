@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-const e18eRules: RuleMap = {
+export const e18eRules: RuleMap = {
   "ban-dependencies": "error",
   "no-delete-property": "error",
   "no-spread-in-reduce": "error",
@@ -33,5 +33,3 @@ const e18eRules: RuleMap = {
 
   "no-indexof-equality": "off",
 };
-
-export { e18eRules };

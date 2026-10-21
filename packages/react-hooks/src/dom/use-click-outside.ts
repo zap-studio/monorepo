@@ -20,7 +20,7 @@ import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-ef
  * return open ? <div ref={ref}>Menu</div> : null;
  * ```
  */
-const useClickOutside = <T extends HTMLElement = HTMLElement>(
+export const useClickOutside = <T extends HTMLElement = HTMLElement>(
   onOutside: (event: MouseEvent | TouchEvent) => void,
 ): RefObject<T | null> => {
   const ref = useRef<T | null>(null);
@@ -49,5 +49,3 @@ const useClickOutside = <T extends HTMLElement = HTMLElement>(
 
   return ref;
 };
-
-export { useClickOutside };

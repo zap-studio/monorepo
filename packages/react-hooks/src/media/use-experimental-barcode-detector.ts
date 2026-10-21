@@ -14,7 +14,7 @@ export type {
 } from "./_barcode-detection-api.ts";
 
 /** The shape returned by `useExperimentalBarcodeDetector`. */
-interface UseExperimentalBarcodeDetectorResult {
+export interface UseExperimentalBarcodeDetectorResult {
   detect: (image: BarcodeDetectorSource) => Promise<DetectedBarcode[] | undefined>;
   getSupportedFormats: () => Promise<BarcodeFormat[] | undefined>;
   supported: boolean;
@@ -35,7 +35,7 @@ interface UseExperimentalBarcodeDetectorResult {
  * const barcodes = supported ? await detect(videoElement) : undefined;
  * ```
  */
-const useExperimentalBarcodeDetector = (
+export const useExperimentalBarcodeDetector = (
   formats?: BarcodeFormat[],
 ): UseExperimentalBarcodeDetectorResult => {
   const supported = Boolean(getBarcodeDetectorConstructor());
@@ -67,6 +67,3 @@ const useExperimentalBarcodeDetector = (
 
   return { detect, getSupportedFormats, supported };
 };
-
-export { useExperimentalBarcodeDetector };
-export type { UseExperimentalBarcodeDetectorResult };

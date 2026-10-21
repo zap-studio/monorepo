@@ -1,9 +1,9 @@
-import { type SetStoredValue, type WebStorageResult, useWebStorage } from "./_web-storage.ts";
+import { type WebStorageResult, useWebStorage } from "./_web-storage.ts";
 
-export type { SetStoredValue };
+export type { SetStoredValue } from "./_web-storage.ts";
 
 /** The tuple returned by `useLocalStorage`. */
-type UseLocalStorageResult<T> = WebStorageResult<T>;
+export type UseLocalStorageResult<T> = WebStorageResult<T>;
 
 const getLocalStorage = (): Storage => window.localStorage;
 
@@ -22,8 +22,5 @@ const getLocalStorage = (): Storage => window.localStorage;
  * const [theme, setTheme, clearTheme, themeError] = useLocalStorage("theme", "light");
  * ```
  */
-const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorageResult<T> =>
+export const useLocalStorage = <T>(key: string, initialValue: T): UseLocalStorageResult<T> =>
   useWebStorage(getLocalStorage, key, initialValue);
-
-export { useLocalStorage };
-export type { UseLocalStorageResult };

@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** A small copy of the Network Information API's types, not declared elsewhere. */
-interface NetworkInformation extends EventTarget {
+export interface NetworkInformation extends EventTarget {
   readonly downlink?: number;
   // oxlint-disable-next-line sonarjs/max-union-size -- these are the only 4 values that the NetworkInformation spec allows for effectiveType. We cannot make the list shorter.
   readonly effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
@@ -14,7 +14,7 @@ interface NavigatorWithConnection extends Navigator {
 }
 
 /** The shape returned by `useNetworkState` (and `useOnlineStatus`'s `.online`). */
-interface NetworkState {
+export interface NetworkState {
   downlink?: number;
   // oxlint-disable-next-line sonarjs/max-union-size -- same fixed effectiveType values as above.
   effectiveType?: "2g" | "3g" | "4g" | "slow-2g";
@@ -71,7 +71,7 @@ const subscribe = (onStoreChange: () => void) => {
  * `useSyncExternalStore` needs this to avoid re-rendering (or looping
  * forever) on every read.
  */
-const useNetworkSnapshot = (): NetworkState => {
+export const useNetworkSnapshot = (): NetworkState => {
   const cacheRef = useRef<NetworkState>(SERVER_SNAPSHOT);
 
   const getSnapshot = useCallback((): NetworkState => {
@@ -84,6 +84,3 @@ const useNetworkSnapshot = (): NetworkState => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useNetworkSnapshot };
-export type { NetworkInformation, NetworkState };

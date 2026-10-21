@@ -13,7 +13,7 @@ import { useEffect, useRef } from "react";
  * useAnimationFrame((deltaMs) => setRotation((r) => r + deltaMs * 0.1));
  * ```
  */
-const useAnimationFrame = (callback: (deltaMs: number) => void, enabled = true): void => {
+export const useAnimationFrame = (callback: (deltaMs: number) => void, enabled = true): void => {
   const callbackRef = useRef(callback);
   useEffect(() => {
     callbackRef.current = callback;
@@ -42,5 +42,3 @@ const useAnimationFrame = (callback: (deltaMs: number) => void, enabled = true):
     };
   }, [enabled]);
 };
-
-export { useAnimationFrame };

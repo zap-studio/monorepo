@@ -3,10 +3,10 @@ import { useRef } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** A combo string (e.g. `"ctrl+s"`, `"shift+enter"`) mapped to a handler, as passed to `useHotkeys`. */
-type HotkeyBindings = Record<string, () => void>;
+export type HotkeyBindings = Record<string, () => void>;
 
 /** Options accepted by `useHotkeys`. */
-interface UseHotkeysOptions {
+export interface UseHotkeysOptions {
   enabled?: boolean;
   preventDefault?: boolean;
 }
@@ -61,7 +61,7 @@ const matchesCombo = (event: KeyboardEvent, combo: ParsedCombo): boolean =>
  * useHotkeys({ "ctrl+s": save, "shift+enter": submit }, { preventDefault: true });
  * ```
  */
-const useHotkeys = (bindings: HotkeyBindings, options: UseHotkeysOptions = {}): void => {
+export const useHotkeys = (bindings: HotkeyBindings, options: UseHotkeysOptions = {}): void => {
   const { enabled = true, preventDefault = false } = options;
   const bindingsRef = useRef(bindings);
   useIsomorphicLayoutEffect(() => {
@@ -88,6 +88,3 @@ const useHotkeys = (bindings: HotkeyBindings, options: UseHotkeysOptions = {}): 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [enabled, preventDefault]);
 };
-
-export { useHotkeys };
-export type { HotkeyBindings, UseHotkeysOptions };

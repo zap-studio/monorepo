@@ -239,7 +239,7 @@ const dispatchHandler = async (
  * export default { fetch: (request: Request) => router.handle(request) };
  * ```
  */
-class WebhookRouter<TMap = unknown> {
+export class WebhookRouter<TMap = unknown> {
   private readonly handlers = new Map<string, HandlerEntry>();
   private readonly verify: VerifyFn | undefined;
   private readonly globalBeforeHooks: BeforeHook[] = [];
@@ -507,6 +507,5 @@ class WebhookRouter<TMap = unknown> {
  * router.register("/stripe", { schema: stripeEventSchema, handler });
  * ```
  */
-const createWebhookRouter = (opts?: WebhookRouterOptions): WebhookRouter => new WebhookRouter(opts);
-
-export { WebhookRouter, createWebhookRouter };
+export const createWebhookRouter = (opts?: WebhookRouterOptions): WebhookRouter =>
+  new WebhookRouter(opts);

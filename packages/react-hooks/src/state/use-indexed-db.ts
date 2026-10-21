@@ -70,10 +70,10 @@ const deleteValue = (key: string): Promise<void> =>
   });
 
 /** Status reported by `useIndexedDB`. */
-type IndexedDBStatus = "error" | "loading" | "ready";
+export type IndexedDBStatus = "error" | "loading" | "ready";
 
 /** The shape returned by `useIndexedDB`. */
-interface UseIndexedDBResult<T> {
+export interface UseIndexedDBResult<T> {
   error: Error | undefined;
   remove: () => Promise<void>;
   setValue: (next: T | ((prev: T) => T)) => Promise<void>;
@@ -97,7 +97,7 @@ interface UseIndexedDBResult<T> {
  * if (status === "ready") await setValue((prev) => ({ ...prev, title: "Hello" }));
  * ```
  */
-const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResult<T> => {
+export const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResult<T> => {
   const isClient = useIsClient();
   const supported = isClient && isSupported();
 
@@ -174,6 +174,3 @@ const useIndexedDB = <T>(key: string, initialValue: T): UseIndexedDBResult<T> =>
     value,
   };
 };
-
-export { useIndexedDB };
-export type { IndexedDBStatus, UseIndexedDBResult };

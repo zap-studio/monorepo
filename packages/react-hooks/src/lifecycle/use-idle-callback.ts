@@ -39,7 +39,7 @@ const cancelIdle = (handle: number): void => {
  * });
  * ```
  */
-const useIdleCallback = (
+export const useIdleCallback = (
   callback: (deadline: IdleDeadline) => void,
   options?: IdleRequestOptions,
   enabled = true,
@@ -62,5 +62,3 @@ const useIdleCallback = (
     return () => cancelIdle(handle);
   }, [enabled, timeout]);
 };
-
-export { useIdleCallback };

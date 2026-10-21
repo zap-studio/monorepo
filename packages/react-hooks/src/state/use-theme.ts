@@ -2,13 +2,13 @@ import { useMediaQueryMatch } from "../sensors/_media-query.ts";
 import { useWebStorage } from "./_web-storage.ts";
 
 /** The persisted theme mode `useTheme` tracks. */
-type ThemeMode = "dark" | "light" | "system";
+export type ThemeMode = "dark" | "light" | "system";
 
 /** The OS/browser color scheme a `"system"` theme mode resolves to. */
-type ResolvedTheme = "dark" | "light";
+export type ResolvedTheme = "dark" | "light";
 
 /** The shape returned by `useTheme`. */
-interface UseThemeResult {
+export interface UseThemeResult {
   resolvedTheme: ResolvedTheme;
   setTheme: (theme: ThemeMode) => void;
   theme: ThemeMode;
@@ -36,7 +36,7 @@ const getLocalStorage = (): Storage => window.localStorage;
  * <button onClick={() => setTheme("dark")}>Dark</button>
  * ```
  */
-const useTheme = (): UseThemeResult => {
+export const useTheme = (): UseThemeResult => {
   const [theme, setTheme] = useWebStorage<ThemeMode>(getLocalStorage, STORAGE_KEY, "system");
   const prefersDark = useMediaQueryMatch("(prefers-color-scheme: dark)");
 
@@ -45,6 +45,3 @@ const useTheme = (): UseThemeResult => {
 
   return { resolvedTheme, setTheme, theme };
 };
-
-export { useTheme };
-export type { ThemeMode, ResolvedTheme, UseThemeResult };

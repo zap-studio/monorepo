@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-const reactDoctorReactNativeRules: RuleMap = {
+export const reactDoctorReactNativeRules: RuleMap = {
   "expo-no-non-inlined-env": "warn",
   "rn-animation-reaction-as-derived": "warn",
   "rn-bottom-sheet-no-ignored-scroll-prop": "warn",
@@ -46,5 +46,3 @@ const reactDoctorReactNativeRules: RuleMap = {
   "rn-animate-layout-property": "off",
   "rn-prefer-content-inset-adjustment": "off",
 };
-
-export { reactDoctorReactNativeRules };

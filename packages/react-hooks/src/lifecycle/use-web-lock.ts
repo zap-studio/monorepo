@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Status reported by `useWebLock`. */
-type WebLockStatus = "error" | "holding" | "idle" | "released";
+export type WebLockStatus = "error" | "holding" | "idle" | "released";
 
 /** The shape returned by `useWebLock`. */
-interface UseWebLockResult {
+export interface UseWebLockResult {
   error: Error | undefined;
   runExclusive: <T>(callback: (lock: Lock | null) => Promise<T> | T) => Promise<T | undefined>;
   status: WebLockStatus;
@@ -29,7 +29,7 @@ const isSupported = (): boolean => typeof navigator !== "undefined" && Boolean(n
  * const total = await runExclusive(() => mergeCartFromOtherTabs());
  * ```
  */
-const useWebLock = (name: string, options?: LockOptions): UseWebLockResult => {
+export const useWebLock = (name: string, options?: LockOptions): UseWebLockResult => {
   const supported = isSupported();
   const [status, setStatus] = useState<WebLockStatus>("idle");
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -70,6 +70,3 @@ const useWebLock = (name: string, options?: LockOptions): UseWebLockResult => {
 
   return { error, runExclusive, status, supported };
 };
-
-export { useWebLock };
-export type { WebLockStatus, UseWebLockResult };

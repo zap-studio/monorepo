@@ -20,7 +20,7 @@ const getServerSnapshot = (): boolean => false;
  * const isArrowHeld = useKeyPress(["ArrowLeft", "ArrowRight"]);
  * ```
  */
-const useKeyPress = (target: string | string[]): boolean => {
+export const useKeyPress = (target: string | string[]): boolean => {
   const pressedRef = useRef(false);
   const targetKey = Array.isArray(target) ? target.join("\u0000") : target;
 
@@ -55,5 +55,3 @@ const useKeyPress = (target: string | string[]): boolean => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useKeyPress };

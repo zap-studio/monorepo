@@ -3,7 +3,7 @@ import { useCallback, useRef, useSyncExternalStore } from "react";
 import { getNavigation } from "./_navigation-api.ts";
 
 /** The shape returned by `useNavigation`. */
-interface NavigationSnapshot {
+export interface NavigationSnapshot {
   canGoBack: boolean;
   canGoForward: boolean;
   currentEntry: NavigationHistoryEntry | null;
@@ -64,7 +64,7 @@ const subscribe = (onStoreChange: () => void) => {
  * if (canGoBack) window.navigation?.back();
  * ```
  */
-const useNavigation = (): NavigationSnapshot => {
+export const useNavigation = (): NavigationSnapshot => {
   const cacheRef = useRef<NavigationSnapshot>(FALLBACK_NAVIGATION);
 
   const getSnapshot = useCallback((): NavigationSnapshot => {
@@ -77,6 +77,3 @@ const useNavigation = (): NavigationSnapshot => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useNavigation };
-export type { NavigationSnapshot };

@@ -20,7 +20,7 @@ const isNonEmptyStack = <T>(entries: readonly T[]): entries is readonly [T, ...T
   entries.length > 0;
 
 /** The shape returned by `useHistoryState`. */
-interface UseHistoryStateResult<T> {
+export interface UseHistoryStateResult<T> {
   canRedo: boolean;
   canUndo: boolean;
   redo: () => void;
@@ -47,7 +47,7 @@ interface UseHistoryStateResult<T> {
  * if (canUndo) undo();
  * ```
  */
-const useHistoryState = <T>(
+export const useHistoryState = <T>(
   initialValue: T,
   capacity: number = DEFAULT_CAPACITY,
 ): UseHistoryStateResult<T> => {
@@ -107,6 +107,3 @@ const useHistoryState = <T>(
     value: stack.present,
   };
 };
-
-export { useHistoryState };
-export type { UseHistoryStateResult };

@@ -19,7 +19,7 @@ import { isProductionBuild } from "./_env.ts";
  * console.log(`rendered ${renderCount} times`);
  * ```
  */
-const useRenderCount = (): number => {
+export const useRenderCount = (): number => {
   const countRef = useRef(0);
   if (isProductionBuild()) {
     // oxlint-disable-next-line react/refs -- see the disable comment below. This hook reads the ref during render on purpose.
@@ -30,5 +30,3 @@ const useRenderCount = (): number => {
   // oxlint-disable-next-line react/refs -- same read as above, on purpose.
   return countRef.current;
 };
-
-export { useRenderCount };

@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorThreeRules } from "./_rules-react-doctor-three.ts";
 
-const threeJsPlugins: ExternalPluginEntry[] = [
+export const threeJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const threeRules: DummyRuleMap = prefixed("react-doctor", reactDoctorThreeRules);
+export const threeRules: DummyRuleMap = prefixed("react-doctor", reactDoctorThreeRules);
 
 const three: OxlintConfig = defineConfig({
   jsPlugins: threeJsPlugins,
@@ -18,5 +18,3 @@ const three: OxlintConfig = defineConfig({
 });
 
 export default three;
-
-export { threeJsPlugins, threeRules };

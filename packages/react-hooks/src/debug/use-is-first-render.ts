@@ -17,7 +17,7 @@ import { isProductionBuild } from "./_env.ts";
  * if (isFirstRender) console.log("mounted");
  * ```
  */
-const useIsFirstRender = (): boolean => {
+export const useIsFirstRender = (): boolean => {
   const mountedRef = useRef(false);
   useEffect(() => {
     mountedRef.current = true;
@@ -29,5 +29,3 @@ const useIsFirstRender = (): boolean => {
   // oxlint-disable-next-line react/refs -- we read the ref during render on purpose. It tells us if the mount effect has run yet. There is no other way to know this.
   return !mountedRef.current;
 };
-
-export { useIsFirstRender };

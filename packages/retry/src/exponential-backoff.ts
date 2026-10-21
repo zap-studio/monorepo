@@ -20,7 +20,7 @@ import { applyJitter } from "./jitter.ts";
  *   jitter: "full",
  * };
  */
-interface ExponentialBackoffOptions {
+export interface ExponentialBackoffOptions {
   /**
    * Maximum number of attempts (including the first) before giving up.
    */
@@ -50,7 +50,7 @@ interface ExponentialBackoffOptions {
  *   maxDelayMs: 2_000,
  * });
  */
-const exponentialBackoff = (options: ExponentialBackoffOptions): RetryPolicy => {
+export const exponentialBackoff = (options: ExponentialBackoffOptions): RetryPolicy => {
   const { maxAttempts, baseDelayMs, maxDelayMs, jitter } = options;
 
   return {
@@ -74,6 +74,3 @@ const exponentialBackoff = (options: ExponentialBackoffOptions): RetryPolicy => 
     },
   };
 };
-
-export { exponentialBackoff };
-export type { ExponentialBackoffOptions };

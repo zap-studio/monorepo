@@ -17,7 +17,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * const decision: Decision = "allow";
  * ```
  */
-type Decision = "allow" | "deny";
+export type Decision = "allow" | "deny";
 
 /**
  * Represents the context in which a policy decision is made.
@@ -28,7 +28,7 @@ type Decision = "allow" | "deny";
  * type AppContext = Context<{ user: { id: string; role: string } }>;
  * ```
  */
-type Context<TContext = unknown> = TContext;
+export type Context<TContext = unknown> = TContext;
 
 /**
  * Represents a role within the system.
@@ -38,7 +38,7 @@ type Context<TContext = unknown> = TContext;
  * type AppRole = Role<"guest" | "user" | "admin">;
  * ```
  */
-type Role<TRole extends string = string> = TRole;
+export type Role<TRole extends string = string> = TRole;
 
 /**
  * Represents a role hierarchy within the system.
@@ -55,7 +55,7 @@ type Role<TRole extends string = string> = TRole;
  * };
  * ```
  */
-type RoleHierarchy<TRole extends Role = Role> = Record<TRole, TRole[]>;
+export type RoleHierarchy<TRole extends Role = Role> = Record<TRole, TRole[]>;
 
 /**
  * Type helper for defining resource schemas using Standard Schema.
@@ -72,7 +72,10 @@ type RoleHierarchy<TRole extends Role = Role> = Record<TRole, TRole[]>;
  * } satisfies Resources;
  * ```
  */
-type Resources<TResourceKey extends string = string> = Record<TResourceKey, StandardSchemaV1>;
+export type Resources<TResourceKey extends string = string> = Record<
+  TResourceKey,
+  StandardSchemaV1
+>;
 
 /**
  * Type helper for defining actions per resource.
@@ -88,7 +91,7 @@ type Resources<TResourceKey extends string = string> = Record<TResourceKey, Stan
  * } as const satisfies Actions<typeof resources>;
  * ```
  */
-type Actions<TResources extends Resources> = {
+export type Actions<TResources extends Resources> = {
   [K in keyof TResources]: readonly string[];
 };
 
@@ -100,7 +103,7 @@ type Actions<TResources extends Resources> = {
  * type Post = InferResource<typeof resources, "post">;
  * ```
  */
-type InferResource<
+export type InferResource<
   TResources extends Resources,
   TResourceKey extends keyof TResources,
 > = StandardSchemaV1.InferOutput<TResources[TResourceKey]>;
@@ -114,7 +117,7 @@ type InferResource<
  * // "read" | "write" | "delete"
  * ```
  */
-type InferAction<
+export type InferAction<
   TResources extends Resources,
   TActions extends Actions<TResources>,
   K extends keyof TActions,
@@ -129,7 +132,7 @@ type InferAction<
  * // "post:read" | "post:write" | "comment:read"
  * ```
  */
-type InferPermission<TResources extends Resources, TActions extends Actions<TResources>> = {
+export type InferPermission<TResources extends Resources, TActions extends Actions<TResources>> = {
   [
     K in keyof TResources & keyof TActions
   ]: `${K & string}:${InferAction<TResources, TActions, K> & string}`;
@@ -144,11 +147,11 @@ type InferPermission<TResources extends Resources, TActions extends Actions<TRes
  *   post.visibility === "public" ? "allow" : "deny";
  * ```
  */
-type PolicyFn<TContext extends Context, TAction extends string = string, TResource = unknown> = (
-  context: TContext,
-  action: TAction,
-  resource: TResource,
-) => Decision;
+export type PolicyFn<
+  TContext extends Context,
+  TAction extends string = string,
+  TResource = unknown,
+> = (context: TContext, action: TAction, resource: TResource) => Decision;
 
 /**
  * A function that evaluates a condition for a given action and resource in a specific context.
@@ -159,16 +162,16 @@ type PolicyFn<TContext extends Context, TAction extends string = string, TResour
  *   context.user.id === post.authorId;
  * ```
  */
-type ConditionFn<TContext extends Context, TAction extends string = string, TResource = unknown> = (
-  context: TContext,
-  action: TAction,
-  resource: TResource,
-) => boolean;
+export type ConditionFn<
+  TContext extends Context,
+  TAction extends string = string,
+  TResource = unknown,
+> = (context: TContext, action: TAction, resource: TResource) => boolean;
 
 /**
  * Call signatures for {@link hasRole}, preserving the with/without hierarchy overloads.
  */
-interface HasRoleFn {
+export interface HasRoleFn {
   /**
    * Checks membership in `role` only, with no inherited roles.
    *
@@ -211,7 +214,7 @@ interface HasRoleFn {
  * };
  * ```
  */
-type ActionPolicyMap<
+export type ActionPolicyMap<
   TContext extends Context,
   TAction extends string = string,
   TResource = unknown,
@@ -239,7 +242,7 @@ type ActionPolicyMap<
  * };
  * ```
  */
-type Rules<
+export type Rules<
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
@@ -265,7 +268,7 @@ type Rules<
  * };
  * ```
  */
-interface PermitConfig<
+export interface PermitConfig<
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
@@ -309,7 +312,7 @@ interface PermitConfig<
  * await policy.can(ctx, "post:read", postData); // true or false
  * ```
  */
-interface Policy<
+export interface Policy<
   TContext extends Context,
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
@@ -323,22 +326,3 @@ interface Policy<
     resource: InferResource<TResources, K>,
   ) => Promise<boolean>;
 }
-
-export type {
-  Decision,
-  Context,
-  Role,
-  RoleHierarchy,
-  Resources,
-  Actions,
-  InferResource,
-  InferAction,
-  InferPermission,
-  PolicyFn,
-  ConditionFn,
-  HasRoleFn,
-  ActionPolicyMap,
-  Rules,
-  PermitConfig,
-  Policy,
-};

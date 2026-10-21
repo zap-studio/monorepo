@@ -8,11 +8,9 @@ const subscribe = () => () => {};
  * Returns `clientValue` once mounted on the client, or `serverValue` during
  * server rendering.
  */
-const useMountState = (clientValue: boolean, serverValue: boolean): boolean =>
+export const useMountState = (clientValue: boolean, serverValue: boolean): boolean =>
   useSyncExternalStore(
     subscribe,
     () => clientValue,
     () => serverValue,
   );
-
-export { useMountState };

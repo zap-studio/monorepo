@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 /** The shape returned by `usePerformanceObserver`. */
-interface UsePerformanceObserverResult {
+export interface UsePerformanceObserverResult {
   supported: boolean;
 }
 
@@ -27,7 +27,7 @@ const isSupported = (): boolean => typeof PerformanceObserver !== "undefined";
  * }, { entryTypes: ["longtask"] });
  * ```
  */
-const usePerformanceObserver = (
+export const usePerformanceObserver = (
   callback: PerformanceObserverCallback,
   options: PerformanceObserverInit,
 ): UsePerformanceObserverResult => {
@@ -53,6 +53,3 @@ const usePerformanceObserver = (
 
   return { supported };
 };
-
-export { usePerformanceObserver };
-export type { UsePerformanceObserverResult };

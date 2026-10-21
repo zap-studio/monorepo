@@ -47,14 +47,14 @@ export type { Err, None, Ok, OptionMatchers, ResultMatchers, Some } from "./type
  * `Result` name with the namespace object below (type and value identifiers
  * live in separate namespaces in TypeScript).
  */
-type Result<T, E> = ResultType<T, E>;
+export type Result<T, E> = ResultType<T, E>;
 
 /**
  * Either a present (`Some`) or absent (`None`) value. Alias of the type
  * from `@zap-studio/monads/types`, re-declared locally so it can share the
  * `Option` name with the namespace object below.
  */
-type Option<T> = OptionType<T>;
+export type Option<T> = OptionType<T>;
 
 /** Shape of the `Result` namespace object below. */
 interface ResultNamespace {
@@ -98,7 +98,7 @@ interface OptionNamespace {
  * `Result`'s overlapping combinators, grouped under a namespace object to
  * avoid clashing with `Option`'s combinators of the same name.
  */
-const Result: ResultNamespace = {
+export const Result: ResultNamespace = {
   andThen: resultAndThen,
   map: resultMap,
   mapErr: resultMapErr,
@@ -113,7 +113,7 @@ const Result: ResultNamespace = {
  * `Option`'s overlapping combinators, grouped under a namespace object to
  * avoid clashing with `Result`'s combinators of the same name.
  */
-const Option: OptionNamespace = {
+export const Option: OptionNamespace = {
   andThen: optionAndThen,
   map: optionMap,
   match: optionMatch,
@@ -122,5 +122,3 @@ const Option: OptionNamespace = {
   unwrapOr: optionUnwrapOr,
   unwrapOrElse: optionUnwrapOrElse,
 };
-
-export { Result, Option };

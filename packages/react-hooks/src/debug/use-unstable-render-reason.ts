@@ -12,16 +12,16 @@ import {
 } from "./_fiber.ts";
 
 /** The classification `useUnstableRenderReason` reports. */
-type RenderReason = "context" | "mount" | "parent" | "props" | "state" | "unknown";
+export type RenderReason = "context" | "mount" | "parent" | "props" | "state" | "unknown";
 
 /** The shape returned by `useUnstableRenderReason`. */
-interface UseUnstableRenderReasonResult<T extends Element> {
+export interface UseUnstableRenderReasonResult<T extends Element> {
   reason: RenderReason;
   ref: RefObject<T | null>;
 }
 
 /** Options accepted by `useUnstableRenderReason`. */
-interface UseUnstableRenderReasonOptions {
+export interface UseUnstableRenderReasonOptions {
   /** How many Fiber ancestors, hooks, and context entries to walk through before giving up. Defaults to `DEFAULT_MAX_WALK` (50). */
   maxWalk?: number;
 }
@@ -100,7 +100,7 @@ const classify = (
  * return <div ref={ref}>{reason}</div>;
  * ```
  */
-const useUnstableRenderReason = <T extends Element = HTMLElement>(
+export const useUnstableRenderReason = <T extends Element = HTMLElement>(
   options?: UseUnstableRenderReasonOptions,
 ): UseUnstableRenderReasonResult<T> => {
   const maxWalk = options?.maxWalk;
@@ -151,6 +151,3 @@ const useUnstableRenderReason = <T extends Element = HTMLElement>(
 
   return { reason, ref };
 };
-
-export { useUnstableRenderReason };
-export type { RenderReason, UseUnstableRenderReasonResult, UseUnstableRenderReasonOptions };

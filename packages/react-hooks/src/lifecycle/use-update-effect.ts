@@ -13,7 +13,7 @@ import { type DependencyList, type EffectCallback, useEffect, useRef } from "rea
  * }, [filter]);
  * ```
  */
-const useUpdateEffect = (effect: EffectCallback, deps?: DependencyList): void => {
+export const useUpdateEffect = (effect: EffectCallback, deps?: DependencyList): void => {
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -25,5 +25,3 @@ const useUpdateEffect = (effect: EffectCallback, deps?: DependencyList): void =>
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- `deps` comes from the caller, like the dependency array of useEffect. This hook cannot know what is inside it.
   }, deps);
 };
-
-export { useUpdateEffect };

@@ -2,9 +2,9 @@ import type { DummyRuleMap, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
-const reactPlugins: NonNullable<OxlintConfig["plugins"]> = ["react"];
+export const reactPlugins: NonNullable<OxlintConfig["plugins"]> = ["react"];
 
-const reactRules: DummyRuleMap = {
+export const reactRules: DummyRuleMap = {
   "react/rules-of-hooks": "error",
   "react/exhaustive-deps": "error",
 };
@@ -15,5 +15,3 @@ const react: OxlintConfig = defineConfig({
 });
 
 export default react;
-
-export { reactPlugins, reactRules };

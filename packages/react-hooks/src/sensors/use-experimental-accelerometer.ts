@@ -14,7 +14,7 @@ interface AccelerometerSensor extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalAccelerometer`. Acceleration in m/s² along each axis. */
-interface AccelerometerReading {
+export interface AccelerometerReading {
   x: number | null;
   y: number | null;
   z: number | null;
@@ -27,7 +27,7 @@ const readAccelerometer = (sensor: AccelerometerSensor): AccelerometerReading =>
 });
 
 /** The shape returned by `useExperimentalAccelerometer`. */
-type UseExperimentalAccelerometerResult = UseGenericSensorResult<AccelerometerReading>;
+export type UseExperimentalAccelerometerResult = UseGenericSensorResult<AccelerometerReading>;
 
 /**
  * Reads the device's `Accelerometer`. This is experimental, only works in
@@ -46,7 +46,7 @@ type UseExperimentalAccelerometerResult = UseGenericSensorResult<AccelerometerRe
  * <button onClick={start} disabled={!supported}>Enable accelerometer</button>
  * ```
  */
-const useExperimentalAccelerometer = (
+export const useExperimentalAccelerometer = (
   options?: GenericSensorOptions,
 ): UseExperimentalAccelerometerResult =>
   useGenericSensor<AccelerometerSensor, AccelerometerReading>(
@@ -54,6 +54,3 @@ const useExperimentalAccelerometer = (
     readAccelerometer,
     options,
   );
-
-export { useExperimentalAccelerometer };
-export type { AccelerometerReading, UseExperimentalAccelerometerResult };

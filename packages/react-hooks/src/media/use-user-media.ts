@@ -1,9 +1,9 @@
-import { type MediaStreamStatus, type UserMediaResult, useMediaStream } from "./_user-media.ts";
+import { type UserMediaResult, useMediaStream } from "./_user-media.ts";
 
-export type { MediaStreamStatus };
+export type { MediaStreamStatus } from "./_user-media.ts";
 
 /** The shape returned by `useUserMedia`. */
-type UseUserMediaResult = UserMediaResult;
+export type UseUserMediaResult = UserMediaResult;
 
 /**
  * Wraps `navigator.mediaDevices.getUserMedia()` for any audio/video
@@ -20,8 +20,5 @@ type UseUserMediaResult = UserMediaResult;
  * <button onClick={start}>Enable camera</button>
  * ```
  */
-const useUserMedia = (constraints: MediaStreamConstraints): UseUserMediaResult =>
+export const useUserMedia = (constraints: MediaStreamConstraints): UseUserMediaResult =>
   useMediaStream(constraints);
-
-export { useUserMedia };
-export type { UseUserMediaResult };

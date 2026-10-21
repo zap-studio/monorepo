@@ -12,12 +12,10 @@ import { useEffect, useRef } from "react";
  * useMount(() => analytics.track("page_viewed"));
  * ```
  */
-const useMount = (effect: () => void): void => {
+export const useMount = (effect: () => void): void => {
   const effectRef = useRef(effect);
 
   useEffect(() => {
     effectRef.current();
   }, []);
 };
-
-export { useMount };

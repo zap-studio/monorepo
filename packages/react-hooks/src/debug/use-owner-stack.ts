@@ -3,7 +3,7 @@ import { captureOwnerStack, useCallback } from "react";
 import { isProductionBuild } from "./_env.ts";
 
 /** The shape returned by `useOwnerStack`. */
-interface UseOwnerStackResult {
+export interface UseOwnerStackResult {
   captureOwnerStack: () => string | undefined;
   supported: boolean;
 }
@@ -25,7 +25,7 @@ interface UseOwnerStackResult {
  * const handleError = () => console.error(supported ? capture() : "unavailable");
  * ```
  */
-const useOwnerStack = (): UseOwnerStackResult => {
+export const useOwnerStack = (): UseOwnerStackResult => {
   const supported = !isProductionBuild() && typeof captureOwnerStack === "function";
 
   const capture = useCallback((): string | undefined => {
@@ -35,6 +35,3 @@ const useOwnerStack = (): UseOwnerStackResult => {
 
   return { captureOwnerStack: capture, supported };
 };
-
-export { useOwnerStack };
-export type { UseOwnerStackResult };

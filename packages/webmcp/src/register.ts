@@ -36,7 +36,9 @@ const NAME_PATTERN = /^[\w.-]{1,128}$/u;
  * });
  * ```
  */
-const defineTool = <TInput = unknown>(tool: ModelContextTool<TInput>): ModelContextTool<TInput> => {
+export const defineTool = <TInput = unknown>(
+  tool: ModelContextTool<TInput>,
+): ModelContextTool<TInput> => {
   if (!NAME_PATTERN.test(tool.name)) {
     throw new TypeError(
       `Invalid WebMCP tool name "${tool.name}": must be 1-128 characters, using only letters, digits, "_", "-", or ".".`,
@@ -67,7 +69,7 @@ const defineTool = <TInput = unknown>(tool: ModelContextTool<TInput>): ModelCont
  * }
  * ```
  */
-const hasWebMCPSupport = (): boolean =>
+export const hasWebMCPSupport = (): boolean =>
   // SAFETY: WebMCPDocument only adds an optional `modelContext` field on top of the
   // real `Document` interface — it changes nothing about the object `document` refers to.
   typeof document !== "undefined" && (document as WebMCPDocument).modelContext !== undefined;
@@ -109,7 +111,7 @@ const noop = (): void => {};
  * unregister();
  * ```
  */
-const registerTool = async <TInput = unknown>(
+export const registerTool = async <TInput = unknown>(
   tool: ModelContextTool<TInput>,
   options?: RegisterToolOptions,
 ): Promise<() => void> => {
@@ -143,5 +145,3 @@ const registerTool = async <TInput = unknown>(
     controller.abort();
   };
 };
-
-export { defineTool, hasWebMCPSupport, registerTool };

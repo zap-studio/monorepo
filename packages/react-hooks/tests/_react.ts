@@ -8,7 +8,7 @@ declare global {
 }
 
 /** React's `act`, which warns unless the act environment is on for the call. */
-const act = async (callback: () => Promise<unknown> | void): Promise<void> => {
+export const act = async (callback: () => Promise<unknown> | void): Promise<void> => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
   try {
@@ -19,7 +19,7 @@ const act = async (callback: () => Promise<unknown> | void): Promise<void> => {
 };
 
 /** `renderHook`, with the callback's props required instead of `Props | undefined`. */
-const renderHook =
+export const renderHook =
   // SAFETY: narrows the callback's parameter only; the runtime function is untouched.
   baseRenderHook as {
     <Result>(renderCallback: () => Result): Promise<RenderHookResult<Result, never>>;
@@ -28,5 +28,3 @@ const renderHook =
       options: RenderHookOptions<Props> & { initialProps: Props },
     ): Promise<RenderHookResult<Result, Props>>;
   };
-
-export { act, renderHook };

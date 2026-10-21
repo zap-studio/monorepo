@@ -14,7 +14,7 @@ import { useLatestRef } from "./_latest-ref.ts";
  * useInterval(() => setElapsed((s) => s + 1), running ? 1000 : null);
  * ```
  */
-const useInterval = (callback: () => void, delayMs: number | null): void => {
+export const useInterval = (callback: () => void, delayMs: number | null): void => {
   const callbackRef = useLatestRef(callback);
 
   useEffect(() => {
@@ -25,5 +25,3 @@ const useInterval = (callback: () => void, delayMs: number | null): void => {
     return () => clearInterval(id);
   }, [callbackRef, delayMs]);
 };
-
-export { useInterval };

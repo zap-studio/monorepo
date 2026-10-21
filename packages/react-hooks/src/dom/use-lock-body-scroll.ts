@@ -15,7 +15,7 @@ import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-ef
  * useLockBodyScroll(isModalOpen);
  * ```
  */
-const useLockBodyScroll = (locked = true): void => {
+export const useLockBodyScroll = (locked = true): void => {
   useIsomorphicLayoutEffect(() => {
     if (!locked) {
       return undefined;
@@ -28,5 +28,3 @@ const useLockBodyScroll = (locked = true): void => {
     };
   }, [locked]);
 };
-
-export { useLockBodyScroll };

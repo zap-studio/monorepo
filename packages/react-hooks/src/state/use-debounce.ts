@@ -15,7 +15,7 @@ import { usePendingTimeoutRef } from "./_pending-timeout-ref.ts";
  * <input onChange={(e) => debouncedSearch(e.target.value)} />
  * ```
  */
-const useDebounce = <Args extends unknown[]>(
+export const useDebounce = <Args extends unknown[]>(
   callback: (...args: Args) => void,
   delayMs: number,
 ): ((...args: Args) => void) => {
@@ -35,5 +35,3 @@ const useDebounce = <Args extends unknown[]>(
     [delayMs, timeoutRef],
   );
 };
-
-export { useDebounce };

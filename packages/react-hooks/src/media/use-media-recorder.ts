@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Status reported by `useMediaRecorder`. */
-type MediaRecorderStatus = "inactive" | "paused" | "recording";
+export type MediaRecorderStatus = "inactive" | "paused" | "recording";
 
 /** The shape returned by `useMediaRecorder`. */
-interface UseMediaRecorderResult {
+export interface UseMediaRecorderResult {
   blob: Blob | undefined;
   error: Error | undefined;
   isTypeSupported: (mimeType: string) => boolean;
@@ -36,7 +36,7 @@ const isTypeSupported = (mimeType: string): boolean =>
  * const { start, stop, blob, status } = useMediaRecorder(stream);
  * ```
  */
-const useMediaRecorder = (
+export const useMediaRecorder = (
   stream: MediaStream | undefined,
   options?: MediaRecorderOptions,
 ): UseMediaRecorderResult => {
@@ -125,6 +125,3 @@ const useMediaRecorder = (
 
   return { blob, error, isTypeSupported, pause, resume, start, status, stop, supported };
 };
-
-export { useMediaRecorder };
-export type { MediaRecorderStatus, UseMediaRecorderResult };

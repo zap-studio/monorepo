@@ -31,14 +31,14 @@ const getSpeechRecognitionConstructor = (): SpeechRecognitionConstructor | undef
 };
 
 /** Options accepted by `useSpeechRecognition`. */
-interface UseSpeechRecognitionOptions {
+export interface UseSpeechRecognitionOptions {
   continuous?: boolean;
   interimResults?: boolean;
   lang?: string;
 }
 
 /** The shape returned by `useSpeechRecognition`. */
-interface UseSpeechRecognitionResult {
+export interface UseSpeechRecognitionResult {
   listening: boolean;
   start: () => void;
   stop: () => void;
@@ -59,7 +59,7 @@ interface UseSpeechRecognitionResult {
  * const { transcript, listening, start, stop } = useSpeechRecognition({ continuous: true });
  * ```
  */
-const useSpeechRecognition = (
+export const useSpeechRecognition = (
   options: UseSpeechRecognitionOptions = {},
 ): UseSpeechRecognitionResult => {
   const { continuous = false, interimResults = false, lang } = options;
@@ -102,6 +102,3 @@ const useSpeechRecognition = (
 
   return { listening, start, stop, supported, transcript };
 };
-
-export { useSpeechRecognition };
-export type { UseSpeechRecognitionOptions, UseSpeechRecognitionResult };

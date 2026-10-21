@@ -17,13 +17,13 @@ import pkg from "../package.json" with { type: "json" };
  * `TracerProvider`; a no-op provider (the default until an app registers an
  * SDK) makes every span/propagation call below a no-op too.
  */
-const tracer: Tracer = trace.getTracer(pkg.name, pkg.version);
+export const tracer: Tracer = trace.getTracer(pkg.name, pkg.version);
 
 /**
  * `TextMapSetter` for the Web `Headers` API, used to inject `traceparent`
  * (and any other registered propagator fields) into the outgoing request.
  */
-const HEADERS_SETTER: TextMapSetter<Headers> = {
+export const HEADERS_SETTER: TextMapSetter<Headers> = {
   set(carrier, key, value) {
     carrier.set(key, value);
   },
@@ -34,11 +34,9 @@ const HEADERS_SETTER: TextMapSetter<Headers> = {
  * accepts an `Error` or `string`, so other thrown values just get the
  * `ERROR` status without an attached exception event.
  */
-const recordSpanError = (span: Span, error: unknown): void => {
+export const recordSpanError = (span: Span, error: unknown): void => {
   if (error instanceof Error || typeof error === "string") {
     span.recordException(error);
   }
   span.setStatus({ code: SpanStatusCode.ERROR });
 };
-
-export { tracer, HEADERS_SETTER, recordSpanError };

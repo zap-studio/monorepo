@@ -2,12 +2,10 @@ import type { OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
-const jsdocPlugins: NonNullable<OxlintConfig["plugins"]> = ["jsdoc"];
+export const jsdocPlugins: NonNullable<OxlintConfig["plugins"]> = ["jsdoc"];
 
 const jsdoc: OxlintConfig = defineConfig({
   plugins: jsdocPlugins,
 });
 
 export default jsdoc;
-
-export { jsdocPlugins };

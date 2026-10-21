@@ -22,7 +22,7 @@ const CONSOLE_METHOD_BY_LEVEL = {
 /**
  * Options for {@link ConsoleLogger}.
  */
-interface ConsoleLoggerOptions {
+export interface ConsoleLoggerOptions {
   /**
    * Minimum level that gets printed. Calls below this threshold are no-ops.
    *
@@ -51,7 +51,7 @@ interface ConsoleLoggerOptions {
  * logger.debug("cache miss", { key: "user:42" });
  * ```
  */
-class ConsoleLogger implements Logger {
+export class ConsoleLogger implements Logger {
   private readonly minLevel: LogLevel;
   private readonly format: LogFormatter;
 
@@ -100,6 +100,3 @@ class ConsoleLogger implements Logger {
     console[consoleMethod](...args);
   }
 }
-
-export { ConsoleLogger };
-export type { ConsoleLoggerOptions };

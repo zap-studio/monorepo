@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Connection status reported by `useWebTransport`. */
-type WebTransportStatus = "closed" | "connected" | "connecting";
+export type WebTransportStatus = "closed" | "connected" | "connecting";
 
 /** The shape returned by `useWebTransport`. */
-interface UseWebTransportResult {
+export interface UseWebTransportResult {
   close: (closeInfo?: WebTransportCloseInfo) => void;
   createBidirectionalStream: () => Promise<WebTransportBidirectionalStream | undefined>;
   createUnidirectionalStream: () => Promise<WritableStream | undefined>;
@@ -48,7 +48,7 @@ const toError = (caught: unknown): Error =>
  * if (status === "connected") await sendDatagram(new TextEncoder().encode("ping"));
  * ```
  */
-const useWebTransport = (
+export const useWebTransport = (
   url: string | undefined,
   options?: WebTransportOptions,
 ): UseWebTransportResult => {
@@ -206,6 +206,3 @@ const useWebTransport = (
     supported,
   };
 };
-
-export { useWebTransport };
-export type { WebTransportStatus, UseWebTransportResult };

@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorMotionRules } from "./_rules-react-doctor-motion.ts";
 
-const motionJsPlugins: ExternalPluginEntry[] = [
+export const motionJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const motionRules: DummyRuleMap = prefixed("react-doctor", reactDoctorMotionRules);
+export const motionRules: DummyRuleMap = prefixed("react-doctor", reactDoctorMotionRules);
 
 const motion: OxlintConfig = defineConfig({
   jsPlugins: motionJsPlugins,
@@ -18,5 +18,3 @@ const motion: OxlintConfig = defineConfig({
 });
 
 export default motion;
-
-export { motionJsPlugins, motionRules };

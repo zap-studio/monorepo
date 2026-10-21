@@ -19,23 +19,23 @@ type ResolvedType = {
   readonly substitutions: TypeAliasEnvironment;
 };
 
-type UnsafeDictionary = {
+export type UnsafeDictionary = {
   readonly kind: "unsafe-dictionary";
   readonly unsafeValue: "any" | "empty-object" | "object" | "union" | "unknown";
 };
 
-type WideningTargetKind =
+export type WideningTargetKind =
   | "anonymous object"
   | "generic container"
   | "object"
   | "open dictionary"
   | "unknown";
 
-type WideningTarget = {
+export type WideningTarget = {
   readonly kind: WideningTargetKind;
 };
 
-type TypeEnvironment = {
+export type TypeEnvironment = {
   readonly aliases: ReadonlyMap<string, ESTree.TSTypeAliasDeclaration>;
   readonly interfaces: ReadonlyMap<string, readonly ESTree.TSInterfaceDeclaration[]>;
   readonly shadowedBuiltIns: ReadonlySet<string>;
@@ -48,7 +48,7 @@ function declaredStatement(statement: ESTree.Statement): ESTree.Node | null {
     : statement;
 }
 
-function createTypeEnvironment(program: ESTree.Program): TypeEnvironment {
+export function createTypeEnvironment(program: ESTree.Program): TypeEnvironment {
   const aliases = new Map<string, ESTree.TSTypeAliasDeclaration>();
   const interfaces = new Map<string, ESTree.TSInterfaceDeclaration[]>();
   const shadowedBuiltIns = new Set<string>();
@@ -303,7 +303,7 @@ function dictionaryValueTypes(
   return dictionaryValueTypes(alias.typeAnnotation, environment, nextSubstitutions, nextResolving);
 }
 
-function classifyUnsafeDictionaryValue(
+export function classifyUnsafeDictionaryValue(
   valueType: ESTree.TSType,
   environment: TypeEnvironment,
 ): UnsafeDictionary | null {
@@ -311,7 +311,7 @@ function classifyUnsafeDictionaryValue(
   return unsafeValue === null ? null : { kind: "unsafe-dictionary", unsafeValue };
 }
 
-function classifyUnsafeDictionary(
+export function classifyUnsafeDictionary(
   type: ESTree.TSType,
   environment: TypeEnvironment,
 ): UnsafeDictionary | null {
@@ -336,7 +336,7 @@ function resolvesToDictionary(
   return dictionaryValueTypes(type, environment, substitutions, resolvingAliases).length > 0;
 }
 
-function classifyWideningTarget(
+export function classifyWideningTarget(
   type: ESTree.TSType,
   environment: TypeEnvironment,
 ): WideningTarget | null {
@@ -456,7 +456,7 @@ function classifyAliasBroadTarget(
   );
 }
 
-function isPopulatedObjectExpression(expression: ESTree.Expression): boolean {
+export function isPopulatedObjectExpression(expression: ESTree.Expression): boolean {
   let current = expression;
   while (
     current.type === "ParenthesizedExpression" ||
@@ -469,7 +469,7 @@ function isPopulatedObjectExpression(expression: ESTree.Expression): boolean {
   return current.type === "ObjectExpression" && current.properties.length > 0;
 }
 
-function isKnownEvidenceExpression(expression: ESTree.Expression): boolean {
+export function isKnownEvidenceExpression(expression: ESTree.Expression): boolean {
   let current = expression;
   while (
     current.type === "ParenthesizedExpression" ||
@@ -492,13 +492,3 @@ function isKnownEvidenceExpression(expression: ESTree.Expression): boolean {
     current.type === "UnaryExpression"
   );
 }
-
-export {
-  createTypeEnvironment,
-  classifyUnsafeDictionaryValue,
-  classifyUnsafeDictionary,
-  classifyWideningTarget,
-  isPopulatedObjectExpression,
-  isKnownEvidenceExpression,
-};
-export type { UnsafeDictionary, WideningTargetKind, WideningTarget, TypeEnvironment };

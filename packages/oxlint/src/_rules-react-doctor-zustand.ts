@@ -1,10 +1,8 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-const reactDoctorZustandRules: RuleMap = {
+export const reactDoctorZustandRules: RuleMap = {
   "zustand-no-fresh-selector-result": "error",
   "zustand-no-get-during-initialization": "error",
   "zustand-no-mutating-state": "error",
   "zustand-no-whole-store-destructure": "warn",
 };
-
-export { reactDoctorZustandRules };

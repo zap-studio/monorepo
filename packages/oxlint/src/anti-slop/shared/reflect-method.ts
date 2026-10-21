@@ -21,7 +21,7 @@ function isGlobalReflect(sourceCode: SourceCode, expression: ESTree.Expression):
 }
 
 /** Reports whether a call target names one method on the global Reflect object. */
-function isGlobalReflectMethodCall(
+export function isGlobalReflectMethodCall(
   sourceCode: SourceCode,
   callee: ESTree.Expression,
   methodName: string,
@@ -33,5 +33,3 @@ function isGlobalReflectMethodCall(
     ? property.type === "Literal" && property.value === methodName
     : property.type === "Identifier" && property.name === methodName;
 }
-
-export { isGlobalReflectMethodCall };

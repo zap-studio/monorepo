@@ -22,7 +22,7 @@
  * }
  * ```
  */
-class PolicyError extends Error {
+export class PolicyError extends Error {
   /**
    * Creates a policy error with a human-readable message.
    *
@@ -33,5 +33,3 @@ class PolicyError extends Error {
     this.name = "PolicyError";
   }
 }
-
-export { PolicyError };

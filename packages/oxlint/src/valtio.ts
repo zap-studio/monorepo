@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorValtioRules } from "./_rules-react-doctor-valtio.ts";
 
-const valtioJsPlugins: ExternalPluginEntry[] = [
+export const valtioJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const valtioRules: DummyRuleMap = prefixed("react-doctor", reactDoctorValtioRules);
+export const valtioRules: DummyRuleMap = prefixed("react-doctor", reactDoctorValtioRules);
 
 const valtio: OxlintConfig = defineConfig({
   jsPlugins: valtioJsPlugins,
@@ -18,5 +18,3 @@ const valtio: OxlintConfig = defineConfig({
 });
 
 export default valtio;
-
-export { valtioJsPlugins, valtioRules };

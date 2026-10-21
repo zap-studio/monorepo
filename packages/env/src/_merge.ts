@@ -87,7 +87,7 @@ const mergeBucket = (
  *   a `client` var doesn't start with its source's `clientPrefix`, or a key
  *   is declared by more than one source with a different schema or bucket.
  */
-const mergeEnvironmentSchemas = (
+export const mergeEnvironmentSchemas = (
   sources: readonly EnvironmentSchema[],
 ): Map<string, ResolvedEnvironmentVariableEntry> => {
   for (const source of sources) {
@@ -103,5 +103,3 @@ const mergeEnvironmentSchemas = (
 
   return merged;
 };
-
-export { mergeEnvironmentSchemas };

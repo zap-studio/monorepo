@@ -11,7 +11,7 @@ import {
 export type { ScreenDetailed, ScreenDetails } from "./_window-management-api.ts";
 
 /** The shape returned by `useExperimentalWindowManagement`. */
-interface UseExperimentalWindowManagementResult {
+export interface UseExperimentalWindowManagementResult {
   currentScreen: ScreenDetailed | undefined;
   isExtended: boolean;
   requestPermission: () => Promise<boolean>;
@@ -56,7 +56,7 @@ const getIsExtendedServerSnapshot = (): boolean => false;
  * </button>;
  * ```
  */
-const useExperimentalWindowManagement = (): UseExperimentalWindowManagementResult => {
+export const useExperimentalWindowManagement = (): UseExperimentalWindowManagementResult => {
   const supported = Boolean(getScreenDetailsFn());
   const isExtended = useSyncExternalStore(
     subscribeIsExtended,
@@ -101,6 +101,3 @@ const useExperimentalWindowManagement = (): UseExperimentalWindowManagementResul
 
   return { currentScreen, isExtended, requestPermission, screens, supported };
 };
-
-export { useExperimentalWindowManagement };
-export type { UseExperimentalWindowManagementResult };

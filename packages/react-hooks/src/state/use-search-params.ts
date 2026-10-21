@@ -3,15 +3,15 @@ import { useCallback, useEffect, useState } from "react";
 import { isUpdaterFunction } from "./_updater.ts";
 
 /** Anything `new URLSearchParams()` itself accepts. */
-type SearchParamsInit = ConstructorParameters<typeof URLSearchParams>[0];
+export type SearchParamsInit = ConstructorParameters<typeof URLSearchParams>[0];
 
 /** Options accepted by `useSearchParams`'s setter. */
-interface SetSearchParamsOptions {
+export interface SetSearchParamsOptions {
   replace?: boolean;
 }
 
 /** The setter returned by `useSearchParams`. */
-type SetSearchParams = (
+export type SetSearchParams = (
   next: SearchParamsInit | ((prev: URLSearchParams) => SearchParamsInit),
   options?: SetSearchParamsOptions,
 ) => void;
@@ -39,7 +39,7 @@ const buildUrl = (params: URLSearchParams): string => {
  * setSearchParams((prev) => new URLSearchParams({ ...Object.fromEntries(prev), page: "2" }));
  * ```
  */
-const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
+export const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
   const [searchParams, setSearchParamsState] = useState<URLSearchParams>(() =>
     typeof window === "undefined" ? new URLSearchParams() : readSearchParams(),
   );
@@ -67,6 +67,3 @@ const useSearchParams = (): [URLSearchParams, SetSearchParams] => {
 
   return [searchParams, setSearchParams];
 };
-
-export { useSearchParams };
-export type { SearchParamsInit, SetSearchParamsOptions, SetSearchParams };

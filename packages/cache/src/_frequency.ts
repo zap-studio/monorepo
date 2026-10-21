@@ -9,7 +9,7 @@ import type { EvictionPolicy } from "./types.ts";
 /**
  * Which end of the frequency range `evict()` drains first.
  */
-type FrequencyOrder = "least" | "most";
+export type FrequencyOrder = "least" | "most";
 
 /**
  * Creates a frequency-bucket eviction policy.
@@ -20,7 +20,7 @@ type FrequencyOrder = "least" | "most";
  * and move it to the next bucket. `evict()` removes the oldest key in the
  * lowest surviving bucket for `"least"`, the highest one for `"most"`.
  */
-const createFrequencyPolicy = <K>(order: FrequencyOrder): EvictionPolicy<K> => {
+export const createFrequencyPolicy = <K>(order: FrequencyOrder): EvictionPolicy<K> => {
   const frequencyByKey = new Map<K, number>();
   const bucketsByFrequency = new Map<number, Map<K, true>>();
   const step = order === "least" ? 1 : -1;
@@ -118,6 +118,3 @@ const createFrequencyPolicy = <K>(order: FrequencyOrder): EvictionPolicy<K> => {
     },
   };
 };
-
-export { createFrequencyPolicy };
-export type { FrequencyOrder };

@@ -12,7 +12,7 @@
  * - `"equal"`: `delayMs/2 + random(0, delayMs/2)` — keeps a floor at half
  *   the computed delay, less spread than full jitter.
  */
-type JitterMode = "equal" | "full";
+export type JitterMode = "equal" | "full";
 
 /**
  * Configuration for jitter application.
@@ -20,7 +20,7 @@ type JitterMode = "equal" | "full";
  * @example
  * const jitter: JitterOptions = { mode: "full" };
  */
-interface JitterOptions {
+export interface JitterOptions {
   /**
    * Jitter strategy to apply.
    */
@@ -44,7 +44,7 @@ interface JitterOptions {
  * @example
  * const delayMs = applyJitter(1000, "full"); // 0-1000
  */
-const applyJitter = (delayMs: number, jitter?: JitterMode | JitterOptions): number => {
+export const applyJitter = (delayMs: number, jitter?: JitterMode | JitterOptions): number => {
   if (jitter === undefined) {
     return delayMs;
   }
@@ -59,6 +59,3 @@ const applyJitter = (delayMs: number, jitter?: JitterMode | JitterOptions): numb
   const half = delayMs / 2;
   return Math.round(half + random() * half);
 };
-
-export { applyJitter };
-export type { JitterMode, JitterOptions };

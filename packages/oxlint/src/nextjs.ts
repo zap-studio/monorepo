@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorNextjsRules } from "./_rules-react-doctor-nextjs.ts";
 
-const nextjsJsPlugins: ExternalPluginEntry[] = [
+export const nextjsJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const nextjsRules: DummyRuleMap = prefixed("react-doctor", reactDoctorNextjsRules);
+export const nextjsRules: DummyRuleMap = prefixed("react-doctor", reactDoctorNextjsRules);
 
 const nextjs: OxlintConfig = defineConfig({
   jsPlugins: nextjsJsPlugins,
@@ -18,5 +18,3 @@ const nextjs: OxlintConfig = defineConfig({
 });
 
 export default nextjs;
-
-export { nextjsJsPlugins, nextjsRules };

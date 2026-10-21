@@ -34,7 +34,7 @@ function parameterName(parameter: Parameter, sourceCode: SourceCode): string {
 }
 
 /** Ban the broad object type on function inputs, including local aliases to object. */
-const noObjectParametersRule: Rule = defineRule({
+export const noObjectParametersRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -119,5 +119,3 @@ const noObjectParametersRule: Rule = defineRule({
     };
   },
 });
-
-export { noObjectParametersRule };

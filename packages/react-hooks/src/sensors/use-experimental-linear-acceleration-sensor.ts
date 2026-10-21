@@ -14,7 +14,7 @@ interface LinearAccelerationSensorInstance extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalLinearAccelerationSensor`. Acceleration in m/s² along each axis, without gravity. */
-interface LinearAccelerationReading {
+export interface LinearAccelerationReading {
   x: number | null;
   y: number | null;
   z: number | null;
@@ -29,7 +29,7 @@ const readLinearAcceleration = (
 });
 
 /** The shape returned by `useExperimentalLinearAccelerationSensor`. */
-type UseExperimentalLinearAccelerationSensorResult =
+export type UseExperimentalLinearAccelerationSensorResult =
   UseGenericSensorResult<LinearAccelerationReading>;
 
 /**
@@ -50,7 +50,7 @@ type UseExperimentalLinearAccelerationSensorResult =
  * <button onClick={start} disabled={!supported}>Enable linear acceleration</button>
  * ```
  */
-const useExperimentalLinearAccelerationSensor = (
+export const useExperimentalLinearAccelerationSensor = (
   options?: GenericSensorOptions,
 ): UseExperimentalLinearAccelerationSensorResult =>
   useGenericSensor<LinearAccelerationSensorInstance, LinearAccelerationReading>(
@@ -58,6 +58,3 @@ const useExperimentalLinearAccelerationSensor = (
     readLinearAcceleration,
     options,
   );
-
-export { useExperimentalLinearAccelerationSensor };
-export type { LinearAccelerationReading, UseExperimentalLinearAccelerationSensorResult };

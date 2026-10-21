@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorJotaiRules } from "./_rules-react-doctor-jotai.ts";
 
-const jotaiJsPlugins: ExternalPluginEntry[] = [
+export const jotaiJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const jotaiRules: DummyRuleMap = prefixed("react-doctor", reactDoctorJotaiRules);
+export const jotaiRules: DummyRuleMap = prefixed("react-doctor", reactDoctorJotaiRules);
 
 const jotai: OxlintConfig = defineConfig({
   jsPlugins: jotaiJsPlugins,
@@ -18,5 +18,3 @@ const jotai: OxlintConfig = defineConfig({
 });
 
 export default jotai;
-
-export { jotaiJsPlugins, jotaiRules };

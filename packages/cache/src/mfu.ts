@@ -26,6 +26,4 @@ import { createFrequencyPolicy } from "./_frequency.ts";
  * const cache = createCache<string, number>(2, { policy: mfu() });
  * ```
  */
-const mfu = <K>(): EvictionPolicy<K> => createFrequencyPolicy<K>("most");
-
-export { mfu };
+export const mfu = <K>(): EvictionPolicy<K> => createFrequencyPolicy<K>("most");

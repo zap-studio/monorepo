@@ -5,9 +5,9 @@ import { type PackageInfo, packages } from "./packages.ts";
 
 const packagesDirectory = resolve(process.cwd(), "../../packages");
 
-type Support = "full" | "partial" | "tooling";
+export type Support = "full" | "partial" | "tooling";
 
-interface CatalogEntry extends PackageInfo {
+export interface CatalogEntry extends PackageInfo {
   dependencies: number;
   gzipBytes: number | null;
   note?: string;
@@ -15,7 +15,7 @@ interface CatalogEntry extends PackageInfo {
   support: Record<RuntimeId, Support>;
 }
 
-const runtimeColumns = [
+export const runtimeColumns = [
   { id: "node", label: "Node" },
   { id: "bun", label: "Bun" },
   { id: "deno", label: "Deno" },
@@ -23,7 +23,7 @@ const runtimeColumns = [
   { id: "browser", label: "Browser" },
 ] as const;
 
-type RuntimeId = (typeof runtimeColumns)[number]["id"];
+export type RuntimeId = (typeof runtimeColumns)[number]["id"];
 
 const everywhere = {
   browser: "full",
@@ -113,7 +113,7 @@ const countDependencies = (manifest: Manifest): number =>
 const countSubpaths = (manifest: Manifest): number =>
   Object.keys(manifest.exports ?? {}).filter((key) => !key.endsWith("package.json")).length;
 
-const catalog: CatalogEntry[] = packages.map((entry) => {
+export const catalog: CatalogEntry[] = packages.map((entry) => {
   const manifest = readManifest(entry.slug);
   return {
     ...entry,
@@ -127,16 +127,13 @@ const catalog: CatalogEntry[] = packages.map((entry) => {
   };
 });
 
-const sizesAvailable = catalog.every((entry) => entry.gzipBytes !== null);
+export const sizesAvailable = catalog.every((entry) => entry.gzipBytes !== null);
 
-const formatBytes = (bytes: number): string => {
+export const formatBytes = (bytes: number): string => {
   if (bytes < 1000) {
     return `${bytes} B`;
   }
   return `${(bytes / 1000).toFixed(bytes < 10_000 ? 1 : 0)} kB`;
 };
 
-const runtimePackages = catalog.filter((entry) => entry.support.node !== "tooling");
-
-export { runtimeColumns, catalog, sizesAvailable, formatBytes, runtimePackages };
-export type { Support, CatalogEntry, RuntimeId };
+export const runtimePackages = catalog.filter((entry) => entry.support.node !== "tooling");

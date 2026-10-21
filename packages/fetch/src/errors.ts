@@ -22,7 +22,7 @@
  *   }
  * }
  */
-class FetchError extends Error {
+export class FetchError extends Error {
   /**
    * HTTP status code from the failing response.
    */
@@ -42,5 +42,3 @@ class FetchError extends Error {
     this.response = response;
   }
 }
-
-export { FetchError };

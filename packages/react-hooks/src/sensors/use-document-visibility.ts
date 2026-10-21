@@ -19,7 +19,5 @@ const subscribe = (onStoreChange: () => void) => {
  * const visibility = useDocumentVisibility(); // "visible" | "hidden"
  * ```
  */
-const useDocumentVisibility = (): DocumentVisibilityState =>
+export const useDocumentVisibility = (): DocumentVisibilityState =>
   useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
-export { useDocumentVisibility };

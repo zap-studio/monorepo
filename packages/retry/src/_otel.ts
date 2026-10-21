@@ -24,7 +24,7 @@ import pkg from "../package.json" with { type: "json" };
  * forever. Repeated `createCounter` calls with the same name are cheap and
  * idempotent, so this costs nothing meaningful.
  */
-const recordRetryAttempt = (decision: "exhausted" | "retry"): void => {
+export const recordRetryAttempt = (decision: "exhausted" | "retry"): void => {
   metrics
     .getMeter(pkg.name, pkg.version)
     .createCounter("retry.attempts", {
@@ -32,5 +32,3 @@ const recordRetryAttempt = (decision: "exhausted" | "retry"): void => {
     })
     .add(1, { "retry.decision": decision });
 };
-
-export { recordRetryAttempt };

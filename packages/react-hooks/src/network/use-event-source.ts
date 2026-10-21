@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Connection status reported by `useEventSource`. */
-type EventSourceStatus = "closed" | "connecting" | "open";
+export type EventSourceStatus = "closed" | "connecting" | "open";
 
 /** The shape returned by `useEventSource`. */
-interface UseEventSourceResult {
+export interface UseEventSourceResult {
   close: () => void;
   data: string | undefined;
   status: EventSourceStatus;
@@ -22,7 +22,7 @@ interface UseEventSourceResult {
  * const { status, data } = useEventSource("https://example.com/stream");
  * ```
  */
-const useEventSource = (url: string | undefined): UseEventSourceResult => {
+export const useEventSource = (url: string | undefined): UseEventSourceResult => {
   const [status, setStatus] = useState<EventSourceStatus>(url ? "connecting" : "closed");
   const [data, setData] = useState<string | undefined>(undefined);
   const sourceRef = useRef<EventSource | null>(null);
@@ -62,6 +62,3 @@ const useEventSource = (url: string | undefined): UseEventSourceResult => {
 
   return { close, data, status };
 };
-
-export { useEventSource };
-export type { EventSourceStatus, UseEventSourceResult };

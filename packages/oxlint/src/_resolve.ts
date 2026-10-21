@@ -9,7 +9,8 @@ import { fileURLToPath } from "node:url";
  * non-hoisted layout. Resolving to an absolute path here, from this package's
  * own module graph, works regardless of the consumer's `node_modules` layout.
  */
-const resolvePlugin = (specifier: string): string => fileURLToPath(import.meta.resolve(specifier));
+export const resolvePlugin = (specifier: string): string =>
+  fileURLToPath(import.meta.resolve(specifier));
 
 const packageRoot = dirname(fileURLToPath(import.meta.resolve("@zap-studio/oxlint/package.json")));
 
@@ -19,6 +20,4 @@ const packageRoot = dirname(fileURLToPath(import.meta.resolve("@zap-studio/oxlin
  * (ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING), which is where this file lives for
  * every real (non-workspace) consumer of the published package.
  */
-const antiSlopSpecifier: string = join(packageRoot, "dist", "anti-slop", "index.js");
-
-export { resolvePlugin, antiSlopSpecifier };
+export const antiSlopSpecifier: string = join(packageRoot, "dist", "anti-slop", "index.js");

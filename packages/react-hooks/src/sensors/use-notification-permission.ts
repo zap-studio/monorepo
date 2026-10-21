@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 /** The shape returned by `useNotificationPermission`. */
-interface UseNotificationPermissionResult {
+export interface UseNotificationPermissionResult {
   notify: (title: string, options?: NotificationOptions) => Notification | undefined;
   permission: NotificationPermission | "unsupported";
   requestPermission: () => Promise<NotificationPermission>;
@@ -27,7 +27,7 @@ const readPermission = (): NotificationPermission | "unsupported" =>
  * notify("Done!", { body: "Your export finished." });
  * ```
  */
-const useNotificationPermission = (): UseNotificationPermissionResult => {
+export const useNotificationPermission = (): UseNotificationPermissionResult => {
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">(
     readPermission,
   );
@@ -53,6 +53,3 @@ const useNotificationPermission = (): UseNotificationPermissionResult => {
 
   return { notify, permission, requestPermission };
 };
-
-export { useNotificationPermission };
-export type { UseNotificationPermissionResult };

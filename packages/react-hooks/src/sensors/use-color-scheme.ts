@@ -1,7 +1,7 @@
 import { useMediaQueryMatch } from "./_media-query.ts";
 
 /** The OS/browser color scheme preference, as reported by `useColorScheme`. */
-type ColorScheme = "dark" | "light";
+export type ColorScheme = "dark" | "light";
 
 /**
  * The OS/browser color scheme preference, via `(prefers-color-scheme:
@@ -13,8 +13,5 @@ type ColorScheme = "dark" | "light";
  * const scheme = useColorScheme(); // "dark" | "light"
  * ```
  */
-const useColorScheme = (): ColorScheme =>
+export const useColorScheme = (): ColorScheme =>
   useMediaQueryMatch("(prefers-color-scheme: dark)") ? "dark" : "light";
-
-export { useColorScheme };
-export type { ColorScheme };

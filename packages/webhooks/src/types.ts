@@ -20,7 +20,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  * };
  * ```
  */
-interface WebhookContext {
+export interface WebhookContext {
   /** The matched route key registered on the router (e.g. "stripe") */
   path: string;
   /** The exact request body bytes (for signature verification) */
@@ -41,13 +41,13 @@ interface WebhookContext {
  * };
  * ```
  */
-interface HandlerContext<TPayload = unknown> extends WebhookContext {
+export interface HandlerContext<TPayload = unknown> extends WebhookContext {
   /** The validated webhook payload */
   payload: TPayload;
 }
 
 /** Internal handler entry stored per registered route. */
-interface HandlerEntry<TPayload = unknown> {
+export interface HandlerEntry<TPayload = unknown> {
   /** Route-level hooks that run after successful processing. */
   after?: AfterHook[];
   /** Route-level hooks that run before request processing. */
@@ -71,7 +71,7 @@ interface HandlerEntry<TPayload = unknown> {
  * };
  * ```
  */
-interface WebhookRouterOptions {
+export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
   after?: AfterHook | AfterHook[];
   /** Global hooks executed before route-level hooks and verification. */
@@ -112,7 +112,7 @@ interface WebhookRouterOptions {
  * };
  * ```
  */
-interface RegisterOptions<T> {
+export interface RegisterOptions<T> {
   /** Hooks that run after successful processing (before global after hooks) */
   after?: AfterHook | AfterHook[];
   /** Hooks that run before request processing (after global before hooks) */
@@ -134,7 +134,7 @@ interface RegisterOptions<T> {
  *
  * @template TSchema - A Standard Schema type.
  */
-type InferSchemaOutput<TSchema> =
+export type InferSchemaOutput<TSchema> =
   TSchema extends StandardSchemaV1<unknown, infer TOutput> ? TOutput : never;
 
 /**
@@ -150,7 +150,7 @@ type InferSchemaOutput<TSchema> =
  * };
  * ```
  */
-type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown>> = Omit<
+export type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown>> = Omit<
   RegisterOptions<InferSchemaOutput<TSchema>>,
   "schema"
 > & {
@@ -158,7 +158,7 @@ type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown>> = Om
 };
 
 /** A single route's registration shape, as used by schema-driven route dictionaries. */
-interface RouteLike {
+export interface RouteLike {
   /** Hooks that run after successful processing. */
   after?: AfterHook | AfterHook[];
   /** Hooks that run before request processing. */
@@ -181,7 +181,7 @@ interface RouteLike {
  * };
  * ```
  */
-type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
+export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: SchemaRouteOptions<TRoutes[P]["schema"]>;
 };
 
@@ -198,7 +198,7 @@ type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
  * };
  * ```
  */
-type WebhookHandler<TPayload = unknown> = (
+export type WebhookHandler<TPayload = unknown> = (
   ctx: HandlerContext<TPayload>,
 ) => Promise<Response | undefined> | Response | undefined;
 
@@ -212,7 +212,7 @@ type WebhookHandler<TPayload = unknown> = (
  * };
  * ```
  */
-type HandlerMap<TMap extends Record<string, unknown>> = {
+export type HandlerMap<TMap extends Record<string, unknown>> = {
   [P in keyof TMap]: WebhookHandler<TMap[P]>;
 };
 
@@ -228,7 +228,7 @@ type HandlerMap<TMap extends Record<string, unknown>> = {
  * }>;
  * ```
  */
-type InferWebhookMapFromRoutes<TRoutes extends Record<string, RouteLike>> = {
+export type InferWebhookMapFromRoutes<TRoutes extends Record<string, RouteLike>> = {
   [P in keyof TRoutes]: InferSchemaOutput<TRoutes[P]["schema"]>;
 };
 
@@ -240,7 +240,7 @@ type InferWebhookMapFromRoutes<TRoutes extends Record<string, RouteLike>> = {
  * const verify: VerifyFn = createHmacVerifier({ headerName: "x-signature", secret });
  * ```
  */
-type VerifyFn = (ctx: WebhookContext) => Promise<void> | void;
+export type VerifyFn = (ctx: WebhookContext) => Promise<void> | void;
 
 /**
  * Hook function that runs before request processing
@@ -250,7 +250,7 @@ type VerifyFn = (ctx: WebhookContext) => Promise<void> | void;
  * const before: BeforeHook = (ctx) => console.log("received", ctx.path);
  * ```
  */
-type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
+export type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
 
 /**
  * Hook function that runs after successful request processing.
@@ -263,7 +263,7 @@ type BeforeHook = (ctx: WebhookContext) => Promise<void> | void;
  * const after: AfterHook = (ctx, response) => console.log(response.status);
  * ```
  */
-type AfterHook = (ctx: WebhookContext, response: Response) => Promise<void> | void;
+export type AfterHook = (ctx: WebhookContext, response: Response) => Promise<void> | void;
 
 /**
  * Hook function that runs when an error occurs
@@ -273,26 +273,7 @@ type AfterHook = (ctx: WebhookContext, response: Response) => Promise<void> | vo
  * const onError: ErrorHook = (error) => Response.json({ error: error.message }, { status: 500 });
  * ```
  */
-type ErrorHook = (
+export type ErrorHook = (
   error: Error,
   ctx: WebhookContext,
 ) => Promise<Response | undefined> | Response | undefined;
-
-export type {
-  WebhookContext,
-  HandlerContext,
-  HandlerEntry,
-  WebhookRouterOptions,
-  RegisterOptions,
-  InferSchemaOutput,
-  SchemaRouteOptions,
-  RouteLike,
-  SchemaRoutes,
-  WebhookHandler,
-  HandlerMap,
-  InferWebhookMapFromRoutes,
-  VerifyFn,
-  BeforeHook,
-  AfterHook,
-  ErrorHook,
-};

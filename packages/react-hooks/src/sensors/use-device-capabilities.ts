@@ -5,7 +5,7 @@ interface NavigatorWithDeviceMemory extends Navigator {
 }
 
 /** The shape returned by `useDeviceCapabilities`. */
-interface DeviceCapabilities {
+export interface DeviceCapabilities {
   deviceMemory?: number;
   hardwareConcurrency: number;
 }
@@ -31,7 +31,7 @@ const subscribe = () => () => {};
  * const { hardwareConcurrency, deviceMemory } = useDeviceCapabilities();
  * ```
  */
-const useDeviceCapabilities = (): DeviceCapabilities => {
+export const useDeviceCapabilities = (): DeviceCapabilities => {
   const cacheRef = useRef<DeviceCapabilities>(SERVER_SNAPSHOT);
 
   const getSnapshot = useCallback((): DeviceCapabilities => {
@@ -49,6 +49,3 @@ const useDeviceCapabilities = (): DeviceCapabilities => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useDeviceCapabilities };
-export type { DeviceCapabilities };

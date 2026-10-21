@@ -23,7 +23,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
  * ```
  */
-const useTextSelection = (): string => {
+export const useTextSelection = (): string => {
   const cacheRef = useRef<string>(FALLBACK_TEXT);
 
   const getSnapshot = useCallback((): string => {
@@ -36,5 +36,3 @@ const useTextSelection = (): string => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useTextSelection };

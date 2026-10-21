@@ -10,6 +10,4 @@ import { useMountState } from "./_mount-state.ts";
  * if (isServer) return null; // skip client-only work during SSR
  * ```
  */
-const useIsServer = (): boolean => useMountState(false, true);
-
-export { useIsServer };
+export const useIsServer = (): boolean => useMountState(false, true);

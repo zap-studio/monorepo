@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { playwrightRules } from "./_rules-playwright.ts";
 
-const playwrightJsPlugins: ExternalPluginEntry[] = [
+export const playwrightJsPlugins: ExternalPluginEntry[] = [
   { name: "playwright", specifier: resolvePlugin("eslint-plugin-playwright") },
 ];
 
-const playwrightRulesFinal: DummyRuleMap = prefixed("playwright", playwrightRules);
+export const playwrightRulesFinal: DummyRuleMap = prefixed("playwright", playwrightRules);
 
 const playwright: OxlintConfig = defineConfig({
   jsPlugins: playwrightJsPlugins,
@@ -18,5 +18,3 @@ const playwright: OxlintConfig = defineConfig({
 });
 
 export default playwright;
-
-export { playwrightJsPlugins, playwrightRulesFinal };

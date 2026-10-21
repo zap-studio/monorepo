@@ -5,7 +5,7 @@ import { type RefObject, useEffect, useRef } from "react";
  * Backs `useDebounce`/`useThrottle` — callers are still responsible for
  * clearing/replacing `.current` themselves as their own timer fires.
  */
-const usePendingTimeoutRef = (): RefObject<ReturnType<typeof setTimeout> | null> => {
+export const usePendingTimeoutRef = (): RefObject<ReturnType<typeof setTimeout> | null> => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(
@@ -19,5 +19,3 @@ const usePendingTimeoutRef = (): RefObject<ReturnType<typeof setTimeout> | null>
 
   return timeoutRef;
 };
-
-export { usePendingTimeoutRef };

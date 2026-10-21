@@ -20,16 +20,16 @@ import type { None, Option, OptionMatchers, Some } from "./types.ts";
  * const option = some(42); // Some<number>
  * ```
  */
-const some = <T>(value: T): Some<T> => ({ some: true, value });
+export const some = <T>(value: T): Some<T> => ({ some: true, value });
 
 /** The `None` value, representing absence. */
-const none = (): None => ({ some: false });
+export const none = (): None => ({ some: false });
 
 /** Type guard: `true` when `option` is `Some`. */
-const isSome = <T>(option: Option<T>): option is Some<T> => option.some;
+export const isSome = <T>(option: Option<T>): option is Some<T> => option.some;
 
 /** Type guard: `true` when `option` is `None`. */
-const isNone = <T>(option: Option<T>): option is None => !option.some;
+export const isNone = <T>(option: Option<T>): option is None => !option.some;
 
 /**
  * Transforms the value inside a `Some`, passing `None` through unchanged.
@@ -39,7 +39,7 @@ const isNone = <T>(option: Option<T>): option is None => !option.some;
  * pipe(some(2), map((n) => n * 2)); // Some(4)
  * ```
  */
-const map =
+export const map =
   <T, U>(fn: (value: T) => U): ((option: Option<T>) => Option<U>) =>
   (option: Option<T>): Option<U> =>
     isSome(option) ? some(fn(option.value)) : option;
@@ -56,7 +56,7 @@ const map =
  * pipe(some(4), andThen(half)); // Some(2)
  * ```
  */
-const andThen =
+export const andThen =
   <T, U>(fn: (value: T) => Option<U>): ((option: Option<T>) => Option<U>) =>
   (option: Option<T>): Option<U> =>
     isSome(option) ? fn(option.value) : option;
@@ -71,7 +71,7 @@ const andThen =
  * pipe(some(1), orElse(() => some(0))); // Some(1), fn not called
  * ```
  */
-const orElse =
+export const orElse =
   <T>(fn: () => Option<T>): ((option: Option<T>) => Option<T>) =>
   (option: Option<T>): Option<T> =>
     isSome(option) ? option : fn();
@@ -84,7 +84,7 @@ const orElse =
  * pipe(none(), unwrapOr(0)); // 0
  * ```
  */
-const unwrapOr =
+export const unwrapOr =
   <T>(defaultValue: T): ((option: Option<T>) => T) =>
   (option: Option<T>): T =>
     isSome(option) ? option.value : defaultValue;
@@ -97,7 +97,7 @@ const unwrapOr =
  * pipe(none(), unwrapOrElse(() => 0)); // 0
  * ```
  */
-const unwrapOrElse =
+export const unwrapOrElse =
   <T>(fn: () => T): ((option: Option<T>) => T) =>
   (option: Option<T>): T =>
     isSome(option) ? option.value : fn();
@@ -116,7 +116,7 @@ const unwrapOrElse =
  * unwrap(none()); // throws
  * ```
  */
-const unwrap = <T>(option: Option<T>): T => {
+export const unwrap = <T>(option: Option<T>): T => {
   if (isSome(option)) {
     return option.value;
   }
@@ -135,7 +135,7 @@ const unwrap = <T>(option: Option<T>): T => {
  * ); // "got 42"
  * ```
  */
-const match =
+export const match =
   <T, U>(matchers: OptionMatchers<T, U>): ((option: Option<T>) => U) =>
   (option: Option<T>): U =>
     isSome(option) ? matchers.some(option.value) : matchers.none();
@@ -150,25 +150,10 @@ const match =
  * fromNullable([1, 2, 3].find((n) => n > 1)); // Some(2)
  * ```
  */
-const fromNullable = <T>(value: T | null | undefined): Option<NonNullable<T>> => {
+export const fromNullable = <T>(value: T | null | undefined): Option<NonNullable<T>> => {
   if (value === null || value === undefined) {
     return none();
   }
 
   return some(value);
-};
-
-export {
-  some,
-  none,
-  isSome,
-  isNone,
-  map,
-  andThen,
-  orElse,
-  unwrapOr,
-  unwrapOrElse,
-  unwrap,
-  match,
-  fromNullable,
 };

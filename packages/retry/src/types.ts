@@ -21,7 +21,7 @@ import type { AbortError, RetryError } from "./errors.ts";
  *   onExhausted: ({ attempts }) => new RetryError("done", { attempts }),
  * };
  */
-interface RetryPolicy<TError extends Error = Error, TData = unknown> {
+export interface RetryPolicy<TError extends Error = Error, TData = unknown> {
   /**
    * Returns the retry decision for a failed attempt.
    *
@@ -55,7 +55,7 @@ interface RetryPolicy<TError extends Error = Error, TData = unknown> {
  * `RetryPolicy` with `onExhausted` and `isKnownError` resolved to concrete
  * functions, used internally once `runRetryPolicy` has applied defaults.
  */
-interface ResolvedRetryPolicy<TError extends Error, TData> {
+export interface ResolvedRetryPolicy<TError extends Error, TData> {
   /**
    * Returns the retry decision for a failed attempt.
    */
@@ -78,7 +78,7 @@ interface ResolvedRetryPolicy<TError extends Error, TData> {
  * @example
  * const decision: RetryDecision = { shouldRetry: true, delayMs: 200, reason: "retry" };
  */
-interface RetryDecision {
+export interface RetryDecision {
   /**
    * When `true`, the runner may schedule another attempt (subject to
    * `delayMs` and the runner's abort rules).
@@ -100,7 +100,7 @@ interface RetryDecision {
  * @example
  * const input: RetryDecisionInput = { attempt: 2, error: new Error("timeout") };
  */
-interface RetryDecisionInput<TError extends Error = Error, TData = unknown> {
+export interface RetryDecisionInput<TError extends Error = Error, TData = unknown> {
   /**
    * One-based attempt number for the current failure.
    */
@@ -128,7 +128,7 @@ interface RetryDecisionInput<TError extends Error = Error, TData = unknown> {
  * @example
  * const input: RetryExhaustedInput = { attempts: 5, error: new Error("timeout") };
  */
-interface RetryExhaustedInput<TError extends Error = Error, TData = unknown> {
+export interface RetryExhaustedInput<TError extends Error = Error, TData = unknown> {
   /**
    * Count of completed attempts that led to stopping retries.
    */
@@ -149,7 +149,7 @@ interface RetryExhaustedInput<TError extends Error = Error, TData = unknown> {
  * @example
  * const options: RetryRunOptions = { throwOnExhausted: false, signal: controller.signal };
  */
-interface RetryRunOptions {
+export interface RetryRunOptions {
   /**
    * Delay function used between retry attempts.
    *
@@ -190,7 +190,7 @@ interface RetryRunOptions {
  * const result: RetryRunResult<string> = await runRetryPolicy(policy, doWork, { throwOnExhausted: false });
  * if (!result.ok) console.error(result.error);
  */
-type RetryRunResult<T> =
+export type RetryRunResult<T> =
   | {
       /**
        * Discriminator for a successful run.
@@ -216,13 +216,3 @@ type RetryRunResult<T> =
        */
       attempts: number;
     };
-
-export type {
-  RetryPolicy,
-  ResolvedRetryPolicy,
-  RetryDecision,
-  RetryDecisionInput,
-  RetryExhaustedInput,
-  RetryRunOptions,
-  RetryRunResult,
-};

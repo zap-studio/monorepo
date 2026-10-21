@@ -27,7 +27,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
  *
  * @public
  */
-class EnvironmentError extends Error {
+export class EnvironmentError extends Error {
   /**
    * Creates an env configuration error with a clear message.
    *
@@ -62,7 +62,7 @@ class EnvironmentError extends Error {
  *
  * @public
  */
-class EnvironmentValidationError extends Error {
+export class EnvironmentValidationError extends Error {
   /**
    * The keys that failed validation. Never includes their values.
    */
@@ -106,7 +106,7 @@ class EnvironmentValidationError extends Error {
  *
  * @public
  */
-class EnvironmentAccessError extends Error {
+export class EnvironmentAccessError extends Error {
   /**
    * The key that was accessed from client-side code.
    */
@@ -125,5 +125,3 @@ class EnvironmentAccessError extends Error {
     this.key = key;
   }
 }
-
-export { EnvironmentError, EnvironmentValidationError, EnvironmentAccessError };

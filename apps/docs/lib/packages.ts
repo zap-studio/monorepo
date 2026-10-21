@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-interface PackageInfo {
+export interface PackageInfo {
   description: string;
   name: string;
   slug: string;
@@ -46,10 +46,7 @@ const readPackage = (slug: string): PackageInfo => {
   return { description, name, slug, version };
 };
 
-const packages: PackageInfo[] = slugs.map(readPackage);
+export const packages: PackageInfo[] = slugs.map(readPackage);
 
-const findPackage = (slug: string): PackageInfo | undefined =>
+export const findPackage = (slug: string): PackageInfo | undefined =>
   packages.find((entry) => entry.slug === slug);
-
-export { packages, findPackage };
-export type { PackageInfo };

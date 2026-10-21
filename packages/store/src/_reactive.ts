@@ -14,13 +14,13 @@ type Listener = () => void;
 /**
  * What `track()` needs from a dependency: only `subscribe`.
  */
-interface Trackable {
+export interface Trackable {
   subscribe: (listener: Listener) => () => void;
 }
 
 let activeTracker: Set<Trackable> | null = null;
 
-class ReactiveNode<T> {
+export class ReactiveNode<T> {
   #value: T;
   #listeners = new Set<Listener>();
 
@@ -63,7 +63,7 @@ class ReactiveNode<T> {
 }
 
 /** Result of `track()`: the callback's return value plus what it read. */
-interface TrackResult<T> {
+export interface TrackResult<T> {
   readonly value: T;
   readonly deps: Set<Trackable>;
 }
@@ -71,7 +71,7 @@ interface TrackResult<T> {
 /**
  * Runs `fn` while recording every `ReactiveNode.get()` call made inside it.
  */
-const track = <T>(fn: () => T): TrackResult<T> => {
+export const track = <T>(fn: () => T): TrackResult<T> => {
   const previous = activeTracker;
   const deps = new Set<Trackable>();
   activeTracker = deps;
@@ -81,6 +81,3 @@ const track = <T>(fn: () => T): TrackResult<T> => {
     activeTracker = previous;
   }
 };
-
-export { ReactiveNode, track };
-export type { Trackable, TrackResult };

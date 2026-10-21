@@ -35,7 +35,10 @@ const isExpired = (entry: Entry<unknown>): boolean =>
  * cache.get("a"); // 1
  * ```
  */
-const createCache = <K, V>(capacity: number, options: CacheOptions<K, V> = {}): Cache<K, V> => {
+export const createCache = <K, V>(
+  capacity: number,
+  options: CacheOptions<K, V> = {},
+): Cache<K, V> => {
   if (!Number.isInteger(capacity) || capacity <= 0) {
     throw new RangeError("createCache capacity must be a positive integer.");
   }
@@ -167,5 +170,3 @@ const createCache = <K, V>(capacity: number, options: CacheOptions<K, V> = {}): 
     },
   };
 };
-
-export { createCache };

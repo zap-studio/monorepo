@@ -5,7 +5,7 @@ const getServerSnapshot = (): boolean => false;
 /**
  * Shared `matchMedia` subscription used by `useMediaQuery` and `useIsMobile`.
  */
-const useMediaQueryMatch = (query: string): boolean => {
+export const useMediaQueryMatch = (query: string): boolean => {
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
       const mediaQueryList = window.matchMedia(query);
@@ -19,5 +19,3 @@ const useMediaQueryMatch = (query: string): boolean => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useMediaQueryMatch };

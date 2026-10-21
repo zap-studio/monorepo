@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
 /** Status reported by `useScript`. */
-type ScriptStatus = "error" | "idle" | "loading" | "ready";
+export type ScriptStatus = "error" | "idle" | "loading" | "ready";
 
 /** Options accepted by `useScript`. */
-interface UseScriptOptions {
+export interface UseScriptOptions {
   async?: boolean;
   /** Remove the `<script>` tag when the last consumer of this `src` unmounts. Defaults to `false`. */
   removeOnUnmount?: boolean;
 }
 
 /** The shape returned by `useScript`. */
-interface UseScriptResult {
+export interface UseScriptResult {
   status: ScriptStatus;
 }
 
@@ -67,7 +67,7 @@ const getOrCreateEntry = (src: string, async: boolean | undefined): ScriptEntry 
  */
 const getServerSnapshot = (): ScriptStatus => "loading";
 
-const useScript = (src: string, options?: UseScriptOptions): UseScriptResult => {
+export const useScript = (src: string, options?: UseScriptOptions): UseScriptResult => {
   const async = options?.async;
   const removeOnUnmount = options?.removeOnUnmount;
 
@@ -106,6 +106,3 @@ const useScript = (src: string, options?: UseScriptOptions): UseScriptResult => 
 
   return { status };
 };
-
-export { useScript };
-export type { ScriptStatus, UseScriptOptions, UseScriptResult };

@@ -28,11 +28,9 @@ import { useSyncExternalStore } from "react";
  * const count = useStore(counter, (s) => s.count);
  * ```
  */
-function useStore<T>(store: Readable<T>): T;
-function useStore<T, U>(store: Readable<T>, selector: (value: T) => U): U;
-function useStore<T, U>(store: Readable<T>, selector?: (value: T) => U): T | U {
+export function useStore<T>(store: Readable<T>): T;
+export function useStore<T, U>(store: Readable<T>, selector: (value: T) => U): U;
+export function useStore<T, U>(store: Readable<T>, selector?: (value: T) => U): T | U {
   const getSnapshot = (): T | U => (selector ? selector(store.get()) : store.get());
   return useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot);
 }
-
-export { useStore };

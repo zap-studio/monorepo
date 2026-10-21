@@ -19,7 +19,7 @@ interface LegacyMouseEvent extends MouseEvent {
  * usePageLeave(() => setShowExitIntentModal(true));
  * ```
  */
-const usePageLeave = (onPageLeave: () => void): void => {
+export const usePageLeave = (onPageLeave: () => void): void => {
   const onPageLeaveRef = useRef(onPageLeave);
   useIsomorphicLayoutEffect(() => {
     onPageLeaveRef.current = onPageLeave;
@@ -38,5 +38,3 @@ const usePageLeave = (onPageLeave: () => void): void => {
     return () => document.removeEventListener("mouseout", handleMouseOut);
   }, []);
 };
-
-export { usePageLeave };

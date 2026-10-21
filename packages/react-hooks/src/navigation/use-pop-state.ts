@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `usePopState`. */
-interface PopState {
+export interface PopState {
   pathname: string;
   state: unknown;
 }
@@ -33,7 +33,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const { pathname } = usePopState();
  * ```
  */
-const usePopState = (): PopState => {
+export const usePopState = (): PopState => {
   const cacheRef = useRef<PopState>(FALLBACK_POP_STATE);
 
   const getSnapshot = useCallback((): PopState => {
@@ -46,6 +46,3 @@ const usePopState = (): PopState => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { usePopState };
-export type { PopState };

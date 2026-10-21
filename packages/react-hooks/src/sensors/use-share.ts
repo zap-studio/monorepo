@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 /** The shape returned by `useShare`. */
-interface UseShareResult {
+export interface UseShareResult {
   canShare: (data?: ShareData) => boolean;
   share: (data: ShareData) => Promise<void>;
   supported: boolean;
@@ -22,7 +22,7 @@ const isSupported = (): boolean =>
  * if (supported && canShare(data)) await share(data);
  * ```
  */
-const useShare = (): UseShareResult => {
+export const useShare = (): UseShareResult => {
   const supported = isSupported();
 
   const share = useCallback(async (data: ShareData): Promise<void> => {
@@ -37,6 +37,3 @@ const useShare = (): UseShareResult => {
 
   return { canShare, share, supported };
 };
-
-export { useShare };
-export type { UseShareResult };

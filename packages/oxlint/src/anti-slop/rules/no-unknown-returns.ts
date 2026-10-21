@@ -24,7 +24,7 @@ function referencedAliasName(type: ESTree.TSType): string | null {
 }
 
 /** Ban function contracts that return unknown instead of a parsed domain type. */
-const noUnknownReturnsRule: Rule = defineRule({
+export const noUnknownReturnsRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -111,5 +111,3 @@ const noUnknownReturnsRule: Rule = defineRule({
     };
   },
 });
-
-export { noUnknownReturnsRule };

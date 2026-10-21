@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The shape returned by `usePointer`. */
-interface PointerState {
+export interface PointerState {
   clientX: number;
   clientY: number;
   isDown: boolean;
@@ -38,7 +38,7 @@ const INITIAL_STATE: PointerState = {
  * const { clientX, clientY, pointerType, isDown } = usePointer();
  * ```
  */
-const usePointer = (): PointerState => {
+export const usePointer = (): PointerState => {
   const [state, setState] = useState<PointerState>(INITIAL_STATE);
 
   useIsomorphicLayoutEffect(() => {
@@ -82,6 +82,3 @@ const usePointer = (): PointerState => {
 
   return state;
 };
-
-export { usePointer };
-export type { PointerState };

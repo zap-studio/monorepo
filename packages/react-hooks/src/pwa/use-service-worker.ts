@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** The shape returned by `useServiceWorker`. */
-interface UseServiceWorkerResult {
+export interface UseServiceWorkerResult {
   registration: ServiceWorkerRegistration | undefined;
   supported: boolean;
   updateAvailable: boolean;
@@ -24,7 +24,7 @@ const isSupported = (): boolean =>
  * if (updateAvailable) showReloadToast();
  * ```
  */
-const useServiceWorker = (): UseServiceWorkerResult => {
+export const useServiceWorker = (): UseServiceWorkerResult => {
   const supported = isSupported();
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | undefined>(
     undefined,
@@ -76,6 +76,3 @@ const useServiceWorker = (): UseServiceWorkerResult => {
 
   return { registration, supported, updateAvailable };
 };
-
-export { useServiceWorker };
-export type { UseServiceWorkerResult };

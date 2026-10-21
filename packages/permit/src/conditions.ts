@@ -23,7 +23,7 @@ import type { ConditionFn, Context, HasRoleFn, PolicyFn, Role, RoleHierarchy } f
  * });
  * ```
  */
-const allow =
+export const allow =
   <TContext extends Context, TAction extends string = string, TResource = unknown>(): PolicyFn<
     TContext,
     TAction,
@@ -48,7 +48,7 @@ const allow =
  * });
  * ```
  */
-const deny =
+export const deny =
   <TContext extends Context, TAction extends string = string, TResource = unknown>(): PolicyFn<
     TContext,
     TAction,
@@ -73,7 +73,7 @@ const deny =
  * });
  * ```
  */
-const when =
+export const when =
   <TContext extends Context, TAction extends string = string, TResource = unknown>(
     condition: ConditionFn<TContext, TAction, TResource>,
   ): PolicyFn<TContext, TAction, TResource> =>
@@ -97,7 +97,7 @@ const when =
  * }
  * ```
  */
-const and =
+export const and =
   <TContext extends Context, TAction extends string = string, TResource = unknown>(
     ...conditions: ConditionFn<TContext, TAction, TResource>[]
   ): ConditionFn<TContext, TAction, TResource> =>
@@ -121,7 +121,7 @@ const and =
  * }
  * ```
  */
-const or =
+export const or =
   <TContext extends Context, TAction extends string = string, TResource = unknown>(
     ...conditions: ConditionFn<TContext, TAction, TResource>[]
   ): ConditionFn<TContext, TAction, TResource> =>
@@ -142,7 +142,7 @@ const or =
  * }
  * ```
  */
-const not =
+export const not =
   <TContext extends Context, TAction extends string = string, TResource = unknown>(
     condition: ConditionFn<TContext, TAction, TResource>,
   ): ConditionFn<TContext, TAction, TResource> =>
@@ -161,7 +161,7 @@ const not =
  * }
  * ```
  */
-const has =
+export const has =
   <TContext extends Context, K extends keyof TContext>(
     key: K,
     value: TContext[K],
@@ -186,7 +186,7 @@ const has =
  * // Returns: Set { "admin", "user", "guest" }
  * ```
  */
-const collectInheritedRoles = <TRole extends Role = Role>(
+export const collectInheritedRoles = <TRole extends Role = Role>(
   roles: TRole[],
   hierarchy: RoleHierarchy<TRole>,
 ): Set<TRole> => {
@@ -237,7 +237,7 @@ const collectInheritedRoles = <TRole extends Role = Role>(
  * }
  * ```
  */
-const hasRole: HasRoleFn =
+export const hasRole: HasRoleFn =
   (role: Role, hierarchy?: RoleHierarchy): ConditionFn<{ role: Role | Role[] }> =>
   (context) => {
     const userRoles = Array.isArray(context.role) ? context.role : [context.role];
@@ -249,5 +249,3 @@ const hasRole: HasRoleFn =
     const inherited = collectInheritedRoles(userRoles, hierarchy);
     return inherited.has(role);
   };
-
-export { allow, deny, when, and, or, not, has, collectInheritedRoles, hasRole };

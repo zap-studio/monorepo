@@ -1,5 +1,5 @@
 /** A simple local copy of the EyeDropper API types. It only works in Chromium browsers. */
-interface EyeDropperOpenOptions {
+export interface EyeDropperOpenOptions {
   signal?: AbortSignal;
 }
 
@@ -21,13 +21,10 @@ interface EyeDropperWindow {
  * `useExperimentalEyeDropper` calls this function directly during render
  * (including on the server), not just inside an effect.
  */
-const getEyeDropperConstructor = (): EyeDropperConstructor | undefined => {
+export const getEyeDropperConstructor = (): EyeDropperConstructor | undefined => {
   if (typeof window === "undefined") {
     return undefined;
   }
   // SAFETY: EyeDropper is not declared on Window. We read it as optional, so a browser without support (Safari, Firefox) gives undefined instead of throwing.
   return (window as EyeDropperWindow).EyeDropper;
 };
-
-export { getEyeDropperConstructor };
-export type { EyeDropperOpenOptions };

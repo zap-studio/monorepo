@@ -1,13 +1,13 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** One entry in `UserAgentData.brands`. */
-interface UserAgentDataBrand {
+export interface UserAgentDataBrand {
   brand: string;
   version: string;
 }
 
 /** The shape returned by `useExperimentalUserAgentData`: the basic fields from `navigator.userAgentData`. */
-interface UserAgentData {
+export interface UserAgentData {
   brands: readonly UserAgentDataBrand[];
   mobile: boolean;
   platform: string;
@@ -45,7 +45,7 @@ const dataEqual = (a: UserAgentData | undefined, b: UserAgentData | undefined): 
  * const isMobile = uaData?.mobile ?? false;
  * ```
  */
-const useExperimentalUserAgentData = (): UserAgentData | undefined => {
+export const useExperimentalUserAgentData = (): UserAgentData | undefined => {
   const cacheRef = useRef<UserAgentData | undefined>(undefined);
 
   const getSnapshot = useCallback((): UserAgentData | undefined => {
@@ -59,6 +59,3 @@ const useExperimentalUserAgentData = (): UserAgentData | undefined => {
 
   return useSyncExternalStore(subscribe, getSnapshot, () => undefined);
 };
-
-export { useExperimentalUserAgentData };
-export type { UserAgentDataBrand, UserAgentData };

@@ -5,7 +5,7 @@
  */
 
 /** A successful `Result`, carrying a value. */
-interface Ok<T> {
+export interface Ok<T> {
   /** Discriminant: always `true` for `Ok`. */
   readonly ok: true;
   /** The successful value. */
@@ -13,7 +13,7 @@ interface Ok<T> {
 }
 
 /** A failed `Result`, carrying an error. */
-interface Err<E> {
+export interface Err<E> {
   /** Discriminant: always `false` for `Err`. */
   readonly ok: false;
   /** The failure error. */
@@ -21,10 +21,10 @@ interface Err<E> {
 }
 
 /** Either a successful (`Ok`) or failed (`Err`) outcome. */
-type Result<T, E> = Ok<T> | Err<E>;
+export type Result<T, E> = Ok<T> | Err<E>;
 
 /** Matchers for `Result.match(...)`, one branch per `Result` variant. */
-interface ResultMatchers<T, E, U> {
+export interface ResultMatchers<T, E, U> {
   /** Called with the `Ok` value when the matched `Result` is `Ok`. */
   ok: (value: T) => U;
   /** Called with the `Err` error when the matched `Result` is `Err`. */
@@ -32,7 +32,7 @@ interface ResultMatchers<T, E, U> {
 }
 
 /** An `Option` holding a value. */
-interface Some<T> {
+export interface Some<T> {
   /** Discriminant: always `true` for `Some`. */
   readonly some: true;
   /** The held value. */
@@ -40,20 +40,18 @@ interface Some<T> {
 }
 
 /** An `Option` holding no value. */
-interface None {
+export interface None {
   /** Discriminant: always `false` for `None`. */
   readonly some: false;
 }
 
 /** Either a present (`Some`) or absent (`None`) value. */
-type Option<T> = Some<T> | None;
+export type Option<T> = Some<T> | None;
 
 /** Matchers for `Option.match(...)`, one branch per `Option` variant. */
-interface OptionMatchers<T, U> {
+export interface OptionMatchers<T, U> {
   /** Called with the held value when the matched `Option` is `Some`. */
   some: (value: T) => U;
   /** Called with no arguments when the matched `Option` is `None`. */
   none: () => U;
 }
-
-export type { Ok, Err, Result, ResultMatchers, Some, None, Option, OptionMatchers };

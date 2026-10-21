@@ -16,7 +16,5 @@ const getServerSnapshot = (): boolean => false;
  * const hasTouch = useTouchSupport();
  * ```
  */
-const useTouchSupport = (): boolean =>
+export const useTouchSupport = (): boolean =>
   useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
-export { useTouchSupport };

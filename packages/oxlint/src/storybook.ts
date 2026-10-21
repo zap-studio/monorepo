@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { storybookRules } from "./_rules-storybook.ts";
 
-const storybookJsPlugins: ExternalPluginEntry[] = [
+export const storybookJsPlugins: ExternalPluginEntry[] = [
   { name: "storybook", specifier: resolvePlugin("eslint-plugin-storybook") },
 ];
 
-const storybookRulesFinal: DummyRuleMap = prefixed("storybook", storybookRules);
+export const storybookRulesFinal: DummyRuleMap = prefixed("storybook", storybookRules);
 
 const storybook: OxlintConfig = defineConfig({
   jsPlugins: storybookJsPlugins,
@@ -18,5 +18,3 @@ const storybook: OxlintConfig = defineConfig({
 });
 
 export default storybook;
-
-export { storybookJsPlugins, storybookRulesFinal };

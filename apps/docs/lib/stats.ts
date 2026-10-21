@@ -1,6 +1,6 @@
 import { packages } from "./packages.ts";
 
-interface Stats {
+export interface Stats {
   downloads: number | null;
   stars: number | null;
 }
@@ -46,13 +46,10 @@ const readDownloads = async (): Promise<number | null> => {
   return total > 0 ? total : null;
 };
 
-const loadStats = async (): Promise<Stats> => {
+export const loadStats = async (): Promise<Stats> => {
   const [downloads, stars] = await Promise.all([readDownloads(), readStars()]);
   return { downloads, stars };
 };
 
-const formatCount = (count: number): string =>
+export const formatCount = (count: number): string =>
   count < 1000 ? `${count}` : `${Math.floor(count / 1000)}k`;
-
-export { loadStats, formatCount };
-export type { Stats };

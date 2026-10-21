@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-const regexpRules: RuleMap = {
+export const regexpRules: RuleMap = {
   "confusing-quantifier": "warn",
   "control-character-escape": "error",
   "match-any": "error",
@@ -90,5 +90,3 @@ const regexpRules: RuleMap = {
   // this earns its keep as a blanket default
   "grapheme-string-literal": "off",
 };
-
-export { regexpRules };

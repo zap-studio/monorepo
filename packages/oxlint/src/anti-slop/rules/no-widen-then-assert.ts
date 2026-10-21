@@ -313,7 +313,7 @@ function assertionIsNarrower(
 }
 
 /** Detect immutable local bindings that erase a known type and are later asserted back to a narrower type. */
-const noWidenThenAssertRule: Rule = defineRule({
+export const noWidenThenAssertRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -365,5 +365,3 @@ const noWidenThenAssertRule: Rule = defineRule({
     };
   },
 });
-
-export { noWidenThenAssertRule };

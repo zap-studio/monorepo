@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-const reactDoctorReactRouterRules: RuleMap = {
+export const reactDoctorReactRouterRules: RuleMap = {
   "react-router-csp-nonce-consistency": "error",
   "react-router-descendant-routes-require-splat": "error",
   "react-router-guard-aborted-handle-error": "warn",
@@ -40,5 +40,3 @@ const reactDoctorReactRouterRules: RuleMap = {
   "react-router-v8-no-removed-future-flags": "error",
   "react-router-valid-route-object": "error",
 };
-
-export { reactDoctorReactRouterRules };

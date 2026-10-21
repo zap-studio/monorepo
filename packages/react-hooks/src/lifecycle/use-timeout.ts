@@ -15,7 +15,7 @@ import { useLatestRef } from "./_latest-ref.ts";
  * useTimeout(() => setShowTooltip(false), showTooltip ? 3000 : null);
  * ```
  */
-const useTimeout = (callback: () => void, delayMs: number | null): void => {
+export const useTimeout = (callback: () => void, delayMs: number | null): void => {
   const callbackRef = useLatestRef(callback);
 
   useEffect(() => {
@@ -26,5 +26,3 @@ const useTimeout = (callback: () => void, delayMs: number | null): void => {
     return () => clearTimeout(id);
   }, [callbackRef, delayMs]);
 };
-
-export { useTimeout };

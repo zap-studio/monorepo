@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 
 /** The shape returned by `useViewTransition`. */
-interface UseViewTransitionResult {
+export interface UseViewTransitionResult {
   startTransition: (callback: () => Promise<void> | void) => Promise<void>;
   supported: boolean;
 }
@@ -25,7 +25,7 @@ const isSupported = (): boolean =>
  * const handleThemeChange = () => startTransition(() => setTheme("dark"));
  * ```
  */
-const useViewTransition = (): UseViewTransitionResult => {
+export const useViewTransition = (): UseViewTransitionResult => {
   const supported = isSupported();
 
   const startTransition = useCallback(
@@ -43,6 +43,3 @@ const useViewTransition = (): UseViewTransitionResult => {
 
   return useMemo(() => ({ startTransition, supported }), [startTransition, supported]);
 };
-
-export { useViewTransition };
-export type { UseViewTransitionResult };

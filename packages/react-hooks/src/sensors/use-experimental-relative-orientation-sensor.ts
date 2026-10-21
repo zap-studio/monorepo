@@ -12,7 +12,7 @@ interface RelativeOrientationSensorInstance extends GenericSensorInstance {
 }
 
 /** The reading from `useExperimentalRelativeOrientationSensor`. It gives the device's rotation as a quaternion `[x, y, z, w]`. */
-interface RelativeOrientationReading {
+export interface RelativeOrientationReading {
   quaternion: [number, number, number, number] | null;
 }
 
@@ -23,7 +23,7 @@ const readRelativeOrientation = (
 });
 
 /** The shape returned by `useExperimentalRelativeOrientationSensor`. */
-type UseExperimentalRelativeOrientationSensorResult =
+export type UseExperimentalRelativeOrientationSensorResult =
   UseGenericSensorResult<RelativeOrientationReading>;
 
 /**
@@ -46,7 +46,7 @@ type UseExperimentalRelativeOrientationSensorResult =
  * <button onClick={start} disabled={!supported}>Enable orientation sensor</button>
  * ```
  */
-const useExperimentalRelativeOrientationSensor = (
+export const useExperimentalRelativeOrientationSensor = (
   options?: GenericSensorOptions,
 ): UseExperimentalRelativeOrientationSensorResult =>
   useGenericSensor<RelativeOrientationSensorInstance, RelativeOrientationReading>(
@@ -54,6 +54,3 @@ const useExperimentalRelativeOrientationSensor = (
     readRelativeOrientation,
     options,
   );
-
-export { useExperimentalRelativeOrientationSensor };
-export type { RelativeOrientationReading, UseExperimentalRelativeOrientationSensorResult };

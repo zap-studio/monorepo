@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** The shape returned by `useMap`. */
-interface UseMapResult<K, V> {
+export interface UseMapResult<K, V> {
   clear: () => void;
   delete: (key: K) => void;
   get: (key: K) => V | undefined;
@@ -23,7 +23,7 @@ interface UseMapResult<K, V> {
  * set("a", 1);
  * ```
  */
-const useMap = <K, V>(initialEntries?: Iterable<readonly [K, V]>): UseMapResult<K, V> => {
+export const useMap = <K, V>(initialEntries?: Iterable<readonly [K, V]>): UseMapResult<K, V> => {
   const [map, setMap] = useState<Map<K, V>>(() => new Map(initialEntries));
   const mapRef = useRef(map);
   useEffect(() => {
@@ -61,6 +61,3 @@ const useMap = <K, V>(initialEntries?: Iterable<readonly [K, V]>): UseMapResult<
 
   return { clear, delete: deleteKey, get, has, map, set };
 };
-
-export { useMap };
-export type { UseMapResult };

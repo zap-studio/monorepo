@@ -2,9 +2,9 @@ import type { DummyRuleMap, OxlintConfig } from "oxlint";
 
 import { defineConfig } from "oxlint";
 
-const jsxRuntimeAutomaticPlugins: NonNullable<OxlintConfig["plugins"]> = ["react"];
+export const jsxRuntimeAutomaticPlugins: NonNullable<OxlintConfig["plugins"]> = ["react"];
 
-const jsxRuntimeAutomaticRules: DummyRuleMap = {
+export const jsxRuntimeAutomaticRules: DummyRuleMap = {
   "react/react-in-jsx-scope": "off",
 };
 
@@ -14,5 +14,3 @@ const jsxRuntimeAutomatic: OxlintConfig = defineConfig({
 });
 
 export default jsxRuntimeAutomatic;
-
-export { jsxRuntimeAutomaticPlugins, jsxRuntimeAutomaticRules };

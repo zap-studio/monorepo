@@ -85,7 +85,7 @@ function shouldReportType(node: ESTree.TSType, environment: TypeEnvironment): bo
 }
 
 /** Disallow object-dictionary contracts whose direct value type is an unsafe escape hatch. */
-const noUnsafeDictionaryTypeRule: Rule = defineRule({
+export const noUnsafeDictionaryTypeRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -132,5 +132,3 @@ const noUnsafeDictionaryTypeRule: Rule = defineRule({
     };
   },
 });
-
-export { noUnsafeDictionaryTypeRule };

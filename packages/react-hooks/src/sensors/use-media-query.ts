@@ -10,6 +10,4 @@ import { useMediaQueryMatch } from "./_media-query.ts";
  * const isWide = useMediaQuery("(min-width: 1024px)");
  * ```
  */
-const useMediaQuery = (query: string): boolean => useMediaQueryMatch(query);
-
-export { useMediaQuery };
+export const useMediaQuery = (query: string): boolean => useMediaQueryMatch(query);

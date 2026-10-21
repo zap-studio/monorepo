@@ -5,7 +5,7 @@ interface DeviceOrientationEventConstructorWithPermission {
 }
 
 /** The tilt fields `useDeviceOrientation` reports — mirrors `DeviceOrientationEvent`. */
-interface DeviceOrientationState {
+export interface DeviceOrientationState {
   absolute: boolean;
   alpha: number | null;
   beta: number | null;
@@ -13,7 +13,7 @@ interface DeviceOrientationState {
 }
 
 /** The shape returned by `useDeviceOrientation`. */
-interface UseDeviceOrientationResult extends DeviceOrientationState {
+export interface UseDeviceOrientationResult extends DeviceOrientationState {
   requestPermission: () => Promise<boolean>;
   supported: boolean;
 }
@@ -59,7 +59,7 @@ const requestDeviceOrientationPermission = async (): Promise<boolean> => {
  * <button onClick={requestPermission}>Enable tilt controls</button>
  * ```
  */
-const useDeviceOrientation = (): UseDeviceOrientationResult => {
+export const useDeviceOrientation = (): UseDeviceOrientationResult => {
   const [state, setState] = useState<DeviceOrientationState>(INITIAL_STATE);
   const supported = typeof window !== "undefined" && Boolean(window.DeviceOrientationEvent);
 
@@ -81,6 +81,3 @@ const useDeviceOrientation = (): UseDeviceOrientationResult => {
     [state, supported],
   );
 };
-
-export { useDeviceOrientation };
-export type { DeviceOrientationState, UseDeviceOrientationResult };

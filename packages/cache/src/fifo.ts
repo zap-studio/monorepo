@@ -20,7 +20,7 @@ import type { EvictionPolicy } from "./types.ts";
  * const cache = createCache<string, number>(2, { policy: fifo() });
  * ```
  */
-const fifo = <K>(): EvictionPolicy<K> => {
+export const fifo = <K>(): EvictionPolicy<K> => {
   const queue = new Set<K>();
 
   return {
@@ -49,5 +49,3 @@ const fifo = <K>(): EvictionPolicy<K> => {
     },
   };
 };
-
-export { fifo };

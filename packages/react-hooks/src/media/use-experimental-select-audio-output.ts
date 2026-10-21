@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 /** Options the Audio Output Devices API's `MediaDevices.selectAudioOutput()` accepts. */
-interface SelectAudioOutputOptions {
+export interface SelectAudioOutputOptions {
   deviceId?: string;
 }
 
@@ -27,7 +27,7 @@ const getSelectAudioOutput = (): SelectAudioOutput | undefined => {
 };
 
 /** The shape returned by `useExperimentalSelectAudioOutput`. */
-interface UseExperimentalSelectAudioOutputResult {
+export interface UseExperimentalSelectAudioOutputResult {
   selectAudioOutput: (options?: SelectAudioOutputOptions) => Promise<MediaDeviceInfo | undefined>;
   supported: boolean;
 }
@@ -50,7 +50,7 @@ interface UseExperimentalSelectAudioOutputResult {
  * </button>
  * ```
  */
-const useExperimentalSelectAudioOutput = (): UseExperimentalSelectAudioOutputResult => {
+export const useExperimentalSelectAudioOutput = (): UseExperimentalSelectAudioOutputResult => {
   const supported = Boolean(getSelectAudioOutput());
 
   const selectAudioOutput = useCallback(
@@ -73,6 +73,3 @@ const useExperimentalSelectAudioOutput = (): UseExperimentalSelectAudioOutputRes
 
   return { selectAudioOutput, supported };
 };
-
-export { useExperimentalSelectAudioOutput };
-export type { SelectAudioOutputOptions, UseExperimentalSelectAudioOutputResult };

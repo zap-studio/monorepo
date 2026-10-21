@@ -6,7 +6,7 @@
  */
 
 /** Metadata hints attached to a tool, per the WebMCP spec. */
-interface ToolAnnotations {
+export interface ToolAnnotations {
   /** Marks the tool as safe to call without side effects. Defaults to `false`. */
   readOnlyHint?: boolean;
   /** Marks the tool's output as untrusted content. Defaults to `false`. */
@@ -14,13 +14,13 @@ interface ToolAnnotations {
 }
 
 /** Options passed to a tool's `execute` callback. */
-interface ToolExecuteCallbackOptions {
+export interface ToolExecuteCallbackOptions {
   /** Aborts when the caller cancels the tool call. */
   signal: AbortSignal;
 }
 
 /** A tool's execute callback: receives the validated input and an abort signal. */
-type ToolExecuteCallback<TInput = unknown> = (
+export type ToolExecuteCallback<TInput = unknown> = (
   input: TInput,
   options: ToolExecuteCallbackOptions,
 ) => Promise<unknown>;
@@ -41,7 +41,7 @@ type ToolExecuteCallback<TInput = unknown> = (
  * };
  * ```
  */
-interface ModelContextTool<TInput = unknown> {
+export interface ModelContextTool<TInput = unknown> {
   /** Unique tool identifier: 1-128 characters, letters, digits, `_`, `-`, or `.` only. */
   name: string;
   /** Natural-language description of what the tool does, for the calling agent. */
@@ -57,7 +57,7 @@ interface ModelContextTool<TInput = unknown> {
 }
 
 /** Options for `registerTool` / `document.modelContext.registerTool`. */
-interface RegisterToolOptions {
+export interface RegisterToolOptions {
   /** Origins this tool is visible to. Defaults to same-origin only. */
   exposedTo?: string[];
   /** Unregisters the tool when aborted. `registerTool` combines this with its own internal signal. */
@@ -65,19 +65,19 @@ interface RegisterToolOptions {
 }
 
 /** Options for `document.modelContext.getTools`. */
-interface GetToolOptions {
+export interface GetToolOptions {
   /** Filters returned tools by origin. */
   fromOrigins?: string[];
 }
 
 /** Options for `document.modelContext.executeTool`. */
-interface ExecuteToolOptions {
+export interface ExecuteToolOptions {
   /** Cancels the tool call. */
   signal?: AbortSignal;
 }
 
 /** A tool as returned by `document.modelContext.getTools`. */
-interface RegisteredTool {
+export interface RegisteredTool {
   /** The tool's unique identifier. */
   name: string;
   /** Human-readable label. */
@@ -96,7 +96,7 @@ interface RegisteredTool {
 }
 
 /** The native `document.modelContext` interface, per the WebMCP spec. */
-interface ModelContext {
+export interface ModelContext {
   /** Registers a tool, making it callable by agents. */
   registerTool: (tool: ModelContextTool, options?: RegisterToolOptions) => Promise<undefined>;
   /** Lists currently registered tools. */
@@ -121,17 +121,4 @@ interface ModelContext {
  * consumer's own `Document` type). Cast through this instead — `document as
  * WebMCPDocument` — at any call site that needs `modelContext` directly.
  */
-type WebMCPDocument = Document & { modelContext?: ModelContext };
-
-export type {
-  ToolAnnotations,
-  ToolExecuteCallbackOptions,
-  ToolExecuteCallback,
-  ModelContextTool,
-  RegisterToolOptions,
-  GetToolOptions,
-  ExecuteToolOptions,
-  RegisteredTool,
-  ModelContext,
-  WebMCPDocument,
-};
+export type WebMCPDocument = Document & { modelContext?: ModelContext };

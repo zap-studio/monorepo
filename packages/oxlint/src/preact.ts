@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorPreactRules } from "./_rules-react-doctor-preact.ts";
 
-const preactJsPlugins: ExternalPluginEntry[] = [
+export const preactJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const preactRules: DummyRuleMap = prefixed("react-doctor", reactDoctorPreactRules);
+export const preactRules: DummyRuleMap = prefixed("react-doctor", reactDoctorPreactRules);
 
 const preact: OxlintConfig = defineConfig({
   jsPlugins: preactJsPlugins,
@@ -18,5 +18,3 @@ const preact: OxlintConfig = defineConfig({
 });
 
 export default preact;
-
-export { preactJsPlugins, preactRules };

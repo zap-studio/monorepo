@@ -11,6 +11,4 @@ import { useNetworkSnapshot } from "./_network.ts";
  * const isOnline = useOnlineStatus();
  * ```
  */
-const useOnlineStatus = (): boolean => useNetworkSnapshot().online;
-
-export { useOnlineStatus };
+export const useOnlineStatus = (): boolean => useNetworkSnapshot().online;

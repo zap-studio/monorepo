@@ -8,7 +8,7 @@
  * Minimal storage contract `persist` needs — satisfied by `localStorage` and
  * `sessionStorage` with zero adapter code.
  */
-interface StorageLike {
+export interface StorageLike {
   getItem: (key: string) => string | null;
   setItem: (key: string, value: string) => void;
 }
@@ -18,7 +18,7 @@ interface StorageLike {
  *
  * Only plain state is persisted — actions (functions) are never serialized.
  */
-interface PersistOptions {
+export interface PersistOptions {
   /** Storage key the serialized state is read from and written to. */
   readonly key: string;
   /** Optional custom storage; defaults to `localStorage` in browsers and a no-op on the server. */
@@ -26,7 +26,7 @@ interface PersistOptions {
 }
 
 /** Options accepted by `createStore`. */
-interface StoreOptions {
+export interface StoreOptions {
   readonly persist?: PersistOptions;
 }
 
@@ -36,19 +36,19 @@ interface StoreOptions {
  * bare-object `set({ ... })` overload — this removes the merge-vs-replace
  * ambiguity while staying a one-liner for simple updates.
  */
-type SetState<S> = (updater: (prev: S) => Partial<S> | S) => void;
+export type SetState<S> = (updater: (prev: S) => Partial<S> | S) => void;
 
 /** Reads the current state without subscribing to it. */
-type GetState<S> = () => S;
+export type GetState<S> = () => S;
 
 /** Factory that builds a store's actions, bound once at creation. */
-type ActionsFactory<S, A extends Record<string, unknown>> = (
+export type ActionsFactory<S, A extends Record<string, unknown>> = (
   set: SetState<S>,
   get: GetState<S>,
 ) => A;
 
 /** Instance returned by `createStore`. */
-interface Store<S, A extends Record<string, unknown> = Record<string, never>> {
+export interface Store<S, A extends Record<string, unknown> = Record<string, never>> {
   /** Returns state and actions merged. */
   get: () => S & A;
   /** Returns state only, no actions. */
@@ -58,18 +58,7 @@ interface Store<S, A extends Record<string, unknown> = Record<string, never>> {
 }
 
 /** Common read surface shared by `Store` and `derive`'s return value. */
-interface Readable<T> {
+export interface Readable<T> {
   get: () => T;
   subscribe: (listener: (value: T) => void) => () => void;
 }
-
-export type {
-  StorageLike,
-  PersistOptions,
-  StoreOptions,
-  SetState,
-  GetState,
-  ActionsFactory,
-  Store,
-  Readable,
-};

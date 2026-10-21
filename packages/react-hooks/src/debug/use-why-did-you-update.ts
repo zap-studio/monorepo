@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { isProductionBuild } from "./_env.ts";
 
 /** One changed prop, as logged by `useWhyDidYouUpdate`. */
-interface ChangedProp {
+export interface ChangedProp {
   from: unknown;
   to: unknown;
 }
@@ -26,7 +26,7 @@ const noop = (): void => {};
  * }
  * ```
  */
-const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
+export const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void => {
   const previousPropsRef = useRef<Record<string, unknown> | undefined>(undefined);
   const skip = isProductionBuild();
 
@@ -53,6 +53,3 @@ const useWhyDidYouUpdate = (name: string, props: Record<string, unknown>): void 
         },
   );
 };
-
-export { useWhyDidYouUpdate };
-export type { ChangedProp };

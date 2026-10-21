@@ -3,13 +3,13 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 import { useIsomorphicLayoutEffect } from "../lifecycle/use-isomorphic-layout-effect.ts";
 
 /** The size fields `useResizeObserver` reports. */
-interface ElementSize {
+export interface ElementSize {
   height: number;
   width: number;
 }
 
 /** The shape returned by `useResizeObserver`. */
-interface UseResizeObserverResult<T extends Element> {
+export interface UseResizeObserverResult<T extends Element> {
   ref: RefObject<T | null>;
   size: ElementSize | undefined;
 }
@@ -31,7 +31,9 @@ const isSupported = (): boolean => typeof ResizeObserver !== "undefined";
  * return <div ref={ref}>{size?.width}×{size?.height}</div>;
  * ```
  */
-const useResizeObserver = <T extends Element = HTMLElement>(): UseResizeObserverResult<T> => {
+export const useResizeObserver = <
+  T extends Element = HTMLElement,
+>(): UseResizeObserverResult<T> => {
   const ref = useRef<T | null>(null);
   const [size, setSize] = useState<ElementSize | undefined>(undefined);
 
@@ -59,6 +61,3 @@ const useResizeObserver = <T extends Element = HTMLElement>(): UseResizeObserver
 
   return { ref, size };
 };
-
-export { useResizeObserver };
-export type { ElementSize, UseResizeObserverResult };

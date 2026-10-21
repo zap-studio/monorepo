@@ -6,11 +6,14 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { tanstackRouterRules } from "./_rules-tanstack-router.ts";
 
-const tanstackRouterJsPlugins: ExternalPluginEntry[] = [
+export const tanstackRouterJsPlugins: ExternalPluginEntry[] = [
   { name: "tanstack-router", specifier: resolvePlugin("@tanstack/eslint-plugin-router") },
 ];
 
-const tanstackRouterRulesFinal: DummyRuleMap = prefixed("tanstack-router", tanstackRouterRules);
+export const tanstackRouterRulesFinal: DummyRuleMap = prefixed(
+  "tanstack-router",
+  tanstackRouterRules,
+);
 
 const tanstackRouter: OxlintConfig = defineConfig({
   jsPlugins: tanstackRouterJsPlugins,
@@ -18,5 +21,3 @@ const tanstackRouter: OxlintConfig = defineConfig({
 });
 
 export default tanstackRouter;
-
-export { tanstackRouterJsPlugins, tanstackRouterRulesFinal };

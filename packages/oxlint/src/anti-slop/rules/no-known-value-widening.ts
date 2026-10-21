@@ -131,7 +131,7 @@ function hasParentAssertion(node: ESTree.Node): boolean {
 }
 
 /** Detect sound syntactic cases where a known value is explicitly widened and loses evidence. */
-const noKnownValueWideningRule: Rule = defineRule({
+export const noKnownValueWideningRule: Rule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -242,5 +242,3 @@ const noKnownValueWideningRule: Rule = defineRule({
     };
   },
 });
-
-export { noKnownValueWideningRule };

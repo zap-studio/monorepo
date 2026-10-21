@@ -6,11 +6,14 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { testingLibraryRules } from "./_rules-testing-library.ts";
 
-const testingLibraryJsPlugins: ExternalPluginEntry[] = [
+export const testingLibraryJsPlugins: ExternalPluginEntry[] = [
   { name: "testing-library", specifier: resolvePlugin("eslint-plugin-testing-library") },
 ];
 
-const testingLibraryRulesFinal: DummyRuleMap = prefixed("testing-library", testingLibraryRules);
+export const testingLibraryRulesFinal: DummyRuleMap = prefixed(
+  "testing-library",
+  testingLibraryRules,
+);
 
 const testingLibrary: OxlintConfig = defineConfig({
   jsPlugins: testingLibraryJsPlugins,
@@ -18,5 +21,3 @@ const testingLibrary: OxlintConfig = defineConfig({
 });
 
 export default testingLibrary;
-
-export { testingLibraryJsPlugins, testingLibraryRulesFinal };

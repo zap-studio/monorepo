@@ -21,7 +21,7 @@ import { applyJitter } from "./jitter.ts";
  *   jitter: "equal",
  * };
  */
-interface LinearBackoffOptions {
+export interface LinearBackoffOptions {
   /**
    * Maximum number of attempts (including the first) before giving up.
    */
@@ -56,7 +56,7 @@ interface LinearBackoffOptions {
  *   maxDelayMs: 2_000,
  * });
  */
-const linearBackoff = (options: LinearBackoffOptions): RetryPolicy => {
+export const linearBackoff = (options: LinearBackoffOptions): RetryPolicy => {
   const { maxAttempts, baseDelayMs, incrementMs, maxDelayMs, jitter } = options;
 
   return {
@@ -79,6 +79,3 @@ const linearBackoff = (options: LinearBackoffOptions): RetryPolicy => {
     },
   };
 };
-
-export { linearBackoff };
-export type { LinearBackoffOptions };

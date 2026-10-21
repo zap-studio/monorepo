@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
 /** The shape returned by `useQueue`. */
-interface UseQueueResult<T> {
+export interface UseQueueResult<T> {
   clear: () => void;
   dequeue: () => T | undefined;
   enqueue: (value: T) => void;
@@ -25,7 +25,7 @@ interface UseQueueResult<T> {
  * const next = dequeue(); // "a"
  * ```
  */
-const useQueue = <T>(initialValues: readonly T[] = []): UseQueueResult<T> => {
+export const useQueue = <T>(initialValues: readonly T[] = []): UseQueueResult<T> => {
   const [queue, setQueue] = useState<readonly T[]>(initialValues);
   const queueRef = useRef(queue);
 
@@ -59,6 +59,3 @@ const useQueue = <T>(initialValues: readonly T[] = []): UseQueueResult<T> => {
     queue,
   };
 };
-
-export { useQueue };
-export type { UseQueueResult };

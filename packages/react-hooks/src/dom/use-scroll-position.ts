@@ -1,7 +1,7 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /** The shape returned by `useScrollPosition`. */
-interface ScrollPosition {
+export interface ScrollPosition {
   x: number;
   y: number;
 }
@@ -33,7 +33,7 @@ const subscribe = (onStoreChange: () => void) => {
  * const showBackToTop = y > 400;
  * ```
  */
-const useScrollPosition = (): ScrollPosition => {
+export const useScrollPosition = (): ScrollPosition => {
   const cacheRef = useRef<ScrollPosition>(FALLBACK_POSITION);
 
   const getSnapshot = useCallback((): ScrollPosition => {
@@ -46,6 +46,3 @@ const useScrollPosition = (): ScrollPosition => {
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 };
-
-export { useScrollPosition };
-export type { ScrollPosition };

@@ -1,6 +1,6 @@
 import type { RuleMap } from "./_prefixed.ts";
 
-const githubRules: RuleMap = {
+export const githubRules: RuleMap = {
   "array-foreach": "error",
   "async-currenttarget": "error",
   "async-preventdefault": "error",
@@ -30,5 +30,3 @@ const githubRules: RuleMap = {
   // convention, not a DOM-attribute bug
   "get-attribute": "off",
 };
-
-export { githubRules };

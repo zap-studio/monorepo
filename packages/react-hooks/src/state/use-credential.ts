@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 /** The shape returned by `useCredential`. */
-interface UseCredentialResult {
+export interface UseCredentialResult {
   create: (options?: CredentialCreationOptions) => Promise<Credential | null | undefined>;
   get: (options?: CredentialRequestOptions) => Promise<Credential | null | undefined>;
   preventSilentAccess: () => Promise<void>;
@@ -30,7 +30,7 @@ const isSupported = (): boolean =>
  * if (credential) await store(credential);
  * ```
  */
-const useCredential = (): UseCredentialResult => {
+export const useCredential = (): UseCredentialResult => {
   const supported = isSupported();
 
   const get = useCallback(
@@ -59,6 +59,3 @@ const useCredential = (): UseCredentialResult => {
 
   return { create, get, preventSilentAccess, store, supported };
 };
-
-export { useCredential };
-export type { UseCredentialResult };

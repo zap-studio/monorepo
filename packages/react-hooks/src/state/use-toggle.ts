@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 /** The tuple returned by `useToggle`. */
-type UseToggleResult = [value: boolean, toggle: (next?: boolean) => void];
+export type UseToggleResult = [value: boolean, toggle: (next?: boolean) => void];
 
 /**
  * Boolean state with a `toggle()` function. Call it with no argument to
@@ -14,7 +14,7 @@ type UseToggleResult = [value: boolean, toggle: (next?: boolean) => void];
  * <button onClick={() => toggleOpen(false)}>Close</button>
  * ```
  */
-const useToggle = (initialValue = false): UseToggleResult => {
+export const useToggle = (initialValue = false): UseToggleResult => {
   const [value, setValue] = useState(initialValue);
 
   const toggle = useCallback((next?: boolean): void => {
@@ -23,6 +23,3 @@ const useToggle = (initialValue = false): UseToggleResult => {
 
   return [value, toggle];
 };
-
-export { useToggle };
-export type { UseToggleResult };

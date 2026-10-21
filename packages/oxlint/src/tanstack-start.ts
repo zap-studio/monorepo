@@ -6,11 +6,14 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorTanstackStartRules } from "./_rules-react-doctor-tanstack-start.ts";
 
-const tanstackStartJsPlugins: ExternalPluginEntry[] = [
+export const tanstackStartJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const tanstackStartRules: DummyRuleMap = prefixed("react-doctor", reactDoctorTanstackStartRules);
+export const tanstackStartRules: DummyRuleMap = prefixed(
+  "react-doctor",
+  reactDoctorTanstackStartRules,
+);
 
 const tanstackStart: OxlintConfig = defineConfig({
   jsPlugins: tanstackStartJsPlugins,
@@ -18,5 +21,3 @@ const tanstackStart: OxlintConfig = defineConfig({
 });
 
 export default tanstackStart;
-
-export { tanstackStartJsPlugins, tanstackStartRules };

@@ -6,11 +6,11 @@ import { prefixed } from "./_prefixed.ts";
 import { resolvePlugin } from "./_resolve.ts";
 import { reactDoctorReduxRules } from "./_rules-react-doctor-redux.ts";
 
-const reduxJsPlugins: ExternalPluginEntry[] = [
+export const reduxJsPlugins: ExternalPluginEntry[] = [
   { name: "react-doctor", specifier: resolvePlugin("oxlint-plugin-react-doctor") },
 ];
 
-const reduxRules: DummyRuleMap = prefixed("react-doctor", reactDoctorReduxRules);
+export const reduxRules: DummyRuleMap = prefixed("react-doctor", reactDoctorReduxRules);
 
 const redux: OxlintConfig = defineConfig({
   jsPlugins: reduxJsPlugins,
@@ -18,5 +18,3 @@ const redux: OxlintConfig = defineConfig({
 });
 
 export default redux;
-
-export { reduxJsPlugins, reduxRules };
