@@ -11,11 +11,7 @@
   ],
   "ignorePatterns": ["packages/oxlint/src/anti-slop/**"],
   "duplicates": {
-    "ignoredClones": [
-      "dup:c7d4db6b:3",
-      "dup:a8315d8b:2",
-      "dup:8bd1bf1d:2"
-    ]
+    "ignoredClones": ["dup:c7d4db6b:3", "dup:a8315d8b:2", "dup:8bd1bf1d:2"]
   },
   "ignoreDependencies": [
     "eslint",
