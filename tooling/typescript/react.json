@@ -3,7 +3,7 @@
   "display": "React",
   "extends": "./library.json",
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx"
   }
 }

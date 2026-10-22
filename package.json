@@ -15,12 +15,13 @@
     "publish:check": "pnpm run build && pnpm run format:check && pnpm run typecheck && pnpm run lint && pnpm run test",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "pnpm -r --if-present run typecheck"
+    "typecheck": "tsc --noEmit && pnpm -r --if-present run typecheck"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",
     "@opentelemetry/api": "catalog:",
     "@oxlint/plugins": "catalog:",
+    "@types/node": "catalog:",
     "@varlock/bumpy": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",

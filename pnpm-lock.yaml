@@ -325,6 +325,9 @@ importers:
       '@oxlint/plugins':
         specifier: 'catalog:'
         version: 1.89.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.5
       '@varlock/bumpy':
         specifier: 'catalog:'
         version: 1.18.1

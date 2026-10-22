@@ -1,9 +1,7 @@
 {
   "extends": "@zap-studio/typescript/library.json",
   "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules", "vite.config.ts"],
   "compilerOptions": {
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": []
+    "lib": ["ESNext", "WebWorker"]
   }
 }

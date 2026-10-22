@@ -1,9 +1,4 @@
 {
   "extends": "@zap-studio/typescript/library.json",
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules"],
-  "compilerOptions": {
-    "lib": ["ESNext"],
-    "types": []
-  }
+  "include": ["src/**/*.ts"]
 }

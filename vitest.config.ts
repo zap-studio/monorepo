@@ -13,7 +13,7 @@ export default defineConfig({
     },
     exclude,
     globals: false,
-    outputFile: isCI ? { junit: "./coverage/junit.xml" } : undefined,
+    outputFile: { junit: "./coverage/junit.xml" },
     projects: [
       {
         extends: true,
