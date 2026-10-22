@@ -43,12 +43,12 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm -C ../.. run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsrs --noEmit"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:^",
     "tsdown": "catalog:",
-    "typescript": "catalog:",
+    "tsrs": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

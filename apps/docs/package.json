@@ -11,7 +11,7 @@
     "deploy": "wrangler deploy",
     "dev": "blume dev",
     "preview": "blume preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsrs --noEmit",
     "validate": "blume validate --strict"
   },
   "dependencies": {
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@zap-studio/typescript": "workspace:^",
-    "typescript": "catalog:",
+    "tsrs": "catalog:",
     "wrangler": "catalog:"
   },
   "engines": {

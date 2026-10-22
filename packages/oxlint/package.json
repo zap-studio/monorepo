@@ -75,7 +75,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm run verify && pnpm -C ../.. run build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsrs --noEmit",
     "verify": "node scripts/verify-presets.mjs"
   },
   "dependencies": {
@@ -102,7 +102,7 @@
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "tsdown": "catalog:",
-    "typescript": "catalog:"
+    "tsrs": "catalog:"
   },
   "peerDependencies": {
     "@oxlint/plugins": "catalog:",

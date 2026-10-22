@@ -36,13 +36,13 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm -C ../.. run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsrs --noEmit"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:^",
     "oxfmt": "catalog:",
     "tsdown": "catalog:",
-    "typescript": "catalog:"
+    "tsrs": "catalog:"
   },
   "peerDependencies": {
     "oxfmt": "catalog:"

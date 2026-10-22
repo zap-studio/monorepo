@@ -46,7 +46,7 @@
   },
   "scripts": {
     "prepublishOnly": "pnpm -C ../.. run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsrs --noEmit"
   },
   "dependencies": {
     "@zap-studio/validation": "workspace:^"
@@ -56,7 +56,7 @@
     "@opentelemetry/sdk-trace-base": "catalog:",
     "@zap-studio/typescript": "workspace:^",
     "tsdown": "catalog:",
-    "typescript": "catalog:",
+    "tsrs": "catalog:",
     "vitest": "catalog:",
     "zod": "catalog:"
   },
