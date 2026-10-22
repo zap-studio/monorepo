@@ -13,11 +13,14 @@
     "skipLibCheck": true,
 
     "strict": true,
+    "alwaysStrict": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
 
     "noUnusedLocals": true,
     "noUnusedParameters": true
