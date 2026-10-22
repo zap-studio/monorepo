@@ -199,13 +199,14 @@ describe("match", () => {
 
 describe("fromThrowable", () => {
   it("returns Ok when the function does not throw", () => {
-    const safeParse = fromThrowable(JSON.parse);
+    const safeParse = fromThrowable((text: string) => JSON.parse(text));
     expect(safeParse('{"a":1}')).toEqual(ok({ a: 1 }));
   });
 
   it("returns Err with the mapped error when the function throws", () => {
-    const safeParse = fromThrowable(JSON.parse, (error) =>
-      error instanceof Error ? error.message : "parse failed",
+    const safeParse = fromThrowable(
+      (text: string) => JSON.parse(text),
+      (error) => (error instanceof Error ? error.message : "parse failed"),
     );
 
     const result = safeParse("not json");
