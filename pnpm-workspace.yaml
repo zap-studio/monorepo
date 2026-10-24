@@ -14,7 +14,7 @@ allowBuilds:
 catalog:
   "@arethetypeswrong/core": ^0.18.5
   "@e18e/eslint-plugin": ^0.8.1
-  "@opentelemetry/api": ^1.9.1
+  "@opentelemetry/api": ^1.10.0
   "@opentelemetry/context-async-hooks": ^2.12.0
   "@opentelemetry/core": ^2.12.0
   "@opentelemetry/sdk-metrics": ^2.12.0
@@ -30,7 +30,7 @@ catalog:
   "@varlock/bumpy": ^1.18.1
   "@vitest/browser-playwright": ^5.0.5
   "@vitest/coverage-v8": ^5.0.5
-  arktype: ^2.2.8
+  arktype: ^2.2.9
   blume: ^2.2.4
   eslint: ^10.13.0
   eslint-plugin-cypress: ^7.0.2
@@ -40,15 +40,15 @@ catalog:
   eslint-plugin-regexp: ^3.3.1
   eslint-plugin-solid: ^0.18.1
   eslint-plugin-sonarjs: ^4.2.2
-  eslint-plugin-storybook: ^10.6.2
+  eslint-plugin-storybook: ^10.6.3
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
-  fallow: ^3.34.1
+  fallow: ^3.35.0
   lefthook: ^2.2.2
   oxfmt: ^0.74.0
   oxlint: ^1.89.0
   oxlint-plugin-react-doctor: ^0.9.18
-  oxlint-tsgolint: ^7.0.2004
+  oxlint-tsgolint: ^7.0.2005
   playwright: ^1.64.1
   publint: ^0.3.25
   react: ^19.3.1
@@ -60,5 +60,5 @@ catalog:
   valibot: ^1.5.0
   vitest: ^5.0.5
   vitest-browser-react: ^2.3.0
-  wrangler: ^4.151.2
+  wrangler: ^4.152.0
   zod: ^4.6.7
