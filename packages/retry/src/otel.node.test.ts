@@ -1,5 +1,5 @@
 import { context, metrics, trace } from "@opentelemetry/api";
-import { AsyncHooksContextManager } from "@opentelemetry/context-async-hooks";
+import { AsyncLocalStorageContextManager } from "@opentelemetry/context-async-hooks";
 import {
   AggregationTemporality,
   InMemoryMetricExporter,
@@ -7,10 +7,10 @@ import {
   PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createSequencePolicy } from "./_sequence-policy.ts";
@@ -24,10 +24,10 @@ describe("retry OpenTelemetry", () => {
   let meterProvider: MeterProvider;
 
   beforeAll(() => {
-    context.setGlobalContextManager(new AsyncHooksContextManager().enable());
+    context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
 
-    const tracerProvider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(spanExporter)],
+    const tracerProvider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: spanExporter })],
     });
     trace.setGlobalTracerProvider(tracerProvider);
 

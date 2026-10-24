@@ -8,10 +8,10 @@ import {
   PeriodicExportingMetricReader,
 } from "@opentelemetry/sdk-metrics";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { Actions, Resources } from "./types.ts";
@@ -52,8 +52,8 @@ describe("permit OpenTelemetry", () => {
   let meterProvider: MeterProvider;
 
   beforeAll(() => {
-    const tracerProvider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(spanExporter)],
+    const tracerProvider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: spanExporter })],
     });
     trace.setGlobalTracerProvider(tracerProvider);
 

@@ -1,10 +1,10 @@
 import { SpanKind, SpanStatusCode, propagation, trace } from "@opentelemetry/api";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { HEADERS_GETTER } from "./_otel.ts";
@@ -44,8 +44,8 @@ describe("WebhookRouter OpenTelemetry", () => {
   };
 
   beforeAll(() => {
-    const provider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(exporter)],
+    const provider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: exporter })],
     });
     trace.setGlobalTracerProvider(provider);
     propagation.setGlobalPropagator(new W3CTraceContextPropagator());

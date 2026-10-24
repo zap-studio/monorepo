@@ -44,7 +44,7 @@
   "devDependencies": {
     "@opentelemetry/api": "catalog:",
     "@opentelemetry/context-async-hooks": "catalog:",
-    "@opentelemetry/sdk-trace-base": "catalog:",
+    "@opentelemetry/sdk-trace": "catalog:",
     "@zap-studio/typescript": "workspace:^",
     "tsdown": "catalog:",
     "tsrs": "catalog:",

@@ -1,10 +1,10 @@
 import { context, trace } from "@opentelemetry/api";
-import { AsyncHooksContextManager } from "@opentelemetry/context-async-hooks";
+import { AsyncLocalStorageContextManager } from "@opentelemetry/context-async-hooks";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ConsoleLogger } from "./console.ts";
@@ -14,9 +14,9 @@ describe("ConsoleLogger trace-log correlation", () => {
   let infoSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    context.setGlobalContextManager(new AsyncHooksContextManager().enable());
-    const tracerProvider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(new InMemorySpanExporter())],
+    context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
+    const tracerProvider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: new InMemorySpanExporter() })],
     });
     trace.setGlobalTracerProvider(tracerProvider);
   });

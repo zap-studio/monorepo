@@ -1,9 +1,9 @@
 import { SpanKind, SpanStatusCode, trace } from "@opentelemetry/api";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 
@@ -16,8 +16,8 @@ describe("env OpenTelemetry", () => {
   const spanExporter = new InMemorySpanExporter();
 
   beforeAll(() => {
-    const tracerProvider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(spanExporter)],
+    const tracerProvider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: spanExporter })],
     });
     trace.setGlobalTracerProvider(tracerProvider);
   });

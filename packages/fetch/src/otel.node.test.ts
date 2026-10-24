@@ -1,10 +1,10 @@
 import { context, trace } from "@opentelemetry/api";
-import { AsyncHooksContextManager } from "@opentelemetry/context-async-hooks";
+import { AsyncLocalStorageContextManager } from "@opentelemetry/context-async-hooks";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { type Mock, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { $fetch } from "./index.ts";
@@ -13,9 +13,9 @@ describe("$fetch OpenTelemetry active context", () => {
   let fetchMock: Mock<typeof fetch>;
 
   beforeAll(() => {
-    context.setGlobalContextManager(new AsyncHooksContextManager().enable());
-    const provider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(new InMemorySpanExporter())],
+    context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
+    const provider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: new InMemorySpanExporter() })],
     });
     trace.setGlobalTracerProvider(provider);
   });

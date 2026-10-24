@@ -1,12 +1,12 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 import { context, trace } from "@opentelemetry/api";
-import { AsyncHooksContextManager } from "@opentelemetry/context-async-hooks";
+import { AsyncLocalStorageContextManager } from "@opentelemetry/context-async-hooks";
 import {
-  BasicTracerProvider,
+  TracerProvider,
   InMemorySpanExporter,
   SimpleSpanProcessor,
-} from "@opentelemetry/sdk-trace-base";
+} from "@opentelemetry/sdk-trace";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { Actions, Resources } from "./types.ts";
@@ -45,9 +45,9 @@ describe("permit OpenTelemetry active context", () => {
   const spanExporter = new InMemorySpanExporter();
 
   beforeAll(() => {
-    context.setGlobalContextManager(new AsyncHooksContextManager().enable());
-    const provider = new BasicTracerProvider({
-      spanProcessors: [new SimpleSpanProcessor(spanExporter)],
+    context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
+    const provider = new TracerProvider({
+      spanProcessors: [new SimpleSpanProcessor({ exporter: spanExporter })],
     });
     trace.setGlobalTracerProvider(provider);
   });
