@@ -31,7 +31,7 @@ catalog:
   "@vitest/browser-playwright": ^5.0.5
   "@vitest/coverage-v8": ^5.0.5
   arktype: ^2.2.9
-  blume: ^2.2.4
+  blume: ^2.2.5
   eslint: ^10.13.0
   eslint-plugin-cypress: ^7.0.2
   eslint-plugin-github: ^6.1.2
@@ -52,7 +52,7 @@ catalog:
   publint: ^0.3.25
   react: ^19.3.1
   react-dom: ^19.3.1
-  tsdown: ^0.23.1
+  tsdown: ^0.23.2
   tsrs: 0.18.0-ts7.1.0-dev.20260929
   typescript: ^7.0.2
   unplugin-unused: ^0.6.0
