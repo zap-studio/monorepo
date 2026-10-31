@@ -25,6 +25,6 @@
     "wrangler": "catalog:"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=26.0.0"
   }
 }
