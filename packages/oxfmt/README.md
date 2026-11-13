@@ -2,6 +2,8 @@
 
 Zap Studio's [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) preset — sorted imports, sorted `package.json`, and an optional Tailwind CSS class-sorting extension.
 
+Full documentation: [docs/oxfmt](https://github.com/zap-studio/monorepo/tree/main/docs/oxfmt)
+
 ## Installation
 
 ```bash
@@ -37,13 +39,6 @@ export default defineConfig({
   printWidth: 120,
 });
 ```
-
-## Presets
-
-| Preset                       | Built on | Adds                                                                                                                                                                                                                                                         |
-| ---------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@zap-studio/oxfmt/base`     | —        | sorted imports (`type-import`, then builtin/external values, internal types, internal values, then parent/sibling/index grouped by type then value, then unknown — blank line between groups) and sorted `package.json` (keys and `scripts`, alphabetically) |
-| `@zap-studio/oxfmt/tailwind` | `base`   | `sortTailwindcss: true`                                                                                                                                                                                                                                      |
 
 ## License
 

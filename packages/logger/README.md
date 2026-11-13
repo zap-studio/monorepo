@@ -4,32 +4,11 @@ A lean logging abstraction: one `Logger` interface, one `ConsoleLogger` implemen
 
 Full documentation: [docs/logger](https://github.com/zap-studio/monorepo/tree/main/docs/logger)
 
-## Motivation
-
-Libraries like `winston` and `pino` are built for Node servers, with file transports and streams. They do not run well — or at all — on Cloudflare Workers or in the browser.
-
-This becomes a problem for small libraries that want to add logging: if a retry library or an HTTP client hard-depends on `winston`, every user of that library must install `winston`, even if they do not want logging, and even if their code runs somewhere `winston` does not.
-
-`@zap-studio/logger` avoids this by shipping an interface, not an implementation. `Logger` is a small type with six methods (`trace`, `debug`, `info`, `warn`, `error`, `fatal`). Most `@zap-studio/*` packages that talk to the outside world — `fetch`, `permit`, `retry`, `webhooks` — accept an optional `logger: Logger`.
-
-Pass nothing, and there is no dependency and no runtime cost. Pass `ConsoleLogger`, and you get leveled, formatted output that works on Node, Bun, Deno, browsers, and Cloudflare Workers with no setup.
-
-Already use `pino`? It already exposes the same six methods, so it works as a `Logger` with no adapter code needed.
-
 ## Installation
 
 ```bash
 npm install @zap-studio/logger
 ```
-
-## Features
-
-- **One interface**: `Logger` — `trace`/`debug`/`info`/`warn`/`error`/`fatal`, each `(message: string, context?: Record<string, unknown>) => void`. Any object shaped like it works, no subclassing required.
-- **One implementation**: `ConsoleLogger`, backed by the global `console` object, with a configurable `minLevel` to control verbosity.
-- **Pluggable output formats**: `classicFormat` (default), `jsonFormat`, `compactFormat`, `prettyFormat` — pass any function matching `LogFormatter`, no registration required.
-- **Zero dependencies, tree-shakeable** — unused exports are dropped by any modern bundler.
-- **Optional by design** — other `@zap-studio/*` packages accept a `logger?: Logger` option; omit it and there's zero logging overhead.
-- **Runtime-agnostic, zero config** — works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers.
 
 ## Quick Start
 
@@ -41,84 +20,6 @@ const logger = new ConsoleLogger({ minLevel: "debug" });
 logger.debug("cache miss", { key: "user:42" });
 logger.warn("retrying after failure", { attempt: 2 });
 ```
-
-## Output Formats
-
-`ConsoleLogger` accepts a `format?: LogFormatter` option, defaulting to `classicFormat` (today's `message` + `context` output). Built-in formatters, all from `@zap-studio/logger/format`:
-
-```ts
-import { ConsoleLogger, jsonFormat, compactFormat, prettyFormat } from "@zap-studio/logger";
-
-new ConsoleLogger({ format: jsonFormat });
-// {"port":3000,"time":1704067200000,"level":"info","msg":"server started"}
-
-new ConsoleLogger({ format: compactFormat });
-// port=3000 time=2024-01-01T00:00:00.000Z level=info msg="server started"
-
-new ConsoleLogger({ format: prettyFormat });
-// 12:34:56.789 INFO  server started   (colored, context inspected as a second arg)
-```
-
-`jsonFormat` and `compactFormat` flatten `context` fields to the top level (a field named `time`, `level`, or `msg` can't override the base field), and safely serialize `Error` and `bigint` context values instead of losing them to `JSON.stringify`'s default behavior.
-
-`prettyFormat`'s color output adapts automatically per runtime, with no configuration — see [Runtime Compatibility](#runtime-compatibility).
-
-Any function matching `LogFormatter` works — no registration required:
-
-```ts
-import type { LogFormatter } from "@zap-studio/logger";
-
-const upperFormat: LogFormatter = (record) => [record.message.toUpperCase()];
-```
-
-## Custom Implementations
-
-Implement the `Logger` interface directly to plug in any logging backend:
-
-```ts
-import type { Logger } from "@zap-studio/logger";
-
-const logger: Logger = {
-  trace: (message, context) => myBackend.log("trace", message, context),
-  debug: (message, context) => myBackend.log("debug", message, context),
-  info: (message, context) => myBackend.log("info", message, context),
-  warn: (message, context) => myBackend.log("warn", message, context),
-  error: (message, context) => myBackend.log("error", message, context),
-  fatal: (message, context) => myBackend.log("fatal", message, context),
-};
-```
-
-## OpenTelemetry
-
-`@opentelemetry/api` is a required peer dependency — tiny, side-effect-free, and a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
-
-This isn't a full bridge to the OTel Logs API — `Logger` already does that job well. `ConsoleLogger` just stamps trace context onto the log automatically: when a span is active, every log call gets `trace_id`/`span_id` merged into its context (an explicit `trace_id`/`span_id` you pass yourself takes precedence):
-
-```bash
-npm install @opentelemetry/api
-```
-
-```ts
-import { ConsoleLogger } from "@zap-studio/logger";
-
-const logger = new ConsoleLogger();
-
-// If this runs inside an active span (e.g. nested inside a
-// @zap-studio/fetch call, or your own app-level span), the log context
-// automatically gets `trace_id`/`span_id` merged in. If not, it's a no-op
-// — no wiring required either way.
-logger.info("checkpoint", { userId: "u1" });
-```
-
-## Runtime Compatibility
-
-Works out of the box on Node.js, Bun, Deno, browsers, and Cloudflare Workers — no configuration needed. `console` dispatch, level filtering, `classicFormat`, `jsonFormat`, and `compactFormat` have no runtime-specific code at all. The only per-runtime behavior is `prettyFormat`'s color detection:
-
-| Runtime            | Colored?                                                                         |
-| ------------------ | -------------------------------------------------------------------------------- |
-| Node / Bun / Deno  | On a real TTY only, never when `NO_COLOR` is set                                 |
-| Browsers           | Always — devtools render ANSI fine                                               |
-| Cloudflare Workers | Never — output may land in the dashboard's web log viewer, which can't render it |
 
 ## Runtime Support
 

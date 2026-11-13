@@ -4,16 +4,6 @@ A type-safe, declarative authorization library for TypeScript with [Standard Sch
 
 Full documentation: [docs/permit](https://github.com/zap-studio/monorepo/tree/main/docs/permit)
 
-## Motivation
-
-Authorization checks written by hand, like `if (user.role === "admin")`, spread through a codebase over time. After a while, nobody can answer "who is allowed to delete a post?" without searching the whole app.
-
-A framework like CASL solves the spreading problem, but it comes with its own vocabulary to learn (`subject`, `can`, `cannot`, `rules`), and its rules are not checked against your actual data shapes — you can write a rule that references a field your resource does not have, and it will only fail once that code runs.
-
-`@zap-studio/permit` keeps all rules in one place, through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)` — one file answers "who can do what."
-
-And because resources come from your Standard Schema schemas, policy types are derived straight from your real data shapes. Reference a field that does not exist, and you get an error while writing the code, not a silent `undefined` in production.
-
 ## Installation
 
 ```bash
@@ -21,18 +11,6 @@ npm install @zap-studio/permit
 ```
 
 You also need a schema library that implements [Standard Schema](https://standardschema.dev/), such as Zod, Valibot, or ArkType.
-
-## Features
-
-- **Full type safety** — actions, resources, and permissions are inferred from your schemas and `satisfies` declarations.
-- **Standard Schema support** via `Resources` — works with Zod, Valibot, ArkType, or any compatible library.
-- **Declarative policies** through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`.
-- **Role hierarchy support** via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`.
-- **Composable conditions** via `and`, `or`, and `not`.
-- **Policy merging strategies** via `mergePoliciesAnd` and `mergePoliciesOr`.
-- **Structured errors** with `PolicyError` for invalid configuration or evaluation failures.
-- **Optional logging** through `createPolicy({ logger })` ([`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger)) — omit it and there's zero added logging overhead.
-- **Tree-shakeable** — policies and conditions are plain functions; unused exports are dropped by any modern bundler.
 
 ## Quick Start
 
@@ -72,114 +50,6 @@ const ctx: AppContext = { user: { id: "user-1" } };
 const post = { id: "1", authorId: "user-1" };
 
 await policy.can(ctx, "post:write", post); // true, inferred as boolean
-```
-
-## Declarative Policies
-
-Through `createPolicy(...)` with `allow()`, `deny()`, and `when(condition)`.
-
-```ts
-rules: {
-  post: {
-    read: allow(),
-    delete: deny(),
-    write: when((ctx, action, resource) => ctx.user.id === resource.authorId),
-  },
-}
-```
-
-## Role Hierarchy Support
-
-Via `hasRole(role, hierarchy?)`, with inheritance resolved by `collectInheritedRoles`.
-
-```ts
-const hierarchy = { guest: [], user: ["guest"], admin: ["user"] };
-
-rules: {
-  post: {
-    read: when(hasRole("guest", hierarchy)), // admins and users inherit guest access
-  },
-}
-```
-
-## Composable Conditions
-
-Via `and`, `or`, and `not`.
-
-```ts
-const isOwnerOrAdmin = or(
-  (ctx, action, resource) => ctx.user.id === resource.authorId,
-  (ctx, action, resource) => ctx.user.role === "admin",
-);
-```
-
-## Policy Merging Strategies
-
-Via `mergePoliciesAnd` and `mergePoliciesOr`.
-
-```ts
-const merged = mergePoliciesAnd(basePolicy, restrictivePolicy);
-```
-
-## Standard Schema Support
-
-Works with Zod, Valibot, ArkType, or any compatible library.
-
-```ts
-// Zod, Valibot, ArkType, or any Standard Schema-compatible library
-const resources = {
-  post: z.object({ id: z.string() }),
-} satisfies Resources;
-```
-
-## Structured Errors
-
-`PolicyError` for invalid configuration or evaluation failures.
-
-```ts
-import { PolicyError } from "@zap-studio/permit";
-
-try {
-  const policy = createPolicy(config);
-  await policy.can(ctx, "post:read", post);
-} catch (error) {
-  if (error instanceof PolicyError) console.error(error.message);
-}
-```
-
-## Logging
-
-Pass a `logger?: Logger` from [`@zap-studio/logger`](https://www.npmjs.com/package/@zap-studio/logger) to `createPolicy(...)` to observe allow/deny decisions. Omit it and only the pre-existing internal-error warnings still print, unchanged.
-
-```ts
-import { ConsoleLogger } from "@zap-studio/logger";
-import { createPolicy } from "@zap-studio/permit";
-
-const logger = new ConsoleLogger({ minLevel: "debug" });
-const policy = createPolicy({ resources, actions, rules, logger });
-```
-
-Allow decisions log at `debug`, deny decisions log at `info`. Resource validation and policy evaluation errors log at `warn` through the logger when one is provided, instead of `console.warn`.
-
-## OpenTelemetry
-
-`@opentelemetry/api` is a required peer dependency — tiny, side-effect-free, and a no-op until an app registers a real SDK, so installing it costs nothing at runtime for consumers who never set one up.
-
-Every `can(...)` check gets an `INTERNAL` span named `permit.check {resourceType}:{action}`, with the decision (`"allow"` or `"deny"`) set as a span attribute, plus a `permit.checks` counter tagged the same way. `mergePoliciesAnd`/`mergePoliciesOr` get their own span around the composite check, on top of the spans each underlying policy already produces:
-
-```bash
-npm install @opentelemetry/api
-```
-
-```ts
-import { createPolicy } from "@zap-studio/permit";
-
-const policy = createPolicy({ resources, actions, rules });
-
-// If your app has registered an OpenTelemetry SDK, this call now produces a
-// span attributed with the allow/deny decision. If not, it's a no-op — no
-// wiring required either way.
-await policy.can(ctx, "post:write", post);
 ```
 
 ## Runtime Support

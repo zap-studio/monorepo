@@ -13,47 +13,47 @@ catalog:
   "@arethetypeswrong/core": ^0.18.5
   "@e18e/eslint-plugin": ^0.8.1
   "@opentelemetry/api": ^1.10.0
-  "@opentelemetry/context-async-hooks": ^3.0.0
-  "@opentelemetry/core": ^3.0.0
-  "@opentelemetry/sdk-metrics": ^3.0.0
-  "@opentelemetry/sdk-trace": ^3.0.0
-  "@oxlint/plugins": ^1.90.0
+  "@opentelemetry/context-async-hooks": ^3.1.1
+  "@opentelemetry/core": ^3.1.1
+  "@opentelemetry/sdk-metrics": ^3.1.1
+  "@opentelemetry/sdk-trace": ^3.1.1
+  "@oxlint/plugins": ^1.93.0
   "@standard-schema/spec": ^1.1.0
-  "@stylexjs/eslint-plugin": ^0.19.1
-  "@tanstack/eslint-plugin-query": ^5.105.0
+  "@stylexjs/eslint-plugin": ^0.19.2
+  "@tanstack/eslint-plugin-query": ^5.107.1
   "@tanstack/eslint-plugin-router": ^1.162.0
   "@types/node": ^26.6.6
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
   "@varlock/bumpy": ^1.19.0
-  "@vitest/browser-playwright": ^5.0.5
-  "@vitest/coverage-v8": ^5.0.5
+  "@vitest/browser-playwright": ^5.1.0
+  "@vitest/coverage-v8": ^5.1.0
   arktype: ^2.2.9
   eslint: ^10.14.0
-  eslint-plugin-cypress: ^7.0.2
+  eslint-plugin-cypress: ^7.0.4
   eslint-plugin-github: ^6.1.2
   eslint-plugin-jest-dom: ^5.10.1
-  eslint-plugin-playwright: ^2.12.1
-  eslint-plugin-regexp: ^3.3.2
-  eslint-plugin-solid: ^0.18.1
+  eslint-plugin-playwright: ^2.12.2
+  eslint-plugin-regexp: ^3.3.3
+  eslint-plugin-solid: ^0.19.0
   eslint-plugin-sonarjs: ^4.2.2
-  eslint-plugin-storybook: ^10.6.5
+  eslint-plugin-storybook: ^10.6.7
   eslint-plugin-tailwindcss: ^4.4.0
   eslint-plugin-testing-library: ^7.16.2
   lefthook: ^2.2.2
-  oxfmt: ^0.75.0
-  oxlint: ^1.90.0
-  oxlint-plugin-react-doctor: ^0.9.18
-  oxlint-tsgolint: ^7.0.2005
-  playwright: ^1.64.1
+  oxfmt: ^0.78.0
+  oxlint: ^1.93.0
+  oxlint-plugin-react-doctor: ^0.9.22
+  oxlint-tsgolint: ^7.0.2007
+  playwright: ^1.65.0
   publint: ^0.3.25
   react: ^19.3.1
   react-dom: ^19.3.1
-  tsdown: ^0.23.4
-  tsrs: 0.20.1-ts7.1.0-beta
+  tsdown: ^0.23.7
+  tsrs: 0.25.0-ts7.1.0-beta
   typescript: ^7.0.2
   unplugin-unused: ^0.6.0
   valibot: ^1.5.0
-  vitest: ^5.0.5
+  vitest: ^5.1.0
   vitest-browser-react: ^2.3.0
   zod: ^4.6.7
