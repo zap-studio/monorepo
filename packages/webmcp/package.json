@@ -15,7 +15,7 @@
     "typescript",
     "webmcp"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/webmcp",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/webmcp",
   "license": "MIT",
   "repository": {
     "type": "git",

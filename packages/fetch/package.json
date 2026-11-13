@@ -20,7 +20,7 @@
     "validation",
     "zod"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/fetch",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/fetch",
   "license": "MIT",
   "repository": {
     "type": "git",

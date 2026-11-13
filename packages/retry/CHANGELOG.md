@@ -27,7 +27,7 @@ We removed the `@zap-studio/monads` dependency and the `runRetryPolicyResult` ex
 
 ### Added
 
-Added native OpenTelemetry support. `fetch`, `webhooks`, and `permit` each create their own span. This package does not, because a retry loop wraps someone else's work. Instead, each decision is recorded as an event (`retry.scheduled`/`retry.exhausted`) on whatever span is already active, plus a `retry.attempts` counter tagged by outcome. See [OpenTelemetry](https://www.zapstudio.dev/retry/opentelemetry).
+Added native OpenTelemetry support. `fetch`, `webhooks`, and `permit` each create their own span. This package does not, because a retry loop wraps someone else's work. Instead, each decision is recorded as an event (`retry.scheduled`/`retry.exhausted`) on whatever span is already active, plus a `retry.attempts` counter tagged by outcome. See [OpenTelemetry](https://github.com/zap-studio/monorepo/blob/main/docs/retry/opentelemetry.md).
 
 ### Changed
 
@@ -43,7 +43,7 @@ Added native OpenTelemetry support. `fetch`, `webhooks`, and `permit` each creat
 
 ### Added
 
-`runRetryPolicy(...)` now takes an optional `logger?: Logger` option (from `@zap-studio/logger`). If you pass it, it logs each retry decision at `debug` level (attempt, delay, reason), exhaustion at `warn`, and cancellation at `debug`. If you don't pass it, there is no extra logging cost. See [Logging](https://www.zapstudio.dev/retry/logging).
+`runRetryPolicy(...)` now takes an optional `logger?: Logger` option (from `@zap-studio/logger`). If you pass it, it logs each retry decision at `debug` level (attempt, delay, reason), exhaustion at `warn`, and cancellation at `debug`. If you don't pass it, there is no extra logging cost. See [Logging](https://github.com/zap-studio/monorepo/blob/main/docs/retry/logging.md).
 
 ## [1.1.0]
 
@@ -51,7 +51,7 @@ Added native OpenTelemetry support. `fetch`, `webhooks`, and `permit` each creat
 
 `exponentialBackoff(...)` and `linearBackoff(...)` now take an optional `jitter?: "full" | "equal" | JitterOptions` option. It changes the delay after the delay is capped at `maxDelayMs`. `"full"` picks a random value in `[0, delayMs]`. `"equal"` keeps at least half the delay, and picks a random value in `[delayMs/2, delayMs]`. Pass `{ mode, random }` to use your own random source — useful for tests that need the same result every time.
 
-New export: `applyJitter(delayMs, jitter?)`, also available from the `./jitter` subpath. See [Jitter](https://www.zapstudio.dev/retry/jitter).
+New export: `applyJitter(delayMs, jitter?)`, also available from the `./jitter` subpath. See [Jitter](https://github.com/zap-studio/monorepo/blob/main/docs/retry/jitter.md).
 
 ## [1.0.0]
 
@@ -61,9 +61,9 @@ New export: `applyJitter(delayMs, jitter?)`, also available from the `./jitter` 
 
 - Override `isKnownError` when `TError` is a narrower subclass, like an HTTP error or a domain-specific error. This gives you real type narrowing, instead of just assuming `instanceof Error`, and stops unrelated `Error` types from being retried as if they belonged to your domain.
 
-See [Narrow the Error Domain](https://www.zapstudio.dev/retry/custom-policies#narrow-the-error-domain) for how to override it.
+See [Narrow the Error Domain](https://github.com/zap-studio/monorepo/blob/main/docs/retry/custom-policies.md#narrow-the-error-domain) for how to override it.
 
-New built-in policy: `linearBackoff(options)`. It adds a fixed `incrementMs` to the delay after each failed attempt, up to `maxDelayMs` — steadier growth than `exponentialBackoff`, bigger gaps than `fixedDelay`. See [linearBackoff](https://www.zapstudio.dev/retry/linear-backoff).
+New built-in policy: `linearBackoff(options)`. It adds a fixed `incrementMs` to the delay after each failed attempt, up to `maxDelayMs` — steadier growth than `exponentialBackoff`, bigger gaps than `fixedDelay`. See [linearBackoff](https://github.com/zap-studio/monorepo/blob/main/docs/retry/linear-backoff.md).
 
 ### Changed
 
@@ -74,7 +74,7 @@ New built-in policy: `linearBackoff(options)`. It adds a fixed `incrementMs` to 
 
 ### Removed
 
-- **Breaking:** `BaseRetryPolicy` is removed. Retry runs now go through the standalone function `runRetryPolicy(policy, execute, options?)`, which accepts any object matching `RetryPolicy` — no subclass needed. Change `policy.run(execute, options)` to `runRetryPolicy(policy, execute, options)`. If your custom policy extended `BaseRetryPolicy` and overrode `next`/`onExhausted`/`isKnownError`, turn it into a plain object with the same members instead; see [Custom Policies](https://www.zapstudio.dev/retry/custom-policies).
+- **Breaking:** `BaseRetryPolicy` is removed. Retry runs now go through the standalone function `runRetryPolicy(policy, execute, options?)`, which accepts any object matching `RetryPolicy` — no subclass needed. Change `policy.run(execute, options)` to `runRetryPolicy(policy, execute, options)`. If your custom policy extended `BaseRetryPolicy` and overrode `next`/`onExhausted`/`isKnownError`, turn it into a plain object with the same members instead; see [Custom Policies](https://github.com/zap-studio/monorepo/blob/main/docs/retry/custom-policies.md).
 
 ### Removed
 

@@ -12,7 +12,7 @@
     "react",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/oxlint",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/oxlint",
   "license": "MIT",
   "repository": {
     "type": "git",

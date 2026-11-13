@@ -1,0 +1,81 @@
+# Persist
+
+Persist is built into `createStore` — it is not a separate package. Pass `{ persist: { key, storage } }` as the third argument:
+
+```ts
+const counter = createStore(
+  { count: 0 },
+  (set) => ({ increment: () => set((s) => ({ count: s.count + 1 })) }),
+  { persist: { key: "counter", storage: localStorage } },
+);
+```
+
+Without a custom `storage`, persist uses `localStorage` in the browser. On the server, reads return nothing and writes are dropped, so persisted stores are safe to create during SSR.
+
+## The `storage` Contract
+
+`storage` only needs `getItem` and `setItem`, so `localStorage` and `sessionStorage` work with no adapter code:
+
+```ts
+interface StorageLike {
+  getItem: (key: string) => string | null;
+  setItem: (key: string, value: string) => void;
+}
+```
+
+Anything implementing this interface works, including an in-memory or server-safe fallback:
+
+```ts
+const memoryStorage: StorageLike = (() => {
+  const data = new Map<string, string>();
+  return {
+    getItem: (key) => data.get(key) ?? null,
+    setItem: (key, value) => {
+      data.set(key, value);
+    },
+  };
+})();
+
+const counter = createStore({ count: 0 }, undefined, {
+  persist: { key: "counter", storage: memoryStorage },
+});
+```
+
+## What Gets Saved
+
+Only plain state is persisted. Actions (functions) are never serialized — `JSON.stringify` cannot represent them anyway, and there would be nothing meaningful to restore.
+
+```ts
+const counter = createStore(
+  { count: 0 },
+  (set) => ({ increment: () => set((s) => ({ count: s.count + 1 })) }),
+  { persist: { key: "counter", storage: localStorage } },
+);
+
+counter.get().increment();
+
+localStorage.getItem("counter"); // '{"count":1}' — no "increment" in there
+```
+
+State is written on every `set` call, right after the in-memory state updates.
+
+## Hydration on Creation
+
+`createStore` reads `storage.getItem(key)` once, synchronously, when it runs. If a value is found, it is shallow-merged onto `initialState`:
+
+```ts
+localStorage.setItem("counter", JSON.stringify({ count: 42 }));
+
+const counter = createStore({ count: 0 }, undefined, {
+  persist: { key: "counter", storage: localStorage },
+});
+
+counter.getState(); // { count: 42 }
+```
+
+If nothing is stored for `key`, or the stored value is corrupt JSON, `createStore` falls back to `initialState` — hydration never throws.
+
+## See Also
+
+- [Getting Started](getting-started.md) — creating a store with persist enabled
+- [`set`](set.md) — the shallow-merge rule that also applies to hydration

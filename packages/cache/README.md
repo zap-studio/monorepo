@@ -2,7 +2,7 @@
 
 Zero-dependency in-memory key-value cache with pluggable eviction policies, capacity limits, and optional TTL.
 
-Full documentation: [zapstudio.dev/docs/cache](https://www.zapstudio.dev/docs/cache)
+Full documentation: [docs/cache](https://github.com/zap-studio/monorepo/tree/main/docs/cache)
 
 ## Motivation
 

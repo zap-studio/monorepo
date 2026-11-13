@@ -11,7 +11,7 @@
     "prettier",
     "tailwind"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/oxfmt",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/oxfmt",
   "license": "MIT",
   "repository": {
     "type": "git",

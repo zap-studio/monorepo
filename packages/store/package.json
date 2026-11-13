@@ -13,7 +13,7 @@
     "store",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/store",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/store",
   "license": "MIT",
   "repository": {
     "type": "git",

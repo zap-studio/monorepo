@@ -15,7 +15,6 @@ coverage/
 **/.out/
 **/.output/
 **/.source/
-.blume/
 
 # TypeScript
 *.tsbuildinfo
@@ -47,7 +46,6 @@ report.[0-9]*.[0-9]*.json
 .parcel-cache/
 .vercel/
 .expo/
-.wrangler/
 
 # Editor and OS files
 .DS_Store

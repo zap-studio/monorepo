@@ -14,7 +14,7 @@
     "typescript",
     "webmcp"
   ],
-  "homepage": "https://www.zapstudio.dev/webmcp/react",
+  "homepage": "https://github.com/zap-studio/monorepo/blob/main/docs/webmcp/react.md",
   "license": "MIT",
   "repository": {
     "type": "git",

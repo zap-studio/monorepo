@@ -3,5 +3,5 @@ import { defineConfig } from "oxfmt";
 
 export default defineConfig({
   ...zapStudio,
-  ignorePatterns: ["**/CHANGELOG.md"],
+  ignorePatterns: ["**/CHANGELOG.md", "docs/**"],
 });

@@ -1,0 +1,116 @@
+# Getting Started
+
+Zap Studio is a set of small TypeScript packages for the code every app needs: HTTP calls, retries, permission checks, validation, logs, webhooks. Pick the one you need, install it, use it. No new runtime, no framework.
+
+This page takes about five minutes. At the end you will have a typed HTTP call that retries on failure.
+
+## Before You Start
+
+You need Node.js 18, Bun 1.0, Deno 1.42, a current Cloudflare Workers release, or an evergreen browser. [Runtimes](runtimes.md) has the full matrix, including the four packages that ask for more.
+
+TypeScript 5 or later is recommended — the packages work in plain JavaScript, but the types are the point.
+
+## Install Your First Package
+
+Start with [`fetch`](fetch/README.md). It makes an HTTP call and validates the response against a schema.
+
+```bash
+# npm
+npm install @zap-studio/fetch zod
+# yarn
+yarn add @zap-studio/fetch zod
+# pnpm
+pnpm add @zap-studio/fetch zod
+# bun
+bun add @zap-studio/fetch zod
+# deno
+deno add jsr:@zap-studio/fetch npm:zod
+```
+
+You also need a schema library that implements [Standard Schema](https://standardschema.dev) — Zod, Valibot, or ArkType. This page uses Zod.
+
+## Make a Typed Call
+
+A **schema** describes the shape you expect back. You pass it to `api.get`, which validates the response at runtime and infers the type from it.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.email(),
+});
+
+// `user` is typed from UserSchema — no manual annotations, no `as` casts
+const user = await api.get("https://jsonplaceholder.typicode.com/users/1", UserSchema);
+
+console.log(user.name);
+```
+
+Run it. You get:
+
+```txt
+Leanne Graham
+```
+
+Change `name: z.string()` to `name: z.number()` and run it again. The call throws a `ValidationError` instead of handing you bad data. That is the whole idea: the response is checked before your code touches it.
+
+## Add a Second Package
+
+Packages compose. Wrap the same call in a retry policy so a flaky network does not break it.
+
+```bash
+# npm
+npm install @zap-studio/retry
+# yarn
+yarn add @zap-studio/retry
+# pnpm
+pnpm add @zap-studio/retry
+# bun
+bun add @zap-studio/retry
+# deno
+deno add jsr:@zap-studio/retry
+```
+
+A **retry policy** decides how many attempts to make and how long to wait between them. `exponentialBackoff` doubles the delay after each failure, up to a cap.
+
+```ts
+import { api } from "@zap-studio/fetch";
+import { exponentialBackoff, runRetryPolicy } from "@zap-studio/retry";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.email(),
+});
+
+const policy = exponentialBackoff({
+  maxAttempts: 3, // total attempts, including the first
+  baseDelayMs: 100, // first retry waits 100 ms
+  maxDelayMs: 2_000, // later retries never wait longer than 2 s
+});
+
+const user = await runRetryPolicy(policy, () =>
+  api.get("https://jsonplaceholder.typicode.com/users/1", UserSchema),
+);
+
+console.log(user.name);
+```
+
+Same output, three attempts instead of one. Point the URL at `https://jsonplaceholder.typicode.com/nope` and watch it try three times before it throws.
+
+## Pick Your Package
+
+Fourteen packages, each one standalone. The **Packages** selector in the sidebar lists them all, with a one-line summary of each.
+
+## Where to Go Next
+
+- [Composition](composition.md) — Stack several packages on one request: retries, caching, verified webhooks.
+- [Installation](installation.md) — npm and JSR, peer dependencies, subpath imports.
+- [Runtimes](runtimes.md) — Node, Bun, Deno, Workers and browser support, per package.
+- [Principles](principles.md) — The four rules every package follows — and where Zap Studio stops.
+
+Or go deeper on what you just built: [`fetch` Getting Started](fetch/getting-started.md) for error handling, POST/PUT/DELETE and configured clients, [`retry` Getting Started](retry/getting-started.md) for jitter, cancellation and result objects instead of throws.

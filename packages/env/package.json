@@ -16,7 +16,7 @@
     "validation",
     "zod"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/env",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/env",
   "license": "MIT",
   "repository": {
     "type": "git",

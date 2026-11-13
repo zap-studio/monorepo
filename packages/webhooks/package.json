@@ -18,7 +18,7 @@
     "webhooks",
     "zod"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/webhooks",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/webhooks",
   "license": "MIT",
   "repository": {
     "type": "git",

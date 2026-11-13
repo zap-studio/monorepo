@@ -14,7 +14,7 @@ The four built-in formatters now say the exact shape they return. Before, they u
 
 ### Added
 
-Automatic trace-log correlation through OpenTelemetry. `ConsoleLogger` now adds the active span's `trace_id`/`span_id` to every log call's context, when a span is active. This is not a full bridge to the OTel Logs API. It just adds correlation on top of the existing `Logger` abstraction. If you pass your own `trace_id`/`span_id`, that value wins. See [OpenTelemetry](https://www.zapstudio.dev/logger/opentelemetry).
+Automatic trace-log correlation through OpenTelemetry. `ConsoleLogger` now adds the active span's `trace_id`/`span_id` to every log call's context, when a span is active. This is not a full bridge to the OTel Logs API. It just adds correlation on top of the existing `Logger` abstraction. If you pass your own `trace_id`/`span_id`, that value wins. See [OpenTelemetry](https://github.com/zap-studio/monorepo/blob/main/docs/logger/opentelemetry.md).
 
 ### Changed
 

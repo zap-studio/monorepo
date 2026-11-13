@@ -10,7 +10,7 @@
     "logging",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/logger",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/logger",
   "license": "MIT",
   "repository": {
     "type": "git",

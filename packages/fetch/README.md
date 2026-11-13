@@ -2,7 +2,7 @@
 
 A small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
 
-Full documentation: [zapstudio.dev/docs/fetch](https://www.zapstudio.dev/docs/fetch)
+Full documentation: [docs/fetch](https://github.com/zap-studio/monorepo/tree/main/docs/fetch)
 
 ## Motivation
 

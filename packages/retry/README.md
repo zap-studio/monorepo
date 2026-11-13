@@ -2,7 +2,7 @@
 
 Composable retry policy primitives for HTTP clients and async workflows.
 
-Full documentation: [zapstudio.dev/docs/retry](https://www.zapstudio.dev/docs/retry)
+Full documentation: [docs/retry](https://github.com/zap-studio/monorepo/tree/main/docs/retry)
 
 ## Motivation
 

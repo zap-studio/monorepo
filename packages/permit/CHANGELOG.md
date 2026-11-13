@@ -28,7 +28,7 @@ The `@opentelemetry/api` peer dependency was published as the raw pnpm `catalog:
 
 ### Added
 
-Added native OpenTelemetry support. Every `can(...)` call now gets an `INTERNAL` span (`permit.check {resourceType}:{action}`). The span has the decision (`"allow"`/`"deny"`) as an attribute. There is also a `permit.checks` counter with the same tag. `mergePoliciesAnd`/`mergePoliciesOr` get their own span around the combined check. See [OpenTelemetry](https://www.zapstudio.dev/permit/opentelemetry).
+Added native OpenTelemetry support. Every `can(...)` call now gets an `INTERNAL` span (`permit.check {resourceType}:{action}`). The span has the decision (`"allow"`/`"deny"`) as an attribute. There is also a `permit.checks` counter with the same tag. `mergePoliciesAnd`/`mergePoliciesOr` get their own span around the combined check. See [OpenTelemetry](https://github.com/zap-studio/monorepo/blob/main/docs/permit/opentelemetry.md).
 
 ### Changed
 
@@ -44,7 +44,7 @@ Added native OpenTelemetry support. Every `can(...)` call now gets an `INTERNAL`
 
 ### Added
 
-`createPolicy(...)` now takes an optional `logger?: Logger` option (from `@zap-studio/logger`). If you pass one, it logs allow decisions at `debug` and deny decisions at `info`. Internal-error warnings (from resource validation and policy checks) go through the logger's `warn` instead of `console.warn`, when a logger is set. With no logger, they still print with `console.warn`, as before. See [Logging](https://www.zapstudio.dev/permit/logging).
+`createPolicy(...)` now takes an optional `logger?: Logger` option (from `@zap-studio/logger`). If you pass one, it logs allow decisions at `debug` and deny decisions at `info`. Internal-error warnings (from resource validation and policy checks) go through the logger's `warn` instead of `console.warn`, when a logger is set. With no logger, they still print with `console.warn`, as before. See [Logging](https://github.com/zap-studio/monorepo/blob/main/docs/permit/logging.md).
 
 ## [1.0.0]
 

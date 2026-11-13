@@ -16,7 +16,7 @@
     "valibot",
     "zod"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/permit",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/permit",
   "license": "MIT",
   "repository": {
     "type": "git",

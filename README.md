@@ -4,7 +4,7 @@
 
 Type-safe, framework-agnostic, composable, and tree-shakeable TypeScript libraries for the web.
 
-Documentation: [zapstudio.dev](https://www.zapstudio.dev)
+Documentation: [docs/](docs/README.md)
 
 ## Packages
 
@@ -27,4 +27,4 @@ Documentation: [zapstudio.dev](https://www.zapstudio.dev)
 
 ## Runtime Support
 
-All runtime packages ship standard ESM and target Node.js >= 18, Bun >= 1.0, Deno >= 1.42, Cloudflare Workers, and the latest evergreen browsers. `@zap-studio/oxlint` and `@zap-studio/oxfmt` are dev-time config presets — Node.js >= 20.19.0 and >= 18.0.0 respectively. See the [documentation](https://www.zapstudio.dev) for package-specific details.
+All runtime packages ship standard ESM and target Node.js >= 18, Bun >= 1.0, Deno >= 1.42, Cloudflare Workers, and the latest evergreen browsers. `@zap-studio/oxlint` and `@zap-studio/oxfmt` are dev-time config presets — Node.js >= 20.19.0 and >= 18.0.0 respectively. See [Runtimes](docs/runtimes.md) for package-specific details.

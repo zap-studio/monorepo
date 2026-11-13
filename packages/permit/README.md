@@ -2,7 +2,7 @@
 
 A type-safe, declarative authorization library for TypeScript with [Standard Schema](https://standardschema.dev/) support.
 
-Full documentation: [zapstudio.dev/docs/permit](https://www.zapstudio.dev/docs/permit)
+Full documentation: [docs/permit](https://github.com/zap-studio/monorepo/tree/main/docs/permit)
 
 ## Motivation
 

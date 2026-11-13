@@ -13,7 +13,7 @@
     "rust",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/monads",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/monads",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -2,7 +2,7 @@
 
 A lean logging abstraction: one `Logger` interface, one `ConsoleLogger` implementation.
 
-Full documentation: [zapstudio.dev/docs/logger](https://www.zapstudio.dev/docs/logger)
+Full documentation: [docs/logger](https://github.com/zap-studio/monorepo/tree/main/docs/logger)
 
 ## Motivation
 

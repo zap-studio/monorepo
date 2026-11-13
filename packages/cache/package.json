@@ -15,7 +15,7 @@
     "ttl",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/cache",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/cache",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -13,6 +13,5 @@ status:
       threshold: 1%
 
 ignore:
-  - "apps/docs/**"
   - "**/dist/**"
   - "**/*.config.*"

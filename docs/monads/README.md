@@ -1,0 +1,58 @@
+# @zap-studio/monads
+
+`monads` provides `Result`, `ResultAsync`, and `Option` types with Rust-style functional combinators — an explicit, type-safe alternative to throw/catch and nullable checks.
+
+## Motivation
+
+Hand-rolled `{ ok: boolean, ... }` result shapes and nullable checks are easy to write once and painful to keep consistent across a codebase. Libraries like [neverthrow](https://github.com/supermacro/neverthrow) and [Effect](https://effect.website/) solve this well, but pull in more surface (do-notation, a runtime, generators, `Either`, class-based fluent APIs) than most projects need.
+
+`monads` is deliberately small: `Result`, `ResultAsync`, and `Option`, as standalone, tree-shakeable functions composed with `pipe` — not class instances with chained methods.
+
+## Features
+
+- **`Result<T, E>`** — `ok`/`err` constructors, `isOk`/`isErr` guards, and `Result.map`/`Result.mapErr`/`Result.andThen`/`Result.unwrapOr`/`Result.unwrapOrElse`/`Result.unwrap`/`Result.match` combinators.
+- **`ResultAsync<T, E>`** — a thenable wrapper around `Promise<Result<T, E>>`, awaitable directly, with chainable combinators for building async pipelines before the final `await`.
+- **`Option<T>`** — `some`/`none` constructors, `isSome`/`isNone` guards, and the mirrored `Option` combinators.
+- **Bridges** — `fromThrowable`, `fromPromise`, `fromNullable`.
+- **`pipe`** — left-to-right composition for the standalone combinators above.
+- **Zero dependencies, tree-shakeable.**
+
+## Quick Start
+
+```ts
+import { err, ok, pipe, Result } from "@zap-studio/monads";
+
+function parseAge(input: string): Result<number, string> {
+  const value = Number(input);
+  return Number.isNaN(value) ? err("not a number") : ok(value);
+}
+
+const message = pipe(
+  parseAge("42"),
+  Result.map((age) => age + 1),
+  Result.match({
+    ok: (age) => `Age next year: ${age}`,
+    err: (reason) => `Invalid input: ${reason}`,
+  }),
+);
+```
+
+## Learn More
+
+- [Getting Started](getting-started.md) — install and use your first `Result`
+- [Result](result.md) — `Result<T, E>` constructors, guards, and combinators
+- [ResultAsync](result-async.md) — chaining async operations that can fail
+- [Option](option.md) — `Option<T>` constructors, guards, and combinators
+- [Pipe](pipe.md) — composing the standalone combinators
+
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0                                           |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The package ships standard ESM only and uses no runtime-specific APIs. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/monads`).

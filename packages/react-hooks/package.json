@@ -10,7 +10,7 @@
     "tree-shakeable",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/react-hooks",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/react-hooks",
   "license": "MIT",
   "repository": {
     "type": "git",

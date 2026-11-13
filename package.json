@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "build": "tsdown --config ./tooling/tsdown/tsdown.config.ts",
-    "dev": "pnpm --filter docs run dev",
     "format": "pnpm exec oxfmt",
     "format:check": "pnpm exec oxfmt --check",
     "lint": "pnpm exec oxlint --type-aware --type-check",

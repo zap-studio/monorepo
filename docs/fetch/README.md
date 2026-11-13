@@ -1,0 +1,72 @@
+# @zap-studio/fetch
+
+`fetch` is a small fetch wrapper with [**Standard Schema**](https://standardschema.dev/schema) response validation.
+
+## Motivation
+
+Raw `fetch` does not throw on HTTP errors like 404 or 500 — you must check `response.ok` yourself. And it does not check that the JSON body matches what your code expects.
+
+So most projects add the same pattern at every call site: check the status, parse the JSON, then validate it with `schema.parse(await res.json())`. It is easy to forget one of these steps somewhere, and that is how bad data or a network error goes unnoticed until it breaks something downstream.
+
+`fetch` makes this pattern the default, not something you write by hand. `api.get(url, UserSchema)` checks the response, validates the body, and throws a clear, typed error — `FetchError` for a bad HTTP status, `ValidationError` for a bad shape — so you always know what went wrong and where.
+
+It uses [Standard Schema](https://standardschema.dev/schema), so you are not locked into one validation library: start with Zod, move to Valibot later, and the call sites do not change. And because it only wraps the global `fetch` function, it is not a Node-only HTTP client — it runs the same way on Bun, Deno, Cloudflare Workers, and in the browser.
+
+## Features
+
+- **Raw fetch mode** through `$fetch(input, options)` — behaves like native `fetch` and returns the `Response`.
+- **Validated fetch mode** through `$fetch(input, schema, options)` — parses and validates the JSON response.
+- **HTTP method helpers** through `api.get`, `api.post`, `api.put`, `api.patch`, and `api.delete`.
+- **Configured clients** through `createFetch(...)` with shared `baseURL`, headers, query params, and error defaults.
+- **JSON convenience** through the `json` option, which serializes the request body and sets `Content-Type`.
+- **Structured errors** with `FetchError` for HTTP failures and `ValidationError` for schema failures.
+- **Validator-agnostic** — works with any library that implements Standard Schema.
+- **[Optional logging](logging.md)** through `createFetch({ logger })` from [`logger`](../logger/README.md) — omit it and there's zero logging overhead.
+- **[Native OpenTelemetry](opentelemetry.md)** — a `CLIENT` span per request with trace context injected into outgoing headers, no-op until an SDK is registered.
+- **Tree-shakeable** — every export is a standalone function with no shared internal state; unused exports are dropped by any modern bundler.
+
+## Quick Start
+
+```ts
+import { ConsoleLogger } from "@zap-studio/logger";
+import { createFetch } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  email: z.email(),
+});
+
+const logger = new ConsoleLogger({ minLevel: "debug" });
+const { api } = createFetch({ logger });
+
+const user = await api.get("https://api.example.com/users/1", UserSchema);
+
+console.log(user.name); // typed as string, validated at runtime
+```
+
+## Learn More
+
+- [Getting Started](getting-started.md) — install and make your first validated request.
+- [Raw Fetch Mode](raw-fetch-mode.md) — `$fetch` without a schema.
+- [Validated Fetch Mode](validated-fetch-mode.md) — `$fetch` with a schema.
+- [HTTP Method Helpers](api-methods.md) — `api.get`, `api.post`, and friends.
+- [Configured Clients](create-fetch.md) — shared defaults with `createFetch`.
+- [JSON Convenience](json-convenience.md) — the `json` request option.
+- [Structured Errors](errors.md) — `FetchError` and `ValidationError`.
+- [Validator-Agnostic](validation.md) — Standard Schema support.
+- [Logging](logging.md) — observe requests, responses, and validation failures.
+- [OpenTelemetry](opentelemetry.md) — native distributed tracing.
+
+## Runtime Support
+
+| Runtime            | Minimum version                                  |
+| ------------------ | ------------------------------------------------ |
+| Node.js            | 18.0.0 (ships native `fetch`)                    |
+| Bun                | 1.0.0                                            |
+| Deno               | 1.42                                             |
+| Cloudflare Workers | Any current release                              |
+| Browsers           | Latest evergreen (Chrome, Edge, Firefox, Safari) |
+
+The package relies on the global `fetch` API and ships standard ESM only. Deno 1.42 is the first release that can install packages from JSR (`deno add jsr:@zap-studio/fetch`).

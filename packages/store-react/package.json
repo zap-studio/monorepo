@@ -12,7 +12,7 @@
     "store",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/store/react",
+  "homepage": "https://github.com/zap-studio/monorepo/blob/main/docs/store/react.md",
   "license": "MIT",
   "repository": {
     "type": "git",

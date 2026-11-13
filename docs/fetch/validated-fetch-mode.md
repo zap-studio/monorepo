@@ -1,0 +1,67 @@
+# Validated Fetch Mode
+
+`$fetch(input, schema, options)` parses and validates the JSON response.
+
+```ts
+import { $fetch } from "@zap-studio/fetch";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+const user = await $fetch("https://api.example.com/users/1", UserSchema);
+```
+
+The return type is inferred from the schema. The schema validates the response body only — never the request `json` or `body` options.
+
+## Signature
+
+```ts
+// Validated mode: resolves to data inferred from the schema
+function $fetch<TSchema extends StandardSchemaV1>(
+  input: FetchInput,
+  schema: TSchema,
+  options?: ExtendedRequestInit & { throwOnValidationError?: true },
+): Promise<StandardSchemaV1.InferOutput<TSchema>>;
+
+// Result mode: resolves to the Standard Schema result object
+function $fetch<TSchema extends StandardSchemaV1>(
+  input: FetchInput,
+  schema: TSchema,
+  options: ExtendedRequestInit & { throwOnValidationError: false },
+): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
+```
+
+- `schema` — any object implementing Standard Schema (Zod, Valibot, ArkType, ...), exported as `StandardSchemaV1` from `validation`.
+
+## Options
+
+| Option                   | Type                   | Default     | Description                                                                                                                    |
+| ------------------------ | ---------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `searchParams`           | `URLSearchParams` init | `undefined` | Per-request query params, merged into the request URL.                                                                         |
+| `throwOnValidationError` | `boolean`              | `true`      | Throw a `ValidationError` when validation returns issues. When `false`, the Standard Schema result object is returned instead. |
+| `throwOnFetchError`      | `boolean`              | `true`      | Throw a `FetchError` on non-2xx responses, before parsing or validation.                                                       |
+
+## Non-Throw Validation
+
+Set `throwOnValidationError: false` to receive the raw Standard Schema result object instead of throwing.
+
+```ts
+const result = await $fetch("https://api.example.com/users/1", UserSchema, {
+  throwOnValidationError: false,
+});
+
+if (result.issues) {
+  console.error(result.issues);
+} else {
+  console.log(result.value);
+}
+```
+
+## See Also
+
+- [Raw Fetch Mode](raw-fetch-mode.md) — skip validation entirely.
+- [Validator-Agnostic](validation.md) — supported schema libraries and full validation flow.
+- [Structured Errors](errors.md) — `ValidationError` details and catch patterns.

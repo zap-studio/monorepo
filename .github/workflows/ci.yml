@@ -36,36 +36,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-  build-docs:
-    name: Build Docs (${{ matrix.app }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        app: [docs]
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .node-version
-          package-manager-cache: false
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          cache: true
-          run_install: true
-      - name: Build docs
-        run: pnpm --filter ${{ matrix.app }} run build
-      - name: Type-check docs pages
-        run: pnpm --filter ${{ matrix.app }} run check
-      - name: Validate docs links
-        run: pnpm --filter ${{ matrix.app }} run validate
-      - name: Audit docs
-        run: pnpm --filter ${{ matrix.app }} run audit
-
   check:
     name: Check
     runs-on: ubuntu-latest

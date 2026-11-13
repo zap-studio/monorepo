@@ -50,7 +50,7 @@ The `@opentelemetry/api` peer dependency was published as the raw pnpm `catalog:
 
 ### Added
 
-Native OpenTelemetry support. Every `handle(request)` call now gets a `SERVER` delivery span. It reads the sender's `traceparent` header, so the delivery continues their trace instead of starting a new one. Each handler dispatch gets its own child `INTERNAL` span. A non-2xx response marks the delivery span `ERROR`. A thrown handler error is also recorded as an exception on the handler span. See [OpenTelemetry](https://www.zapstudio.dev/webhooks/opentelemetry).
+Native OpenTelemetry support. Every `handle(request)` call now gets a `SERVER` delivery span. It reads the sender's `traceparent` header, so the delivery continues their trace instead of starting a new one. Each handler dispatch gets its own child `INTERNAL` span. A non-2xx response marks the delivery span `ERROR`. A thrown handler error is also recorded as an exception on the handler span. See [OpenTelemetry](https://github.com/zap-studio/monorepo/blob/main/docs/webhooks/opentelemetry.md).
 
 ### Changed
 
@@ -66,7 +66,7 @@ Native OpenTelemetry support. Every `handle(request)` call now gets a `SERVER` d
 
 ### Added
 
-`WebhookRouter` (and `createWebhookRouter(...)`) now take an optional `logger?: Logger` option, from `@zap-studio/logger`. When you pass one, it logs each delivery attempt and handler dispatch at `debug`, and logs verification failures and unmatched routes at `warn`. Leave it out, and there is no logging cost at all. See [Logging](https://www.zapstudio.dev/webhooks/logging).
+`WebhookRouter` (and `createWebhookRouter(...)`) now take an optional `logger?: Logger` option, from `@zap-studio/logger`. When you pass one, it logs each delivery attempt and handler dispatch at `debug`, and logs verification failures and unmatched routes at `warn`. Leave it out, and there is no logging cost at all. See [Logging](https://github.com/zap-studio/monorepo/blob/main/docs/webhooks/logging.md).
 
 ## [1.0.0]
 

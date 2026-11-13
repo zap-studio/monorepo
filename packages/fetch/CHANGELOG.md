@@ -40,7 +40,7 @@ Reverted the `@zap-studio/monads` dependency and the `$fetchResult`/`apiResult`/
 
 ### Added
 
-Native OpenTelemetry support. Every request now gets a `CLIENT` span (`http.request.method`, `url.full`, `http.response.status_code`). The trace context is added to the outgoing request's headers, so the call stays part of the caller's trace. On failure — a non-2xx response or a thrown error — the span is marked `ERROR`, and a thrown error is also recorded on the span. See [OpenTelemetry](https://www.zapstudio.dev/fetch/opentelemetry).
+Native OpenTelemetry support. Every request now gets a `CLIENT` span (`http.request.method`, `url.full`, `http.response.status_code`). The trace context is added to the outgoing request's headers, so the call stays part of the caller's trace. On failure — a non-2xx response or a thrown error — the span is marked `ERROR`, and a thrown error is also recorded on the span. See [OpenTelemetry](https://github.com/zap-studio/monorepo/blob/main/docs/fetch/opentelemetry.md).
 
 ### Changed
 
@@ -56,7 +56,7 @@ Native OpenTelemetry support. Every request now gets a `CLIENT` span (`http.requ
 
 ### Added
 
-`createFetch(...)` now has an optional `logger?: Logger` option (from `@zap-studio/logger`). When you pass one, it logs outgoing requests at `debug`, the response status at `debug` (2xx) or `warn` (non-2xx), and schema validation failures at `error`. Leave it out and there is no logging cost at all. See [Logging](https://www.zapstudio.dev/fetch/logging).
+`createFetch(...)` now has an optional `logger?: Logger` option (from `@zap-studio/logger`). When you pass one, it logs outgoing requests at `debug`, the response status at `debug` (2xx) or `warn` (non-2xx), and schema validation failures at `error`. Leave it out and there is no logging cost at all. See [Logging](https://github.com/zap-studio/monorepo/blob/main/docs/fetch/logging.md).
 
 ## [1.0.0]
 

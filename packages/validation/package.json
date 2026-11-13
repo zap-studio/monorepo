@@ -11,7 +11,7 @@
     "typescript",
     "validation"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/validation",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/validation",
   "license": "MIT",
   "repository": {
     "type": "git",

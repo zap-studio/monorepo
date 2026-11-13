@@ -13,7 +13,7 @@
     "retry",
     "typescript"
   ],
-  "homepage": "https://www.zapstudio.dev/packages/retry",
+  "homepage": "https://github.com/zap-studio/monorepo/tree/main/docs/retry",
   "license": "MIT",
   "repository": {
     "type": "git",

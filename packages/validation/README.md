@@ -2,7 +2,7 @@
 
 Utilities for validating values using the [**Standard Schema**](https://standardschema.dev/schema) specification.
 
-Full documentation: [zapstudio.dev/docs/validation](https://www.zapstudio.dev/docs/validation)
+Full documentation: [docs/validation](https://github.com/zap-studio/monorepo/tree/main/docs/validation)
 
 ## Motivation
 
