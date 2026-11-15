@@ -50,7 +50,7 @@ cache.get("a"); // undefined — expired and removed
 cache.has("a"); // false
 ```
 
-Because expiry is lazy, an expired entry that is never read stays in the underlying store (and counts toward nothing, since `size` only counts live entries) until it is touched, or until `set` inserts a new key into a full cache — at which point every expired entry is removed (firing `onEvict`) before any live entry is evicted. The store therefore never holds more than `capacity` entries, live or expired.
+Because expiry is lazy, an expired entry that is never read stays in the underlying store (and counts toward nothing, since `size` only counts live entries) until it is touched, or until `set` inserts a new key into a full cache — at which point every expired entry is removed (firing `onEvict`) before any live entry is evicted. With the built-in policies (or any custom policy whose `evict()` returns a stored key when asked), the store therefore never holds more than `capacity` entries, live or expired. A custom policy that returns `undefined` from `evict()` gives no such bound.
 
 ## Interaction with `size`
 
