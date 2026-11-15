@@ -79,10 +79,14 @@ export const createCache = <K, V>(
   };
 
   const dropAllExpired = (): void => {
+    const expired: [K, Entry<V>][] = [];
     for (const [key, entry] of store) {
       if (isExpired(entry)) {
-        dropExpired(key, entry);
+        expired.push([key, entry]);
       }
+    }
+    for (const [key, entry] of expired) {
+      dropExpired(key, entry);
     }
   };
 
