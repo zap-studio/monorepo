@@ -1,6 +1,6 @@
 # TTL
 
-TTL (time-to-live) is optional and lazy — there is no background timer sweeping expired entries. Expiry is checked only when an entry is touched via `get`, `has`, or `peek`. An entry with no applicable `ttl` never expires.
+TTL (time-to-live) is optional and lazy — there is no background timer sweeping expired entries. Expiry is checked when an entry is touched via `get`, `has`, or `peek`, and when `set` inserts a new key into a full cache. An entry with no applicable `ttl` never expires.
 
 ## Cache-Wide Default
 
@@ -50,7 +50,7 @@ cache.get("a"); // undefined — expired and removed
 cache.has("a"); // false
 ```
 
-Because expiry is lazy, an expired entry that is never read stays in the underlying store (and counts toward nothing, since `size` only counts live entries) until the next touch or a capacity eviction reclaims the slot.
+Because expiry is lazy, an expired entry that is never read stays in the underlying store (and counts toward nothing, since `size` only counts live entries) until it is touched, or until `set` inserts a new key into a full cache — at which point every expired entry is removed (firing `onEvict`) before any live entry is evicted. The store therefore never holds more than `capacity` entries, live or expired.
 
 ## Interaction with `size`
 
