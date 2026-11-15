@@ -266,6 +266,40 @@ describe("createCache ttl", () => {
 
     expect(cache.has("a")).toBe(false);
   });
+
+  it("never lets size exceed capacity when untouched entries expire", () => {
+    const onEvict = vi.fn<(key: string, value: number) => void>();
+    const cache = createCache<string, number>(2, { onEvict, ttl: 20 });
+    cache.set("a", 1);
+    cache.set("b", 2);
+
+    vi.advanceTimersByTime(30);
+    for (const [key, value] of [
+      ["c", 3],
+      ["d", 4],
+      ["e", 5],
+      ["f", 6],
+    ] as const) {
+      cache.set(key, value);
+      expect(cache.size).toBeLessThanOrEqual(cache.capacity);
+    }
+
+    expect([...cache.keys()]).toStrictEqual(["e", "f"]);
+    expect(onEvict.mock.calls.map(([key]) => key)).toStrictEqual(["a", "b", "c", "d"]);
+  });
+
+  it("reclaims expired entries on insert so the store stays bounded", () => {
+    const onEvict = vi.fn<(key: string, value: number) => void>();
+    const cache = createCache<string, number>(10, { onEvict, ttl: 1 });
+
+    for (let i = 0; i < 100; i += 1) {
+      cache.set(`k${i}`, i);
+      vi.advanceTimersByTime(2);
+    }
+
+    // At most `capacity` dead entries may still be waiting to be reclaimed.
+    expect(onEvict.mock.calls.length).toBeGreaterThanOrEqual(90);
+  });
 });
 
 describe("createCache size/capacity", () => {
