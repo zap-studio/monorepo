@@ -29,10 +29,10 @@ catalog:
   "@vitest/browser-playwright": ^5.1.0
   "@vitest/coverage-v8": ^5.1.0
   arktype: ^2.2.9
-  eslint: ^10.14.0
-  eslint-plugin-cypress: ^7.0.4
+  eslint: ^10.15.0
+  eslint-plugin-cypress: ^7.0.5
   eslint-plugin-github: ^6.1.2
-  eslint-plugin-jest-dom: ^5.10.1
+  eslint-plugin-jest-dom: ^5.10.2
   eslint-plugin-playwright: ^2.12.2
   eslint-plugin-regexp: ^3.3.3
   eslint-plugin-solid: ^0.19.0
@@ -43,9 +43,9 @@ catalog:
   lefthook: ^2.2.2
   oxfmt: ^0.78.0
   oxlint: ^1.93.0
-  oxlint-plugin-react-doctor: ^0.9.22
+  oxlint-plugin-react-doctor: ^0.9.23
   oxlint-tsgolint: ^7.0.2007
-  playwright: ^1.65.0
+  playwright: ^1.65.1
   publint: ^0.3.25
   react: ^19.3.1
   react-dom: ^19.3.1
