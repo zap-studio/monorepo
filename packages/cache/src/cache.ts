@@ -78,6 +78,27 @@ export const createCache = <K, V>(
     return count;
   };
 
+  const dropAllExpired = (): void => {
+    for (const [key, entry] of store) {
+      if (isExpired(entry)) {
+        dropExpired(key, entry);
+      }
+    }
+  };
+
+  const evictOne = (): void => {
+    const victimKey = policy.evict();
+    if (victimKey === undefined) {
+      return;
+    }
+
+    const victimEntry = store.get(victimKey);
+    store.delete(victimKey);
+    if (victimEntry !== undefined) {
+      onEvict?.(victimKey, victimEntry.value);
+    }
+  };
+
   return {
     capacity,
 
@@ -136,14 +157,10 @@ export const createCache = <K, V>(
       const ttl = setOptions?.ttl ?? defaultTtl;
       const expiresAt = ttl === undefined ? undefined : Date.now() + ttl;
 
-      if (!store.has(key) && liveSize() >= capacity) {
-        const victimKey = policy.evict();
-        if (victimKey !== undefined) {
-          const victimEntry = store.get(victimKey);
-          store.delete(victimKey);
-          if (victimEntry !== undefined) {
-            onEvict?.(victimKey, victimEntry.value);
-          }
+      if (!store.has(key) && store.size >= capacity) {
+        dropAllExpired();
+        if (store.size >= capacity) {
+          evictOne();
         }
       }
 
