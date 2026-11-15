@@ -10,12 +10,13 @@ const cache = createCache<string, number>(2, {
 
 ## When It Fires
 
-| Trigger                                     | `onEvict` called?  |
-| ------------------------------------------- | ------------------ |
-| Capacity eviction (`set` over capacity)     | Yes                |
-| TTL expiry discovered by `get`/`has`/`peek` | Yes                |
-| Manual `delete(key)`                        | No                 |
-| `clear()`                                   | No (not per entry) |
+| Trigger                                          | `onEvict` called?  |
+| ------------------------------------------------ | ------------------ |
+| Capacity eviction (`set` over capacity)          | Yes                |
+| TTL expiry discovered by `get`/`has`/`peek`      | Yes                |
+| Expired entry reclaimed by `set` on a full cache | Yes                |
+| Manual `delete(key)`                             | No                 |
+| `clear()`                                        | No (not per entry) |
 
 ### Capacity Eviction
 
@@ -33,7 +34,7 @@ evicted; // [["a", 1]]
 
 ### TTL Expiry
 
-Fires the first time an expired entry is discovered — via `get`, `has`, or `peek` — not at the moment it actually expires, since there is no background timer.
+Fires the first time an expired entry is discovered — via `get`, `has`, or `peek`, or when `set` reclaims expired slots in a full cache — not at the moment it actually expires, since there is no background timer.
 
 ```ts
 const cache = createCache<string, number>(2, {
