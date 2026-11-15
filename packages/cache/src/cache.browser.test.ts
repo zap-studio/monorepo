@@ -300,6 +300,25 @@ describe("createCache ttl", () => {
     // At most `capacity` dead entries may still be waiting to be reclaimed.
     expect(onEvict.mock.calls.length).toBeGreaterThanOrEqual(90);
   });
+
+  it("does not loop forever when onEvict re-inserts an expired key", () => {
+    let calls = 0;
+    const cache = createCache<string, number>(1, {
+      onEvict: (key, value) => {
+        calls += 1;
+        // Guard so a regression fails the test instead of hanging the runner.
+        if (calls > 100) {
+          throw new Error("onEvict re-entered too many times");
+        }
+        cache.set(key, value);
+      },
+      ttl: 0,
+    });
+
+    cache.set("a", 1);
+
+    expect(() => cache.set("b", 2)).not.toThrow();
+  });
 });
 
 describe("createCache size/capacity", () => {
